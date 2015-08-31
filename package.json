@@ -1,0 +1,20 @@
+{
+  "name": "Bulletproof",
+  "version": "0.1.0",
+  "description": "Bulletproof",
+  "main": "core/index.html",
+  "engines" : { 
+    "node" : ">=0.12" 
+  },
+  "window": {
+    "title": "Bulletproof",
+    "show": true,
+    "toolbar": true,
+    "frame": true,
+    "transparent": false,
+    "width": 800,
+    "height": 600,
+    "min_width": 800,
+    "min_height": 600
+  }
+}

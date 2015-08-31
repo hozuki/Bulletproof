@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <style>
+        #bp-canvas {
+            background: #eee;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 600px;
+            height: 480px;
+        }
+    </style>
+</head>
+<body>
+<!--
+<iframe src="bulletproof.html" style="height: 100%; width: 100%;"
+        frameborder="0" scrolling="no" id="iframepage" onload="iFrameHeight()"></iframe>
+<script type="text/javascript">
+    function iFrameHeight() {
+        var ifm = document.getElementById("iframepage");
+        var subWeb = document.frames ? document.frames["iframepage"].document : ifm.contentDocument;
+        if (ifm != null && subWeb != null) {
+            ifm.style.height = subWeb.body.clientHeight.toString() + 'px';
+            //ifm.style.width = subWeb.body.scrollWidth.toString() + 'px';
+        }
+    }
+
+    document.body.addEventListener('resize', iFrameHeight);
+    this.name = 'MainWindow';
+</script>-->
+<div id="bp-div">
+    <canvas id="bp-canvas" width="600" height="480">
+    </canvas>
+</div>
+<script src="kevlar.js" type="text/javascript"></script>
+<script src="../test/3d-ball.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //console.log(window.parent.name);
+</script>
+</body>
+</html>
