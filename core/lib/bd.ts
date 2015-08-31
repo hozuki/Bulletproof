@@ -328,6 +328,50 @@ export module bilidanmaku {
 
     }
 
+    export class MotionEasing {
+
+        public static get NONE():string {
+            return 'None';
+        }
+
+        public static get BACK():string {
+            return 'Back';
+        }
+
+        public static get BOUNCE():string {
+            return 'Bounce';
+        }
+
+        public static get CIRCULAR():string {
+            return 'Circular';
+        }
+
+        public static get CUBIC():string {
+            return 'Cubic';
+        }
+
+        public static get ELASTIC():string {
+            return 'Elastic';
+        }
+
+        public static get EXPONENTIAL():string {
+            return 'Exponential';
+        }
+
+        public static get SINE():string {
+            return 'Sine';
+        }
+
+        public static get QUINTIC():string {
+            return 'Quintic';
+        }
+
+        public static get LINEAR():string {
+            return 'Linear';
+        }
+
+    }
+
     export class CommentField extends flash.display.DisplayObject {
 
         public alwaysShowSelection:boolean;
