@@ -1991,7 +1991,9 @@ export module display {
         }
 
         public set x(v:number) {
+            var b = this._x != v;
             this._x = v;
+            b && this._bp_invalidate();
         }
 
         public get y():number {
@@ -1999,7 +2001,9 @@ export module display {
         }
 
         public set y(v:number) {
+            var b = this._y != v;
             this._y = v;
+            b && this._bp_invalidate();
         }
 
         public get z():number {
@@ -2833,9 +2837,9 @@ export module display {
             }
             context.closePath();
             //if (this._isInFill) {
-                context.fill();
+            context.fill();
             //} else {
-                context.stroke();
+            context.stroke();
             //}
             this._displayObject._bp_invalidate();
         }
@@ -2991,12 +2995,15 @@ export module display {
         }
 
         public lineTo(x:number, y:number):void {
-            this._bp_context().lineTo(x, y);
+            // HACK: Please update
+            this._bp_context().lineTo(x + this._displayObject.x, y + this._displayObject.y);
+            this._bp_context().stroke();
             this._displayObject._bp_invalidate();
         }
 
         public moveTo(x:number, y:number):void {
-            this._bp_context().moveTo(x, y);
+            // HACK: Please update
+            this._bp_context().moveTo(x + this._displayObject.x, y + this._displayObject.y);
             this._displayObject._bp_invalidate();
         }
 
