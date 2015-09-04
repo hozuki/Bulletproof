@@ -2,7 +2,7 @@
  * Created by MIC on 2015/8/27.
  */
 
-import org=require('./org');
+import org = require('./org');
 
 export class util {
 
