@@ -1767,6 +1767,8 @@ export module display {
                 this._bp_displayBuffer = window.document.createElement('canvas');
                 if (_bp_parent != null) {
                     _bp_parent._bp_containerElement().appendChild(this._bp_displayBuffer);
+                    //window.document.body.appendChild(this._bp_displayBuffer);
+                    //this._bp_displayBuffer.style.backgroundColor = mic.Color.rgbToCss(23, 30, 30);
                 }
                 this._bp_displayBuffer.style.left = '0';
                 this._bp_displayBuffer.style.top = '0';
@@ -2616,6 +2618,12 @@ export module display {
             return this._graphics;
         }
 
+        public _bp_draw(canvas:HTMLCanvasElement = this._bp_canvas()):void {
+            if (this._graphics) {
+                this._graphics.redraw();
+            }
+        }
+
     }
 
     export interface IGraphicsData {
@@ -2647,7 +2655,7 @@ export module display {
     /**
      * Bulletproof
      */
-    interface GraphicsSettings {
+    interface IGraphicsSettings {
 
         fillStyle:string|CanvasPattern|CanvasGradient;
         strokeStyle:string|CanvasPattern|CanvasGradient;
@@ -2658,11 +2666,102 @@ export module display {
 
     }
 
+    class GraphicsHistoryCommand {
+
+        public static get BEGIN_BITMAP_FILL():number {
+            return 120;
+        }
+
+        public static get BEGIN_FILL():number {
+            return 110;
+        }
+
+        public static get BEGIN_GRADIENT_FILL():number {
+            return 130;
+        }
+
+        public static get BEGIN_SHADER_FILL():number {
+            return 140;
+        }
+
+        public static get CLEAR():number {
+            return 100;
+        }
+
+        public static get CURVE_TO():number {
+            return 90;
+        }
+
+        public static get DRAW_CIRCLE():number {
+            return 70;
+        }
+
+        public static get DRAW_ELLIPSE():number {
+            return 80;
+        }
+
+        public static get DRAW_GRAPHICS_DATA():number {
+            return 150;
+        }
+
+        public static get DRAW_PATH():number {
+            return 50;
+        }
+
+        public static get DRAW_RECT():number {
+            return 30;
+        }
+
+        public static get DRAW_ROUND_RECT():number {
+            return 60;
+        }
+
+        public static get DRAW_TRIANGLES():number {
+            return 40;
+        }
+
+        public static get END_FILL():number {
+            return 160;
+        }
+
+        public static get LINE_BITMAP_STYLE():number {
+            return 170;
+        }
+
+        public static get LINE_GRADIENT_STYLE():number {
+            return 180;
+        }
+
+        public static get LINE_SHADER_STYLE():number {
+            return 190;
+        }
+
+        public static get LINE_STYLE():number {
+            return 200;
+        }
+
+        public static get LINE_TO():number {
+            return 20;
+        }
+
+        public static get MOVE_TO():number {
+            return 10;
+        }
+
+    }
+
+    interface IGraphicsHistoryCommand {
+
+        command:number;
+        data:any;
+
+    }
+
     export class Graphics implements org.ICopyable<Graphics> {
 
         private _canvas:HTMLCanvasElement;
         private _displayObject:DisplayObject;
-        private static _bp_defaultGraphicsSettings:GraphicsSettings = {
+        private static _bp_defaultGraphicsSettings:IGraphicsSettings = {
             fillStyle: "#000000",
             strokeStyle: "#000000",
             lineWidth: 1,
@@ -2670,18 +2769,23 @@ export module display {
             miterLimit: 10,
             font: "10px sans-serif"
         };
+        private _currentGraphicsSettings:IGraphicsSettings;
         private _isInFill = false;
+        private _transformMatrix:Array<number> = [1, 0, 0, 1, 0, 0, 0, 0, 1];
+        private _isRedrawCalling:boolean = false;
+        private _redrawHistoryStack:Array<IGraphicsHistoryCommand> = [];
 
         public constructor(attachedDisplayObject:DisplayObject) {
             this._displayObject = attachedDisplayObject;
             this._canvas = attachedDisplayObject._bp_displayBuffer;
+            this.saveGraphicsSettings(); // saved as an origin
         }
 
         private _bp_context():CanvasRenderingContext2D {
             return this._canvas.getContext('2d');
         }
 
-        private static _bp_getSettings(context:CanvasRenderingContext2D):GraphicsSettings {
+        private static _bp_getSettings(context:CanvasRenderingContext2D):IGraphicsSettings {
             return {
                 fillStyle: context.fillStyle,
                 strokeStyle: context.strokeStyle,
@@ -2692,7 +2796,17 @@ export module display {
             };
         }
 
-        private static _bp_setSettings(context:CanvasRenderingContext2D, settings:GraphicsSettings):void {
+        // Bulletproof
+        private saveGraphicsSettings():void {
+            this._currentGraphicsSettings = Graphics._bp_getSettings(this._bp_context());
+        }
+
+        // Bulletproof
+        private restoreGraphicsSettings():void {
+            Graphics._bp_setSettings(this._bp_context(), this._currentGraphicsSettings);
+        }
+
+        private static _bp_setSettings(context:CanvasRenderingContext2D, settings:IGraphicsSettings):void {
             context.fillStyle = settings.fillStyle;
             context.strokeStyle = settings.strokeStyle;
             context.lineWidth = settings.lineWidth;
@@ -2708,17 +2822,39 @@ export module display {
         public beginFill(color:number, alpha:number = 1.0):void {
             this._bp_context().fillStyle = mic.Color.argbNumberToCss(color, alpha);
             this._isInFill = true;
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.BEGIN_FILL,
+                    data: {
+                        color: color,
+                        alpha: alpha
+                    }
+                });
+            }
         }
 
         public beginGradientFill(type:string, colors:Array<number>, alphas:Array<number>, ratios:Array<number>,
                                  matrix:geom.Matrix = null, spreadMethod:string = SpreadMethod.PAD,
                                  interpolationMethod:string = InterpolationMethod.RGB, focalPointRatio:number = 0):void {
-            if (!this._isInFill) {
-                var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-                if (gradient != null) {
-                    this._bp_context().fillStyle = gradient;
-                }
-                this._isInFill = true;
+            var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+            if (gradient != null) {
+                this._bp_context().fillStyle = gradient;
+            }
+            this._isInFill = true;
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.BEGIN_GRADIENT_FILL,
+                    data: {
+                        type: type,
+                        colors: colors,
+                        alphas: alphas,
+                        ratios: ratios,
+                        matrix: matrix,
+                        spreadMethod: spreadMethod,
+                        interpolationMethod: interpolationMethod,
+                        focalPointRatio: focalPointRatio
+                    }
+                });
             }
         }
 
@@ -2728,12 +2864,21 @@ export module display {
 
         public clear():void {
             var context = this._bp_context();
+            //context.save();
+            this.resetTransform();
             // 似乎无效
-            context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+            //context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
             // TODO: HACK: works under nw.js v0.12
             // DANGER: will reset styles
-            //this._canvas.width = this._canvas.width;
+            this._canvas.width = this._canvas.width;
+            //context.restore();
             Graphics._bp_setSettings(context, Graphics._bp_defaultGraphicsSettings);
+            // Since all contents are clear, there should be nothing even if redraw() is called
+            // Also please free the history entries.
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack = [];
+                this.saveGraphicsSettings();
+            }
             this._displayObject._bp_invalidate();
         }
 
@@ -2742,8 +2887,22 @@ export module display {
         }
 
         public curveTo(controlX:number, controlY:number, anchorX:number, anchorY:number):void {
-            this._bp_context().quadraticCurveTo(controlX, controlY, anchorX, anchorY);
+            var context = this._bp_context();
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
+            context.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.CURVE_TO,
+                    data: {
+                        controlX: controlX,
+                        controlY: controlY,
+                        anchorX: anchorX,
+                        anchorY: anchorY
+                    }
+                });
+            }
         }
 
         public drawCircle(x:number, y:number, radius:number):void {
@@ -2755,13 +2914,23 @@ export module display {
                 this._bp_context().stroke();
             }
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.DRAW_CIRCLE,
+                    data: {
+                        x: x,
+                        y: y,
+                        radius: radius
+                    }
+                });
+            }
         }
 
         public drawEllipse(x:number, y:number, width:number, height:number):void {
             // http://www.cnblogs.com/shn11160/archive/2012/08/27/2658057.html
             var ox = 0.5 * width, oy = 0.6 * height;
             var context = this._bp_context();
-            context.save();
+            //context.save();
             context.translate(x, y);
             context.beginPath();
             context.moveTo(0, height);
@@ -2775,8 +2944,19 @@ export module display {
             } else {
                 this._bp_context().stroke();
             }
-            context.restore();
+            //context.restore();
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.DRAW_ELLIPSE,
+                    data: {
+                        x: x,
+                        y: y,
+                        width: width,
+                        height: height
+                    }
+                });
+            }
         }
 
         public drawGraphicsData(graphicsData:Array<IGraphicsData>):void {
@@ -2798,6 +2978,8 @@ export module display {
             var commandLength = commands.length;
             var dataLength = data.length;
             var j = 0;
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
             context.beginPath();
             for (var i = 0; i < commandLength; i++) {
                 switch (commands[i]) {
@@ -2811,14 +2993,14 @@ export module display {
                         break;
                     case GraphicsPathCommand.LINE_TO:
                         // HACK: please update the x and y properties
-                        context.lineTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
-                        //context.lineTo(data[j], data[j + 1]);
+                        //context.lineTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
+                        context.lineTo(data[j], data[j + 1]);
                         j += 2;
                         break;
                     case GraphicsPathCommand.MOVE_TO:
                         // HACK: please update the x and y properties
-                        context.moveTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
-                        //context.moveTo(data[j], data[j + 1]);
+                        //context.moveTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
+                        context.moveTo(data[j], data[j + 1]);
                         j += 2;
                         break;
                     case GraphicsPathCommand.NO_OP:
@@ -2842,6 +3024,17 @@ export module display {
             context.stroke();
             //}
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.DRAW_PATH,
+                    data: {
+                        commands: commands,
+                        data: data,
+                        winding: winding,
+                        checkCommands: checkCommands
+                    }
+                });
+            }
         }
 
         private static _bp_checkPathCommands(commands:Array<number>, data:Array<number>):boolean {
@@ -2904,6 +3097,17 @@ export module display {
                 this._bp_context().strokeRect(x, y, width, height);
             }
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.DRAW_RECT,
+                    data: {
+                        x: x,
+                        y: y,
+                        width: width,
+                        height: height
+                    }
+                });
+            }
         }
 
         public drawRoundRect(x:number, y:number, width:number, height:number, ellipseWidth:number, ellipseHeight:number = NaN):void {
@@ -2952,6 +3156,7 @@ export module display {
                 data.push(ax, ay, bx, by, cx, cy, ax, ay);
             }
             // 已经有 this._displayObject._bp_invalidate(); 了
+            // 历史记录由 drawPath() 代为完成
             this.drawPath(commands, data, void(0), false);
         }
 
@@ -2959,6 +3164,12 @@ export module display {
             // TODO: 文档上说似乎应该进行指令缓存，在 endFill() 时一起绘制？
             this._isInFill = false;
             //this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.END_FILL,
+                    data: null
+                });
+            }
         }
 
         public lineBitmapStyle(bitmap:BitmapData, matrix:geom.Matrix = null, repeat:boolean = true, smooth:boolean = false):void {
@@ -2971,6 +3182,21 @@ export module display {
             var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
             if (gradient != null) {
                 this._bp_context().strokeStyle = gradient;
+            }
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.LINE_BITMAP_STYLE,
+                    data: {
+                        type: type,
+                        colors: colors,
+                        alphas: alphas,
+                        ratios: ratios,
+                        matrix: matrix,
+                        spreadMethod: spreadMethod,
+                        interpolationMethod: interpolationMethod,
+                        focalPointRatio: focalPointRatio
+                    }
+                });
             }
         }
 
@@ -2992,19 +3218,132 @@ export module display {
                 context.lineJoin = joints;
             }
             context.miterLimit = miterLimit;
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.LINE_STYLE,
+                    data: {
+                        thickness: thickness,
+                        color: color,
+                        alpha: alpha,
+                        pixelHinting: pixelHinting,
+                        scaleMode: scaleMode,
+                        caps: caps,
+                        joints: joints,
+                        miterLimt: miterLimit
+                    }
+                });
+            }
         }
 
         public lineTo(x:number, y:number):void {
+            var context = this._bp_context();
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
+            context.lineTo(x, y);
             // HACK: Please update
-            this._bp_context().lineTo(x + this._displayObject.x, y + this._displayObject.y);
-            this._bp_context().stroke();
+            //context.lineTo(x + this._displayObject.x, y + this._displayObject.y);
+            context.stroke();
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.LINE_TO,
+                    data: {
+                        x: x,
+                        y: y
+                    }
+                });
+            }
         }
 
         public moveTo(x:number, y:number):void {
+            var context = this._bp_context();
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
             // HACK: Please update
-            this._bp_context().moveTo(x + this._displayObject.x, y + this._displayObject.y);
+            context.moveTo(x, y);
             this._displayObject._bp_invalidate();
+            if (!this._isRedrawCalling) {
+                this._redrawHistoryStack.push({
+                    command: GraphicsHistoryCommand.MOVE_TO,
+                    data: {
+                        x: x,
+                        y: y
+                    }
+                });
+            }
+        }
+
+        public redraw():void {
+            if (this._isRedrawCalling) {
+                return;
+            }
+            this._isRedrawCalling = true;
+            this.clear();
+            var len = this._redrawHistoryStack.length;
+            var cmd:IGraphicsHistoryCommand;
+            for (var i = 0; i < len; i++) {
+                cmd = this._redrawHistoryStack[i];
+                switch (cmd.command) {
+                    case GraphicsHistoryCommand.BEGIN_BITMAP_FILL:
+                        break;
+                    case GraphicsHistoryCommand.BEGIN_FILL:
+                        this.beginFill(cmd.data.color, cmd.data.alpha);
+                        break;
+                    case GraphicsHistoryCommand.BEGIN_GRADIENT_FILL:
+                        this.beginGradientFill(cmd.data.type, cmd.data.colors, cmd.data.alphas, cmd.data.ratios,
+                            cmd.data.matrix, cmd.data.spreadMethod, cmd.data.interpolationMethod, cmd.data.focalPointRatio);
+                        break;
+                    case GraphicsHistoryCommand.BEGIN_SHADER_FILL:
+                        break;
+                    case GraphicsHistoryCommand.CLEAR:
+                        break;
+                    case GraphicsHistoryCommand.CURVE_TO:
+                        this.curveTo(cmd.data.controlX, cmd.data.controlY, cmd.data.anchorX, cmd.data.anchorY);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_CIRCLE:
+                        this.drawCircle(cmd.data.x, cmd.data.y, cmd.data.radius);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_ELLIPSE:
+                        this.drawEllipse(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_GRAPHICS_DATA:
+                        break;
+                    case GraphicsHistoryCommand.DRAW_PATH:
+                        this.drawPath(cmd.data.commands, cmd.data.data, cmd.data.winding, cmd.data.checkCommands);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_RECT:
+                        this.drawRect(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_ROUND_RECT:
+                        break;
+                    case GraphicsHistoryCommand.END_FILL:
+                        this.endFill();
+                        break;
+                    case GraphicsHistoryCommand.LINE_BITMAP_STYLE:
+                        break;
+                    case GraphicsHistoryCommand.LINE_GRADIENT_STYLE:
+                        this.lineGradientStyle(cmd.data.type, cmd.data.colors, cmd.data.alphas, cmd.data.ratios,
+                            cmd.data.matrix, cmd.data.spreadMethod, cmd.data.interpolationMethod, cmd.data.focalPointRatio);
+                        break;
+                    case GraphicsHistoryCommand.LINE_SHADER_STYLE:
+                        break;
+                    case GraphicsHistoryCommand.LINE_STYLE:
+                        this.lineStyle(cmd.data.thickness, cmd.data.color, cmd.data.alpha, cmd.data.pixelHinting,
+                            cmd.data.scaleMode, cmd.data.caps, cmd.data.joints, cmd.data.miterLimit);
+                        break;
+                    case GraphicsHistoryCommand.LINE_TO:
+                        this.lineTo(cmd.data.x, cmd.data.y);
+                        break;
+                    case GraphicsHistoryCommand.MOVE_TO:
+                        this.moveTo(cmd.data.x, cmd.data.y);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_TRIANGLES:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            this._isRedrawCalling = false;
         }
 
         private createGradient(type:string, colors:Array<number>, alphas:Array<number>, ratios:Array<number>,
@@ -3040,6 +3379,15 @@ export module display {
                     mic.Color.argbNumberToCssSharp(mic.Color.colorCombine(colors[i], alphas[i])));
             }
             return gradient;
+        }
+
+        private resetTransform() {
+            this._bp_context().setTransform(1, 0, 0, 1, 0, 0);
+        }
+
+        private redoLastActiveTransform() {
+            this._bp_context().transform(this._transformMatrix[0], this._transformMatrix[3], this._transformMatrix[1],
+                this._transformMatrix[4], this._transformMatrix[2], this._transformMatrix[5]);
         }
 
     }
