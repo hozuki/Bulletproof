@@ -36,9 +36,33 @@
     </canvas>
 </div>
 <script src="kevlar.js" type="text/javascript"></script>
-<script src="../test/3d-ball.js" type="text/javascript"></script>
+<!-- test script #1 -->
+<!--<script src="../test/3d-ball.js" type="text/javascript"></script>-->
+<!-- test script #2 -->
+<script src="../test/kanpai-lbn.js" type="text/javascript"></script>
 <script type="text/javascript">
     //console.log(window.parent.name);
+    var frameCount = 0;
+    var lastTime = Date.now();
+    var nextUpdate = Date.now() + 1000;
+    var f = function () {
+        var now = Date.now();
+        frameCount++;
+        if (now >= nextUpdate) {
+            fps = ((frameCount / (now - lastTime) * 1000 * 10) | 0) / 10;
+            document.title = "FPS: " + fps.toString();
+            lastTime = now;
+            frameCount = 0;
+            nextUpdate = Date.now() + 1000;
+        }
+        if (s) {
+            s.x += 0.05;
+        }
+        requestAnimationFrame(f);
+    };
+    requestAnimationFrame(f);
 </script>
+<!-- test script #3 -->
+<!--<script src="../test/kanpai-madoka.js" type="text/javascript"></script>-->
 </body>
 </html>
