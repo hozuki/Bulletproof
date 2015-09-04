@@ -2773,7 +2773,7 @@ export module display {
         private _isInFill = false;
         private _transformMatrix:Array<number> = [1, 0, 0, 1, 0, 0, 0, 0, 1];
         private _isRedrawCalling:boolean = false;
-        private _redrawHistoryStack:Array<IGraphicsHistoryCommand> = [];
+        private _redrawHistoryQueue:Array<IGraphicsHistoryCommand> = [];
 
         public constructor(attachedDisplayObject:DisplayObject) {
             this._displayObject = attachedDisplayObject;
@@ -2823,7 +2823,7 @@ export module display {
             this._bp_context().fillStyle = mic.Color.argbNumberToCss(color, alpha);
             this._isInFill = true;
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.BEGIN_FILL,
                     data: {
                         color: color,
@@ -2842,7 +2842,7 @@ export module display {
             }
             this._isInFill = true;
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.BEGIN_GRADIENT_FILL,
                     data: {
                         type: type,
@@ -2876,7 +2876,7 @@ export module display {
             // Since all contents are clear, there should be nothing even if redraw() is called
             // Also please free the history entries.
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack = [];
+                this._redrawHistoryQueue = [];
                 this.saveGraphicsSettings();
             }
             this._displayObject._bp_invalidate();
@@ -2893,7 +2893,7 @@ export module display {
             context.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.CURVE_TO,
                     data: {
                         controlX: controlX,
@@ -2915,7 +2915,7 @@ export module display {
             }
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_CIRCLE,
                     data: {
                         x: x,
@@ -2947,7 +2947,7 @@ export module display {
             //context.restore();
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_ELLIPSE,
                     data: {
                         x: x,
@@ -3025,7 +3025,7 @@ export module display {
             //}
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_PATH,
                     data: {
                         commands: commands,
@@ -3098,7 +3098,7 @@ export module display {
             }
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_RECT,
                     data: {
                         x: x,
@@ -3165,7 +3165,7 @@ export module display {
             this._isInFill = false;
             //this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.END_FILL,
                     data: null
                 });
@@ -3184,7 +3184,7 @@ export module display {
                 this._bp_context().strokeStyle = gradient;
             }
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.LINE_BITMAP_STYLE,
                     data: {
                         type: type,
@@ -3219,7 +3219,7 @@ export module display {
             }
             context.miterLimit = miterLimit;
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.LINE_STYLE,
                     data: {
                         thickness: thickness,
@@ -3245,7 +3245,7 @@ export module display {
             context.stroke();
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.LINE_TO,
                     data: {
                         x: x,
@@ -3263,7 +3263,7 @@ export module display {
             context.moveTo(x, y);
             this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
-                this._redrawHistoryStack.push({
+                this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.MOVE_TO,
                     data: {
                         x: x,
@@ -3279,10 +3279,10 @@ export module display {
             }
             this._isRedrawCalling = true;
             this.clear();
-            var len = this._redrawHistoryStack.length;
+            var len = this._redrawHistoryQueue.length;
             var cmd:IGraphicsHistoryCommand;
             for (var i = 0; i < len; i++) {
-                cmd = this._redrawHistoryStack[i];
+                cmd = this._redrawHistoryQueue[i];
                 switch (cmd.command) {
                     case GraphicsHistoryCommand.BEGIN_BITMAP_FILL:
                         break;
