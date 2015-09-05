@@ -17,7 +17,7 @@
         });
     }
 
-    bd.bilidanmaku.initialize(root);
+    bd.bilidanmaku.initialize(container);
 
     function ExecContext() {
         "use strict";

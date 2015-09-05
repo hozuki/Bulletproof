@@ -91,7 +91,7 @@ export module bilidanmaku {
     export interface IProofStartParams {
 
         startDate:Date;
-        root:HTMLCanvasElement;
+        root:HTMLDivElement;
 
     }
 
@@ -100,7 +100,7 @@ export module bilidanmaku {
         startDate: null
     };
 
-    export function initialize(root:HTMLCanvasElement) {
+    export function initialize(root:HTMLDivElement) {
         _startParams.root = root;
         _startParams.startDate = new Date();
     }
