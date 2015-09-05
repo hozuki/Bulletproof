@@ -1739,7 +1739,7 @@ export module display {
         private _height:number;
         private _loaderInfo:LoaderInfo;
         private _parent:DisplayObjectContainer;
-        private _root:DisplayObject;
+        protected _root:IRootDisplayObject;
         private _rotation:number;
         private _rotationX:number;
         private _rotationY:number;
@@ -1752,11 +1752,10 @@ export module display {
         private _x:number = 0;
         private _y:number = 0;
         private _z:number = 0;
-        public _bp_displayBuffer:HTMLCanvasElement;
-        public _bp_invalidated:boolean = false;
+        protected _bp_displayBuffer:HTMLCanvasElement;
         protected _bp_containerElem:HTMLElement = null;
 
-        public constructor(_bp_root:DisplayObject, _bp_parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
+        public constructor(_bp_root:IRootDisplayObject, _bp_parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
             super();
             this._root = _bp_root;
             this._parent = _bp_parent;
@@ -1788,16 +1787,11 @@ export module display {
              */
         }
 
-        public _bp_draw(canvas:HTMLCanvasElement = this._bp_canvas()):void {
+        public _bp_draw():void {
         }
 
         protected _bp_context():CanvasRenderingContext2D {
             return this._bp_displayBuffer.getContext('2d');
-        }
-
-        // 给 stage 使用
-        public _bp_stageReleaseRoot():void {
-            this._root = null;
         }
 
         public _bp_onSizeChanged(newSize:geom.Point):void {
@@ -1807,12 +1801,8 @@ export module display {
 
         public _bp_invalidate():void {
             if (this._root != null) {
-                this._root._bp_invalidated = true;
+                this._root.invalidateDrawState();
             }
-        }
-
-        protected _bp_canvas():HTMLCanvasElement {
-            return this._bp_displayBuffer;
         }
 
         protected _bp_containerElement():HTMLElement {
@@ -1850,13 +1840,13 @@ export module display {
         }
 
         public get height():number {
-            return this._bp_canvas().clientHeight;
+            return this._bp_displayBuffer.clientHeight;
         }
 
         public set height(v:number) {
             this._height = v;
-            this._bp_canvas().style.height = v.toString() + 'px';
-            this._bp_canvas().height = v;
+            this._bp_displayBuffer.style.height = v.toString() + 'px';
+            this._bp_displayBuffer.height = v;
             this._bp_draw();
         }
 
@@ -1882,7 +1872,7 @@ export module display {
             return this._parent;
         }
 
-        public get root():DisplayObject {
+        public get root():IRootDisplayObject {
             return this._root;
         }
 
@@ -1978,13 +1968,13 @@ export module display {
         public visible:boolean;
 
         public get width():number {
-            return this._bp_canvas().clientWidth;
+            return this._bp_displayBuffer.clientWidth;
         }
 
         public set width(v:number) {
             this._width = v;
-            this._bp_canvas().style.width = v.toString() + 'px';
-            this._bp_canvas().width = v;
+            this._bp_displayBuffer.style.width = v.toString() + 'px';
+            this._bp_displayBuffer.width = v;
             this._bp_draw();
         }
 
@@ -2048,6 +2038,11 @@ export module display {
             throw new org.NotImplementedError();
         }
 
+        // Bulletproof
+        public getDisplayBuffer():HTMLCanvasElement {
+            return this._bp_displayBuffer;
+        }
+
     }
 
     export class InteractiveObject extends DisplayObject {
@@ -2061,7 +2056,7 @@ export module display {
         public tabEnabled:boolean;
         public tabIndex:number;
 
-        public constructor(root:DisplayObject, parent:DisplayObjectContainer, createBuffer:boolean = true) {
+        public constructor(root:IRootDisplayObject, parent:DisplayObjectContainer, createBuffer:boolean = true) {
             super(root, parent, createBuffer);
         }
 
@@ -2075,7 +2070,7 @@ export module display {
 
         protected _children:Array<DisplayObject> = [];
 
-        public constructor(root:DisplayObject, parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
+        public constructor(root:IRootDisplayObject, parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
             super(root, parent, createBuffer);
             if (parent != null) {
                 this._bp_containerElem = window.document.createElement('div');
@@ -2083,16 +2078,16 @@ export module display {
             }
         }
 
-        public _bp_draw(canvas:HTMLCanvasElement = this._bp_canvas()):void {
+        public _bp_draw():void {
             //super._bp_draw();
             var len = this.numChildren;
-            var context = canvas.getContext('2d');
-            //context.clearRect(0, 0, this._bp_canvas().clientWidth, this._bp_canvas().clientHeight);
+            var context = this._bp_context();
+            //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
             // 似乎无效
-            context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+            context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
             // TODO: HACK: works under nw.js v0.12
             // DANGER: will reset styles
-            //this._bp_canvas().width = this._bp_canvas().width;
+            //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
             var child:DisplayObject;
             for (var i = 0; i < len; i++) {
                 child = this._children[i];
@@ -2144,7 +2139,7 @@ export module display {
             return child;
         }
 
-        public areInaccessbleObjectsUnderPoint(point:geom.Point):boolean {
+        public areInaccessibleObjectsUnderPoint(point:geom.Point):boolean {
             throw new org.NotImplementedError();
         }
 
@@ -2190,7 +2185,14 @@ export module display {
 
     }
 
-    export class Stage extends DisplayObjectContainer {
+    // Bulletproof
+    export interface IRootDisplayObject {
+
+        invalidateDrawState():void;
+
+    }
+
+    export class Stage extends DisplayObjectContainer implements IRootDisplayObject {
 
         private _allowFullScreen:boolean;
         private _allowFullScreenInteractive:boolean;
@@ -2198,6 +2200,7 @@ export module display {
         private _stageHeight:number;
         private _stageWidth:number;
         private _bp_outputCanvas:HTMLCanvasElement;
+        private _bp_drawStateInvalidated:boolean = false;
 
         public constructor(_bp_canvas:HTMLCanvasElement, _bp_container:HTMLElement) {
             // 注意这里可能引起了循环引用，请手工释放
@@ -2222,15 +2225,20 @@ export module display {
             this.dispatchEvent(event);
         }
 
-        public redraw() {
-            if (this._bp_invalidated) {
-                this._bp_draw();
-                this._bp_invalidated = false;
-            }
+        public invalidateDrawState():void {
+            this._bp_drawStateInvalidated = true;
         }
 
-        protected _bp_canvas():HTMLCanvasElement {
-            return this._bp_outputCanvas;
+        // Bulletproof
+        public _bp_stageReleaseRoot():void {
+            this._root = null;
+        }
+
+        public redraw() {
+            if (this._bp_drawStateInvalidated) {
+                this._bp_draw();
+                this._bp_drawStateInvalidated = false;
+            }
         }
 
         public _bp_draw() {
@@ -2609,7 +2617,7 @@ export module display {
 
         private _graphics:Graphics;
 
-        public constructor(root:DisplayObject, parent:DisplayObjectContainer) {
+        public constructor(root:IRootDisplayObject, parent:DisplayObjectContainer) {
             super(root, parent);
             this._graphics = new Graphics(this);
         }
@@ -2618,7 +2626,7 @@ export module display {
             return this._graphics;
         }
 
-        public _bp_draw(canvas:HTMLCanvasElement = this._bp_canvas()):void {
+        public _bp_draw():void {
             if (this._graphics) {
                 this._graphics.redraw();
             }
@@ -2777,7 +2785,7 @@ export module display {
 
         public constructor(attachedDisplayObject:DisplayObject) {
             this._displayObject = attachedDisplayObject;
-            this._canvas = attachedDisplayObject._bp_displayBuffer;
+            this._canvas = attachedDisplayObject.getDisplayBuffer();
             this.saveGraphicsSettings(); // saved as an origin
         }
 

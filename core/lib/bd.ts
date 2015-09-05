@@ -388,11 +388,12 @@ export module bilidanmaku {
         public defaultTextFormat:flash.text.TextFormat;
         public gridFitType:string;
 
-        public _bp_draw(canvas:HTMLCanvasElement = this._bp_canvas()):void {
-            super._bp_draw(canvas);
+        public _bp_draw():void {
+            super._bp_draw();
             // clear the canvas
-            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            var canvas = this._bp_displayBuffer;
             var context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
             context.font = this.textHeight.toString() + 'pt SimHei';
             context.fillText(this.text, 0, this.textHeight);
         }
