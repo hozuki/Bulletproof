@@ -2199,14 +2199,13 @@ export module display {
         private _colorCorrectionSupport:string;
         private _stageHeight:number;
         private _stageWidth:number;
-        private _bp_outputCanvas:HTMLCanvasElement;
         private _bp_drawStateInvalidated:boolean = false;
 
-        public constructor(_bp_canvas:HTMLCanvasElement, _bp_container:HTMLElement) {
+        public constructor(_bp_container:HTMLElement) {
             // 注意这里可能引起了循环引用，请手工释放
-            super(this, null, false);
-            this._bp_outputCanvas = _bp_canvas;
+            super(null, null, false);
             this._bp_containerElem = _bp_container;
+            this._root = this; // forced (= =)#
         }
 
         public _bp_onSizeChanged(newSize:geom.Point):void {
@@ -2214,10 +2213,6 @@ export module display {
             for (var i = 0; i < len; i++) {
                 this._children[i]._bp_onSizeChanged(newSize);
             }
-        }
-
-        protected _bp_context():CanvasRenderingContext2D {
-            return this._bp_outputCanvas.getContext('2d');
         }
 
         public raiseEnterFrame() {
@@ -2242,7 +2237,13 @@ export module display {
         }
 
         public _bp_draw() {
-            super._bp_draw();
+            //super._bp_draw();
+            var len = this.numChildren;
+            var child:DisplayObject;
+            for (var i = 0; i < len; i++) {
+                child = this._children[i];
+                child._bp_draw();
+            }
             /*
              var context = this._bp_outputCanvas.getContext('2d');
              context.clearRect(0, 0, this._bp_outputCanvas.clientWidth, this._bp_outputCanvas.clientHeight);
@@ -2279,6 +2280,14 @@ export module display {
 
         public get fullScreenWidth():number {
             return screen.width;
+        }
+
+        public get height():number {
+            return this._bp_containerElem.clientHeight;
+        }
+
+        public set height(v:number) {
+            this._bp_containerElem.style.height = v.toString() + 'px';
         }
 
         public mouseChildren:boolean;
@@ -2319,6 +2328,14 @@ export module display {
 
         public get textSnapshot():text.TextSnapshot {
             throw new org.NotImplementedError();
+        }
+
+        public get width():number {
+            return this._bp_containerElem.clientWidth;
+        }
+
+        public set width(v:number) {
+            this._bp_containerElem.style.width = v.toString() + 'px';
         }
 
         public invalidate():void {

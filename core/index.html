@@ -12,6 +12,15 @@
             width: 600px;
             height: 480px;
         }
+
+        #bp-div {
+            background: #eee;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 600px;
+            height: 480px;
+        }
     </style>
 </head>
 <body>
@@ -32,8 +41,8 @@
     this.name = 'MainWindow';
 </script>-->
 <div id="bp-div">
-    <canvas id="bp-canvas" width="600" height="480">
-    </canvas>
+    <!--<canvas id="bp-canvas" width="600" height="480">
+    </canvas>-->
 </div>
 <script src="kevlar.js" type="text/javascript"></script>
 <!-- test script #1 -->
@@ -53,7 +62,7 @@
             document.title = "FPS: " + fps.toString();
             lastTime = now;
             frameCount = 0;
-            nextUpdate = Date.now() + 1000;
+            nextUpdate = now + 1000;
         }
         if (s) {
             s.x += 0.05;

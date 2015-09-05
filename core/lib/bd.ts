@@ -21,14 +21,12 @@ export module bulletproof {
         private static _shouldUpdate:boolean = true;
         private static _isDispatching:boolean = false;
         private static _isInWatchMode:boolean = false;
-        private static _canvas:HTMLCanvasElement;
         private static _stage:flash.display.Stage;
         private static _lastIntervalHandle:number = 0;
 
-        static init(canvas:HTMLCanvasElement, div:HTMLDivElement, fpsLimit:number = 100):void {
-            Bulletproof._canvas = canvas;
+        static init(div:HTMLDivElement, fpsLimit:number = 100):void {
             Bulletproof.enterMainLoop(fpsLimit);
-            Bulletproof._stage = new flash.display.Stage(canvas, div);
+            Bulletproof._stage = new flash.display.Stage(div);
         }
 
         private static enterMainLoop(fpsLimit:number = 100):void {

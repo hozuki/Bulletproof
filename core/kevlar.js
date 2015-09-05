@@ -2,7 +2,7 @@
  * Created by MIC on 2015/8/29.
  */
 
-(function (root, container) {
+(function (container) {
     var bd = require('./lib/bd.js');
     var flash = require('./lib/flash.js');
     var fl = require('./lib/fl.js');
@@ -79,7 +79,7 @@
      */
 
     // 如果帧率限制设置太低，会造成如果用小的 setInterval() 进行第三方绘制，就会出现闪屏的现象
-    bd.bulletproof.Bulletproof.init(root, container, 50);
-})(document.getElementById('bp-canvas'), document.getElementById('bp-div'));
+    bd.bulletproof.Bulletproof.init(container, 50);
+})(document.getElementById('bp-div'));
 
 
