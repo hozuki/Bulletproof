@@ -44,6 +44,7 @@ var s = $.createShape({
         {x: {fromValue: -15, toValue: -20, lifeTime: 2}, alpha: {fromValue: 1, toValue: 0, lifeTime: 2}}
     ]
 });
+var s1 = s;
 var g = s.graphics;
 g.moveTo(94.69187622070312, 83.75048217773437);
 g.lineStyle(1, 0, 1);
@@ -2572,6 +2573,7 @@ var s = $.createShape({
         {x: {fromValue: -40, toValue: -45, lifeTime: 2}, alpha: {fromValue: 1, toValue: 0, lifeTime: 2}}
     ]
 });
+var s2 = s;
 var g = s.graphics;
 g.moveTo(330, 206);
 g.moveTo(257, 62);
