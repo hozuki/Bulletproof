@@ -1739,7 +1739,7 @@ export module display {
         private _height:number;
         private _loaderInfo:LoaderInfo;
         private _parent:DisplayObjectContainer;
-        protected _root:IRootDisplayObject;
+        protected _root:DisplayObject;
         private _rotation:number;
         private _rotationX:number;
         private _rotationY:number;
@@ -1754,8 +1754,9 @@ export module display {
         private _z:number = 0;
         protected _bp_displayBuffer:HTMLCanvasElement;
         protected _bp_containerElem:HTMLElement = null;
+        protected _bp_drawStateInvalidated:boolean = false;
 
-        public constructor(_bp_root:IRootDisplayObject, _bp_parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
+        public constructor(_bp_root:DisplayObject, _bp_parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
             super();
             this._root = _bp_root;
             this._parent = _bp_parent;
@@ -1788,6 +1789,13 @@ export module display {
         }
 
         public _bp_draw():void {
+            if (this._bp_drawStateInvalidated) {
+                this._bp_draw_core();
+                this._bp_drawStateInvalidated = false;
+            }
+        }
+
+        protected _bp_draw_core():void {
         }
 
         protected _bp_context():CanvasRenderingContext2D {
@@ -1800,9 +1808,7 @@ export module display {
         }
 
         public _bp_invalidate():void {
-            if (this._root != null) {
-                this._root.invalidateDrawState();
-            }
+            this._bp_drawStateInvalidated = true;
         }
 
         protected _bp_containerElement():HTMLElement {
@@ -1872,7 +1878,7 @@ export module display {
             return this._parent;
         }
 
-        public get root():IRootDisplayObject {
+        public get root():DisplayObject {
             return this._root;
         }
 
@@ -2056,7 +2062,7 @@ export module display {
         public tabEnabled:boolean;
         public tabIndex:number;
 
-        public constructor(root:IRootDisplayObject, parent:DisplayObjectContainer, createBuffer:boolean = true) {
+        public constructor(root:DisplayObject, parent:DisplayObjectContainer, createBuffer:boolean = true) {
             super(root, parent, createBuffer);
         }
 
@@ -2070,7 +2076,7 @@ export module display {
 
         protected _children:Array<DisplayObject> = [];
 
-        public constructor(root:IRootDisplayObject, parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
+        public constructor(root:DisplayObject, parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
             super(root, parent, createBuffer);
             if (parent != null) {
                 this._bp_containerElem = window.document.createElement('div');
@@ -2088,6 +2094,10 @@ export module display {
             // TODO: HACK: works under nw.js v0.12
             // DANGER: will reset styles
             //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
+            if (this._bp_drawStateInvalidated) {
+                this._bp_draw_core();
+                this._bp_drawStateInvalidated = false;
+            }
             var child:DisplayObject;
             for (var i = 0; i < len; i++) {
                 child = this._children[i];
@@ -2185,21 +2195,13 @@ export module display {
 
     }
 
-    // Bulletproof
-    export interface IRootDisplayObject {
-
-        invalidateDrawState():void;
-
-    }
-
-    export class Stage extends DisplayObjectContainer implements IRootDisplayObject {
+    export class Stage extends DisplayObjectContainer {
 
         private _allowFullScreen:boolean;
         private _allowFullScreenInteractive:boolean;
         private _colorCorrectionSupport:string;
         private _stageHeight:number;
         private _stageWidth:number;
-        private _bp_drawStateInvalidated:boolean = false;
 
         public constructor(_bp_container:HTMLElement) {
             // 注意这里可能引起了循环引用，请手工释放
@@ -2220,20 +2222,13 @@ export module display {
             this.dispatchEvent(event);
         }
 
-        public invalidateDrawState():void {
-            this._bp_drawStateInvalidated = true;
-        }
-
         // Bulletproof
         public _bp_stageReleaseRoot():void {
             this._root = null;
         }
 
         public redraw() {
-            if (this._bp_drawStateInvalidated) {
-                this._bp_draw();
-                this._bp_drawStateInvalidated = false;
-            }
+            this._bp_draw();
         }
 
         public _bp_draw() {
@@ -2634,7 +2629,7 @@ export module display {
 
         private _graphics:Graphics;
 
-        public constructor(root:IRootDisplayObject, parent:DisplayObjectContainer) {
+        public constructor(root:DisplayObject, parent:DisplayObjectContainer) {
             super(root, parent);
             this._graphics = new Graphics(this);
         }
