@@ -13,7 +13,8 @@ export interface IGeneralCreateParams {
     color?:number;
     fontsize?:number;
     parent?:flash.display.DisplayObjectContainer;
-    motion?:Array<IMotion>;
+    motion?:IMotion;
+    motionGroup?:Array<IMotion>
 
 }
 
@@ -51,6 +52,9 @@ export interface IMotion {
     alpha?:IMotionPropertyAnimation;
     rotationZ?:IMotionPropertyAnimation;
     rotationY?:IMotionPropertyAnimation;
+    createdTime:number;
+    maximumLifeTime:number;
+    sourceObject:Object;
 
 }
 

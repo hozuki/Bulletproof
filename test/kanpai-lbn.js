@@ -6,6 +6,12 @@ var s = window.$.createShape({
     ]
 });
 var g = s.graphics;
+// Draw and fill a white rectangle (to ensure the background is white).
+g.lineStyle(1, 0xffffff);
+g.beginFill(0xffffff);
+g.drawRect(0, 0, 600, 480);
+g.endFill();
+// Now draw the lines.
 g.moveTo(278, 13);
 g.lineStyle(1, 0, 1);
 g.curveTo(266, 24, 267, 30);

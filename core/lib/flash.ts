@@ -1823,6 +1823,7 @@ export module display {
 
         public set alpha(v:number) {
             this._alpha = mic.util.limit(v, 0, 1);
+            this._bp_displayBuffer.style.opacity = this._alpha.toString();
         }
 
         public blendMode:string;
@@ -3117,11 +3118,8 @@ export module display {
         }
 
         public drawRect(x:number, y:number, width:number, height:number):void {
-            if (this._isInFill) {
-                this._bp_context().fillRect(x, y, width, height);
-            } else {
-                this._bp_context().strokeRect(x, y, width, height);
-            }
+            this._bp_context().fillRect(x, y, width, height);
+            this._bp_context().strokeRect(x, y, width, height);
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({

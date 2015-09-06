@@ -11,18 +11,32 @@ import flash = require('./flash');
 import fl = require('./fl');
 import mic = require('./mic');
 import org = require('./org');
-import bddata =require('./bddata');
+import bddata = require('./bddata');
 
 export module bulletproof {
+
+    export interface IBulletproofOptions {
+
+        // life time (ms)
+        commentLifeTime:number;
+
+    }
 
     export class Bulletproof {
 
         private static _shouldUpdate:boolean = true;
         private static _stage:flash.display.Stage;
+        private static _objectMotions:Array<bddata.IMotion> = [];
+        private static _options:IBulletproofOptions;
+
+        public static DEFAULT_OPTIONS:IBulletproofOptions = {
+            commentLifeTime: 4000
+        };
 
         static init(div:HTMLDivElement):void {
-            Bulletproof.enterMainLoop();
+            Bulletproof._options = Bulletproof.DEFAULT_OPTIONS;
             Bulletproof._stage = new flash.display.Stage(div);
+            Bulletproof.enterMainLoop();
         }
 
         private static enterMainLoop():void {
@@ -31,6 +45,7 @@ export module bulletproof {
 
         private static mainLoop() {
             Bulletproof._stage.raiseEnterFrame();
+            Bulletproof.calculateMotionGroups();
             Bulletproof._stage._bp_draw();
             window.requestAnimationFrame(Bulletproof.mainLoop);
         }
@@ -43,8 +58,61 @@ export module bulletproof {
             Bulletproof._shouldUpdate = v;
         }
 
+        public static get options():IBulletproofOptions {
+            return Bulletproof._options;
+        }
+
         public static get stage():flash.display.Stage {
             return Bulletproof._stage;
+        }
+
+        public static registerMotion(motion:bddata.IMotion):void {
+            console.log('register motion');
+            if (this._objectMotions.indexOf(motion) < 0) {
+                console.log('push motion');
+                this._objectMotions.push(motion);
+            }
+        }
+
+        public static clearMotions():void {
+            while (this._objectMotions.length > 0) {
+                this._objectMotions.pop();
+            }
+        }
+
+        private static calculateMotionGroups():void {
+            var propertyNames = ['x', 'y', 'alpha', 'rotationZ', 'rotationY'];
+            var motionCount = this._objectMotions.length;
+            var now = bilidanmaku.getTimer();
+            var relativeTime:number;
+            var motion:bddata.IMotion;
+            var motionAnimation:bddata.IMotionPropertyAnimation;
+            var value:number;
+            for (var i = 0; i < motionCount; i++) {
+                motion = this._objectMotions[i];
+                if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
+                    for (var j = 0; j < 5; j++) {
+                        motionAnimation = motion[propertyNames[j]];
+                        if (motionAnimation) {
+                            relativeTime = now - motion.createdTime;
+                            if (motionAnimation.startDelay) {
+                                relativeTime -= motionAnimation.startDelay;
+                            }
+                            if (relativeTime <= motionAnimation.lifeTime * 1000) {
+                                // TODO: 这里忽略了 repeat 属性
+                                // TODO: 应该使用指定的 easing 方法，没有则假设线性；这里假设线性
+                                value = motionAnimation.fromValue +
+                                    (motionAnimation.toValue - motionAnimation.fromValue) / (motionAnimation.lifeTime * 1000) * relativeTime;
+                                motion.sourceObject[propertyNames[j]] = value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static debugLogMotions():void {
+            console.log(this._objectMotions);
         }
 
     }
@@ -110,8 +178,69 @@ export module bilidanmaku {
             return comment;
         }
 
-        public static createShape(text:string, params:bddata.IGeneralCreateParams):flash.display.Shape {
-            return new flash.display.Shape(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage);
+        public static createShape(params:bddata.IGeneralCreateParams):flash.display.Shape {
+            var shape = new flash.display.Shape(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage);
+            if (params) {
+                if (params.alpha) {
+                    shape.alpha = params.alpha;
+                }
+            }
+
+            function getMotionMaximumLifeTime(motion:bddata.IMotion):any {
+                var motionAnimation:bddata.IMotionPropertyAnimation;
+                var propertyNames = ['x', 'y', 'alpha', 'rotationZ', 'rotationY'];
+                var maxLife:number = 0;
+                var literalMaxLife:number = 0;
+                for (var j = 0; j < 5; j++) {
+                    motionAnimation = motion[propertyNames[j]];
+                    if (motionAnimation) {
+                        if (!motionAnimation.lifeTime) {
+                            motionAnimation.lifeTime = bulletproof.Bulletproof.options.commentLifeTime / 1000;
+                        }
+                        if (motionAnimation.startDelay) {
+                            maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
+                        } else {
+                            maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000);
+                        }
+                        literalMaxLife = Math.max(literalMaxLife, motionAnimation.lifeTime * 1000);
+                    }
+                }
+                return {
+                    maxLife: maxLife,
+                    literalMaxLife: literalMaxLife
+                };
+            }
+
+            var motion:bddata.IMotion;
+            var life:any;
+            var now = getTimer();
+            var motions = [];
+            if (params) {
+                if (params.motion) {
+                    motion = params.motion;
+                    motion.sourceObject = shape;
+                    motion.createdTime = now;
+                    life = getMotionMaximumLifeTime(motion);
+                    motion.maximumLifeTime = life.maxLife;
+                    // 不需要更新 now
+                    bulletproof.Bulletproof.registerMotion(motion);
+                }
+                if (params.motionGroup) {
+                    for (var i = 0; i < params.motionGroup.length; i++) {
+                        motion = params.motionGroup[i];
+                        motion.sourceObject = shape;
+                        motion.createdTime = now;
+                        life = getMotionMaximumLifeTime(motion);
+                        motion.maximumLifeTime = life.maxLife;
+                        bulletproof.Bulletproof.registerMotion(motion);
+                        now += life.literalMaxLife;
+                    }
+                }
+                if (params.motion && params.motionGroup) {
+                    console.warn("'motion' and 'motionGroup' are both set!");
+                }
+            }
+            return shape;
         }
 
         public static createCanvas(text:string, params:bddata.IGeneralCreateParams):any {
