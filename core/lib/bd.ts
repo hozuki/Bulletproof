@@ -17,49 +17,22 @@ export module bulletproof {
 
     export class Bulletproof {
 
-        private static _timeout:number;
         private static _shouldUpdate:boolean = true;
-        private static _isDispatching:boolean = false;
-        private static _isInWatchMode:boolean = false;
         private static _stage:flash.display.Stage;
-        private static _lastIntervalHandle:number = 0;
 
-        static init(div:HTMLDivElement, fpsLimit:number = 100):void {
-            Bulletproof.enterMainLoop(fpsLimit);
+        static init(div:HTMLDivElement):void {
+            Bulletproof.enterMainLoop();
             Bulletproof._stage = new flash.display.Stage(div);
         }
 
-        private static enterMainLoop(fpsLimit:number = 100):void {
-            Bulletproof._timeout = 1000 / (fpsLimit < 1 ? 1 : fpsLimit);
-            //Bulletproof._lastIntervalHandle = setInterval(Bulletproof.mainLoop, Bulletproof._timeout);
+        private static enterMainLoop():void {
             window.requestAnimationFrame(Bulletproof.mainLoop);
         }
 
         private static mainLoop() {
-            if (Bulletproof._shouldUpdate && (true || !Bulletproof._isDispatching)) {
-                if (false && Bulletproof._isInWatchMode) {
-                    clearInterval(Bulletproof._lastIntervalHandle);
-                    Bulletproof._lastIntervalHandle = setInterval(Bulletproof.mainLoop, Bulletproof._timeout);
-                    Bulletproof._isInWatchMode = false;
-                }
-                //var tic:number, toc:number;
-                //tic = Date.now();
-                //console.log('Start: ' + tic.toString());
-                Bulletproof._isDispatching = true;
-                Bulletproof._stage.raiseEnterFrame();
-                Bulletproof._stage._bp_draw();
-                Bulletproof._isDispatching = false;
-                //toc = Date.now();
-                //console.log('End: ' + toc.toString());
-                //console.log('Passed: ' + (toc - tic).toString() +
-                window.requestAnimationFrame(Bulletproof.mainLoop);
-            } else {
-                if (false && Bulletproof._isDispatching && !Bulletproof._isInWatchMode) {
-                    clearInterval(Bulletproof._lastIntervalHandle);
-                    Bulletproof._lastIntervalHandle = setInterval(Bulletproof.mainLoop, Bulletproof._timeout / 2);
-                    Bulletproof._isInWatchMode = true;
-                }
-            }
+            Bulletproof._stage.raiseEnterFrame();
+            Bulletproof._stage._bp_draw();
+            window.requestAnimationFrame(Bulletproof.mainLoop);
         }
 
         public static get shouldUpdate():boolean {

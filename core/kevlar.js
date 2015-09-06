@@ -17,23 +17,6 @@
         });
     }
 
-    bd.bilidanmaku.initialize(container);
-
-    function ExecContext() {
-        "use strict";
-        // turning arguments into an array
-        var args = Array.prototype.slice.call(arguments);
-        // the last argument is the callback
-        var callback = args.pop();
-        // make sure the function is called
-        // as a constructor
-        if (!(this instanceof ExecContext)) {
-            return new ExecContext(callback);
-        }
-        // call the callback
-        callback();
-    }
-
     // BSE basics
     def(this, '$', bd.bilidanmaku.$);
     def(this, '$G', bd.bilidanmaku.$G);
@@ -71,15 +54,8 @@
     // test
     def(this, 'Timer', bd.bilidanmaku.Timer);
 
-    /*
-     var ev = Function('console.log(this.$); console.log(window);'); // Good test!
-     //ev.bind(this);
-     console.log("Call -- prototype");
-     ExecContext(ev.bind(this));
-     */
-
-    // 如果帧率限制设置太低，会造成如果用小的 setInterval() 进行第三方绘制，就会出现闪屏的现象
-    bd.bulletproof.Bulletproof.init(container, 50);
+    bd.bilidanmaku.initialize(container);
+    bd.bulletproof.Bulletproof.init(container);
 })(document.getElementById('bp-div'));
 
 
