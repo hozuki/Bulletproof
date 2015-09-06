@@ -2914,6 +2914,9 @@ export module display {
             this.resetTransform();
             context.translate(this._displayObject.x, this._displayObject.y);
             context.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(anchorX, anchorY);
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
@@ -3267,6 +3270,7 @@ export module display {
             //context.lineTo(x + this._displayObject.x, y + this._displayObject.y);
             context.stroke();
             context.beginPath();
+            context.moveTo(x, y);
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
