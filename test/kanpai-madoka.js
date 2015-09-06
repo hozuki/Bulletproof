@@ -4015,6 +4015,7 @@ var s = $.createShape({
         {x: {fromValue: -40, toValue: -45, lifeTime: 2}, alpha: {fromValue: 1, toValue: 0, lifeTime: 2}}
     ]
 });
+var s3 = s;
 var g = s.graphics;
 g.moveTo(236.347412109375, 93.04119262695312);
 g.moveTo(225, 117);
