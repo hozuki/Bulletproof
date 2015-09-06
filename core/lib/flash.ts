@@ -3,7 +3,7 @@
  */
 
 /// <reference path="mic.ts"/>
-///<reference path="org.ts"/>
+/// <reference path="org.ts"/>
 
 import mic = require('./mic');
 import org = require('./org');
@@ -1853,7 +1853,7 @@ export module display {
             this._height = v;
             this._bp_displayBuffer.style.height = v.toString() + 'px';
             this._bp_displayBuffer.height = v;
-            this._bp_draw();
+            this._bp_invalidate();
         }
 
         public get loaderInfo():LoaderInfo {
@@ -1981,7 +1981,7 @@ export module display {
             this._width = v;
             this._bp_displayBuffer.style.width = v.toString() + 'px';
             this._bp_displayBuffer.width = v;
-            this._bp_draw();
+            this._bp_invalidate();
         }
 
         public get x():number {
@@ -2638,7 +2638,7 @@ export module display {
             return this._graphics;
         }
 
-        public _bp_draw():void {
+        public _bp_draw_core():void {
             if (this._graphics) {
                 this._graphics.redraw();
             }
@@ -2686,6 +2686,7 @@ export module display {
 
     }
 
+    // Bulletproof
     class GraphicsHistoryCommand {
 
         public static get BEGIN_BITMAP_FILL():number {
@@ -2770,7 +2771,8 @@ export module display {
 
     }
 
-    interface IGraphicsHistoryCommand {
+    // Bulletproof
+    interface IGraphicsHistoryEntry {
 
         command:number;
         data:any;
@@ -2793,7 +2795,7 @@ export module display {
         private _isInFill = false;
         private _transformMatrix:Array<number> = [1, 0, 0, 1, 0, 0, 0, 0, 1];
         private _isRedrawCalling:boolean = false;
-        private _redrawHistoryQueue:Array<IGraphicsHistoryCommand> = [];
+        private _redrawHistoryQueue:Array<IGraphicsHistoryEntry> = [];
 
         public constructor(attachedDisplayObject:DisplayObject) {
             this._displayObject = attachedDisplayObject;
@@ -2887,19 +2889,20 @@ export module display {
             //context.save();
             this.resetTransform();
             // 似乎无效
-            //context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
+            context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
             // TODO: HACK: works under nw.js v0.12
             // DANGER: will reset styles
-            this._canvas.width = this._canvas.width;
+            //this._canvas.width = this._canvas.width;
             //context.restore();
             Graphics._bp_setSettings(context, Graphics._bp_defaultGraphicsSettings);
+            context.beginPath();
             // Since all contents are clear, there should be nothing even if redraw() is called
             // Also please free the history entries.
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue = [];
                 this.saveGraphicsSettings();
             }
-            this._displayObject._bp_invalidate();
         }
 
         public copyFrom(sourceGraphics:Graphics) {
@@ -2911,8 +2914,8 @@ export module display {
             this.resetTransform();
             context.translate(this._displayObject.x, this._displayObject.y);
             context.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
-            this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.CURVE_TO,
                     data: {
@@ -2933,8 +2936,8 @@ export module display {
             } else {
                 this._bp_context().stroke();
             }
-            this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_CIRCLE,
                     data: {
@@ -2965,8 +2968,8 @@ export module display {
                 this._bp_context().stroke();
             }
             //context.restore();
-            this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_ELLIPSE,
                     data: {
@@ -3043,8 +3046,8 @@ export module display {
             //} else {
             context.stroke();
             //}
-            this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_PATH,
                     data: {
@@ -3116,8 +3119,8 @@ export module display {
             } else {
                 this._bp_context().strokeRect(x, y, width, height);
             }
-            this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.DRAW_RECT,
                     data: {
@@ -3263,8 +3266,9 @@ export module display {
             // HACK: Please update
             //context.lineTo(x + this._displayObject.x, y + this._displayObject.y);
             context.stroke();
-            this._displayObject._bp_invalidate();
+            context.beginPath();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.LINE_TO,
                     data: {
@@ -3281,8 +3285,8 @@ export module display {
             context.translate(this._displayObject.x, this._displayObject.y);
             // HACK: Please update
             context.moveTo(x, y);
-            this._displayObject._bp_invalidate();
             if (!this._isRedrawCalling) {
+                this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
                     command: GraphicsHistoryCommand.MOVE_TO,
                     data: {
@@ -3300,10 +3304,31 @@ export module display {
             this._isRedrawCalling = true;
             this.clear();
             var len = this._redrawHistoryQueue.length;
-            var cmd:IGraphicsHistoryCommand;
+            var cmd:IGraphicsHistoryEntry;
             for (var i = 0; i < len; i++) {
                 cmd = this._redrawHistoryQueue[i];
                 switch (cmd.command) {
+                    case GraphicsHistoryCommand.LINE_TO:
+                        this.lineTo(cmd.data.x, cmd.data.y);
+                        break;
+                    case GraphicsHistoryCommand.MOVE_TO:
+                        this.moveTo(cmd.data.x, cmd.data.y);
+                        break;
+                    case GraphicsHistoryCommand.CURVE_TO:
+                        this.curveTo(cmd.data.controlX, cmd.data.controlY, cmd.data.anchorX, cmd.data.anchorY);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_RECT:
+                        this.drawRect(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_CIRCLE:
+                        this.drawCircle(cmd.data.x, cmd.data.y, cmd.data.radius);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_ELLIPSE:
+                        this.drawEllipse(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
+                        break;
+                    case GraphicsHistoryCommand.DRAW_PATH:
+                        this.drawPath(cmd.data.commands, cmd.data.data, cmd.data.winding, cmd.data.checkCommands);
+                        break;
                     case GraphicsHistoryCommand.BEGIN_BITMAP_FILL:
                         break;
                     case GraphicsHistoryCommand.BEGIN_FILL:
@@ -3317,22 +3342,7 @@ export module display {
                         break;
                     case GraphicsHistoryCommand.CLEAR:
                         break;
-                    case GraphicsHistoryCommand.CURVE_TO:
-                        this.curveTo(cmd.data.controlX, cmd.data.controlY, cmd.data.anchorX, cmd.data.anchorY);
-                        break;
-                    case GraphicsHistoryCommand.DRAW_CIRCLE:
-                        this.drawCircle(cmd.data.x, cmd.data.y, cmd.data.radius);
-                        break;
-                    case GraphicsHistoryCommand.DRAW_ELLIPSE:
-                        this.drawEllipse(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
-                        break;
                     case GraphicsHistoryCommand.DRAW_GRAPHICS_DATA:
-                        break;
-                    case GraphicsHistoryCommand.DRAW_PATH:
-                        this.drawPath(cmd.data.commands, cmd.data.data, cmd.data.winding, cmd.data.checkCommands);
-                        break;
-                    case GraphicsHistoryCommand.DRAW_RECT:
-                        this.drawRect(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
                         break;
                     case GraphicsHistoryCommand.DRAW_ROUND_RECT:
                         break;
@@ -3350,12 +3360,6 @@ export module display {
                     case GraphicsHistoryCommand.LINE_STYLE:
                         this.lineStyle(cmd.data.thickness, cmd.data.color, cmd.data.alpha, cmd.data.pixelHinting,
                             cmd.data.scaleMode, cmd.data.caps, cmd.data.joints, cmd.data.miterLimit);
-                        break;
-                    case GraphicsHistoryCommand.LINE_TO:
-                        this.lineTo(cmd.data.x, cmd.data.y);
-                        break;
-                    case GraphicsHistoryCommand.MOVE_TO:
-                        this.moveTo(cmd.data.x, cmd.data.y);
                         break;
                     case GraphicsHistoryCommand.DRAW_TRIANGLES:
                         break;

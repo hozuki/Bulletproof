@@ -48,7 +48,7 @@
 <!-- test script #1 -->
 <!--<script src="../test/3d-ball.js" type="text/javascript"></script>-->
 <!-- test script #2 -->
-<script src="../test/kanpai-lbn.js" type="text/javascript"></script>
+<!--<script src="../test/kanpai-lbn.js" type="text/javascript"></script>
 <script type="text/javascript">
     //console.log(window.parent.name);
     var frameCount = 0;
@@ -70,9 +70,9 @@
         requestAnimationFrame(f);
     };
     requestAnimationFrame(f);
-</script>
+</script>-->
 <!-- test script #3 -->
-<!--<script src="../test/kanpai-madoka.js" type="text/javascript"></script>
+<script src="../test/kanpai-madoka.js" type="text/javascript"></script>
 <script type="text/javascript">
     var frameCount = 0;
     var lastTime = Date.now();
@@ -88,14 +88,14 @@
             nextUpdate = now + 1000;
         }
         if (typeof s1 !== 'undefined') {
-            s1.x += 0.5;
+            s1.x += 0.1;
         }
         if (typeof s2 !== 'undefined') {
-            s2.x -= 0.5;
+            s2.x -= 0.1;
         }
         requestAnimationFrame(f);
     };
     requestAnimationFrame(f);
-</script>-->
+</script>
 </body>
 </html>
