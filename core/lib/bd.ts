@@ -67,9 +67,7 @@ export module bulletproof {
         }
 
         public static registerMotion(motion:bddata.IMotion):void {
-            console.log('register motion');
             if (this._objectMotions.indexOf(motion) < 0) {
-                console.log('push motion');
                 this._objectMotions.push(motion);
             }
         }
@@ -257,8 +255,8 @@ export module bilidanmaku {
             return new flash.filters.GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout);
         }
 
-        public static createBlurFilter(blurX:number = 4.0, blurY:number = 4.0, quality:number = 1):flash.filters.GlowFilter {
-            return new flash.filters.GlowFilter(blurX, blurY, quality);
+        public static createBlurFilter(blurX:number = 4.0, blurY:number = 4.0, quality:number = 1):flash.filters.BlurFilter {
+            return new flash.filters.BlurFilter(blurX, blurY, quality);
         }
 
         public static toIntVector(array:Array<number>):Array<number> {

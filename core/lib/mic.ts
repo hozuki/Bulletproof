@@ -217,6 +217,22 @@ export class util {
         }
     }
 
+    public static alphaBlend(sR:number, sG:number, sB:number, sA:number,
+                             tR:number, tG:number, tB:number, tA:number,
+                             sourceConstantAlpha = 0xff):{r:number, g:number, b:number, a:number} {
+        var ret = {
+            r: 0,
+            g: 0,
+            b: 0,
+            a: 0
+        };
+        ret.r = sR + tR * (1 - sA / 0xff);
+        ret.g = sG + tG * (1 - sA / 0xff);
+        ret.b = sB + tB * (1 - sA / 0xff);
+        ret.a = sA + tA * (1 - sA / 0xff);
+        return ret;
+    }
+
 }
 
 export interface IXhrResult {

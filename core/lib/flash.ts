@@ -4,9 +4,11 @@
 
 /// <reference path="mic.ts"/>
 /// <reference path="org.ts"/>
+/// <reference path="thirdparty.ts"/>
 
 import mic = require('./mic');
 import org = require('./org');
+import thirdparty = require('./thirdparty');
 
 export module events {
 
@@ -41,7 +43,6 @@ export module events {
                     try {
                         arr[i](data);
                     } catch (ex) {
-                        console.log(ex);
                         if (ex.hasOwnProperty('stack')) {
                             mic.trace(ex.stack.toString(), 'dispatchEvent: error');
                         } else {
@@ -1523,7 +1524,35 @@ export module geom {
 
 export module filters {
 
-    export interface BitmapFilter extends org.ICloneable<BitmapFilter> {
+    export interface IBitmapFilter extends org.ICloneable<IBitmapFilter> {
+
+        filterType:string;
+        apply(canvas:HTMLCanvasElement):void;
+
+    }
+
+    export class BitmapFilter implements IBitmapFilter {
+
+        public get filterType():string {
+            return 'filter';
+        }
+
+        public clone():BitmapFilter {
+            return null;
+        }
+
+        public apply(canvas:HTMLCanvasElement):void {
+            throw new org.NotImplementedError();
+        }
+
+        public static get FILTER_BLUR():string {
+            return 'blur';
+        }
+
+        public static get FILTER_GLOW():string {
+            return 'glow';
+        }
+
     }
 
     export class BitmapFilterQuality {
@@ -1542,7 +1571,7 @@ export module filters {
 
     }
 
-    export class GlowFilter implements BitmapFilter {
+    export class GlowFilter extends BitmapFilter {
 
         public alpha:number;
         public blurX:number;
@@ -1553,8 +1582,12 @@ export module filters {
         public quality:number;
         public strength:number;
 
+        private _bufferCanvas:HTMLCanvasElement;
+        private _bufferContext:CanvasRenderingContext2D;
+
         public constructor(color:number = 0xff0000, alpha:number = 1.0, blurX:number = 6.0, blurY:number = 6.0,
                            strength:number = 2, quality:number = BitmapFilterQuality.LOW, inner:boolean = false, knockout:boolean = false) {
+            super();
             this.color = color;
             this.alpha = alpha;
             this.blurX = blurX;
@@ -1570,15 +1603,110 @@ export module filters {
                 this.strength, this.quality, this.inner, this.knockout);
         }
 
+        public get filterType():string {
+            return BitmapFilter.FILTER_GLOW;
+        }
+
+        private updateBuffer(sourceCanvas:HTMLCanvasElement):void {
+            if (sourceCanvas != null) {
+                if (this._bufferCanvas == null) {
+                    this._bufferCanvas = window.document.createElement('canvas');
+                    this._bufferContext = this._bufferCanvas.getContext('2d');
+                }
+                if (this._bufferCanvas.width != sourceCanvas.width || this._bufferCanvas.height != sourceCanvas.height) {
+                    this._bufferCanvas.width = sourceCanvas.width;
+                    this._bufferCanvas.height = sourceCanvas.height;
+                }
+                this._bufferContext.drawImage(sourceCanvas, 0, 0);
+            }
+        }
+
+        private releaseBuffer():void {
+            this._bufferContext = null;
+            if (this._bufferCanvas && this._bufferCanvas.parentElement) {
+                this._bufferCanvas.parentElement.removeChild(this._bufferCanvas);
+            }
+            this._bufferCanvas = null;
+        }
+
+        private solidifyBuffer():void {
+            var sourceImageData:ImageData = this._bufferContext.getImageData(0, 0, this._bufferCanvas.width, this._bufferCanvas.height);
+            var position:number;
+            var i:number, j:number;
+            var r:number, g:number, b:number;
+            r = (this.color & 0x00ff0000) >> 16;
+            g = (this.color & 0x0000ff00) >> 8;
+            b = (this.color & 0x000000ff) | 0;
+            for (j = 0; j < sourceImageData.height; j++) {
+                for (i = 0; i < sourceImageData.width; i++) {
+                    position = ((j * sourceImageData.width) + i) * 4;
+                    if (sourceImageData.data[position + 3] != 0) {
+                        sourceImageData.data[position] = r;
+                        sourceImageData.data[position + 1] = g;
+                        sourceImageData.data[position + 2] = b;
+                    } else {
+                        sourceImageData.data[position] = 0;
+                        sourceImageData.data[position + 1] = 0;
+                        sourceImageData.data[position + 2] = 0;
+                    }
+                }
+            }
+            this._bufferContext.putImageData(sourceImageData, 0, 0);
+            sourceImageData = null;
+        }
+
+        private static mixUp(blurContext:CanvasRenderingContext2D, targetContext:CanvasRenderingContext2D, width:number, height:number):void {
+            var tmp:any;
+            var blurImageData:ImageData = blurContext.getImageData(0, 0, width, height);
+            var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
+            var position:number;
+            var i:number, j:number;
+            var sr:number, sg:number, sb:number, sa:number;
+            var tr:number, tg:number, tb:number, ta:number;
+            for (j = 0; j < height; j++) {
+                for (i = 0; i < width; i++) {
+                    position = ((j * width) + i) * 4;
+                    sr = blurImageData.data[position];
+                    sg = blurImageData.data[position + 1];
+                    sb = blurImageData.data[position + 2];
+                    sa = blurImageData.data [position + 3];
+                    tr = targetImageData.data[position];
+                    tg = targetImageData.data[position + 1];
+                    tb = targetImageData.data[position + 2];
+                    ta = targetImageData.data[position + 3];
+                    tmp = mic.util.alphaBlend(sr, sg, sb, sa, tr, tg, tb, ta);
+                    targetImageData.data[position] = tmp.r;
+                    targetImageData.data[position + 1] = tmp.g;
+                    targetImageData.data[position + 2] = tmp.b;
+                    targetImageData.data[position + 3] = tmp.a;
+                }
+            }
+            targetContext.putImageData(targetImageData, 0, 0);
+            targetImageData = null;
+            blurImageData = null;
+        }
+
+        public apply(canvas:HTMLCanvasElement):void {
+            if (canvas != null) {
+                this.updateBuffer(canvas);
+                this.solidifyBuffer();
+                var radius = (this.blurX + this.blurY ) / 2;
+                thirdparty.FastBlur.boxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
+                var targetContext = canvas.getContext('2d');
+                GlowFilter.mixUp(this._bufferContext, targetContext, canvas.width, canvas.height);
+            }
+        }
+
     }
 
-    export class BlurFilter implements BitmapFilter {
+    export class BlurFilter extends BitmapFilter {
 
         public blurX:number;
         public blurY:number;
         public quality:number;
 
         public constructor(blurX:number = 4.0, blurY:number = 4.0, quality:number = BitmapFilterQuality.LOW) {
+            super();
             this.blurX = blurX;
             this.blurY = blurY;
             this.quality = quality;
@@ -1586,6 +1714,15 @@ export module filters {
 
         public clone():BlurFilter {
             return new BlurFilter(this.blurX, this.blurY, this.quality);
+        }
+
+        public get filterType():string {
+            return BitmapFilter.FILTER_BLUR;
+        }
+
+        public apply(canvas:HTMLCanvasElement):void {
+            var radius = (this.blurX + this.blurY ) / 2;
+            thirdparty.FastBlur.boxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
         }
 
     }
@@ -1791,6 +1928,12 @@ export module display {
         public _bp_draw():void {
             if (this._bp_drawStateInvalidated) {
                 this._bp_draw_core();
+                var filters = this.filters;
+                if (filters && filters.length > 0) {
+                    for (var i = 0; i < filters.length; i++) {
+                        filters[i].apply(this._bp_displayBuffer);
+                    }
+                }
                 this._bp_drawStateInvalidated = false;
             }
         }
@@ -1844,6 +1987,7 @@ export module display {
             } else {
                 this._filters = v;
             }
+            this._bp_invalidate();
         }
 
         public get height():number {
