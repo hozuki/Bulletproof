@@ -478,10 +478,14 @@ export class ColorFormat {
 
 }
 
-export function trace(message:string, title:string = null):void {
-    if (title && title.length > 0) {
-        console.debug(title + '\r\n' + message);
+export function trace(message:string|any, title:string = null):void {
+    if (typeof message == 'string') {
+        if (title && title.length > 0) {
+            console.debug(title + '\r\n' + message);
+        } else {
+            console.debug(message);
+        }
     } else {
-        console.debug(message);
+        console.log(message);
     }
 }
