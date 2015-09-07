@@ -10,7 +10,8 @@ also means barrage (of military). With some technical support provided by some s
 (usually web players), a skilled danamku maker can write programs to create special danmakus,
 which started a kind of art of creating splendid danmakus. All started in [Niconico](//www.nicovideo.jp/).
 
-The target of this project is to create a danmaku player based on HTML5.
+The target of this project is to create a danmaku player based on HTML5. Currently the whole project and
+tests run on nw.js (node-webkit).
 
 ## Building and Running
 
@@ -23,6 +24,7 @@ tsc {path-to-project}/core/lib/fl.ts
 tsc {path-to-project}/core/lib/flash.ts
 tsc {path-to-project}/core/lib/mic.ts
 tsc {path-to-project}/core/lib/org.ts
+tsc {path-to-project}/core/lib/thirdparty.ts
 ```
 
 And all the work is done.
@@ -67,6 +69,8 @@ The project is pre-alpha now. The classes are not fully implemented yet, and the
 
 为什么要起“防弹”这个名称呢？因为[左舷弹幕太薄了](//zh.moegirl.org/%E5%B7%A6%E8%88%B7%E5%BC%B9%E5%B9%95%E5%A4%AA%E8%96%84%E4%BA%86)。
 
+目前项目和测试的运行环境为 nw.js（node-webkit）。
+
 ## 安装与使用
 
 请下载并安装 [TypeScript](//www.typescriptlang.org/) 和 [nw.js](//nwjs.io)。安装完毕后，首先编译 TypeScript 源文件：
@@ -77,6 +81,7 @@ tsc {项目路径}/core/lib/fl.ts
 tsc {项目路径}/core/lib/flash.ts
 tsc {项目路径}/core/lib/mic.ts
 tsc {项目路径}/core/lib/org.ts
+tsc {项目路径}/core/lib/thirdparty.ts
 ```
 
 完成后就可以运行了。使用以下命令运行：
