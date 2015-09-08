@@ -54,7 +54,6 @@
     // test
     def(this, 'Timer', bd.bilidanmaku.Timer);
 
-    bd.bilidanmaku.initialize(container);
     bd.bulletproof.Bulletproof.init(container);
 })(document.getElementById('bp-div'));
 

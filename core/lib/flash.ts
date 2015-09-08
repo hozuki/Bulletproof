@@ -1871,25 +1871,25 @@ export module display {
 
     export class DisplayObject extends events.EventDispatcher implements IBitmapDrawable {
 
-        private _alpha:number;
-        private _blendShader:Shader;
-        private _filters:Array<filters.BitmapFilter>;
-        private _height:number;
-        private _loaderInfo:LoaderInfo;
-        private _parent:DisplayObjectContainer;
+        protected _alpha:number;
+        protected _blendShader:Shader;
+        protected _filters:Array<filters.BitmapFilter>;
+        protected _height:number;
+        protected _loaderInfo:LoaderInfo;
+        protected _parent:DisplayObjectContainer;
         protected _root:DisplayObject;
-        private _rotation:number;
-        private _rotationX:number;
-        private _rotationY:number;
-        private _rotationZ:number;
-        private _scaleX:number;
-        private _scaleY:number;
-        private _scaleZ:number;
-        private _stage:Stage;
-        private _width:number;
-        private _x:number = 0;
-        private _y:number = 0;
-        private _z:number = 0;
+        protected _rotation:number;
+        protected _rotationX:number;
+        protected _rotationY:number;
+        protected _rotationZ:number;
+        protected _scaleX:number;
+        protected _scaleY:number;
+        protected _scaleZ:number;
+        protected _stage:Stage;
+        protected _width:number;
+        protected _x:number = 0;
+        protected _y:number = 0;
+        protected _z:number = 0;
         protected _bp_displayBuffer:HTMLCanvasElement;
         protected _bp_containerElem:HTMLElement = null;
         protected _bp_drawStateInvalidated:boolean = false;
@@ -1996,10 +1996,11 @@ export module display {
         }
 
         public set height(v:number) {
+            var b = this._height != v;
             this._height = v;
             this._bp_displayBuffer.style.height = v.toString() + 'px';
             this._bp_displayBuffer.height = v;
-            this._bp_invalidate();
+            b && this._bp_invalidate();
         }
 
         public get loaderInfo():LoaderInfo {
@@ -2124,10 +2125,11 @@ export module display {
         }
 
         public set width(v:number) {
+            var b = this._width != v;
             this._width = v;
             this._bp_displayBuffer.style.width = v.toString() + 'px';
             this._bp_displayBuffer.width = v;
-            this._bp_invalidate();
+            b && this._bp_invalidate();
         }
 
         public get x():number {
@@ -2479,8 +2481,26 @@ export module display {
             this._bp_containerElem.style.width = v.toString() + 'px';
         }
 
+        public get x():number {
+            console.warn('Stage.x is always 0.');
+            return 0;
+        }
+
+        public set x(v:number) {
+            console.warn('Stage.x cannot be set manually.');
+        }
+
+        public get y():number {
+            console.warn('Stage.y is always 0.');
+            return 0;
+        }
+
+        public set y(v:number) {
+            console.warn('Stage.y cannot be set manually.');
+        }
+
         public invalidate():void {
-            throw new org.NotImplementedError();
+            this._bp_invalidate();
         }
 
         public isFocusInaccessible():boolean {
@@ -3563,7 +3583,7 @@ export module display {
             }
             for (i = 0; i < arrayLen; i++) {
                 gradient.addColorStop(mic.util.limit(ratios[i], 0, 255) / 255,
-                    mic.Color.argbNumberToCssSharp(mic.Color.colorCombine(colors[i], alphas[i])));
+                    mic.Color.argbNumberToCss(mic.Color.colorCombine(colors[i], alphas[i])));
             }
             return gradient;
         }
@@ -3811,6 +3831,8 @@ export module utils {
             this._delay = v >= 0 ? v : 0;
         }
 
+        public enabled:boolean = true;
+
         public get repeatCount():number {
             return this._repeatCount;
         }
@@ -3824,15 +3846,17 @@ export module utils {
             return this._running;
         }
 
-        public _bp_timerCallbackInternal():void {
+        protected _bp_timerCallbackInternal():void {
         }
 
-        public _bp_timerCallback():void {
-            this._currentCount++;
-            if (this.repeatCount > 0 && this.currentCount > this.repeatCount) {
-                this.stop();
-            } else {
-                this._bp_timerCallbackInternal();
+        protected _bp_timerCallback():void {
+            if (this.enabled) {
+                this._currentCount++;
+                if (this.repeatCount > 0 && this.currentCount > this.repeatCount) {
+                    this.stop();
+                } else {
+                    this._bp_timerCallbackInternal();
+                }
             }
         }
 

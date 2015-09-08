@@ -405,18 +405,6 @@ export class Color {
         return 'rgba(' + r.toString() + ', ' + g.toString() + ', ' + b.toString() + ', ' + a.toString() + ')';
     }
 
-    public static argbNumberToCssSharp(argb:number, alpha:number = null):string {
-        var a = alpha == null ? ((argb & 0xff000000) >>> 24 / 255) : util.limit(alpha, 0, 1);
-        var r = (argb & 0x00ff0000) >> 16;
-        var g = (argb & 0x0000ff00) >> 8;
-        var b = (argb & 0x000000ff);
-        var sa = a < 16 ? '0' + a.toString(16) : a.toString(16);
-        var sr = r < 16 ? '0' + r.toString(16) : r.toString(16);
-        var sg = g < 16 ? '0' + g.toString(16) : g.toString(16);
-        var sb = b < 16 ? '0' + b.toString(16) : b.toString(16);
-        return '#' + sa + sr + sg + sb;
-    }
-
     public static rgbToCss(r:number, g:number, b:number):string {
         r = util.limit(r, 0, 255);
         g = util.limit(g, 0, 255);
@@ -429,6 +417,16 @@ export class Color {
         var g = (rgb & 0x0000ff00) >> 8;
         var b = (rgb & 0x000000ff);
         return 'rgb(' + r.toString() + ', ' + g.toString() + ', ' + b.toString() + ')';
+    }
+
+    public static rgbNumberToCssSharp(rgb:number):string {
+        var r = (rgb & 0x00ff0000) >> 16;
+        var g = (rgb & 0x0000ff00) >> 8;
+        var b = (rgb & 0x000000ff);
+        var sr = r < 16 ? '0' + r.toString(16) : r.toString(16);
+        var sg = g < 16 ? '0' + g.toString(16) : g.toString(16);
+        var sb = b < 16 ? '0' + b.toString(16) : b.toString(16);
+        return '#' + sr + sg + sb;
     }
 
     /**

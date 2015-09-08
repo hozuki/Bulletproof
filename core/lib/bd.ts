@@ -36,6 +36,7 @@ export module bulletproof {
         static init(div:HTMLDivElement):void {
             Bulletproof._options = Bulletproof.DEFAULT_OPTIONS;
             Bulletproof._stage = new flash.display.Stage(div);
+            bilidanmaku.initialize(div);
             Bulletproof.enterMainLoop();
         }
 
@@ -127,6 +128,12 @@ export module bilidanmaku {
 
     }
 
+    interface IProofDanmakuObject {
+
+        createParams:bddata.IGeneralCreateParams;
+
+    }
+
     export interface IProofStartParams {
 
         startDate:Date;
@@ -139,7 +146,7 @@ export module bilidanmaku {
         startDate: null
     };
 
-    export function initialize(root:HTMLDivElement) {
+    export function initialize(root:HTMLDivElement):void {
         _startParams.root = root;
         _startParams.startDate = new Date();
     }
@@ -171,16 +178,22 @@ export module bilidanmaku {
         }
 
         public static createComment(text:string, params:bddata.IGeneralCreateParams):CommentField {
-            var comment = new CommentField(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage);
+            var comment = new CommentField(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage, params);
             comment.text = text;
             return comment;
         }
 
-        public static createShape(params:bddata.IGeneralCreateParams):flash.display.Shape {
-            var shape = new flash.display.Shape(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage);
+        public static createShape(params:bddata.IGeneralCreateParams):flashimpl.Shape {
+            var shape = new flashimpl.Shape(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage, params);
             if (params) {
                 if (params.alpha) {
                     shape.alpha = params.alpha;
+                }
+                if (params.x) {
+                    shape.x = params.x;
+                }
+                if (params.y) {
+                    shape.y = params.y;
                 }
             }
 
@@ -212,7 +225,6 @@ export module bilidanmaku {
             var motion:bddata.IMotion;
             var life:any;
             var now = getTimer();
-            var motions = [];
             if (params) {
                 if (params.motion) {
                     motion = params.motion;
@@ -470,30 +482,93 @@ export module bilidanmaku {
 
     }
 
-    export class CommentField extends flash.display.DisplayObject {
+    export class CommentField extends flash.display.DisplayObject implements IProofDanmakuObject {
 
-        public alwaysShowSelection:boolean;
-        public background:boolean;
-        public backgroundColor:number;
-        public border:boolean;
-        public borderColor:number;
+        public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                           createParams:bddata.IGeneralCreateParams) {
+            super(root, parent);
+            this._createParams = createParams;
+            this.updateCanvasSettings();
+        }
+
+        public alwaysShowSelection:boolean = false;
+
+        public get background():boolean {
+            return this._background;
+        }
+
+        public set background(v:boolean) {
+            var b = this._background != v;
+            this._background = v;
+            b && this._bp_invalidate();
+        }
+
+        public get backgroundColor():number {
+            return this._backgroundColor;
+        }
+
+        public set backgroundColor(v:number) {
+            v |= 0;
+            var b = this._backgroundColor != v;
+            this._backgroundColor = v;
+            b && this.updateCanvasSettings();
+        }
+
+        public get border():boolean {
+            return this._border;
+        }
+
+        public set border(v:boolean) {
+            var b = this._border != v;
+            this._border = v;
+            b && this._bp_invalidate();
+        }
+
+        public get borderColor():number {
+            return this._borderColor;
+        }
+
+        public set borderColor(v:number) {
+            v |= 0;
+            var b = this._borderColor != v;
+            this._borderColor = v;
+            b && this.updateCanvasSettings();
+        }
 
         public get bottomScrollV():number {
             throw new org.NotImplementedError();
         }
 
-        public condenseWhite:boolean;
-        public defaultTextFormat:flash.text.TextFormat;
-        public gridFitType:string;
+        public condenseWhite:boolean = true;
+        public defaultTextFormat:flash.text.TextFormat = null;
+        public gridFitType:string = flashimpl.GridFitType.NONE;
 
         public _bp_draw():void {
             super._bp_draw();
             // clear the canvas
-            var canvas = this._bp_displayBuffer;
-            var context = canvas.getContext('2d');
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.font = this.textHeight.toString() + 'pt SimHei';
-            context.fillText(this.text, 0, this.textHeight);
+            var context = this._bp_context();
+            var width = this._bp_displayBuffer.width;
+            var height = this._bp_displayBuffer.height;
+            context.clearRect(0, 0, width, height);
+            if (this.background) {
+                context.fillStyle = this._backgroundFillStyle;
+                context.fillRect(0, 0, width, height);
+                context.fillStyle = this._textFillStyle;
+            }
+            if (this.autoSize) {
+                context.fillText(this.text, 1, this.height - 1);
+                context.strokeText(this.text, 1, this.height - 1);
+            } else {
+                context.fillText(this.text, 0, this.textHeight);
+                context.strokeText(this.text, 0, this.textHeight);
+            }
+            if (this.border) {
+                context.strokeStyle = this._borderStrokeStyle;
+                context.lineWidth = 1;
+                context.strokeRect(0, 0, width, height);
+                context.strokeStyle = this._textStrokeStyle;
+                context.lineWidth = this.thickness;
+            }
         }
 
         public get htmlText():string {
@@ -522,45 +597,184 @@ export module bilidanmaku {
                 }
                 this._needRecalcNumLines = false;
             }
-            //throw new org.NotImplementedError();
             return this._numLines;
         }
 
-        public restrict:string;
-        public sharpness:number;
+        public restrict:string = flashimpl.RestrictEncoding.NULL;
+        public sharpness:number = 0;
+        public autoSize:boolean = true;
 
         public get text():string {
             return this._text;
         }
 
         public set text(v:string) {
+            var b = this._text != v;
             this._text = v;
+            b && this.updateCanvasSettings();
         }
 
-        public textColor:number;
+        public get textColor():number {
+            return this._textColor;
+        }
+
+        public set textColor(v:number) {
+            v |= 0;
+            var b = this._textColor != v;
+            this._textColor = v;
+            b && this.updateCanvasSettings();
+        }
 
         public get textHeight():number {
-            return CommentField._defaultTextHeight;
+            return this.fontsize;
         }
 
         public get textWidth():number {
-            throw new org.NotImplementedError();
+            return this._textWidth;
         }
 
-        public thickness:number;
-        public wordWrap:boolean;
-        public fontsize:number;
-        public bold:boolean;
+        public get thickness():number {
+            return this._thickness;
+        }
+
+        public set thickness(v:number) {
+            if (v < 0) {
+                v = 0;
+            }
+            var b = this._thickness != v;
+            this._thickness = v;
+            b && this.updateCanvasSettings();
+        }
+
+        public wordWrap:boolean = false;
+
+        public get fontsize():number {
+            return this._fontsize;
+        }
+
+        public set fontsize(v:number) {
+            if (v < 1) {
+                v = 1;
+            }
+            var b = this._fontsize != v;
+            this._fontsize = v;
+            b && this.updateCanvasSettings();
+        }
+
+        public get bold():boolean {
+            return this._bold;
+        }
+
+        public set bold(v:boolean) {
+            var b = this._bold != v;
+            this._bold = v;
+            b && this.updateCanvasSettings();
+        }
+
+        public get italic():boolean {
+            return this._italic;
+        }
+
+        public set italic(v:boolean) {
+            var b = this._italic != v;
+            this._italic = v;
+            b && this.updateCanvasSettings();
+        }
 
         public appendText(newText:string):void {
-            throw new org.NotImplementedError();
+            this.text += newText;
         }
 
+        public get createParams():bddata.IGeneralCreateParams {
+            return this._createParams;
+        }
+
+        public get x():number {
+            return this._x;
+        }
+
+        public set x(v:number) {
+            this._bp_displayBuffer.style.left = this._x.toString() + 'px';
+        }
+
+        public get y():number {
+            return this._y;
+        }
+
+        public set y(v:number) {
+            this._bp_displayBuffer.style.top = this._y.toString() + 'px';
+        }
+
+        // WARNING: WILL CLEAR ALL STYLE SETTINGS AND DRAWINGS OF THE CANVAS
+        private updateSizeIfAutoSized():void {
+            if (this.autoSize) {
+                var context = this._bp_context();
+                var metrics = context.measureText(this.text);
+                this._textWidth = metrics.width;
+                this.width = this.textWidth + 2;
+                this.height = this.textHeight + 2;
+                this._bp_invalidate();
+            }
+        }
+
+        private updateCanvasSettings():void {
+            this._fontString = this.getRenderFontStyleString();
+            var context = this._bp_context();
+            context.font = this._fontString;
+            this.updateStyles();
+            this.updateSizeIfAutoSized();
+            if (this.autoSize) {
+                // 因为上一步清除了样式，包括字体
+                context.font = this._fontString;
+                this.updateStyles();
+            }
+            this._bp_invalidate();
+        }
+
+        private getRenderFontStyleString():string {
+            var fontString = '';
+            this.bold && (fontString += ' bold');
+            this.italic && (fontString += ' italic');
+            fontString += ' ' + this.fontsize.toString() + 'pt ';
+            fontString += CommentField._defaultTextFontFamily;
+            return fontString;
+        }
+
+        private updateStyles():void {
+            var context = this._bp_context();
+            context.lineWidth = this.thickness;
+            this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
+            this._textStrokeStyle = this._textFillStyle;
+            context.fillStyle = this._textFillStyle;
+            context.strokeStyle = this._textStrokeStyle;
+            context.lineWidth = this.thickness;
+            this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
+            this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
+        }
+
+        private _background:boolean = false;
+        private _backgroundColor:number = 0xffffff;
+        private _border:boolean = false;
+        private _borderColor:number = 0x000000;
+        private _textColor:number = 0xffffff;
+        private _thickness:number = 0;
+        private _bold:boolean = false;
+        private _italic:boolean = false;
+        private _fontsize:number = 12;
         private _htmlText:string;
         private _text:string;
-        private _needRecalcNumLines = true;
-        private _numLines;
+        private _textFillStyle:string;
+        private _textStrokeStyle:string;
+        private _backgroundFillStyle:string;
+        private _borderStrokeStyle:string;
+        private _needRecalcNumLines:boolean = true;
+        private _numLines:number;
+        private _fontString:string;
+        private _textWidth:number;
         private static _defaultTextHeight:number = 12;
+        private static _defaultTextFontFamily:string = 'SimHei';
+        private static _defaultBorderWidth:number = 1;
+        private _createParams:bddata.IGeneralCreateParams;
 
     }
 
@@ -685,37 +899,6 @@ export module bilidanmaku {
 
     }
 
-    export class Timer extends flash.utils.Timer {
-
-        private _closure:any;
-        private _possibleClosure:string;
-
-        public constructor(closure:Function|string, delay:number, repeatCount:number = 1) {
-            super(delay, repeatCount);
-            this._closure = closure;
-            if (typeof this._closure == 'string') {
-                this._possibleClosure = this._closure + '();';
-            }
-        }
-
-        public _bp_timerCallbackInternal():void {
-            if (this._closure != null) {
-                var type = typeof this._closure;
-                switch (type) {
-                    case 'string':
-                        eval(this._possibleClosure);
-                        break;
-                    case 'function':
-                        this._closure.call(window);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-    }
-
     export class Bitmap {
 
         public static __canUse:boolean = false;
@@ -786,8 +969,8 @@ export module bilidanmaku {
             return setTimeout(closure, delay);
         }
 
-        public static interval(closure:Function|string, delay:number, times:number):Timer {
-            return new Timer(closure, delay, times);
+        public static interval(closure:Function|string, delay:number, times:number):flashimpl.Timer {
+            return new flashimpl.Timer(closure, delay, times);
         }
 
         public static distance(x1:number, y1:number, x2:number, y2:number):number {
@@ -817,7 +1000,7 @@ export module bilidanmaku {
         return Utils.delay(closure, delay);
     }
 
-    export function interval(closure:Function|string, delay:number, times:number = 1):Timer {
+    export function interval(closure:Function|string, delay:number, times:number = 1):flashimpl.Timer {
         return Utils.interval(closure, delay, times);
     }
 
@@ -892,5 +1075,88 @@ export module bilidanmaku {
 
     export var $ = Display;
     export var $G = Global;
+
+    export module flashimpl {
+
+        export class Timer extends flash.utils.Timer {
+
+            private _closure:any;
+            private _possibleClosure:string;
+
+            public constructor(closure:Function|string, delay:number, repeatCount:number = 1) {
+                super(delay, repeatCount);
+                this._closure = closure;
+                if (typeof this._closure == 'string') {
+                    this._possibleClosure = this._closure + '();';
+                }
+            }
+
+            protected _bp_timerCallbackInternal():void {
+                if (this._closure != null) {
+                    var type = typeof this._closure;
+                    switch (type) {
+                        case 'string':
+                            eval(this._possibleClosure);
+                            break;
+                        case 'function':
+                            this._closure.call(window);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+        }
+
+        export class Shape extends flash.display.Shape implements IProofDanmakuObject {
+
+            private _createParams:bddata.IGeneralCreateParams;
+
+            public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                               createParams:bddata.IGeneralCreateParams) {
+                super(root, parent);
+                this._createParams = createParams;
+            }
+
+            public get createParams():bddata.IGeneralCreateParams {
+                return this._createParams;
+            }
+
+        }
+
+        export class GridFitType {
+
+            public static get NONE():string {
+                return 'none';
+            }
+
+            public static get PIXEL():string {
+                return 'pixel';
+            }
+
+            public static get SUBPIXEL():string {
+                return 'subpixel';
+            }
+
+        }
+
+        export class RestrictEncoding {
+
+            public static get NULL():string {
+                return null;
+            }
+
+            public static get UTF8():string {
+                return 'utf8';
+            }
+
+            public static get GBK():string {
+                return 'gbk';
+            }
+
+        }
+
+    }
 
 }
