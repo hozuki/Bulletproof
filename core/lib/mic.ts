@@ -219,18 +219,21 @@ export class util {
 
     public static alphaBlend(sR:number, sG:number, sB:number, sA:number,
                              tR:number, tG:number, tB:number, tA:number,
-                             sourceConstantAlpha = 0xff):{r:number, g:number, b:number, a:number} {
-        var ret = {
-            r: 0,
-            g: 0,
-            b: 0,
-            a: 0
-        };
-        ret.r = sR + tR * (1 - sA / 0xff);
-        ret.g = sG + tG * (1 - sA / 0xff);
-        ret.b = sB + tB * (1 - sA / 0xff);
-        ret.a = sA + tA * (1 - sA / 0xff);
-        return ret;
+                             sourceConstantAlpha = 0xff):Color {
+        var r:number, g:number, b:number, a:number;
+        sourceConstantAlpha = util.limit(sourceConstantAlpha, 0, 0xff);
+        if (sourceConstantAlpha == 0xff) {
+            r = sR + tR * (1 - sA / 0xff);
+            g = sG + tG * (1 - sA / 0xff);
+            b = sB + tB * (1 - sA / 0xff);
+            a = sA + tA * (1 - sA / 0xff);
+        } else {
+            r = sR + tR * (1 - sourceConstantAlpha / 0xff);
+            g = sG + tG * (1 - sourceConstantAlpha / 0xff);
+            b = sB + tB * (1 - sourceConstantAlpha / 0xff);
+            a = sA + tA * (1 - sourceConstantAlpha / 0xff);
+        }
+        return new Color(r, g, b, a);
     }
 
 }

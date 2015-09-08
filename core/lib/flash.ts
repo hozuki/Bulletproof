@@ -1589,7 +1589,7 @@ export module filters {
                            strength:number = 2, quality:number = BitmapFilterQuality.LOW, inner:boolean = false, knockout:boolean = false) {
             super();
             this.color = color;
-            this.alpha = alpha;
+            this.alpha = mic.util.limit(alpha, 0, 1);
             this.blurX = blurX;
             this.blurY = blurY;
             this.strength = strength;
@@ -1644,6 +1644,7 @@ export module filters {
                         sourceImageData.data[position] = r;
                         sourceImageData.data[position + 1] = g;
                         sourceImageData.data[position + 2] = b;
+                        sourceImageData.data[position + 3] *= this.alpha;
                     } else {
                         sourceImageData.data[position] = 0;
                         sourceImageData.data[position + 1] = 0;
@@ -1656,7 +1657,7 @@ export module filters {
         }
 
         private static mixUp(blurContext:CanvasRenderingContext2D, targetContext:CanvasRenderingContext2D, width:number, height:number):void {
-            var tmp:any;
+            var tmp:mic.Color;
             var blurImageData:ImageData = blurContext.getImageData(0, 0, width, height);
             var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
             var position:number;
