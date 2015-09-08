@@ -3078,13 +3078,14 @@ export module display {
         }
 
         public drawCircle(x:number, y:number, radius:number):void {
-            this._bp_context().moveTo(x + radius, y);
-            this._bp_context().arc(x, y, radius, 0, Math.PI * 2);
-            if (this._isInFill) {
-                this._bp_context().fill();
-            } else {
-                this._bp_context().stroke();
-            }
+            var context = this._bp_context();
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
+            context.moveTo(x + radius, y);
+            context.arc(x, y, radius, 0, Math.PI * 2);
+            context.fill();
+            context.stroke();
+            context.beginPath();
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
@@ -3100,23 +3101,35 @@ export module display {
 
         public drawEllipse(x:number, y:number, width:number, height:number):void {
             // http://www.cnblogs.com/shn11160/archive/2012/08/27/2658057.html
-            var ox = 0.5 * width, oy = 0.6 * height;
             var context = this._bp_context();
             //context.save();
-            context.translate(x, y);
-            context.beginPath();
-            context.moveTo(0, height);
-            context.bezierCurveTo(ox, height, width, oy, width, 0);
-            context.bezierCurveTo(width, -oy, ox, -height, 0, -height);
-            context.bezierCurveTo(-ox, -height, -width, -oy, -width, 0);
-            context.bezierCurveTo(-width, oy, -ox, height, 0, height);
-            context.closePath();
-            if (this._isInFill) {
-                this._bp_context().fill();
-            } else {
-                this._bp_context().stroke();
-            }
+            /*
+             var ox = 0.5 * width, oy = 0.6 * height;
+             context.translate(x, y);
+             context.beginPath();
+             context.moveTo(0, height);
+             context.bezierCurveTo(ox, height, width, oy, width, 0);
+             context.bezierCurveTo(width, -oy, ox, -height, 0, -height);
+             context.bezierCurveTo(-ox, -height, -width, -oy, -width, 0);
+             context.bezierCurveTo(-width, oy, -ox, height, 0, height);
+             context.closePath();
+             context.fill();
+             context.stroke();
+             */
             //context.restore();
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
+            context.save();
+            var ratio = height / width;
+            var centerX = x + width / 2;
+            var centerY = y + width / 2;
+            context.moveTo(centerX + width / 2, centerY);
+            context.scale(1, ratio);
+            context.arc(centerX, centerY, width / 2, 0, Math.PI * 2, true);
+            context.restore();
+            context.fill();
+            context.stroke();
+            context.beginPath();
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
@@ -3263,8 +3276,11 @@ export module display {
         }
 
         public drawRect(x:number, y:number, width:number, height:number):void {
-            this._bp_context().fillRect(x, y, width, height);
-            this._bp_context().strokeRect(x, y, width, height);
+            var context = this._bp_context();
+            this.resetTransform();
+            context.translate(this._displayObject.x, this._displayObject.y);
+            context.fillRect(x, y, width, height);
+            context.strokeRect(x, y, width, height);
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
