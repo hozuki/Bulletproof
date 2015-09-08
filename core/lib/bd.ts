@@ -6,12 +6,15 @@
 /// <reference path="fl.ts"/>
 /// <reference path="mic.ts"/>
 /// <reference path="org.ts"/>
+/// <reference path="bddata.d.ts"/>
+/// <reference path="mx.ts"/>
 
 import flash = require('./flash');
 import fl = require('./fl');
 import mic = require('./mic');
 import org = require('./org');
-import bddata = require('./bddata');
+import bddata = require('./bddata.d');
+import mx = require('./mx');
 
 export module bulletproof {
 
@@ -256,8 +259,8 @@ export module bilidanmaku {
             return shape;
         }
 
-        public static createCanvas(text:string, params:bddata.IGeneralCreateParams):any {
-            throw new org.NotImplementedError();
+        public static createCanvas(params:bddata.IGeneralCreateParams):flashimpl.Canvas {
+            return new flashimpl.Canvas(Display.root, Display.root, params);
         }
 
         public static createButton(text:string, params:bddata.IGeneralCreateParams):any {
@@ -355,6 +358,10 @@ export module bilidanmaku {
                 var x = transformed[i * 3], y = transformed[i * 3 + 1];
                 projectedVertices.push(x, y);
             }
+        }
+
+        public static get root():flash.display.Stage {
+            return bulletproof.Bulletproof.stage;
         }
 
     }
@@ -1113,6 +1120,22 @@ export module bilidanmaku {
         }
 
         export class Shape extends flash.display.Shape implements IProofDanmakuObject {
+
+            private _createParams:bddata.IGeneralCreateParams;
+
+            public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                               createParams:bddata.IGeneralCreateParams) {
+                super(root, parent);
+                this._createParams = createParams;
+            }
+
+            public get createParams():bddata.IGeneralCreateParams {
+                return this._createParams;
+            }
+
+        }
+
+        export class Canvas extends mx.containers.Canvas implements IProofDanmakuObject {
 
             private _createParams:bddata.IGeneralCreateParams;
 

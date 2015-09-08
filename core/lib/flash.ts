@@ -2242,16 +2242,18 @@ export module display {
         public _bp_draw():void {
             //super._bp_draw();
             var len = this.numChildren;
-            var context = this._bp_context();
-            //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-            // 似乎无效
-            context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-            // TODO: HACK: works under nw.js v0.12
-            // DANGER: will reset styles
-            //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
-            if (this._bp_drawStateInvalidated) {
-                this._bp_draw_core();
-                this._bp_drawStateInvalidated = false;
+            if (this._bp_displayBuffer != null) {
+                var context = this._bp_context();
+                //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
+                // 似乎无效
+                context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
+                // TODO: HACK: works under nw.js v0.12
+                // DANGER: will reset styles
+                //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
+                if (this._bp_drawStateInvalidated) {
+                    this._bp_draw_core();
+                    this._bp_drawStateInvalidated = false;
+                }
             }
             var child:DisplayObject;
             for (var i = 0; i < len; i++) {
