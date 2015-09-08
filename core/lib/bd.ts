@@ -33,10 +33,10 @@ export module bulletproof {
             commentLifeTime: 4000
         };
 
-        static init(div:HTMLDivElement):void {
+        static init(div:HTMLDivElement, video:HTMLVideoElement):void {
             Bulletproof._options = Bulletproof.DEFAULT_OPTIONS;
             Bulletproof._stage = new flash.display.Stage(div);
-            bilidanmaku.initialize(div);
+            bilidanmaku.initialize(div, video);
             Bulletproof.enterMainLoop();
         }
 
@@ -138,17 +138,20 @@ export module bilidanmaku {
 
         startDate:Date;
         root:HTMLDivElement;
+        video:HTMLVideoElement;
 
     }
 
     export var _startParams:IProofStartParams = {
         root: null,
-        startDate: null
+        startDate: null,
+        video: null
     };
 
-    export function initialize(root:HTMLDivElement):void {
+    export function initialize(root:HTMLDivElement, video:HTMLVideoElement):void {
         _startParams.root = root;
         _startParams.startDate = new Date();
+        _startParams.video = video;
     }
 
     export class Display extends ProofObject {
