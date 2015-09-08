@@ -1617,6 +1617,7 @@ export module filters {
                     this._bufferCanvas.width = sourceCanvas.width;
                     this._bufferCanvas.height = sourceCanvas.height;
                 }
+                this._bufferContext.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
                 this._bufferContext.drawImage(sourceCanvas, 0, 0);
             }
         }
@@ -1675,7 +1676,7 @@ export module filters {
                     tg = targetImageData.data[position + 1];
                     tb = targetImageData.data[position + 2];
                     ta = targetImageData.data[position + 3];
-                    tmp = mic.util.alphaBlend(sr, sg, sb, sa, tr, tg, tb, ta);
+                    tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
                     targetImageData.data[position] = tmp.r;
                     targetImageData.data[position + 1] = tmp.g;
                     targetImageData.data[position + 2] = tmp.b;
