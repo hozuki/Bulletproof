@@ -546,8 +546,8 @@ export module bilidanmaku {
         public defaultTextFormat:flash.text.TextFormat = null;
         public gridFitType:string = flashimpl.GridFitType.NONE;
 
-        public _bp_draw():void {
-            super._bp_draw();
+        public _bp_draw_core():void {
+            super._bp_draw_core();
             // clear the canvas
             var context = this._bp_context();
             var width = this._bp_displayBuffer.width;
