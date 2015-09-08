@@ -17,12 +17,6 @@ export module containers {
             super(root, parent, false);
         }
 
-        public remove():void {
-            if (this._parent) {
-                this._parent.removeChild(this);
-            }
-        }
-
     }
 
 }

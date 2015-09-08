@@ -1149,6 +1149,12 @@ export module bilidanmaku {
                 return this._createParams;
             }
 
+            public remove():void {
+                if (this._parent) {
+                    this._parent.removeChild(this);
+                }
+            }
+
         }
 
         export class GridFitType {
