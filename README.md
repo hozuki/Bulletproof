@@ -47,9 +47,17 @@ nw /path/to/Bulletproof/
 
 ## Testing
 
-The default page (`/core/index.html`) already included current testing code, a spinning 3-D ball.
+The default page (`/core/index.html`) already included current testing code. One of the tests will show
+up at launch.
 
-You can find the testing code at `/test/3d-ball.js`.
+Tests are:
+
+- A spinning 3-D ball (`3d-ball.js`);
+- Green Dam Musume (`kanpai-lbn.js`);
+- Madoka and other Mahou Shoujos (`kanpai-madoka.js`).
+
+Testing code samples can be found at `/test/` directory. You can view the tests by commenting and/or
+uncommenting the `<script>` labels in `/core/index.html`.
 
 ## Project Status
 
@@ -102,7 +110,15 @@ nw /path/to/Bulletproof/
 
 ## 测试
 
-运行时就会运行测试样例。当前的测试样例在 `/test/3d-ball.js`。
+当前的主页（`/core/index.html`）就包含了各测试代码的引用。工程启动时就会运行测试样例。
+
+当前包含的的测试样例有：
+
+- 一个三维旋转的球（`3d-ball.js`）；
+- 绿坝娘（`kanpai-lbn.js`）；
+- 小圆脸和她愉快(?)的小伙伴们（`kanpai-madoka.js`）。
+
+所有的测试样例都位于 `/test/` 目录下。如果想切换显示的样例，请注释、解除注释 `/core/index.html` 中的各 `<script>` 标签。
 
 ## 项目状态
 
