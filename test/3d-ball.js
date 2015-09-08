@@ -21,7 +21,7 @@
 
 var fill = true;
 var wireframe = true;
-var filters = false; // change to true to enable filters
+var filters = true; // change to true to enable filters
 var radius = 200;
 var detail = 40;
 var stripes = 9;
@@ -124,7 +124,7 @@ function render() {
     $.projectVectors(matrix3D, vertices, projectedVertices, uvtData);
     ball.graphics.clear();
     var color = getColor(counter++);
-    if (false && frameCount === 0 && filters) { // Filters are not supported yet
+    if (frameCount === 0 && filters) {
         var r = Math.floor(color / 65536), g = Math.floor((color % 65536) / 256), b = color % 256;
         nmrgb = Utils.rgb(255 * (r > 128 ? 1 : 0), 255 * (g > 128 ? 1 : 0), 255 * (b > 128 ? 1 : 0));
         if (nmrgb !== mrgb) {
