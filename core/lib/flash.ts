@@ -1646,10 +1646,6 @@ export module filters {
                         sourceImageData.data[position + 1] = g;
                         sourceImageData.data[position + 2] = b;
                         sourceImageData.data[position + 3] *= this.alpha;
-                    } else {
-                        sourceImageData.data[position] = 0;
-                        sourceImageData.data[position + 1] = 0;
-                        sourceImageData.data[position + 2] = 0;
                     }
                 }
             }
@@ -1657,35 +1653,43 @@ export module filters {
             sourceImageData = null;
         }
 
-        private static mixUp(blurContext:CanvasRenderingContext2D, targetContext:CanvasRenderingContext2D, width:number, height:number):void {
+        private static mixUp(blurredContext:CanvasRenderingContext2D, targetContext:CanvasRenderingContext2D,
+                             blurredCanvas:HTMLCanvasElement, targetCanvas:HTMLCanvasElement,
+                             width:number, height:number):void {
             var tmp:mic.Color;
-            var blurImageData:ImageData = blurContext.getImageData(0, 0, width, height);
-            var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
+            //var blurImageData:ImageData = blurredContext.getImageData(0, 0, width, height);
+            //var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
             var position:number;
             var i:number, j:number;
             var sr:number, sg:number, sb:number, sa:number;
             var tr:number, tg:number, tb:number, ta:number;
-            for (j = 0; j < height; j++) {
-                for (i = 0; i < width; i++) {
-                    position = ((j * width) + i) * 4;
-                    sr = blurImageData.data[position];
-                    sg = blurImageData.data[position + 1];
-                    sb = blurImageData.data[position + 2];
-                    sa = blurImageData.data [position + 3];
-                    tr = targetImageData.data[position];
-                    tg = targetImageData.data[position + 1];
-                    tb = targetImageData.data[position + 2];
-                    ta = targetImageData.data[position + 3];
-                    tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
-                    targetImageData.data[position] = tmp.r;
-                    targetImageData.data[position + 1] = tmp.g;
-                    targetImageData.data[position + 2] = tmp.b;
-                    targetImageData.data[position + 3] = tmp.a;
-                }
-            }
-            targetContext.putImageData(targetImageData, 0, 0);
-            targetImageData = null;
-            blurImageData = null;
+            blurredContext.drawImage(targetCanvas, 0, 0);
+            targetContext.setTransform(1, 0, 0, 1, 0, 0);
+            targetContext.clearRect(0, 0, width, height);
+            targetContext.drawImage(blurredCanvas, 0, 0);
+            /*
+             for (j = 0; j < height; j++) {
+             for (i = 0; i < width; i++) {
+             position = ((j * width) + i) * 4;
+             sr = blurImageData.data[position];
+             sg = blurImageData.data[position + 1];
+             sb = blurImageData.data[position + 2];
+             sa = blurImageData.data [position + 3];
+             tr = targetImageData.data[position];
+             tg = targetImageData.data[position + 1];
+             tb = targetImageData.data[position + 2];
+             ta = targetImageData.data[position + 3];
+             tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
+             targetImageData.data[position] = tmp.r;
+             targetImageData.data[position + 1] = tmp.g;
+             targetImageData.data[position + 2] = tmp.b;
+             targetImageData.data[position + 3] = tmp.a;
+             }
+             }
+             */
+            //targetContext.putImageData(targetImageData, 0, 0);
+            //targetImageData = null;
+            //blurImageData = null;
         }
 
         public apply(canvas:HTMLCanvasElement):void {
@@ -1693,9 +1697,11 @@ export module filters {
                 this.updateBuffer(canvas);
                 this.solidifyBuffer();
                 var radius = (this.blurX + this.blurY ) / 2;
-                thirdparty.FastBlur.boxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
+                thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
                 var targetContext = canvas.getContext('2d');
-                GlowFilter.mixUp(this._bufferContext, targetContext, canvas.width, canvas.height);
+                GlowFilter.mixUp(this._bufferContext, targetContext,
+                    this._bufferCanvas, canvas,
+                    canvas.width, canvas.height);
             }
         }
 
@@ -1724,7 +1730,7 @@ export module filters {
 
         public apply(canvas:HTMLCanvasElement):void {
             var radius = (this.blurX + this.blurY ) / 2;
-            thirdparty.FastBlur.boxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
+            thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
         }
 
     }
