@@ -21,3 +21,5 @@ core/lib/org.js
 core/lib/org.js.map
 core/lib/thirdparty.js
 core/lib/thirdparty.js.map
+core/lib/mx.js
+core/lib/mx.js.map

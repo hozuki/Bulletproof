@@ -22,6 +22,7 @@ compile the TypeScript files:
 tsc {path-to-project}/core/lib/bd.ts
 tsc {path-to-project}/core/lib/fl.ts
 tsc {path-to-project}/core/lib/flash.ts
+tsc {path-to-project}/core/lib/mx.ts
 tsc {path-to-project}/core/lib/mic.ts
 tsc {path-to-project}/core/lib/org.ts
 tsc {path-to-project}/core/lib/thirdparty.ts
@@ -87,6 +88,7 @@ The project is pre-alpha now. The classes are not fully implemented yet, and the
 tsc {项目路径}/core/lib/bd.ts
 tsc {项目路径}/core/lib/fl.ts
 tsc {项目路径}/core/lib/flash.ts
+tsc {项目路径}/core/lib/mx.ts
 tsc {项目路径}/core/lib/mic.ts
 tsc {项目路径}/core/lib/org.ts
 tsc {项目路径}/core/lib/thirdparty.ts

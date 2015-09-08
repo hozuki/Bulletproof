@@ -2,7 +2,7 @@
  * Created by MIC on 2015/8/29.
  */
 
-(function (container) {
+(function (container, video) {
     var bd = require('./lib/bd.js');
     var flash = require('./lib/flash.js');
     var fl = require('./lib/fl.js');
@@ -54,7 +54,7 @@
     // test
     def(this, 'Timer', bd.bilidanmaku.Timer);
 
-    bd.bulletproof.Bulletproof.init(container);
-})(document.getElementById('bp-div'));
+    bd.bulletproof.Bulletproof.init(container, video);
+})(document.getElementById('bp-div'), document.getElementById('bp-video'));
 
 
