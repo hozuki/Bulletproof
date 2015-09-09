@@ -1897,6 +1897,7 @@ export module display {
         protected _x:number = 0;
         protected _y:number = 0;
         protected _z:number = 0;
+        protected _childIndex:number;
         protected _bp_displayBuffer:HTMLCanvasElement;
         protected _bp_containerElem:HTMLElement = null;
         protected _bp_drawStateInvalidated:boolean = false;
@@ -1906,14 +1907,13 @@ export module display {
             this._root = _bp_root;
             this._parent = _bp_parent;
             if (_bp_parent != null) {
+                this._childIndex = _bp_parent.numChildren;
                 _bp_parent.addChild(this);
             }
             if (createBuffer) {
                 this._bp_displayBuffer = window.document.createElement('canvas');
                 if (_bp_parent != null) {
                     _bp_parent._bp_containerElement().appendChild(this._bp_displayBuffer);
-                    //window.document.body.appendChild(this._bp_displayBuffer);
-                    //this._bp_displayBuffer.style.backgroundColor = mic.Color.rgbToCss(23, 30, 30);
                 }
                 this._bp_displayBuffer.style.left = '0';
                 this._bp_displayBuffer.style.top = '0';
@@ -1921,16 +1921,6 @@ export module display {
                 this.width = _bp_parent.width;
                 this.height = _bp_parent.height;
             }
-            /*
-             function r0255():number {
-             return Math.floor(Math.random() * 256);
-             }
-
-             if (this._bp_canvas() != null) {
-             this._bp_canvas().style.backgroundColor = mic.util.format('rgb({0}, {1}, {2})', r0255(), r0255(), r0255());mic.util.format('rgb({0}, {1}, {2})', r0255(), r0255(), r0255());
-             console.log(this._bp_canvas().style.backgroundColor);
-             }
-             */
         }
 
         public _bp_draw():void {
@@ -1984,6 +1974,17 @@ export module display {
         }
 
         public cacheAsBitmap:boolean;
+
+        // Bulletproof
+        public get childIndex():number {
+            return this._childIndex;
+        }
+
+        // Bulletproof
+        // DO NOT call manually
+        public set childIndex(v:number) {
+            this._childIndex = v;
+        }
 
         public get filters():Array<filters.BitmapFilter> {
             return this._filters;
@@ -2330,15 +2331,25 @@ export module display {
             throw new org.NotImplementedError();
         }
 
-        public  removeChild(child:DisplayObject):DisplayObject {
-            throw new org.NotImplementedError();
+        public removeChild(child:DisplayObject):DisplayObject {
+            if (this._children.indexOf(child) >= 0) {
+                var childIndex = child.childIndex;
+                for (var i = child.childIndex + 1; i < this._children.length; i++) {
+                    this._children[i].childIndex++;
+                }
+                this._bp_containerElem.removeChild(child.getDisplayBuffer());
+                this._children.splice(childIndex, 1);
+                return child;
+            } else {
+                return null;
+            }
         }
 
         public removeChildAt(index:number):DisplayObject {
             throw new org.NotImplementedError();
         }
 
-        public  setChildIndex(child:DisplayObject, index:number):void {
+        public setChildIndex(child:DisplayObject, index:number):void {
             throw new org.NotImplementedError();
         }
 
