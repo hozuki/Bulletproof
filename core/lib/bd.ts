@@ -134,6 +134,7 @@ export module bilidanmaku {
     interface IProofDanmakuObject {
 
         createParams:bddata.IGeneralCreateParams;
+        lifeTime:number;
 
     }
 
@@ -498,6 +499,7 @@ export module bilidanmaku {
                            createParams:bddata.IGeneralCreateParams) {
             super(root, parent);
             this._createParams = createParams;
+            this._lifeTime = bulletproof.Bulletproof.DEFAULT_OPTIONS.commentLifeTime;
             this.updateCanvasSettings();
         }
 
@@ -715,6 +717,11 @@ export module bilidanmaku {
             this._bp_displayBuffer.style.top = this._y.toString() + 'px';
         }
 
+        // Bulletproof
+        public get lifeTime():number {
+            return this._lifeTime;
+        }
+
         // WARNING: WILL CLEAR ALL STYLE SETTINGS AND DRAWINGS OF THE CANVAS
         private updateSizeIfAutoSized():void {
             if (this.autoSize) {
@@ -785,6 +792,7 @@ export module bilidanmaku {
         private static _defaultTextFontFamily:string = 'SimHei';
         private static _defaultBorderWidth:number = 1;
         private _createParams:bddata.IGeneralCreateParams;
+        private _lifeTime:number;
 
     }
 
@@ -1122,10 +1130,12 @@ export module bilidanmaku {
         export class Shape extends flash.display.Shape implements IProofDanmakuObject {
 
             private _createParams:bddata.IGeneralCreateParams;
+            private _lifeTime:number;
 
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
                                createParams:bddata.IGeneralCreateParams) {
                 super(root, parent);
+                this._lifeTime = bulletproof.Bulletproof.DEFAULT_OPTIONS.commentLifeTime;
                 this._createParams = createParams;
             }
 
@@ -1133,15 +1143,21 @@ export module bilidanmaku {
                 return this._createParams;
             }
 
+            public get lifeTime():number {
+                return this._lifeTime;
+            }
+
         }
 
         export class Canvas extends mx.containers.Canvas implements IProofDanmakuObject {
 
             private _createParams:bddata.IGeneralCreateParams;
+            private _lifeTime:number;
 
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
                                createParams:bddata.IGeneralCreateParams) {
                 super(root, parent);
+                this._lifeTime = bulletproof.Bulletproof.DEFAULT_OPTIONS.commentLifeTime;
                 this._createParams = createParams;
             }
 
@@ -1153,6 +1169,10 @@ export module bilidanmaku {
                 if (this._parent) {
                     this._parent.removeChild(this);
                 }
+            }
+
+            public get lifeTime():number {
+                return this._lifeTime;
             }
 
         }
