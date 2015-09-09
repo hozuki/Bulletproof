@@ -3071,6 +3071,7 @@ export module display {
             //context.restore();
             Graphics._bp_setSettings(context, Graphics._bp_defaultGraphicsSettings);
             context.beginPath();
+            this._isInFill = false;
             // Since all contents are clear, there should be nothing even if redraw() is called
             // Also please free the history entries.
             if (!this._isRedrawCalling) {
@@ -3112,7 +3113,9 @@ export module display {
             context.translate(this._displayObject.x, this._displayObject.y);
             context.moveTo(x + radius, y);
             context.arc(x, y, radius, 0, Math.PI * 2);
-            context.fill();
+            if (this._isInFill) {
+                context.fill();
+            }
             context.stroke();
             context.beginPath();
             if (!this._isRedrawCalling) {
@@ -3156,7 +3159,9 @@ export module display {
             context.scale(1, ratio);
             context.arc(centerX, centerY, width / 2, 0, Math.PI * 2, true);
             context.restore();
-            context.fill();
+            if (this._isInFill) {
+                context.fill();
+            }
             context.stroke();
             context.beginPath();
             if (!this._isRedrawCalling) {
@@ -3232,11 +3237,10 @@ export module display {
                 }
             }
             context.closePath();
-            //if (this._isInFill) {
-            context.fill();
-            //} else {
+            if (this._isInFill) {
+                context.fill();
+            }
             context.stroke();
-            //}
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
                 this._redrawHistoryQueue.push({
@@ -3308,7 +3312,9 @@ export module display {
             var context = this._bp_context();
             this.resetTransform();
             context.translate(this._displayObject.x, this._displayObject.y);
-            context.fillRect(x, y, width, height);
+            if (this._isInFill) {
+                context.fillRect(x, y, width, height);
+            }
             context.strokeRect(x, y, width, height);
             if (!this._isRedrawCalling) {
                 this._displayObject._bp_invalidate();
