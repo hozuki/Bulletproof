@@ -8,6 +8,7 @@
 /// <reference path="org.ts"/>
 /// <reference path="bddata.d.ts"/>
 /// <reference path="mx.ts"/>
+/// <reference path="bp.d.ts"/>
 
 import flash = require('./flash');
 import fl = require('./fl');
@@ -15,148 +16,71 @@ import mic = require('./mic');
 import org = require('./org');
 import bddata = require('./bddata.d');
 import mx = require('./mx');
+import bp = require('./bp.d');
 
-export module bulletproof {
+class ProofObject {
 
-    export interface IBulletproofOptions {
-
-        // life time (ms)
-        commentLifeTime:number;
-
+    public static get version():string {
+        return 'Bulletproof/0.1.0 (BiliBili, like BSE, like CCL, like Flash) HTML5/*';
     }
 
-    export class Bulletproof {
+}
 
-        private static _shouldUpdate:boolean = true;
-        private static _stage:flash.display.Stage;
-        private static _objectMotions:Array<bddata.IMotion> = [];
-        private static _options:IBulletproofOptions;
+interface IProofDanmakuObject {
 
-        public static DEFAULT_OPTIONS:IBulletproofOptions = {
-            commentLifeTime: 4000
-        };
+    createParams:bddata.IGeneralCreateParams;
+    lifeTime:number;
 
-        static init(div:HTMLDivElement, video:HTMLVideoElement):void {
-            Bulletproof._options = Bulletproof.DEFAULT_OPTIONS;
-            Bulletproof._stage = new flash.display.Stage(div);
-            bilidanmaku.initialize(div, video);
-            Bulletproof.enterMainLoop();
+}
+
+interface IProofStartParams {
+
+    startDate:Date;
+    root:HTMLDivElement;
+    video:HTMLVideoElement;
+    bp:bp.bulletproof.Bulletproof;
+
+}
+
+export class AdvAdapter {
+
+    private static _initialized:boolean = false;
+    private static _instance:AdvAdapter;
+    private _startParams:IProofStartParams;
+
+    public static get instance():AdvAdapter {
+        return AdvAdapter._instance;
+    }
+
+    public get startParams():IProofStartParams {
+        return this._startParams;
+    }
+
+    public static initialize(root:HTMLDivElement, video:HTMLVideoElement, bp:bp.bulletproof.Bulletproof):AdvAdapter {
+        if (!AdvAdapter._initialized) {
+            var adapter = new AdvAdapter();
+            adapter._startParams = {
+                root: root,
+                startDate: new Date(),
+                video: video,
+                bp: bp
+            };
+            AdvAdapter._instance = adapter;
         }
+        return AdvAdapter._instance;
+    }
 
-        private static enterMainLoop():void {
-            window.requestAnimationFrame(Bulletproof.mainLoop);
-        }
+    public getTimer():number {
+        return bilidanmaku.getTimer();
+    }
 
-        private static mainLoop() {
-            Bulletproof._stage.raiseEnterFrame();
-            Bulletproof.calculateMotionGroups();
-            Bulletproof._stage._bp_draw();
-            window.requestAnimationFrame(Bulletproof.mainLoop);
-        }
-
-        public static get shouldUpdate():boolean {
-            return Bulletproof._shouldUpdate;
-        }
-
-        public static set shouldUpdate(v:boolean) {
-            Bulletproof._shouldUpdate = v;
-        }
-
-        public static get options():IBulletproofOptions {
-            return Bulletproof._options;
-        }
-
-        public static get stage():flash.display.Stage {
-            return Bulletproof._stage;
-        }
-
-        public static registerMotion(motion:bddata.IMotion):void {
-            if (this._objectMotions.indexOf(motion) < 0) {
-                this._objectMotions.push(motion);
-            }
-        }
-
-        public static clearMotions():void {
-            while (this._objectMotions.length > 0) {
-                this._objectMotions.pop();
-            }
-        }
-
-        private static calculateMotionGroups():void {
-            var propertyNames = ['x', 'y', 'alpha', 'rotationZ', 'rotationY'];
-            var motionCount = this._objectMotions.length;
-            var now = bilidanmaku.getTimer();
-            var relativeTime:number;
-            var motion:bddata.IMotion;
-            var motionAnimation:bddata.IMotionPropertyAnimation;
-            var value:number;
-            for (var i = 0; i < motionCount; i++) {
-                motion = this._objectMotions[i];
-                if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
-                    for (var j = 0; j < 5; j++) {
-                        motionAnimation = motion[propertyNames[j]];
-                        if (motionAnimation) {
-                            relativeTime = now - motion.createdTime;
-                            if (motionAnimation.startDelay) {
-                                relativeTime -= motionAnimation.startDelay;
-                            }
-                            if (relativeTime <= motionAnimation.lifeTime * 1000) {
-                                // TODO: 这里忽略了 repeat 属性
-                                // TODO: 应该使用指定的 easing 方法，没有则假设线性；这里假设线性
-                                value = motionAnimation.fromValue +
-                                    (motionAnimation.toValue - motionAnimation.fromValue) / (motionAnimation.lifeTime * 1000) * relativeTime;
-                                motion.sourceObject[propertyNames[j]] = value;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static debugLogMotions():void {
-            console.log(this._objectMotions);
-        }
-
+    public getModule():any {
+        return bilidanmaku;
     }
 
 }
 
 export module bilidanmaku {
-
-    class ProofObject {
-
-        public static get version():string {
-            return 'Bulletproof/0.1.0 (BiliBili, like BSE, like CCL, like Flash) HTML5/*';
-        }
-
-    }
-
-    interface IProofDanmakuObject {
-
-        createParams:bddata.IGeneralCreateParams;
-        lifeTime:number;
-
-    }
-
-    export interface IProofStartParams {
-
-        startDate:Date;
-        root:HTMLDivElement;
-        video:HTMLVideoElement;
-
-    }
-
-    export var _startParams:IProofStartParams = {
-        root: null,
-        startDate: null,
-        video: null
-    };
-
-    export function initialize(root:HTMLDivElement, video:HTMLVideoElement):void {
-        _startParams.root = root;
-        _startParams.startDate = new Date();
-        _startParams.video = video;
-    }
 
     export class Display extends ProofObject {
 
@@ -169,11 +93,11 @@ export module bilidanmaku {
         }
 
         public static get width():number {
-            return _startParams.root.clientWidth;
+            return AdvAdapter.instance.startParams.root.clientWidth;
         }
 
         public static get height():number {
-            return _startParams.root.clientHeight;
+            return AdvAdapter.instance.startParams.root.clientHeight;
         }
 
         public static createMatrix(a:number = 1, b:number = 0, c:number = 1, d:number = 1, tx:number = 0, ty:number = 0):flash.geom.Matrix {
@@ -185,13 +109,13 @@ export module bilidanmaku {
         }
 
         public static createComment(text:string, params:bddata.IGeneralCreateParams):CommentField {
-            var comment = new CommentField(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage, params);
+            var comment = new CommentField(Display.root, Display.root, params);
             comment.text = text;
             return comment;
         }
 
         public static createShape(params:bddata.IGeneralCreateParams):flashimpl.Shape {
-            var shape = new flashimpl.Shape(bulletproof.Bulletproof.stage, bulletproof.Bulletproof.stage, params);
+            var shape = new flashimpl.Shape(Display.root, Display.root, params);
             if (params) {
                 if (params.alpha) {
                     shape.alpha = params.alpha;
@@ -213,7 +137,7 @@ export module bilidanmaku {
                     motionAnimation = motion[propertyNames[j]];
                     if (motionAnimation) {
                         if (!motionAnimation.lifeTime) {
-                            motionAnimation.lifeTime = bulletproof.Bulletproof.options.commentLifeTime / 1000;
+                            motionAnimation.lifeTime = AdvAdapter.instance.startParams.bp.options.commentLifeTime / 1000;
                         }
                         if (motionAnimation.startDelay) {
                             maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
@@ -240,7 +164,7 @@ export module bilidanmaku {
                     life = getMotionMaximumLifeTime(motion);
                     motion.maximumLifeTime = life.maxLife;
                     // 不需要更新 now
-                    bulletproof.Bulletproof.registerMotion(motion);
+                    AdvAdapter.instance.startParams.bp.registerMotion(motion);
                 }
                 if (params.motionGroup) {
                     for (var i = 0; i < params.motionGroup.length; i++) {
@@ -249,7 +173,7 @@ export module bilidanmaku {
                         motion.createdTime = now;
                         life = getMotionMaximumLifeTime(motion);
                         motion.maximumLifeTime = life.maxLife;
-                        bulletproof.Bulletproof.registerMotion(motion);
+                        AdvAdapter.instance.startParams.bp.registerMotion(motion);
                         now += life.literalMaxLife;
                     }
                 }
@@ -362,7 +286,12 @@ export module bilidanmaku {
         }
 
         public static get root():flash.display.Stage {
-            return bulletproof.Bulletproof.stage;
+            // TODO: Remove force type cast when flash.d.ts is fully synced with implementations.
+            return <any>AdvAdapter.instance.startParams.bp.stage;
+        }
+
+        public static getTimer():number {
+            return bilidanmaku.getTimer();
         }
 
     }
@@ -499,7 +428,7 @@ export module bilidanmaku {
                            createParams:bddata.IGeneralCreateParams) {
             super(root, parent);
             this._createParams = createParams;
-            this._lifeTime = bulletproof.Bulletproof.DEFAULT_OPTIONS.commentLifeTime;
+            this._lifeTime = AdvAdapter.instance.startParams.bp.options.commentLifeTime;
             this.updateCanvasSettings();
         }
 
@@ -1011,7 +940,7 @@ export module bilidanmaku {
     }
 
     export function getTimer():number {
-        return Date.now() - _startParams.startDate.getTime();
+        return Date.now() - AdvAdapter.instance.startParams.startDate.getTime();
     }
 
     export function timer(closure:Function|string, delay:number):number {
@@ -1135,7 +1064,7 @@ export module bilidanmaku {
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
                                createParams:bddata.IGeneralCreateParams) {
                 super(root, parent);
-                this._lifeTime = bulletproof.Bulletproof.DEFAULT_OPTIONS.commentLifeTime;
+                this._lifeTime = AdvAdapter.instance.startParams.bp.options.commentLifeTime;
                 this._createParams = createParams;
             }
 
@@ -1157,7 +1086,7 @@ export module bilidanmaku {
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
                                createParams:bddata.IGeneralCreateParams) {
                 super(root, parent);
-                this._lifeTime = bulletproof.Bulletproof.DEFAULT_OPTIONS.commentLifeTime;
+                this._lifeTime = AdvAdapter.instance.startParams.bp.options.commentLifeTime;
                 this._createParams = createParams;
             }
 

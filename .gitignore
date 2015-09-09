@@ -23,3 +23,5 @@ core/lib/thirdparty.js
 core/lib/thirdparty.js.map
 core/lib/mx.js
 core/lib/mx.js.map
+core/lib/bp.js
+core/lib/bp.js.map

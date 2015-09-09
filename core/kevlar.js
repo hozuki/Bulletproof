@@ -3,7 +3,7 @@
  */
 
 (function (container, video) {
-    var bd = require('./lib/bd.js');
+    var bp = require('./lib/bp.js');
     var flash = require('./lib/flash.js');
     var fl = require('./lib/fl.js');
 
@@ -17,34 +17,38 @@
         });
     }
 
+    var bulletproof = new bp.bulletproof.Bulletproof();
+    bulletproof.initialize(container, video);
+    console.log(bulletproof);
+    var bilidanmaku = bulletproof.module;
+
     // BSE basics
-    def(this, '$', bd.bilidanmaku.$);
-    def(this, '$G', bd.bilidanmaku.$G);
-    def(this, 'Bitmap', bd.bilidanmaku.Bitmap);
-    def(this, 'Display', bd.bilidanmaku.Display);
-    def(this, 'Global', bd.bilidanmaku.Global);
+    def(this, '$', bilidanmaku.$);
+    def(this, '$G', bilidanmaku.$G);
+    def(this, 'Bitmap', bilidanmaku.Bitmap);
+    def(this, 'Display', bilidanmaku.Display);
+    def(this, 'Global', bilidanmaku.Global);
     //def(this, 'ITween', bd.ITween); // Interface, not a class
-    def(this, 'Player', bd.bilidanmaku.Player);
-    def(this, 'ScriptManager', bd.bilidanmaku.ScriptManager);
-    def(this, 'Storage', bd.bilidanmaku.Storage);
-    def(this, 'Utils', bd.bilidanmaku.Utils);
-    def(this, 'Tween', bd.bilidanmaku.Tween);
+    def(this, 'Player', bilidanmaku.Player);
+    def(this, 'ScriptManager', bilidanmaku.ScriptManager);
+    def(this, 'Storage', bilidanmaku.Storage);
+    def(this, 'Utils', bilidanmaku.Utils);
+    def(this, 'Tween', bilidanmaku.Tween);
 
     // external libraries
     def(this, 'flash', flash);
     def(this, 'fl', fl);
-    def(this, 'Bulletproof', bd.bulletproof.Bulletproof);
-    def(this, 'bd', bd);
+    def(this, 'Bulletproof', bulletproof);
 
     // global functions
-    def(this, 'trace', bd.bilidanmaku.trace);
-    def(this, 'clear', bd.bilidanmaku.clear);
-    def(this, 'getTimer', bd.bilidanmaku.getTimer);
-    def(this, 'timer', bd.bilidanmaku.timer);
-    def(this, 'interval', bd.bilidanmaku.interval);
-    def(this, 'foreach', bd.bilidanmaku.foreach);
-    def(this, 'clone', bd.bilidanmaku.clone);
-    def(this, 'load', bd.bilidanmaku.load);
+    def(this, 'trace', bilidanmaku.trace);
+    def(this, 'clear', bilidanmaku.clear);
+    def(this, 'getTimer', bilidanmaku.getTimer);
+    def(this, 'timer', bilidanmaku.timer);
+    def(this, 'interval', bilidanmaku.interval);
+    def(this, 'foreach', bilidanmaku.foreach);
+    def(this, 'clone', bilidanmaku.clone);
+    def(this, 'load', bilidanmaku.load);
 
     // safety
     //def(bd, 'console', null);
@@ -52,9 +56,9 @@
     //def(this, 'document', null);
 
     // test
-    def(this, 'Timer', bd.bilidanmaku.Timer);
+    def(this, 'Timer', bilidanmaku.Timer);
 
-    bd.bulletproof.Bulletproof.init(container, video);
+    bulletproof.enterMainLoop();
 })(document.getElementById('bp-div'), document.getElementById('bp-video'));
 
 
