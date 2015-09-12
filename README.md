@@ -13,25 +13,12 @@ which started a kind of art of creating splendid danmakus. All started in [Nicon
 The target of this project is to create a danmaku player based on HTML5. Currently the whole project and
 tests run on nw.js (node-webkit).
 
-## Building and Running
+## Playing with Bulletproof
 
-You will need [TypeScript](http://www.typescriptlang.org/) and [nw.js](http://nwjs.io). After installing, please
-compile the TypeScript files:
+The source files are compiled. However, playing with the tests needs [nw.js](http://nwjs.io).
+You can get it from its homepage. 
 
-```
-tsc {path-to-project}/core/lib/bd.ts
-tsc {path-to-project}/core/lib/fl.ts
-tsc {path-to-project}/core/lib/flash.ts
-tsc {path-to-project}/core/lib/mx.ts
-tsc {path-to-project}/core/lib/bulletproof.ts
-tsc {path-to-project}/core/lib/mic.ts
-tsc {path-to-project}/core/lib/org.ts
-tsc {path-to-project}/core/lib/thirdparty.ts
-```
-
-And all the work is done.
-
-You can launch with nw.js executable:
+You can launch the tests with nw.js executable:
 
 Windows:
 
@@ -47,19 +34,39 @@ Mac/Linux:
 nw /path/to/Bulletproof/
 ```
 
-## Testing
-
-The default page (`/core/index.html`) already included current testing code. One of the tests will show
-up at launch.
-
-Tests are:
+The homepage for testing (`/test/index.html`) already included current tests. They are:
 
 - A spinning 3-D ball (`3d-ball.js`);
 - Green Dam Musume (`kanpai-lbn.js`);
 - Madoka and other Mahou Shoujos (`kanpai-madoka.js`).
 
-Testing code samples can be found at `/test/` directory. You can view the tests by commenting and/or
-uncommenting the `<script>` labels in `/core/index.html`.
+You are able to select the tests from the homepage. Source code of the tests can be found in `/test/scripts/`.
+
+## Building
+
+Before building, you will need [Node.js](https://nodejs.org/en/) and [TypeScript](http://www.typescriptlang.org/).
+TypeScript may be installed via [NPM](https://www.npmjs.org/):
+
+```
+npm install -g typescript
+```
+
+After installing, please compile the TypeScript files:
+
+```
+tsc {path-to-project}/core/lib/bulletproof.ts --out {path-to-project}/build/bulletproof.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-bilidanmaku.ts --out {path-to-project}/build/bulletproof-bilidanmaku.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-data-interface.ts --out {path-to-project}/build/bulletproof-data-interface.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-fl.ts --out {path-to-project}/build/bulletproof-fl.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-flash.ts --out {path-to-project}/build/bulletproof-flash.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-injector.ts --out {path-to-project}/build/bulletproof-injector.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-mic.ts --out {path-to-project}/build/bulletproof-mic.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-mx.ts --out {path-to-project}/build/bulletproof-mx.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-org.ts --out {path-to-project}/build/bulletproof-org.js --sourcemap --module commonjs --target es5
+tsc {path-to-project}/core/lib/bulletproof-thirdparty.ts --out {path-to-project}/build/bulletproof-thirdparty.js --sourcemap --module commonjs --target es5
+```
+
+Generated files will be found in `/build/`.
 
 ## Project Status
 
@@ -81,22 +88,9 @@ The project is pre-alpha now. The classes are not fully implemented yet, and the
 
 目前项目和测试的运行环境为 nw.js（node-webkit）。
 
-## 安装与使用
+## 尝鲜
 
-请下载并安装 [TypeScript](http://www.typescriptlang.org/) 和 [nw.js](http://nwjs.io)。安装完毕后，首先编译 TypeScript 源文件：
-
-```
-tsc {项目路径}/core/lib/bd.ts
-tsc {项目路径}/core/lib/fl.ts
-tsc {项目路径}/core/lib/flash.ts
-tsc {项目路径}/core/lib/mx.ts
-tsc {项目路径}/core/lib/bulletproof.ts
-tsc {项目路径}/core/lib/mic.ts
-tsc {项目路径}/core/lib/org.ts
-tsc {项目路径}/core/lib/thirdparty.ts
-```
-
-完成后就可以运行了。使用以下命令运行：
+为了各位能直接看到测试效果，代码已经编译了。您可以使用 [nw.js](http://nwjs.io) 来浏览。运行方式是：
 
 Windows:
 
@@ -112,17 +106,38 @@ Mac/Linux:
 nw /path/to/Bulletproof/
 ```
 
-## 测试
-
-当前的主页（`/core/index.html`）就包含了各测试代码的引用。工程启动时就会运行测试样例。
-
-当前包含的的测试样例有：
+您可以在当前的测试主页（`/test/index.html`）显示的示例中选择。当前包含的的示例有：
 
 - 一个三维旋转的球（`3d-ball.js`）；
 - 绿坝娘（`kanpai-lbn.js`）；
 - 小圆脸和她愉快(?)的小伙伴们（`kanpai-madoka.js`）。
 
-所有的测试样例都位于 `/test/` 目录下。如果想切换显示的样例，请注释、解除注释 `/core/index.html` 中的各 `<script>` 标签。
+所有的测试样例都位于 `/test/script/` 目录下。
+
+## 编译
+
+编译需要 [Node.js](https://nodejs.org/en/) 和 [TypeScript](http://www.typescriptlang.org/)。其中 TypeScript 可以通过 [NPM](https://www.npmjs.org/) 安装：
+
+```
+npm install -g typescript
+```
+
+安装完毕后，首先编译 TypeScript 源文件：
+
+```
+tsc {项目路径}/core/lib/bulletproof.ts --out {项目路径}/build/bulletproof.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-bilidanmaku.ts --out {项目路径}/build/bulletproof-bilidanmaku.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-data-interface.ts --out {项目路径}/build/bulletproof-data-interface.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-fl.ts --out {项目路径}/build/bulletproof-fl.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-flash.ts --out {项目路径}/build/bulletproof-flash.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-injector.ts --out {项目路径}/build/bulletproof-injector.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-mic.ts --out {项目路径}/build/bulletproof-mic.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-mx.ts --out {项目路径}/build/bulletproof-mx.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-org.ts --out {项目路径}/build/bulletproof-org.js --sourcemap --module commonjs --target es5
+tsc {项目路径}/core/lib/bulletproof-thirdparty.ts --out {项目路径}/build/bulletproof-thirdparty.js --sourcemap --module commonjs --target es5
+```
+
+编译完成后，结果会保存在 `/build/` 目录。
 
 ## 项目状态
 
