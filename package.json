@@ -2,7 +2,7 @@
   "name": "Bulletproof",
   "version": "0.1.0",
   "description": "Bulletproof",
-  "main": "core/index.html",
+  "main": "test/index.html",
   "engines" : { 
     "node" : ">=0.12" 
   },
