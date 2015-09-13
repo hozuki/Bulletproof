@@ -22,26 +22,23 @@
     appendBulletproofModule(bulletproof, injector, "../build/bulletproof-bilidanmaku");
     appendBulletproofModule(bulletproof, injector, "../build/bulletproof");
 
-    (function exposeBilibiliApis() {
-        "use strict";
-        var members = ['CommentData', 'CommentField', 'Display', 'Bitmap', 'Storage',
-            'Global', 'ITween', 'Player', 'ScriptManager', 'Shape', 'Tween', 'Utils', '$', '$G',
-            'trace', 'clear', 'getTimer', 'timer', 'interval', 'foreach', 'clone', 'load'];
-        for (var key in bulletproof.bilidanmaku) {
-            if (bulletproof.bilidanmaku.hasOwnProperty(key)) {
-                if (members.indexOf(key) >= 0) {
-                    // TRICK
-                    window[key] = bulletproof.bilidanmaku[key];
-                }
-            }
-        }
-    })();
-
     this.bp = bulletproof;
     this.bulletproof = new bulletproof.Bulletproof();
     this.bulletproof.initialize();
-    bulletproof.AdvancedDanamaku.initialize(container, video);
-    bulletproof.AdvancedDanamaku.start();
+    this.ad = bulletproof.AdvancedDanmaku.createInstance(container, video);
+    bulletproof.BiliBiliDanmakuApi.attachApi(this.ad);
+
+    (function attachBiliBiliApis(ad) {
+        "use strict";
+        for (var key in ad.api) {
+            if (ad.api.hasOwnProperty(key)) {
+                // TODO: TRICK
+                window[key] = ad.api[key];
+            }
+        }
+    })(this.ad);
+
+    this.ad.start();
 })(document.getElementById('bp-div'), document.getElementById('bp-video'));
 
 

@@ -2,15 +2,6 @@
  * Created by MIC on 2015/8/27.
  */
 
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-bilidanmaku.d.ts"/>
-/// <reference path="../include/bulletproof-fl.d.ts"/>
-/// <reference path="../include/bulletproof-mic.d.ts"/>
-/// <reference path="../include/bulletproof-org.d.ts"/>
-/// <reference path="../include/bulletproof-data-interface.d.ts"/>
-/// <reference path="../include/bulletproof-mx.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
-
 import bulletproof_main = require("./bulletproof");
 import bulletproof_data_interface = require("./bulletproof-data-interface");
 import bulletproof_flash = require("./bulletproof-flash");
@@ -46,18 +37,21 @@ export module bulletproof {
         stage:flash.display.Stage;
     }
 
-    export class AdvancedDanamaku {
+    export class AdvancedDanmaku {
 
-        private static _startParams:bulletproof.IProofStartParams;
-        private static _objectMotions:Array<IMotion> = [];
+        private _startParams:bulletproof.IProofStartParams;
+        private _objectMotions:Array<IMotion> = [];
+        // TODO: Potential security issues.
+        private _api:any;
 
-        public static get startParams():IProofStartParams {
-            return AdvancedDanamaku._startParams;
+        public get startParams():IProofStartParams {
+            return this._startParams;
         }
 
-        public static initialize(root:HTMLDivElement, video:HTMLVideoElement) {
+        public static createInstance(root:HTMLDivElement, video:HTMLVideoElement):AdvancedDanmaku {
+            var ad = new AdvancedDanmaku();
             var stage:flash.display.Stage = new flash.display.Stage(root);
-            AdvancedDanamaku._startParams = {
+            ad._startParams = {
                 root: root,
                 startDate: new Date(),
                 video: video,
@@ -65,40 +59,42 @@ export module bulletproof {
                 stage: stage
             };
 
-            AdvancedDanamaku._startParams.bp.addEventListener(Bulletproof.RENDER_REQUESTED, function (event:Event) {
+            ad._startParams.bp.addEventListener(Bulletproof.RENDER_REQUESTED, function (event:Event) {
                 stage.raiseEnterFrame();
-                AdvancedDanamaku.calculateMotionGroups();
+                ad.calculateMotionGroups();
                 stage.redraw();
             });
+
+            return ad;
         }
 
-        public static start():void {
-            AdvancedDanamaku._startParams.bp.enterMainLoop();
+        public start():void {
+            this._startParams.bp.enterMainLoop();
         }
 
-        public static registerMotion(motion:IMotion):void {
-            if (AdvancedDanamaku._objectMotions.indexOf(motion) < 0) {
-                AdvancedDanamaku._objectMotions.push(motion);
+        public registerMotion(motion:IMotion):void {
+            if (this._objectMotions.indexOf(motion) < 0) {
+                this._objectMotions.push(motion);
             }
         }
 
-        public static clearMotions():void {
-            while (AdvancedDanamaku._objectMotions.length > 0) {
-                AdvancedDanamaku._objectMotions.pop();
+        public clearMotions():void {
+            while (this._objectMotions.length > 0) {
+                this._objectMotions.pop();
             }
         }
 
-        private static calculateMotionGroups():void {
+        private calculateMotionGroups():void {
             var propertyNames = ['x', 'y', 'alpha', 'rotationZ', 'rotationY'];
-            var motionCount = AdvancedDanamaku._objectMotions.length;
+            var motionCount = this._objectMotions.length;
             //var now = this._bdg.getTimer();
-            var now = bilidanmaku.getTimer();
+            var now = (<BiliBiliDanmakuApi>this.api).getTimer();
             var relativeTime:number;
             var motion:IMotion;
             var motionAnimation:IMotionPropertyAnimation;
             var value:number;
             for (var i = 0; i < motionCount; i++) {
-                motion = AdvancedDanamaku._objectMotions[i];
+                motion = this._objectMotions[i];
                 if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
                     for (var j = 0; j < 5; j++) {
                         motionAnimation = motion[propertyNames[j]];
@@ -120,61 +116,23 @@ export module bulletproof {
             }
         }
 
-        private static debugLogMotions():void {
-            console.log(AdvancedDanamaku._objectMotions);
+        private debugLogMotions():void {
+            console.log(this._objectMotions);
+        }
+
+        public set api(v:any) {
+            this._api = v;
+        }
+
+        public get api():any {
+            return this._api;
         }
 
     }
-
-    export class ProofObject {
-
-        public static get version():string {
-            return 'Bulletproof/0.1.0 (BiliBili, like BSE, like CCL, like Flash) HTML5/*';
-        }
-
-    }
-
-    /*
-     export class AdvAdapter {
-
-     private static _initialized:boolean = false;
-     private static _instance:AdvAdapter;
-     private _startParams:IProofStartParams;
-
-     public static get instance():AdvAdapter {
-     return AdvAdapter._instance;
-     }
-
-     public get startParams():IProofStartParams {
-     return this._startParams;
-     }
-
-     public static initialize(root:HTMLDivElement, video:HTMLVideoElement, bp:Bulletproof):AdvAdapter {
-     if (!AdvAdapter._initialized) {
-     var adapter = new AdvAdapter();
-     adapter._startParams = {
-     root: root,
-     startDate: new Date(),
-     video: video,
-     bp: bp
-     };
-     AdvAdapter._instance = adapter;
-     }
-     return AdvAdapter._instance;
-     }
-
-     public getTimer():number {
-     return bilidanmaku.getTimer();
-     }
-
-     public getModule():any {
-     return bilidanmaku;
-     }
-
-     }
-     */
 
     export module bilidanmaku {
+
+        import AdvancedDanmaku = bulletproof.AdvancedDanmaku;
 
         export interface CommentData {
             txt:string;
@@ -194,40 +152,144 @@ export module bulletproof {
             stopOnComplete:boolean;
         }
 
+        export class ProofObject {
+
+            public get version():string {
+                return 'Bulletproof/0.1.0 (BiliBili, like BSE, like CCL, like Flash) HTML5/*';
+            }
+
+        }
+
+        export module flashimpl {
+
+            export class Timer extends flash.utils.Timer {
+
+                private _closure:any;
+                private _possibleClosure:string;
+
+                public constructor(closure:Function|string, delay:number, repeatCount:number = 1) {
+                    super(delay, repeatCount);
+                    this._closure = closure;
+                    if (typeof this._closure == 'string') {
+                        this._possibleClosure = this._closure + '();';
+                    }
+                }
+
+                protected _bp_timerCallbackInternal():void {
+                    if (this._closure != null) {
+                        var type = typeof this._closure;
+                        switch (type) {
+                            case 'string':
+                                eval(this._possibleClosure);
+                                break;
+                            case 'function':
+                                this._closure.call(window);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+            }
+
+            export class Shape extends flash.display.Shape implements IProofDanmakuObject {
+
+                private _ad:AdvancedDanmaku;
+                private _createParams:IGeneralCreateParams;
+                private _lifeTime:number;
+
+                public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                                   createParams:IGeneralCreateParams, ad:AdvancedDanmaku) {
+                    super(root, parent);
+                    this._lifeTime = ad.startParams.bp.options.commentLifeTime;
+                    this._createParams = createParams;
+                    this._ad = ad;
+                }
+
+                public get createParams():IGeneralCreateParams {
+                    return this._createParams;
+                }
+
+                public get lifeTime():number {
+                    return this._lifeTime;
+                }
+
+            }
+
+            export class Canvas extends mx.containers.Canvas implements IProofDanmakuObject {
+
+                private _ad:AdvancedDanmaku;
+                private _createParams:IGeneralCreateParams;
+                private _lifeTime:number;
+
+                public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                                   createParams:IGeneralCreateParams, ad:AdvancedDanmaku) {
+                    super(root, parent);
+                    this._lifeTime = ad.startParams.bp.options.commentLifeTime;
+                    this._createParams = createParams;
+                    this._ad = ad;
+                }
+
+                public get createParams():IGeneralCreateParams {
+                    return this._createParams;
+                }
+
+                public remove():void {
+                    if (this._parent) {
+                        this._parent.removeChild(this);
+                    }
+                }
+
+                public get lifeTime():number {
+                    return this._lifeTime;
+                }
+
+            }
+
+        }
+
         export class Display extends ProofObject {
 
-            public static get fullScreenWidth():number {
+            private _ad:AdvancedDanmaku;
+
+            public constructor(ad:AdvancedDanmaku) {
+                super();
+                this._ad = ad;
+            }
+
+            public get fullScreenWidth():number {
                 return screen.width;
             }
 
-            public static get fullScreenHeight():number {
+            public get fullScreenHeight():number {
                 return screen.height;
             }
 
-            public static get width():number {
-                return AdvancedDanamaku.startParams.root.clientWidth;
+            public get width():number {
+                return this._ad.startParams.root.clientWidth;
             }
 
-            public static get height():number {
-                return AdvancedDanamaku.startParams.root.clientHeight;
+            public get height():number {
+                return this._ad.startParams.root.clientHeight;
             }
 
-            public static createMatrix(a:number = 1, b:number = 0, c:number = 1, d:number = 1, tx:number = 0, ty:number = 0):flash.geom.Matrix {
+            public createMatrix(a:number = 1, b:number = 0, c:number = 1, d:number = 1, tx:number = 0, ty:number = 0):flash.geom.Matrix {
                 return new flash.geom.Matrix(a, b, c, d, tx, ty);
             }
 
-            public static createPoint(x:number = 0, y:number = 0):flash.geom.Point {
+            public createPoint(x:number = 0, y:number = 0):flash.geom.Point {
                 return new flash.geom.Point(x, y);
             }
 
-            public static createComment(text:string, params:IGeneralCreateParams):CommentField {
-                var comment = new CommentField(Display.root, Display.root, params);
+            public createComment(text:string, params:IGeneralCreateParams):CommentField {
+                var comment = new CommentField(this.root, this.root, params, this._ad);
                 comment.text = text;
                 return comment;
             }
 
-            public static createShape(params:IGeneralCreateParams):flashimpl.Shape {
-                var shape = new flashimpl.Shape(Display.root, Display.root, params);
+            public createShape(params:IGeneralCreateParams):flashimpl.Shape {
+                var shape = new flashimpl.Shape(this.root, this.root, params, this._ad);
                 if (params) {
                     if (params.alpha) {
                         shape.alpha = params.alpha;
@@ -240,7 +302,7 @@ export module bulletproof {
                     }
                 }
 
-                function getMotionMaximumLifeTime(motion:IMotion):any {
+                function getMotionMaximumLifeTime(motion:IMotion, ad:AdvancedDanmaku):any {
                     var motionAnimation:IMotionPropertyAnimation;
                     var propertyNames = ['x', 'y', 'alpha', 'rotationZ', 'rotationY'];
                     var maxLife:number = 0;
@@ -249,7 +311,7 @@ export module bulletproof {
                         motionAnimation = motion[propertyNames[j]];
                         if (motionAnimation) {
                             if (!motionAnimation.lifeTime) {
-                                motionAnimation.lifeTime = AdvancedDanamaku.startParams.bp.options.commentLifeTime / 1000;
+                                motionAnimation.lifeTime = ad.startParams.bp.options.commentLifeTime / 1000;
                             }
                             if (motionAnimation.startDelay) {
                                 maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
@@ -267,25 +329,25 @@ export module bulletproof {
 
                 var motion:IMotion;
                 var life:any;
-                var now = getTimer();
+                var now = (<BiliBiliDanmakuApi>this._ad.api).getTimer();
                 if (params) {
                     if (params.motion) {
                         motion = params.motion;
                         motion.sourceObject = shape;
                         motion.createdTime = now;
-                        life = getMotionMaximumLifeTime(motion);
+                        life = getMotionMaximumLifeTime(motion, this._ad);
                         motion.maximumLifeTime = life.maxLife;
                         // 不需要更新 now
-                        AdvancedDanamaku.registerMotion(motion);
+                        this._ad.registerMotion(motion);
                     }
                     if (params.motionGroup) {
                         for (var i = 0; i < params.motionGroup.length; i++) {
                             motion = params.motionGroup[i];
                             motion.sourceObject = shape;
                             motion.createdTime = now;
-                            life = getMotionMaximumLifeTime(motion);
+                            life = getMotionMaximumLifeTime(motion, this._ad);
                             motion.maximumLifeTime = life.maxLife;
-                            AdvancedDanamaku.registerMotion(motion);
+                            this._ad.registerMotion(motion);
                             now += life.literalMaxLife;
                         }
                     }
@@ -296,25 +358,25 @@ export module bulletproof {
                 return shape;
             }
 
-            public static createCanvas(params:IGeneralCreateParams):flashimpl.Canvas {
-                return new flashimpl.Canvas(Display.root, Display.root, params);
+            public createCanvas(params:IGeneralCreateParams):flashimpl.Canvas {
+                return new flashimpl.Canvas(this.root, this.root, params, this._ad);
             }
 
-            public static createButton(text:string, params:IGeneralCreateParams):any {
+            public createButton(text:string, params:IGeneralCreateParams):any {
                 throw new NotImplementedError();
             }
 
-            public static createGlowFilter(color:number = 0xff0000, alpha:number = 1.0, blurX:number = 6.0,
-                                           blurY:number = 6.0, strength:number = 2, quality:number = flash.filters.BitmapFilterQuality.LOW,
-                                           inner:boolean = false, knockout:boolean = false):flash.filters.GlowFilter {
+            public createGlowFilter(color:number = 0xff0000, alpha:number = 1.0, blurX:number = 6.0,
+                                    blurY:number = 6.0, strength:number = 2, quality:number = flash.filters.BitmapFilterQuality.LOW,
+                                    inner:boolean = false, knockout:boolean = false):flash.filters.GlowFilter {
                 return new flash.filters.GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout);
             }
 
-            public static createBlurFilter(blurX:number = 4.0, blurY:number = 4.0, quality:number = 1):flash.filters.BlurFilter {
+            public createBlurFilter(blurX:number = 4.0, blurY:number = 4.0, quality:number = 1):flash.filters.BlurFilter {
                 return new flash.filters.BlurFilter(blurX, blurY, quality);
             }
 
-            public static toIntVector(array:Array<number>):Array<number> {
+            public toIntVector(array:Array<number>):Array<number> {
                 // jabbany
                 Object.defineProperty(array, 'as3Type', {
                     get: function () {
@@ -327,7 +389,7 @@ export module bulletproof {
                 return array;
             }
 
-            public static toUIntVector(array:Array<number>):Array<number> {
+            public toUIntVector(array:Array<number>):Array<number> {
                 // jabbany
                 Object.defineProperty(array, 'as3Type', {
                     get: function () {
@@ -340,7 +402,7 @@ export module bulletproof {
                 return array;
             }
 
-            public static toNumberVector(array:Array<number>):Array<number> {
+            public toNumberVector(array:Array<number>):Array<number> {
                 // jabbany
                 Object.defineProperty(array, 'as3Type', {
                     get: function () {
@@ -353,35 +415,35 @@ export module bulletproof {
                 return array;
             }
 
-            public static createVector3D(x:number = 0, y:number = 0, z:number = 0, w:number = 0):flash.geom.Vector3D {
+            public createVector3D(x:number = 0, y:number = 0, z:number = 0, w:number = 0):flash.geom.Vector3D {
                 return new flash.geom.Vector3D(x, y, z, w);
             }
 
-            public static createMatrix3D(a:Array<number> = null):flash.geom.Matrix3D {
+            public createMatrix3D(a:Array<number> = null):flash.geom.Matrix3D {
                 return new flash.geom.Matrix3D(a);
             }
 
-            public static createColorTransform():flash.geom.ColorTransform {
+            public createColorTransform():flash.geom.ColorTransform {
                 return new flash.geom.ColorTransform();
             }
 
-            public static createTextFormat():flash.text.TextFormat {
+            public createTextFormat():flash.text.TextFormat {
                 return new flash.text.TextFormat();
             }
 
-            public static createGraphic():flash.display.Graphics {
+            public createGraphic():flash.display.Graphics {
                 throw new NotImplementedError();
             }
 
             // CCL compatible
             // jabbany
-            public static projectVector(matrix:flash.geom.Matrix3D, vector:flash.geom.Vector3D):flash.geom.Vector3D {
+            public projectVector(matrix:flash.geom.Matrix3D, vector:flash.geom.Vector3D):flash.geom.Vector3D {
                 return matrix.transformVector(vector);
             }
 
             // CCL compatible
             // jabbany
-            public static projectVectors(matrix:flash.geom.Matrix3D, vertices:Array<number>, projectedVertices:Array<number>, uvts:Array<number>):void {
+            public projectVectors(matrix:flash.geom.Matrix3D, vertices:Array<number>, projectedVertices:Array<number>, uvts:Array<number>):void {
                 while (projectedVertices.length > 0) {
                     projectedVertices.pop();
                 }
@@ -397,74 +459,81 @@ export module bulletproof {
                 }
             }
 
-            public static get root():flash.display.Stage {
+            public get root():flash.display.Stage {
                 // TODO: Remove force type cast when flash.d.ts is fully synced with implementations.
-                return AdvancedDanamaku.startParams.stage;
+                return this._ad.startParams.stage;
             }
 
         }
 
         export class Player extends ProofObject {
 
-            public static play():void {
+            private _ad:AdvancedDanmaku;
+
+            public constructor(ad:AdvancedDanmaku) {
+                super();
+                this._ad = ad;
+            }
+
+            public play():void {
                 throw new NotImplementedError();
             }
 
-            public static pause():void {
+            public pause():void {
                 throw new NotImplementedError();
             }
 
-            public static seek(offset:number):void {
+            public seek(offset:number):void {
                 throw new NotImplementedError();
             }
 
-            public static jump(av:string, page:number = 1, newWindow:boolean = false):void {
+            public jump(av:string, page:number = 1, newWindow:boolean = false):void {
                 throw new NotImplementedError();
             }
 
-            public static get state():string {
+            public get state():string {
                 throw new NotImplementedError();
             }
 
-            public static get time():number {
+            public get time():number {
                 throw new NotImplementedError();
             }
 
-            public static commentTrigger(f:(cd:CommentData)=>void, timeout:number = 1000):number {
+            public commentTrigger(f:(cd:CommentData)=>void, timeout:number = 1000):number {
                 throw new NotImplementedError();
             }
 
-            public static keyTrigger(f:(key:number)=>void, timeout:number = 1000, up:boolean = false):number {
+            public keyTrigger(f:(key:number)=>void, timeout:number = 1000, up:boolean = false):number {
                 throw new NotImplementedError();
             }
 
-            public static setMask(obj:flash.display.DisplayObject):void {
+            public setMask(obj:flash.display.DisplayObject):void {
                 throw new NotImplementedError();
             }
 
-            public static createSound(t:string, onLoad:Function = null):flash.media.Sound {
+            public createSound(t:string, onLoad:Function = null):flash.media.Sound {
                 throw new NotImplementedError();
             }
 
-            public static get commentList():Array<CommentData> {
+            public get commentList():Array<CommentData> {
                 throw new NotImplementedError();
             }
 
-            public static refreshRate:number;
+            public refreshRate:number;
 
-            public static get width():number {
+            public get width():number {
                 throw new NotImplementedError();
             }
 
-            public static get height():number {
+            public get height():number {
                 throw new NotImplementedError();
             }
 
-            public static get videoWidth():number {
+            public get videoWidth():number {
                 throw new NotImplementedError();
             }
 
-            public static get videoHeight():number {
+            public get videoHeight():number {
                 throw new NotImplementedError();
             }
 
@@ -532,11 +601,14 @@ export module bulletproof {
 
         export class CommentField extends flash.display.DisplayObject implements IProofDanmakuObject {
 
+            private _ad:AdvancedDanmaku;
+
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
-                               createParams:IGeneralCreateParams) {
+                               createParams:IGeneralCreateParams, ad:AdvancedDanmaku) {
                 super(root, parent);
                 this._createParams = createParams;
-                this._lifeTime = AdvancedDanamaku.startParams.bp.options.commentLifeTime;
+                this._lifeTime = ad.startParams.bp.options.commentLifeTime;
+                this._ad = ad;
                 this.updateCanvasSettings();
             }
 
@@ -838,40 +910,108 @@ export module bulletproof {
 
         export class Global {
 
-            private static _map:Map<string, any> = new Map<string, any>();
+            private _map:Map<string, any> = new Map<string, any>();
+            private _ad:AdvancedDanmaku;
 
-            public static _set(key:string, val:any):void {
-                Global._map.set(key, val);
+            public constructor(ad:AdvancedDanmaku) {
+                this._ad = ad;
             }
 
-            public static _get(key:string):any {
-                return Global._map.get(key);
+            public _set(key:string, val:any):void {
+                this._map.set(key, val);
+            }
+
+            public _get(key:string):any {
+                return this._map.get(key);
             }
 
         }
 
         export class ScriptManager {
 
-            public static clearTimer():void {
+            private _ad:AdvancedDanmaku;
+
+            public constructor(ad:AdvancedDanmaku) {
+                this._ad = ad;
+            }
+
+            public clearTimer():void {
                 throw new NotImplementedError();
             }
 
-            public static clearEl():void {
+            public clearEl():void {
                 throw new NotImplementedError();
             }
 
-            public static clearTrigger():void {
+            public clearTrigger():void {
                 throw new NotImplementedError();
             }
 
         }
 
-        export class Tween extends fl.transitions.Tween implements ITween {
+        export class Tween {
+
+            private _ad:AdvancedDanmaku;
+
+            public constructor(ad:AdvancedDanmaku) {
+                this._ad = ad;
+            }
+
+            public tween(object:Object, dest:Object, src:Object, duration:number, easing:Function):Tween {
+                throw new NotImplementedError();
+            }
+
+            public to(object:Object, dest:Object, duration:number, easing:Function):Tween {
+                throw new NotImplementedError();
+            }
+
+            public bezier(object:Object, dest:Object, src:Object, control:Object):Tween {
+                throw new NotImplementedError();
+            }
+
+            public scale(src:ITween, scale:number):ITween {
+                throw new NotImplementedError();
+            }
+
+            public delay(src:ITween, delay:number):ITween {
+                throw new NotImplementedError();
+            }
+
+            public reverse(src:ITween):ITween {
+                throw new NotImplementedError();
+            }
+
+            public repeat(src:ITween, times:number):ITween {
+                throw new NotImplementedError();
+            }
+
+            public slice(src:ITween, from:number, to:number):ITween {
+                throw new NotImplementedError();
+            }
+
+            public serial(src1:ITween, ...other:Array<ITween>):ITween {
+                throw new NotImplementedError();
+            }
+
+            public parallel(src1:ITween, ...other:Array<ITween>):ITween {
+                throw new NotImplementedError();
+            }
+
+        }
+
+        export class TweenImpl extends fl.transitions.Tween implements ITween {
+
+            public constructor(obj:Object, prop:string, func:Function, begin:number, finish:number, duration:number, useSeconds:boolean = false) {
+                super(obj, prop, func, begin, finish, duration, useSeconds);
+            }
 
             public stopOnComplete:boolean;
 
             public play():void {
                 throw new NotImplementedError();
+            }
+
+            public stop():void {
             }
 
             public gotoAndPlay(time:number):void {
@@ -886,65 +1026,27 @@ export module bulletproof {
                 throw new NotImplementedError();
             }
 
-            public constructor(obj:Object, prop:string, func:Function, begin:number, finish:number, duration:number, useSeconds:boolean = false) {
-                super(obj, prop, func, begin, finish, duration, useSeconds);
-            }
-
-            public static tween(object:Object, dest:Object, src:Object, duration:number, easing:Function):Tween {
-                throw new NotImplementedError();
-            }
-
-            public static to(object:Object, dest:Object, duration:number, easing:Function):Tween {
-                throw new NotImplementedError();
-            }
-
-            public static bezier(object:Object, dest:Object, src:Object, control:Object):Tween {
-                throw new NotImplementedError();
-            }
-
-            public static scale(src:ITween, scale:number):ITween {
-                throw new NotImplementedError();
-            }
-
-            public static delay(src:ITween, delay:number):ITween {
-                throw new NotImplementedError();
-            }
-
-            public static reverse(src:ITween):ITween {
-                throw new NotImplementedError();
-            }
-
-            public static repeat(src:ITween, times:number):ITween {
-                throw new NotImplementedError();
-            }
-
-            public static slice(src:ITween, from:number, to:number):ITween {
-                throw new NotImplementedError();
-            }
-
-            public static serial(src1:ITween, ...other:Array<ITween>):ITween {
-                throw new NotImplementedError();
-            }
-
-            public static parallel(src1:ITween, ...other:Array<ITween>):ITween {
-                throw new NotImplementedError();
-            }
-
         }
 
         export class Bitmap {
 
-            public static __canUse:boolean = false;
+            private _ad:AdvancedDanmaku;
 
-            public static createBitmapData(width:number, height:number, transparent:boolean = true, fillColor:number = 0xffffffff):flash.display.BitmapData {
+            public __canUse:boolean = false;
+
+            public constructor(ad:AdvancedDanmaku) {
+                this._ad = ad;
+            }
+
+            public createBitmapData(width:number, height:number, transparent:boolean = true, fillColor:number = 0xffffffff):flash.display.BitmapData {
                 throw new NotImplementedError();
             }
 
-            public static createRectangle(x:number = 0, y:number = 0, width:number = 0, height:number = 0):flash.geom.Rectangle {
+            public createRectangle(x:number = 0, y:number = 0, width:number = 0, height:number = 0):flash.geom.Rectangle {
                 return new flash.geom.Rectangle(x, y, width, height);
             }
 
-            public static createBitmap(params:ICommentBitmapCreateParams):CommentBitmap {
+            public createBitmap(params:ICommentBitmapCreateParams):CommentBitmap {
                 throw new NotImplementedError();
             }
 
@@ -952,21 +1054,27 @@ export module bulletproof {
 
         export class Storage {
 
-            public static __canUse:boolean = false;
+            private _ad:AdvancedDanmaku;
 
-            public static loadRank(complete:Function, err:Function = null):void {
+            public constructor(ad:AdvancedDanmaku) {
+                this._ad = ad;
+            }
+
+            public __canUse:boolean = false;
+
+            public loadRank(complete:Function, err:Function = null):void {
                 throw new NotImplementedError();
             }
 
-            public static uploadScore(score:number, name:string = null, complete:Function = null, err:Function = null):void {
+            public uploadScore(score:number, name:string = null, complete:Function = null, err:Function = null):void {
                 throw new NotImplementedError();
             }
 
-            public static saveData(userData:any, complete:Function = null, err:Function = null):void {
+            public saveData(userData:any, complete:Function = null, err:Function = null):void {
                 throw new NotImplementedError();
             }
 
-            public static loadData(complete:Function = null, err:Function = null):void {
+            public loadData(complete:Function = null, err:Function = null):void {
                 throw new NotImplementedError();
             }
 
@@ -974,7 +1082,13 @@ export module bulletproof {
 
         export class Utils {
 
-            public static hue(v:number):number {
+            private _ad:AdvancedDanmaku;
+
+            public constructor(ad:AdvancedDanmaku) {
+                this._ad = ad;
+            }
+
+            public hue(v:number):number {
                 v = v % 360;
                 // http://blog.sina.com.cn/s/blog_5de73d0b0101baxq.html
                 var lambda = v / 60 * 255;
@@ -984,130 +1098,149 @@ export module bulletproof {
                 return (0xff << 24) | (r << 16) | (g << 8) | b;
             }
 
-            public static rgb(r:number, g:number, b:number):number {
+            public rgb(r:number, g:number, b:number):number {
                 r = mic.util.limit(r, 0, 255);
                 g = mic.util.limit(g, 0, 255);
                 b = mic.util.limit(b, 0, 255);
                 return (0xff << 24) | (r << 16) | (g << 8) | b;
             }
 
-            public static formatTimes(time:number):string {
+            public formatTimes(time:number):string {
                 throw new NotImplementedError();
             }
 
-            public static delay(closure:Function|string, delay:number):number {
+            public delay(closure:Function|string, delay:number):number {
                 if (typeof closure == 'string') {
                     closure += '();';
                 }
                 return setTimeout(closure, delay);
             }
 
-            public static interval(closure:Function|string, delay:number, times:number):flashimpl.Timer {
+            public interval(closure:Function|string, delay:number, times:number):flashimpl.Timer {
                 return new flashimpl.Timer(closure, delay, times);
             }
 
-            public static distance(x1:number, y1:number, x2:number, y2:number):number {
+            public distance(x1:number, y1:number, x2:number, y2:number):number {
                 return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
             }
 
-            public static rand(min:number, max:number):number {
+            public rand(min:number, max:number):number {
                 console.assert(min < max, 'max must be bigger than min.');
                 return Math.random() * (max - min) + min;
             }
 
         }
 
-        export function trace(message:string):void {
-            console.debug(message);
-        }
+        export class _Global {
 
-        export function clear():void {
-            console.clear();
-        }
+            private _ad:AdvancedDanmaku;
+            private _utils:Utils;
+            private _display:Display;
+            private _global:Global;
 
-        export function getTimer():number {
-            return Date.now() - AdvancedDanamaku.startParams.startDate.getTime();
-        }
+            public constructor(ad:AdvancedDanmaku, utils:Utils, display:Display, global:Global) {
+                this._ad = ad;
+                this._utils = utils;
+                this._display = display;
+                this._global = global;
+            }
 
-        export function timer(closure:Function|string, delay:number):number {
-            return Utils.delay(closure, delay);
-        }
+            public trace(message:string):void {
+                console.debug(message);
+            }
 
-        export function interval(closure:Function|string, delay:number, times:number = 1):flashimpl.Timer {
-            return Utils.interval(closure, delay, times);
-        }
+            public clear():void {
+                console.clear();
+            }
 
-        export function foreach(loop:Object, f:(key:string, value:any)=>any):void {
-            for (var key in loop
-                ) {
-                if (loop.hasOwnProperty(key)) {
-                    f(key, loop[key]);
+            public getTimer():number {
+                return Date.now() - this._ad.startParams.startDate.getTime();
+            }
+
+            public timer(closure:Function|string, delay:number):number {
+                return this._utils.delay(closure, delay);
+            }
+
+            public interval(closure:Function|string, delay:number, times:number = 1):flashimpl.Timer {
+                return this._utils.interval(closure, delay, times);
+            }
+
+            public foreach(loop:Object, f:(key:string, value:any)=>any):void {
+                for (var key in loop
+                    ) {
+                    if (loop.hasOwnProperty(key)) {
+                        f(key, loop[key]);
+                    }
                 }
             }
-        }
 
-        export function clone(object:Object):Object {
-            function cloneInternal(object:Object):Object {
-                var type = typeof object;
-                switch (type) {
-                    case 'number':
-                        return object;
-                    case 'string':
-                        return object;
-                    case 'function':
-                        return object;
-                    case 'object':
-                        if (object == null) {
-                            return null;
-                        }
-                        if (object instanceof Array) {
-                            var a = [];
-                            for (var i = 0; i < object.length; i++) {
-                                a.push(cloneInternal(object[i]));
+            public clone(object:Object):Object {
+                function cloneInternal(object:Object):Object {
+                    var type = typeof object;
+                    switch (type) {
+                        case 'number':
+                            return object;
+                        case 'string':
+                            return object;
+                        case 'function':
+                            return object;
+                        case 'object':
+                            if (object == null) {
+                                return null;
                             }
-                            return a;
-                        } else {
-                            var o:Object = {};
-                            for (var key in object) {
-                                if (object.hasOwnProperty(key)) {
-                                    o[key] = clone(object[key]);
+                            if (object instanceof Array) {
+                                var a = [];
+                                for (var i = 0; i < object.length; i++) {
+                                    a.push(cloneInternal(object[i]));
                                 }
+                                return a;
+                            } else {
+                                var o:Object = {};
+                                for (var key in object) {
+                                    if (object.hasOwnProperty(key)) {
+                                        o[key] = cloneInternal(object[key]);
+                                    }
+                                }
+                                return o;
                             }
-                            return o;
-                        }
-                    case 'undefined':
-                        return undefined;
-                    default:
-                        return object;
+                        case 'undefined':
+                            return undefined;
+                        default:
+                            return object;
+                    }
+                }
+
+                return cloneInternal(object);
+            }
+
+
+            public load(libraryName:string, onComplete:()=>any):void {
+                var availableLibraries = [
+                    'libBitmap',
+                    'libStorage'
+                ];
+                var index = availableLibraries.indexOf(libraryName);
+                if (index >= 0) {
+                    switch (index) {
+                        case 0:
+                            break;
+                        case 1:
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
-            return cloneInternal(object);
-        }
-
-
-        export function load(libraryName:string, onComplete:()=>any):void {
-            var availableLibraries = [
-                'libBitmap',
-                'libStorage'
-            ];
-            var index = availableLibraries.indexOf(libraryName);
-            if (index >= 0) {
-                switch (index) {
-                    case 0:
-                        Bitmap.__canUse = true;
-                        break;
-                    case 1:
-                        Storage.__canUse = true;
-                        break;
-                    default:
-                        break;
-                }
+            public get $():Display {
+                return this._display;
             }
-        }
 
-        export var $ = Display;
-        export var $G = Global;
+            public get $G():Global {
+                return this._global;
+            }
+
+        }
 
         export class GridFitType {
 
@@ -1141,90 +1274,53 @@ export module bulletproof {
 
         }
 
-        export module flashimpl {
+    }
 
-            export class Timer extends flash.utils.Timer {
+    export class BiliBiliDanmakuApi {
 
-                private _closure:any;
-                private _possibleClosure:string;
+        public Display:bilidanmaku.Display;
+        public Bitmap:bilidanmaku.Bitmap;
+        public Storage:bilidanmaku.Storage;
+        public Global:bilidanmaku.Global;
+        public Player:bilidanmaku.Player;
+        public ScriptManager:bilidanmaku.ScriptManager;
+        public Tween:bilidanmaku.Tween;
+        public Utils:bilidanmaku.Utils;
+        public $:bilidanmaku.Display;
+        public $G:bilidanmaku.Global;
 
-                public constructor(closure:Function|string, delay:number, repeatCount:number = 1) {
-                    super(delay, repeatCount);
-                    this._closure = closure;
-                    if (typeof this._closure == 'string') {
-                        this._possibleClosure = this._closure + '();';
-                    }
-                }
-
-                protected _bp_timerCallbackInternal():void {
-                    if (this._closure != null) {
-                        var type = typeof this._closure;
-                        switch (type) {
-                            case 'string':
-                                eval(this._possibleClosure);
-                                break;
-                            case 'function':
-                                this._closure.call(window);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-
-            }
-
-            export class Shape extends flash.display.Shape implements IProofDanmakuObject {
-
-                private _createParams:IGeneralCreateParams;
-                private _lifeTime:number;
-
-                public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
-                                   createParams:IGeneralCreateParams) {
-                    super(root, parent);
-                    this._lifeTime = AdvancedDanamaku.startParams.bp.options.commentLifeTime;
-                    this._createParams = createParams;
-                }
-
-                public get createParams():IGeneralCreateParams {
-                    return this._createParams;
-                }
-
-                public get lifeTime():number {
-                    return this._lifeTime;
-                }
-
-            }
-
-            export class Canvas extends mx.containers.Canvas implements IProofDanmakuObject {
-
-                private _createParams:IGeneralCreateParams;
-                private _lifeTime:number;
-
-                public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
-                                   createParams:IGeneralCreateParams) {
-                    super(root, parent);
-                    this._lifeTime = AdvancedDanamaku.startParams.bp.options.commentLifeTime;
-                    this._createParams = createParams;
-                }
-
-                public get createParams():IGeneralCreateParams {
-                    return this._createParams;
-                }
-
-                public remove():void {
-                    if (this._parent) {
-                        this._parent.removeChild(this);
-                    }
-                }
-
-                public get lifeTime():number {
-                    return this._lifeTime;
-                }
-
-            }
-
+        public static attachApi(ad:AdvancedDanmaku):void {
+            var api = new BiliBiliDanmakuApi();
+            api.Display = new bilidanmaku.Display(ad);
+            api.Bitmap = new bilidanmaku.Bitmap(ad);
+            api.Storage = new bilidanmaku.Storage(ad);
+            api.Global = new bilidanmaku.Global(ad);
+            api.Player = new bilidanmaku.Player(ad);
+            api.ScriptManager = new bilidanmaku.ScriptManager(ad);
+            api.Tween = new bilidanmaku.Tween(ad);
+            api.Utils = new bilidanmaku.Utils(ad);
+            api.$ = api.Display;
+            api.$G = api.Global;
+            var g = new bilidanmaku._Global(ad, api.Utils, api.Display, api.Global);
+            api.trace = g.trace.bind(g);
+            api.clear = g.clear.bind(g);
+            api.getTimer = g.getTimer.bind(g);
+            api.timer = g.timer.bind(g);
+            api.interval = g.interval.bind(g);
+            api.foreach = g.foreach.bind(g);
+            api.clone = g.clone.bind(g);
+            api.load = g.load.bind(g);
+            ad.api = api;
         }
+
+        public trace:(str:string)=>void;
+        public clear:()=>void;
+        public getTimer:()=>number;
+        public timer:(closure:string|Function, delay:number)=>number;
+        public interval:(closure:string|Function, delay:number, repeat:number)=>bilidanmaku.flashimpl.Timer;
+        public foreach:(loop:Object, f:(key:string, value:any)=>void)=>void;
+        public clone:(obj:Object)=>Object;
+        public load:(libraryName:string, complete:(arg:any)=>void)=>void;
 
     }
 
