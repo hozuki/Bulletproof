@@ -18,7 +18,7 @@ export module bulletproof.mx {
         export class Canvas extends flash.display.DisplayObjectContainer {
 
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer) {
-                super(root, parent, false);
+                super(root, parent);
             }
 
         }

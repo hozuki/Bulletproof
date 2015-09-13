@@ -7,11 +7,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-data-interface.d.ts"/>
-/// <reference path="../include/bulletproof-mic.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
-/// <reference path="../include/bulletproof-thirdparty.d.ts"/>
 var bulletproof_org = require("./bulletproof-org");
 var bulletproof_mic = require("./bulletproof-mic");
 var bulletproof_thirdparty = require("./bulletproof-thirdparty");
@@ -20,9 +15,11 @@ var bulletproof;
     var flash;
     (function (flash) {
         var mic = bulletproof_mic.bulletproof.mic;
-        var thirdparty = bulletproof_thirdparty.bulletproof.thirdparty;
         var NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
         var ArgumentError = bulletproof_org.bulletproof.ArgumentError;
+        var SVG_NAMESPACE = bulletproof_org.bulletproof.SVG_NAMESPACE;
+        var SVG_LENGTHTYPE_PX = 5;
+        var SVG_FECOLORMATRIX_TYPE_MATRIX = 1;
         var events;
         (function (events) {
             var EventClass = bulletproof_org.bulletproof.EventClass;
@@ -1758,9 +1755,6 @@ var bulletproof;
                 BitmapFilter.prototype.clone = function () {
                     return null;
                 };
-                BitmapFilter.prototype.apply = function (canvas) {
-                    throw new NotImplementedError();
-                };
                 Object.defineProperty(BitmapFilter, "FILTER_BLUR", {
                     get: function () {
                         return 'blur';
@@ -1775,6 +1769,10 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
+                BitmapFilter.prototype.onAdded = function (obj) {
+                };
+                BitmapFilter.prototype.onRemoved = function (obj) {
+                };
                 return BitmapFilter;
             })();
             filters.BitmapFilter = BitmapFilter;
@@ -1836,93 +1834,74 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                GlowFilter.prototype.updateBuffer = function (sourceCanvas) {
-                    if (sourceCanvas != null) {
-                        if (this._bufferCanvas == null) {
-                            this._bufferCanvas = window.document.createElement('canvas');
-                            this._bufferContext = this._bufferCanvas.getContext('2d');
+                GlowFilter.prototype.onAdded = function (obj) {
+                    function getNumberList(a) {
+                        console.log(SVGNumberList);
+                        var numList = new SVGNumberList();
+                        if (a == null || a.length == 0) {
+                            return numList;
                         }
-                        if (this._bufferCanvas.width != sourceCanvas.width || this._bufferCanvas.height != sourceCanvas.height) {
-                            this._bufferCanvas.width = sourceCanvas.width;
-                            this._bufferCanvas.height = sourceCanvas.height;
+                        for (var i = 0; i < a.length; i++) {
+                            var n = new SVGNumber();
+                            n.value = a[i];
+                            numList.appendItem(n);
                         }
-                        this._bufferContext.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-                        this._bufferContext.drawImage(sourceCanvas, 0, 0);
+                        return numList;
                     }
-                };
-                GlowFilter.prototype.releaseBuffer = function () {
-                    this._bufferContext = null;
-                    if (this._bufferCanvas && this._bufferCanvas.parentElement) {
-                        this._bufferCanvas.parentElement.removeChild(this._bufferCanvas);
-                    }
-                    this._bufferCanvas = null;
-                };
-                GlowFilter.prototype.solidifyBuffer = function () {
-                    var sourceImageData = this._bufferContext.getImageData(0, 0, this._bufferCanvas.width, this._bufferCanvas.height);
-                    var position;
-                    var i, j;
-                    var r, g, b;
-                    r = (this.color & 0x00ff0000) >> 16;
-                    g = (this.color & 0x0000ff00) >> 8;
-                    b = (this.color & 0x000000ff) | 0;
-                    for (j = 0; j < sourceImageData.height; j++) {
-                        for (i = 0; i < sourceImageData.width; i++) {
-                            position = ((j * sourceImageData.width) + i) * 4;
-                            if (sourceImageData.data[position + 3] != 0) {
-                                sourceImageData.data[position] = r;
-                                sourceImageData.data[position + 1] = g;
-                                sourceImageData.data[position + 2] = b;
-                                sourceImageData.data[position + 3] *= this.alpha;
-                            }
-                        }
-                    }
-                    this._bufferContext.putImageData(sourceImageData, 0, 0);
-                    sourceImageData = null;
-                };
-                GlowFilter.mixUp = function (blurredContext, targetContext, blurredCanvas, targetCanvas, width, height) {
-                    var tmp;
-                    //var blurImageData:ImageData = blurredContext.getImageData(0, 0, width, height);
-                    //var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
-                    var position;
-                    var i, j;
-                    var sr, sg, sb, sa;
-                    var tr, tg, tb, ta;
-                    blurredContext.drawImage(targetCanvas, 0, 0);
-                    targetContext.setTransform(1, 0, 0, 1, 0, 0);
-                    targetContext.clearRect(0, 0, width, height);
-                    targetContext.drawImage(blurredCanvas, 0, 0);
-                    /*
-                     for (j = 0; j < height; j++) {
-                     for (i = 0; i < width; i++) {
-                     position = ((j * width) + i) * 4;
-                     sr = blurImageData.data[position];
-                     sg = blurImageData.data[position + 1];
-                     sb = blurImageData.data[position + 2];
-                     sa = blurImageData.data [position + 3];
-                     tr = targetImageData.data[position];
-                     tg = targetImageData.data[position + 1];
-                     tb = targetImageData.data[position + 2];
-                     ta = targetImageData.data[position + 3];
-                     tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
-                     targetImageData.data[position] = tmp.r;
-                     targetImageData.data[position + 1] = tmp.g;
-                     targetImageData.data[position + 2] = tmp.b;
-                     targetImageData.data[position + 3] = tmp.a;
-                     }
-                     }
+                    var color = mic.Color.fromNumber(this.color);
+                    var filter = window.document.createElementNS(SVG_NAMESPACE, 'filter');
+                    var colorMatrix = window.document.createElementNS(SVG_NAMESPACE, 'feColorMatrix');
+                    var blur = window.document.createElementNS(SVG_NAMESPACE, 'feGaussianBlur');
+                    var merge = window.document.createElementNS(SVG_NAMESPACE, 'feMerge');
+                    colorMatrix.type.baseVal = SVG_FECOLORMATRIX_TYPE_MATRIX;
+                    /*colorMatrix.values.baseVal = getNumberList([
+                     0, 0, 0, 0, color.r,
+                     0, 0, 0, 0, color.g,
+                     0, 0, 0, 0, color.b,
+                     0, 0, 0, 1, 0
+                     ]);
                      */
-                    //targetContext.putImageData(targetImageData, 0, 0);
-                    //targetImageData = null;
-                    //blurImageData = null;
+                    colorMatrix.setAttributeNS(SVG_NAMESPACE, 'values', [
+                        0,
+                        0,
+                        0,
+                        color.r,
+                        0,
+                        0,
+                        0,
+                        0,
+                        color.g,
+                        0,
+                        0,
+                        0,
+                        0,
+                        color.b,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0
+                    ].join(' '));
+                    blur.stdDeviationX.baseVal = this.blurX;
+                    blur.stdDeviationY.baseVal = this.blurY;
+                    blur.result.baseVal = 'coloredImage';
+                    var n1 = window.document.createElementNS(SVG_NAMESPACE, 'feMergeNode');
+                    var n2 = window.document.createElementNS(SVG_NAMESPACE, 'feMergeNode');
+                    n1.in1.baseVal = 'coloredImage';
+                    n2.in1.baseVal = 'SourceGraphic';
+                    merge.appendChild(n1);
+                    merge.appendChild(n2);
+                    filter.appendChild(colorMatrix);
+                    filter.appendChild(blur);
+                    filter.appendChild(merge);
+                    this._id = obj.stage.addFilterDefinition(filter);
+                    obj.svgElement.style.filter = 'url(#' + this._id + ')';
                 };
-                GlowFilter.prototype.apply = function (canvas) {
-                    if (canvas != null) {
-                        this.updateBuffer(canvas);
-                        this.solidifyBuffer();
-                        var radius = (this.blurX + this.blurY) / 2;
-                        thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
-                        var targetContext = canvas.getContext('2d');
-                        GlowFilter.mixUp(this._bufferContext, targetContext, this._bufferCanvas, canvas, canvas.width, canvas.height);
+                GlowFilter.prototype.onRemoved = function (obj) {
+                    if (this._id != null) {
+                        obj.stage.removeFilterDefinition(this._id);
+                        this._id = null;
                     }
                 };
                 return GlowFilter;
@@ -1949,9 +1928,21 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                BlurFilter.prototype.apply = function (canvas) {
-                    var radius = (this.blurX + this.blurY) / 2;
-                    thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
+                BlurFilter.prototype.onAdded = function (obj) {
+                    var filter = window.document.createElementNS(SVG_NAMESPACE, 'filter');
+                    var blur = window.document.createElementNS(SVG_NAMESPACE, 'feGaussianBlur');
+                    blur.stdDeviationX.baseVal = this.blurX;
+                    blur.stdDeviationY.baseVal = this.blurY;
+                    blur.in1.baseVal = 'SourceGraphic';
+                    filter.appendChild(blur);
+                    this._id = obj.stage.addFilterDefinition(filter);
+                    obj.svgElement.style.filter = 'url(#' + this._id + ')';
+                };
+                BlurFilter.prototype.onRemoved = function (obj) {
+                    if (this._id != null) {
+                        obj.stage.removeFilterDefinition(this._id);
+                        this._id = null;
+                    }
                 };
                 return BlurFilter;
             })(BitmapFilter);
@@ -2109,7 +2100,6 @@ var bulletproof;
                     this._x = 0;
                     this._y = 0;
                     this._z = 0;
-                    this._bp_containerElem = null;
                     this._bp_drawStateInvalidated = false;
                     this._root = _bp_root;
                     this._parent = _bp_parent;
@@ -2117,44 +2107,25 @@ var bulletproof;
                         this._childIndex = _bp_parent.numChildren;
                         _bp_parent.addChild(this);
                     }
+                    this._svgElement = this.createMySvgElement();
                     if (createBuffer) {
-                        this._bp_displayBuffer = window.document.createElement('canvas');
                         if (_bp_parent != null) {
-                            _bp_parent._bp_containerElement().appendChild(this._bp_displayBuffer);
+                            _bp_parent._svgElement.appendChild(this._svgElement);
+                            this.width = _bp_parent.width;
+                            this.height = _bp_parent.height;
                         }
-                        this._bp_displayBuffer.style.left = '0';
-                        this._bp_displayBuffer.style.top = '0';
-                        this._bp_displayBuffer.style.position = 'absolute';
-                        this.width = _bp_parent.width;
-                        this.height = _bp_parent.height;
                     }
                 }
                 DisplayObject.prototype._bp_draw = function () {
                     if (this._bp_drawStateInvalidated) {
                         this._bp_draw_core();
-                        var filters = this.filters;
-                        if (filters && filters.length > 0) {
-                            for (var i = 0; i < filters.length; i++) {
-                                filters[i].apply(this._bp_displayBuffer);
-                            }
-                        }
                         this._bp_drawStateInvalidated = false;
                     }
                 };
                 DisplayObject.prototype._bp_draw_core = function () {
                 };
-                DisplayObject.prototype._bp_context = function () {
-                    return this._bp_displayBuffer.getContext('2d');
-                };
-                DisplayObject.prototype._bp_onSizeChanged = function (newSize) {
-                    this._bp_displayBuffer.style.width = newSize.x.toString() + 'px';
-                    this._bp_displayBuffer.style.height = newSize.y.toString() + 'px';
-                };
-                DisplayObject.prototype._bp_invalidate = function () {
+                DisplayObject.prototype.invalidate = function () {
                     this._bp_drawStateInvalidated = true;
-                };
-                DisplayObject.prototype._bp_containerElement = function () {
-                    return this._bp_containerElem;
                 };
                 Object.defineProperty(DisplayObject.prototype, "alpha", {
                     get: function () {
@@ -2162,7 +2133,8 @@ var bulletproof;
                     },
                     set: function (v) {
                         this._alpha = mic.util.limit(v, 0, 1);
-                        this._bp_displayBuffer.style.opacity = this._alpha.toString();
+                        // HACK
+                        this._svgElement.style.opacity = v.toString();
                     },
                     enumerable: true,
                     configurable: true
@@ -2192,27 +2164,37 @@ var bulletproof;
                         return this._filters;
                     },
                     set: function (v) {
+                        var _this = this;
+                        if (this._filters != null && this._filters.length > 0) {
+                            this._filters.forEach(function (item) {
+                                item.onRemoved(_this);
+                            });
+                        }
                         if (v == null) {
                             this._filters = [];
                         }
                         else {
                             this._filters = v;
                         }
-                        this._bp_invalidate();
+                        if (this._filters != null && this._filters.length > 0) {
+                            this._filters.forEach(function (item) {
+                                item.onAdded(_this);
+                            });
+                        }
+                        this.invalidate();
                     },
                     enumerable: true,
                     configurable: true
                 });
                 Object.defineProperty(DisplayObject.prototype, "height", {
                     get: function () {
-                        return this._bp_displayBuffer.clientHeight;
+                        return this._height;
                     },
                     set: function (v) {
                         var b = this._height != v;
                         this._height = v;
-                        this._bp_displayBuffer.style.height = v.toString() + 'px';
-                        this._bp_displayBuffer.height = v;
-                        b && this._bp_invalidate();
+                        // Resizing is not supported
+                        b && this.invalidate();
                     },
                     enumerable: true,
                     configurable: true
@@ -2348,21 +2330,20 @@ var bulletproof;
                 });
                 Object.defineProperty(DisplayObject.prototype, "stage", {
                     get: function () {
-                        return this._stage;
+                        return this._root;
                     },
                     enumerable: true,
                     configurable: true
                 });
                 Object.defineProperty(DisplayObject.prototype, "width", {
                     get: function () {
-                        return this._bp_displayBuffer.clientWidth;
+                        return this._width;
                     },
                     set: function (v) {
                         var b = this._width != v;
                         this._width = v;
-                        this._bp_displayBuffer.style.width = v.toString() + 'px';
-                        this._bp_displayBuffer.width = v;
-                        b && this._bp_invalidate();
+                        // Resizing is not supported
+                        b && this.invalidate();
                     },
                     enumerable: true,
                     configurable: true
@@ -2374,7 +2355,7 @@ var bulletproof;
                     set: function (v) {
                         var b = this._x != v;
                         this._x = v;
-                        b && this._bp_invalidate();
+                        b && this.invalidate();
                     },
                     enumerable: true,
                     configurable: true
@@ -2386,7 +2367,7 @@ var bulletproof;
                     set: function (v) {
                         var b = this._y != v;
                         this._y = v;
-                        b && this._bp_invalidate();
+                        b && this.invalidate();
                     },
                     enumerable: true,
                     configurable: true
@@ -2427,9 +2408,17 @@ var bulletproof;
                     throw new NotImplementedError();
                 };
                 // Bulletproof
-                DisplayObject.prototype.getDisplayBuffer = function () {
-                    return this._bp_displayBuffer;
+                DisplayObject.prototype.createMySvgElement = function () {
+                    return null;
                 };
+                Object.defineProperty(DisplayObject.prototype, "svgElement", {
+                    // Bulletproof
+                    get: function () {
+                        return this._svgElement;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return DisplayObject;
             })(events.EventDispatcher);
             display.DisplayObject = DisplayObject;
@@ -2447,27 +2436,15 @@ var bulletproof;
             display.InteractiveObject = InteractiveObject;
             var DisplayObjectContainer = (function (_super) {
                 __extends(DisplayObjectContainer, _super);
-                function DisplayObjectContainer(root, parent, createBuffer) {
+                function DisplayObjectContainer(root, parent) {
                     if (parent === void 0) { parent = null; }
-                    if (createBuffer === void 0) { createBuffer = true; }
-                    _super.call(this, root, parent, createBuffer);
+                    _super.call(this, root, parent, true);
                     this._children = [];
-                    if (parent != null) {
-                        this._bp_containerElem = window.document.createElement('div');
-                        parent._bp_containerElement().appendChild(this._bp_containerElem);
-                    }
                 }
                 DisplayObjectContainer.prototype._bp_draw = function () {
                     //super._bp_draw();
                     var len = this.numChildren;
-                    if (this._bp_displayBuffer != null) {
-                        var context = this._bp_context();
-                        //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                        // 似乎无效
-                        context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                        // TODO: HACK: works under nw.js v0.12
-                        // DANGER: will reset styles
-                        //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
+                    if (this._svgElement != null) {
                         if (this._bp_drawStateInvalidated) {
                             this._bp_draw_core();
                             this._bp_drawStateInvalidated = false;
@@ -2477,13 +2454,6 @@ var bulletproof;
                     for (var i = 0; i < len; i++) {
                         child = this._children[i];
                         child._bp_draw();
-                    }
-                };
-                DisplayObjectContainer.prototype._bp_onSizeChanged = function (newSize) {
-                    _super.prototype._bp_onSizeChanged.call(this, newSize);
-                    var len = this.numChildren;
-                    for (var i = 0; i < len; i++) {
-                        this._children[i]._bp_onSizeChanged(newSize);
                     }
                 };
                 DisplayObjectContainer.prototype.dispatchEvent = function (event, data) {
@@ -2544,7 +2514,7 @@ var bulletproof;
                         for (var i = child.childIndex + 1; i < this._children.length; i++) {
                             this._children[i].childIndex++;
                         }
-                        this._bp_containerElem.removeChild(child.getDisplayBuffer());
+                        this._svgElement.removeChild(child.svgElement);
                         this._children.splice(childIndex, 1);
                         return child;
                     }
@@ -2564,6 +2534,60 @@ var bulletproof;
                 DisplayObjectContainer.prototype.swapChildrenAt = function (index1, index2) {
                     throw new NotImplementedError();
                 };
+                Object.defineProperty(DisplayObjectContainer.prototype, "height", {
+                    get: function () {
+                        return this._height;
+                    },
+                    set: function (v) {
+                        var b = this._height != v;
+                        this._height = v;
+                        this._svgElement.height.baseVal.valueInSpecifiedUnits = v;
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObjectContainer.prototype, "width", {
+                    get: function () {
+                        return this._width;
+                    },
+                    set: function (v) {
+                        var b = this._width != v;
+                        this._width = v;
+                        this._svgElement.width.baseVal.valueInSpecifiedUnits = v;
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObjectContainer.prototype, "x", {
+                    get: function () {
+                        return this._x;
+                    },
+                    set: function (v) {
+                        var b = this._x != v;
+                        this._x = v;
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObjectContainer.prototype, "y", {
+                    get: function () {
+                        return this._y;
+                    },
+                    set: function (v) {
+                        var b = this._y != v;
+                        this._y = v;
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                // Bulletproof
+                DisplayObjectContainer.prototype.createMySvgElement = function () {
+                    return window.document.createElementNS(SVG_NAMESPACE, 'svg');
+                };
                 return DisplayObjectContainer;
             })(InteractiveObject);
             display.DisplayObjectContainer = DisplayObjectContainer;
@@ -2571,16 +2595,15 @@ var bulletproof;
                 __extends(Stage, _super);
                 function Stage(_bp_container) {
                     // 注意这里可能引起了循环引用，请手工释放
-                    _super.call(this, null, null, false);
-                    this._bp_containerElem = _bp_container;
+                    _super.call(this, null, null);
+                    // Bulletproof
+                    this._currentFilterID = 0;
                     this._root = this; // forced (= =)#
+                    _bp_container.appendChild(this._svgElement);
+                    var svgdoc = this._svgElement;
+                    svgdoc.width.baseVal.unitType = SVG_LENGTHTYPE_PX;
+                    svgdoc.height.baseVal.unitType = SVG_LENGTHTYPE_PX;
                 }
-                Stage.prototype._bp_onSizeChanged = function (newSize) {
-                    var len = this.numChildren;
-                    for (var i = 0; i < len; i++) {
-                        this._children[i]._bp_onSizeChanged(newSize);
-                    }
-                };
                 Stage.prototype.raiseEnterFrame = function () {
                     var event = mic.util.createTestEvent(events.FlashEvent.ENTER_FRAME);
                     this.dispatchEvent(event);
@@ -2641,16 +2664,6 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                Object.defineProperty(Stage.prototype, "height", {
-                    get: function () {
-                        return this._bp_containerElem.clientHeight;
-                    },
-                    set: function (v) {
-                        this._bp_containerElem.style.height = v.toString() + 'px';
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
                 Object.defineProperty(Stage.prototype, "nativeWindow", {
                     get: function () {
                         return window;
@@ -2699,16 +2712,6 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                Object.defineProperty(Stage.prototype, "width", {
-                    get: function () {
-                        return this._bp_containerElem.clientWidth;
-                    },
-                    set: function (v) {
-                        this._bp_containerElem.style.width = v.toString() + 'px';
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
                 Object.defineProperty(Stage.prototype, "x", {
                     get: function () {
                         console.warn('Stage.x is always 0.');
@@ -2731,11 +2734,54 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                Stage.prototype.invalidate = function () {
-                    this._bp_invalidate();
-                };
+                Object.defineProperty(Stage.prototype, "height", {
+                    get: function () {
+                        return this._height;
+                    },
+                    set: function (v) {
+                        var b = this._height != v;
+                        this._height = v;
+                        var val = this._svgElement.height.baseVal.newValueSpecifiedUnits(SVG_LENGTHTYPE_PX, v);
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Stage.prototype, "width", {
+                    get: function () {
+                        return this._width;
+                    },
+                    set: function (v) {
+                        var b = this._width != v;
+                        this._width = v;
+                        var val = this._svgElement.width.baseVal.newValueSpecifiedUnits(SVG_LENGTHTYPE_PX, v);
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 Stage.prototype.isFocusInaccessible = function () {
                     throw new NotImplementedError();
+                };
+                Stage.prototype.addFilterDefinition = function (filter) {
+                    var defs = window.document.createElementNS(SVG_NAMESPACE, 'defs');
+                    var currentFilterString = 'feFilter' + (this._currentFilterID++).toString();
+                    filter.id = currentFilterString;
+                    defs.appendChild(filter);
+                    var before = this._svgElement.firstChild;
+                    this._svgElement.insertBefore(defs, before);
+                    return currentFilterString;
+                };
+                Stage.prototype.removeFilterDefinition = function (id) {
+                    var filter = this._svgElement.getElementById(id);
+                    if (filter != null) {
+                        var filterDef = filter.parentNode;
+                        this._svgElement.removeChild(filterDef);
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 };
                 return Stage;
             })(DisplayObjectContainer);
@@ -3238,7 +3284,63 @@ var bulletproof;
                 Shape.prototype._bp_draw_core = function () {
                     if (this._graphics) {
                         this._graphics.redraw();
+                        this._graphics.outputDoDisplayObject();
                     }
+                };
+                Object.defineProperty(Shape.prototype, "height", {
+                    get: function () {
+                        return this._height;
+                    },
+                    set: function (v) {
+                        var b = this._height != v;
+                        this._height = v;
+                        this._svgElement.height.baseVal.valueInSpecifiedUnits = v;
+                        b && this._graphics != null && this._graphics.updateCanvasSize();
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Shape.prototype, "width", {
+                    get: function () {
+                        return this._width;
+                    },
+                    set: function (v) {
+                        var b = this._width != v;
+                        this._width = v;
+                        this._svgElement.width.baseVal.valueInSpecifiedUnits = v;
+                        b && this._graphics != null && this._graphics.updateCanvasSize();
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Shape.prototype, "x", {
+                    get: function () {
+                        return this._x;
+                    },
+                    set: function (v) {
+                        var b = this._x != v;
+                        this._x = v;
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(Shape.prototype, "y", {
+                    get: function () {
+                        return this._y;
+                    },
+                    set: function (v) {
+                        var b = this._y != v;
+                        this._y = v;
+                        b && this.invalidate();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Shape.prototype.createMySvgElement = function () {
+                    return window.document.createElementNS(SVG_NAMESPACE, 'image');
                 };
                 return Shape;
             })(DisplayObject);
@@ -3410,11 +3512,17 @@ var bulletproof;
                     this._isRedrawCalling = false;
                     this._redrawHistoryQueue = [];
                     this._displayObject = attachedDisplayObject;
-                    this._canvas = attachedDisplayObject.getDisplayBuffer();
+                    this._svgImage = attachedDisplayObject.svgElement;
+                    this._canvas = window.document.createElement('canvas');
+                    this._canvas.width = attachedDisplayObject.width;
+                    this._canvas.height = attachedDisplayObject.height;
                     this.saveGraphicsSettings(); // saved as an origin
                 }
                 Graphics.prototype._bp_context = function () {
                     return this._canvas.getContext('2d');
+                };
+                Graphics.prototype._bp_invalidateParent = function () {
+                    this._displayObject.invalidate();
                 };
                 Graphics._bp_getSettings = function (context) {
                     return {
@@ -3497,7 +3605,7 @@ var bulletproof;
                     //context.save();
                     this.resetTransform();
                     // 似乎无效
-                    context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
+                    context.clearRect(0, 0, this._canvas.width, this._canvas.height);
                     // TODO: HACK: works under nw.js v0.12
                     // DANGER: will reset styles
                     //this._canvas.width = this._canvas.width;
@@ -3508,10 +3616,11 @@ var bulletproof;
                     // Since all contents are clear, there should be nothing even if redraw() is called
                     // Also please free the history entries.
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue = [];
                         this.saveGraphicsSettings();
                     }
+                    this._bp_invalidateParent();
                 };
                 Graphics.prototype.copyFrom = function (sourceGraphics) {
                     throw new NotImplementedError();
@@ -3524,8 +3633,9 @@ var bulletproof;
                     context.stroke();
                     context.beginPath();
                     context.moveTo(anchorX, anchorY);
+                    this._bp_invalidateParent();
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.CURVE_TO,
                             data: {
@@ -3548,8 +3658,9 @@ var bulletproof;
                     }
                     context.stroke();
                     context.beginPath();
+                    this._bp_invalidateParent();
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.DRAW_CIRCLE,
                             data: {
@@ -3593,8 +3704,9 @@ var bulletproof;
                     }
                     context.stroke();
                     context.beginPath();
+                    this._bp_invalidateParent();
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.DRAW_ELLIPSE,
                             data: {
@@ -3670,8 +3782,9 @@ var bulletproof;
                         context.fill();
                     }
                     context.stroke();
+                    this._bp_invalidateParent();
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.DRAW_PATH,
                             data: {
@@ -3743,8 +3856,9 @@ var bulletproof;
                         context.fillRect(x, y, width, height);
                     }
                     context.strokeRect(x, y, width, height);
+                    this._bp_invalidateParent();
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.DRAW_RECT,
                             data: {
@@ -3799,14 +3913,14 @@ var bulletproof;
                         commands.push(1, 2, 2, 2);
                         data.push(ax, ay, bx, by, cx, cy, ax, ay);
                     }
-                    // 已经有 this._displayObject._bp_invalidate(); 了
+                    // 已经有 this._displayObject.invalidate(); 了
                     // 历史记录由 drawPath() 代为完成
                     this.drawPath(commands, data, void (0), false);
                 };
                 Graphics.prototype.endFill = function () {
                     // TODO: 文档上说似乎应该进行指令缓存，在 endFill() 时一起绘制？
                     this._isInFill = false;
-                    //this._displayObject._bp_invalidate();
+                    //this._displayObject.invalidate();
                     if (!this._isRedrawCalling) {
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.END_FILL,
@@ -3881,7 +3995,7 @@ var bulletproof;
                                 scaleMode: scaleMode,
                                 caps: caps,
                                 joints: joints,
-                                miterLimt: miterLimit
+                                miterLimit: miterLimit
                             }
                         });
                     }
@@ -3896,8 +4010,9 @@ var bulletproof;
                     context.stroke();
                     context.beginPath();
                     context.moveTo(x, y);
+                    this._bp_invalidateParent();
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.LINE_TO,
                             data: {
@@ -3911,10 +4026,9 @@ var bulletproof;
                     var context = this._bp_context();
                     this.resetTransform();
                     context.translate(this._displayObject.x, this._displayObject.y);
-                    // HACK: Please update
                     context.moveTo(x, y);
                     if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
+                        this._displayObject.invalidate();
                         this._redrawHistoryQueue.push({
                             command: GraphicsHistoryCommand.MOVE_TO,
                             data: {
@@ -4033,6 +4147,16 @@ var bulletproof;
                 };
                 Graphics.prototype.redoLastActiveTransform = function () {
                     this._bp_context().transform(this._transformMatrix[0], this._transformMatrix[3], this._transformMatrix[1], this._transformMatrix[4], this._transformMatrix[2], this._transformMatrix[5]);
+                };
+                Graphics.prototype.updateCanvasSize = function () {
+                    console.log(this._displayObject.width + 'px, ' + this._displayObject.height + 'px');
+                    this._canvas.width = this._displayObject.width;
+                    this._canvas.height = this._displayObject.height;
+                    this._displayObject.invalidate();
+                };
+                Graphics.prototype.outputDoDisplayObject = function () {
+                    // Note: This line fails when directly launched browsers locally.
+                    this._svgImage.href.baseVal = this._canvas.toDataURL();
                 };
                 Graphics._bp_defaultGraphicsSettings = {
                     fillStyle: "#000000",

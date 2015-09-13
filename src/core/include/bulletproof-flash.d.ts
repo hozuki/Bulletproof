@@ -434,18 +434,13 @@ export declare module bulletproof.flash {
     export module filters {
 
         export interface IBitmapFilter extends ICloneable<IBitmapFilter> {
-
             filterType:string;
-            apply(canvas:HTMLCanvasElement):void;
-
         }
 
         export class BitmapFilter implements IBitmapFilter {
             filterType:string;
 
             clone():BitmapFilter;
-
-            apply(canvas:HTMLCanvasElement):void;
 
             static FILTER_BLUR:string;
             static FILTER_GLOW:string;
@@ -475,8 +470,6 @@ export declare module bulletproof.flash {
             clone():GlowFilter;
 
             filterType:string;
-
-            apply(canvas:HTMLCanvasElement):void;
         }
 
         export class BlurFilter extends BitmapFilter {
@@ -489,8 +482,6 @@ export declare module bulletproof.flash {
             clone():BlurFilter;
 
             filterType:string;
-
-            apply(canvas:HTMLCanvasElement):void;
         }
 
     }

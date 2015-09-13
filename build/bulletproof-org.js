@@ -80,5 +80,6 @@ var bulletproof;
         return EventClass;
     })();
     bulletproof.EventClass = EventClass;
+    bulletproof.SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 })(bulletproof = exports.bulletproof || (exports.bulletproof = {}));
 //# sourceMappingURL=bulletproof-org.js.map

@@ -23,6 +23,7 @@ export module bulletproof {
     import IMotionPropertyAnimation = bulletproof_data_interface.bulletproof.bilidanmaku.IMotionPropertyAnimation;
     import NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
     import Bulletproof = bulletproof_main.bulletproof.Bulletproof;
+    import SVG_NAMESPACE = bulletproof_org.bulletproof.SVG_NAMESPACE;
 
     export interface IProofDanmakuObject {
         createParams:IGeneralCreateParams;
@@ -51,6 +52,9 @@ export module bulletproof {
         public static createInstance(root:HTMLDivElement, video:HTMLVideoElement):AdvancedDanmaku {
             var ad = new AdvancedDanmaku();
             var stage:flash.display.Stage = new flash.display.Stage(root);
+
+            stage.width = 682;
+            stage.height = 438;
             ad._startParams = {
                 root: root,
                 startDate: new Date(),
@@ -621,7 +625,7 @@ export module bulletproof {
             public set background(v:boolean) {
                 var b = this._background != v;
                 this._background = v;
-                b && this._bp_invalidate();
+                b && this.invalidate();
             }
 
             public get backgroundColor():number {
@@ -642,7 +646,7 @@ export module bulletproof {
             public set border(v:boolean) {
                 var b = this._border != v;
                 this._border = v;
-                b && this._bp_invalidate();
+                b && this.invalidate();
             }
 
             public get borderColor():number {
@@ -667,29 +671,31 @@ export module bulletproof {
             protected _bp_draw_core():void {
                 super._bp_draw_core();
                 // clear the canvas
-                var context = this._bp_context();
-                var width = this._bp_displayBuffer.width;
-                var height = this._bp_displayBuffer.height;
-                context.clearRect(0, 0, width, height);
-                if (this.background) {
-                    context.fillStyle = this._backgroundFillStyle;
-                    context.fillRect(0, 0, width, height);
-                    context.fillStyle = this._textFillStyle;
-                }
-                if (this.autoSize) {
-                    context.fillText(this.text, 1, this.height - 1);
-                    context.strokeText(this.text, 1, this.height - 1);
-                } else {
-                    context.fillText(this.text, 0, this.textHeight);
-                    context.strokeText(this.text, 0, this.textHeight);
-                }
-                if (this.border) {
-                    context.strokeStyle = this._borderStrokeStyle;
-                    context.lineWidth = 1;
-                    context.strokeRect(0, 0, width, height);
-                    context.strokeStyle = this._textStrokeStyle;
-                    context.lineWidth = this.thickness;
-                }
+                /*
+                 var context = this._bp_context();
+                 var width = this._bp_displayBuffer.width;
+                 var height = this._bp_displayBuffer.height;
+                 context.clearRect(0, 0, width, height);
+                 if (this.background) {
+                 context.fillStyle = this._backgroundFillStyle;
+                 context.fillRect(0, 0, width, height);
+                 context.fillStyle = this._textFillStyle;
+                 }
+                 if (this.autoSize) {
+                 context.fillText(this.text, 1, this.height - 1);
+                 context.strokeText(this.text, 1, this.height - 1);
+                 } else {
+                 context.fillText(this.text, 0, this.textHeight);
+                 context.strokeText(this.text, 0, this.textHeight);
+                 }
+                 if (this.border) {
+                 context.strokeStyle = this._borderStrokeStyle;
+                 context.lineWidth = 1;
+                 context.strokeRect(0, 0, width, height);
+                 context.strokeStyle = this._textStrokeStyle;
+                 context.lineWidth = this.thickness;
+                 }
+                 */
             }
 
             public get htmlText():string {
@@ -732,6 +738,7 @@ export module bulletproof {
             public set text(v:string) {
                 var b = this._text != v;
                 this._text = v;
+                (<SVGTextElement>this._svgElement).textContent = v;
                 b && this.updateCanvasSettings();
             }
 
@@ -815,7 +822,7 @@ export module bulletproof {
             }
 
             public set x(v:number) {
-                this._bp_displayBuffer.style.left = this._x.toString() + 'px';
+                //this._bp_displayBuffer.style.left = this._x.toString() + 'px';
             }
 
             public get y():number {
@@ -823,7 +830,7 @@ export module bulletproof {
             }
 
             public set y(v:number) {
-                this._bp_displayBuffer.style.top = this._y.toString() + 'px';
+                //this._bp_displayBuffer.style.top = this._y.toString() + 'px';
             }
 
             // Bulletproof
@@ -834,27 +841,32 @@ export module bulletproof {
             // WARNING: WILL CLEAR ALL STYLE SETTINGS AND DRAWINGS OF THE CANVAS
             private updateSizeIfAutoSized():void {
                 if (this.autoSize) {
-                    var context = this._bp_context();
-                    var metrics = context.measureText(this.text);
-                    this._textWidth = metrics.width;
-                    this.width = this.textWidth + 2;
-                    this.height = this.textHeight + 2;
-                    this._bp_invalidate();
+                    /*
+                     var context = this._bp_context();
+                     var metrics = context.measureText(this.text);
+                     this._textWidth = metrics.width;
+                     this.width = this.textWidth + 2;
+                     this.height = this.textHeight + 2;
+                     this.invalidate();
+                     */
                 }
             }
 
             private updateCanvasSettings():void {
-                this._fontString = this.getRenderFontStyleString();
-                var context = this._bp_context();
-                context.font = this._fontString;
+                /*
+                 this._fontString = this.getRenderFontStyleString();
+                 var context = this._bp_context();
+                 context.font = this._fontString;
+                 this.updateStyles();
+                 this.updateSizeIfAutoSized();
+                 if (this.autoSize) {
+                 // 因为上一步清除了样式，包括字体
+                 context.font = this._fontString;
+                 this.updateStyles();
+                 }
+                 this.invalidate();
+                 */
                 this.updateStyles();
-                this.updateSizeIfAutoSized();
-                if (this.autoSize) {
-                    // 因为上一步清除了样式，包括字体
-                    context.font = this._fontString;
-                    this.updateStyles();
-                }
-                this._bp_invalidate();
             }
 
             private getRenderFontStyleString():string {
@@ -867,15 +879,27 @@ export module bulletproof {
             }
 
             private updateStyles():void {
-                var context = this._bp_context();
-                context.lineWidth = this.thickness;
-                this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
-                this._textStrokeStyle = this._textFillStyle;
-                context.fillStyle = this._textFillStyle;
-                context.strokeStyle = this._textStrokeStyle;
-                context.lineWidth = this.thickness;
-                this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
-                this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
+                /*
+                 var context = this._bp_context();
+                 context.lineWidth = this.thickness;
+                 this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
+                 this._textStrokeStyle = this._textFillStyle;
+                 context.fillStyle = this._textFillStyle;
+                 context.strokeStyle = this._textStrokeStyle;
+                 context.lineWidth = this.thickness;
+                 this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
+                 this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
+                 */
+                var c = <SVGTextElement>this._svgElement;
+                c.style.fontFamily = 'SimHei';
+                c.style.fontSize = this.fontsize.toString();
+                c.style.fill = mic.Color.rgbNumberToCss(this.textColor);
+                c.setAttributeNS(SVG_NAMESPACE, 'x', '100');
+                c.setAttributeNS(SVG_NAMESPACE, 'y', '100');
+            }
+
+            protected createMySvgElement():SVGElement {
+                return <SVGTextElement>window.document.createElementNS(SVG_NAMESPACE, 'text');
             }
 
             private _background:boolean = false;

@@ -2,12 +2,6 @@
  * Created by MIC on 2015/8/27.
  */
 
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-data-interface.d.ts"/>
-/// <reference path="../include/bulletproof-mic.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
-/// <reference path="../include/bulletproof-thirdparty.d.ts"/>
-
 import bulletproof_org = require("./bulletproof-org");
 import bulletproof_mic = require("./bulletproof-mic");
 import bulletproof_thirdparty = require("./bulletproof-thirdparty");
@@ -21,6 +15,10 @@ export module bulletproof.flash {
     import ICopyable = bulletproof_org.bulletproof.ICopyable;
     import NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
     import ArgumentError = bulletproof_org.bulletproof.ArgumentError;
+    import SVG_NAMESPACE = bulletproof_org.bulletproof.SVG_NAMESPACE;
+
+    var SVG_LENGTHTYPE_PX = 5;
+    var SVG_FECOLORMATRIX_TYPE_MATRIX = 1;
 
     export module events {
 
@@ -1503,14 +1501,17 @@ export module bulletproof.flash {
 
     export module filters {
 
+        import DisplayObject = flash.display.DisplayObject;
+
         export interface IBitmapFilter extends ICloneable<IBitmapFilter> {
 
             filterType:string;
-            apply(canvas:HTMLCanvasElement):void;
 
         }
 
         export class BitmapFilter implements IBitmapFilter {
+
+            protected _id:string;
 
             public get filterType():string {
                 return 'filter';
@@ -1520,16 +1521,18 @@ export module bulletproof.flash {
                 return null;
             }
 
-            public apply(canvas:HTMLCanvasElement):void {
-                throw new NotImplementedError();
-            }
-
             public static get FILTER_BLUR():string {
                 return 'blur';
             }
 
             public static get FILTER_GLOW():string {
                 return 'glow';
+            }
+
+            public onAdded(obj:DisplayObject):void {
+            }
+
+            public onRemoved(obj:DisplayObject):void {
             }
 
         }
@@ -1586,101 +1589,61 @@ export module bulletproof.flash {
                 return BitmapFilter.FILTER_GLOW;
             }
 
-            private updateBuffer(sourceCanvas:HTMLCanvasElement):void {
-                if (sourceCanvas != null) {
-                    if (this._bufferCanvas == null) {
-                        this._bufferCanvas = window.document.createElement('canvas');
-                        this._bufferContext = this._bufferCanvas.getContext('2d');
+            public onAdded(obj:DisplayObject):void {
+                function getNumberList(a:Array<number>):SVGNumberList {
+                    console.log(SVGNumberList);
+                    var numList = new SVGNumberList();
+                    if (a == null || a.length == 0) {
+                        return numList;
                     }
-                    if (this._bufferCanvas.width != sourceCanvas.width || this._bufferCanvas.height != sourceCanvas.height) {
-                        this._bufferCanvas.width = sourceCanvas.width;
-                        this._bufferCanvas.height = sourceCanvas.height;
+                    for (var i = 0; i < a.length; i++) {
+                        var n = new SVGNumber();
+                        n.value = a[i];
+                        numList.appendItem(n);
                     }
-                    this._bufferContext.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-                    this._bufferContext.drawImage(sourceCanvas, 0, 0);
+                    return numList;
                 }
-            }
 
-            private releaseBuffer():void {
-                this._bufferContext = null;
-                if (this._bufferCanvas && this._bufferCanvas.parentElement) {
-                    this._bufferCanvas.parentElement.removeChild(this._bufferCanvas);
-                }
-                this._bufferCanvas = null;
-            }
-
-            private solidifyBuffer():void {
-                var sourceImageData:ImageData = this._bufferContext.getImageData(0, 0, this._bufferCanvas.width, this._bufferCanvas.height);
-                var position:number;
-                var i:number, j:number;
-                var r:number, g:number, b:number;
-                r = (this.color & 0x00ff0000) >> 16;
-                g = (this.color & 0x0000ff00) >> 8;
-                b = (this.color & 0x000000ff) | 0;
-                for (j = 0; j < sourceImageData.height; j++) {
-                    for (i = 0; i < sourceImageData.width; i++) {
-                        position = ((j * sourceImageData.width) + i) * 4;
-                        if (sourceImageData.data[position + 3] != 0) {
-                            sourceImageData.data[position] = r;
-                            sourceImageData.data[position + 1] = g;
-                            sourceImageData.data[position + 2] = b;
-                            sourceImageData.data[position + 3] *= this.alpha;
-                        }
-                    }
-                }
-                this._bufferContext.putImageData(sourceImageData, 0, 0);
-                sourceImageData = null;
-            }
-
-            private static mixUp(blurredContext:CanvasRenderingContext2D, targetContext:CanvasRenderingContext2D,
-                                 blurredCanvas:HTMLCanvasElement, targetCanvas:HTMLCanvasElement,
-                                 width:number, height:number):void {
-                var tmp:mic.Color;
-                //var blurImageData:ImageData = blurredContext.getImageData(0, 0, width, height);
-                //var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
-                var position:number;
-                var i:number, j:number;
-                var sr:number, sg:number, sb:number, sa:number;
-                var tr:number, tg:number, tb:number, ta:number;
-                blurredContext.drawImage(targetCanvas, 0, 0);
-                targetContext.setTransform(1, 0, 0, 1, 0, 0);
-                targetContext.clearRect(0, 0, width, height);
-                targetContext.drawImage(blurredCanvas, 0, 0);
-                /*
-                 for (j = 0; j < height; j++) {
-                 for (i = 0; i < width; i++) {
-                 position = ((j * width) + i) * 4;
-                 sr = blurImageData.data[position];
-                 sg = blurImageData.data[position + 1];
-                 sb = blurImageData.data[position + 2];
-                 sa = blurImageData.data [position + 3];
-                 tr = targetImageData.data[position];
-                 tg = targetImageData.data[position + 1];
-                 tb = targetImageData.data[position + 2];
-                 ta = targetImageData.data[position + 3];
-                 tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
-                 targetImageData.data[position] = tmp.r;
-                 targetImageData.data[position + 1] = tmp.g;
-                 targetImageData.data[position + 2] = tmp.b;
-                 targetImageData.data[position + 3] = tmp.a;
-                 }
-                 }
+                var color = mic.Color.fromNumber(this.color);
+                var filter = <SVGFilterElement>window.document.createElementNS(SVG_NAMESPACE, 'filter');
+                var colorMatrix = <SVGFEColorMatrixElement>window.document.createElementNS(SVG_NAMESPACE, 'feColorMatrix');
+                var blur = <SVGFEGaussianBlurElement>window.document.createElementNS(SVG_NAMESPACE, 'feGaussianBlur');
+                var merge = <SVGFEMergeElement>window.document.createElementNS(SVG_NAMESPACE, 'feMerge');
+                colorMatrix.type.baseVal = SVG_FECOLORMATRIX_TYPE_MATRIX;
+                /*colorMatrix.values.baseVal = getNumberList([
+                 0, 0, 0, 0, color.r,
+                 0, 0, 0, 0, color.g,
+                 0, 0, 0, 0, color.b,
+                 0, 0, 0, 1, 0
+                 ]);
                  */
-                //targetContext.putImageData(targetImageData, 0, 0);
-                //targetImageData = null;
-                //blurImageData = null;
+                colorMatrix.setAttributeNS(SVG_NAMESPACE, 'values', [
+                    0, 0, 0, color.r, 0,
+                    0, 0, 0, color.g, 0,
+                    0, 0, 0, color.b, 0,
+                    0, 0, 0, 1, 0
+                ].join(' '));
+                blur.stdDeviationX.baseVal = this.blurX;
+                blur.stdDeviationY.baseVal = this.blurY;
+                blur.result.baseVal = 'coloredImage';
+                var n1 = <SVGFEMergeNodeElement>window.document.createElementNS(SVG_NAMESPACE, 'feMergeNode');
+                var n2 = <SVGFEMergeNodeElement>window.document.createElementNS(SVG_NAMESPACE, 'feMergeNode');
+                n1.in1.baseVal = 'coloredImage';
+                n2.in1.baseVal = 'SourceGraphic';
+                merge.appendChild(n1);
+                merge.appendChild(n2);
+                filter.appendChild(colorMatrix);
+                filter.appendChild(blur);
+                filter.appendChild(merge);
+
+                this._id = obj.stage.addFilterDefinition(filter);
+                (<any>obj.svgElement).style.filter = 'url(#' + this._id + ')';
             }
 
-            public apply(canvas:HTMLCanvasElement):void {
-                if (canvas != null) {
-                    this.updateBuffer(canvas);
-                    this.solidifyBuffer();
-                    var radius = (this.blurX + this.blurY ) / 2;
-                    thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
-                    var targetContext = canvas.getContext('2d');
-                    GlowFilter.mixUp(this._bufferContext, targetContext,
-                        this._bufferCanvas, canvas,
-                        canvas.width, canvas.height);
+            public onRemoved(obj:DisplayObject):void {
+                if (this._id != null) {
+                    obj.stage.removeFilterDefinition(this._id);
+                    this._id = null;
                 }
             }
 
@@ -1707,9 +1670,23 @@ export module bulletproof.flash {
                 return BitmapFilter.FILTER_BLUR;
             }
 
-            public apply(canvas:HTMLCanvasElement):void {
-                var radius = (this.blurX + this.blurY ) / 2;
-                thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
+            public onAdded(obj:DisplayObject):void {
+                var filter = <SVGFilterElement>window.document.createElementNS(SVG_NAMESPACE, 'filter');
+                var blur = <SVGFEGaussianBlurElement>window.document.createElementNS(SVG_NAMESPACE, 'feGaussianBlur');
+                blur.stdDeviationX.baseVal = this.blurX;
+                blur.stdDeviationY.baseVal = this.blurY;
+                blur.in1.baseVal = 'SourceGraphic';
+                filter.appendChild(blur);
+
+                this._id = obj.stage.addFilterDefinition(filter);
+                (<any>obj.svgElement).style.filter = 'url(#' + this._id + ')';
+            }
+
+            public onRemoved(obj:DisplayObject):void {
+                if (this._id != null) {
+                    obj.stage.removeFilterDefinition(this._id);
+                    this._id = null;
+                }
             }
 
         }
@@ -1893,9 +1870,8 @@ export module bulletproof.flash {
             protected _y:number = 0;
             protected _z:number = 0;
             protected _childIndex:number;
-            protected _bp_displayBuffer:HTMLCanvasElement;
-            protected _bp_containerElem:HTMLElement = null;
             protected _bp_drawStateInvalidated:boolean = false;
+            protected _svgElement:SVGElement;
 
             public constructor(_bp_root:DisplayObject, _bp_parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
                 super();
@@ -1905,28 +1881,19 @@ export module bulletproof.flash {
                     this._childIndex = _bp_parent.numChildren;
                     _bp_parent.addChild(this);
                 }
+                this._svgElement = this.createMySvgElement();
                 if (createBuffer) {
-                    this._bp_displayBuffer = window.document.createElement('canvas');
                     if (_bp_parent != null) {
-                        _bp_parent._bp_containerElement().appendChild(this._bp_displayBuffer);
+                        _bp_parent._svgElement.appendChild(this._svgElement);
+                        this.width = _bp_parent.width;
+                        this.height = _bp_parent.height;
                     }
-                    this._bp_displayBuffer.style.left = '0';
-                    this._bp_displayBuffer.style.top = '0';
-                    this._bp_displayBuffer.style.position = 'absolute';
-                    this.width = _bp_parent.width;
-                    this.height = _bp_parent.height;
                 }
             }
 
             public _bp_draw():void {
                 if (this._bp_drawStateInvalidated) {
                     this._bp_draw_core();
-                    var filters = this.filters;
-                    if (filters && filters.length > 0) {
-                        for (var i = 0; i < filters.length; i++) {
-                            filters[i].apply(this._bp_displayBuffer);
-                        }
-                    }
                     this._bp_drawStateInvalidated = false;
                 }
             }
@@ -1934,21 +1901,8 @@ export module bulletproof.flash {
             protected _bp_draw_core():void {
             }
 
-            protected _bp_context():CanvasRenderingContext2D {
-                return this._bp_displayBuffer.getContext('2d');
-            }
-
-            public _bp_onSizeChanged(newSize:geom.Point):void {
-                this._bp_displayBuffer.style.width = newSize.x.toString() + 'px';
-                this._bp_displayBuffer.style.height = newSize.y.toString() + 'px';
-            }
-
-            public _bp_invalidate():void {
+            public invalidate():void {
                 this._bp_drawStateInvalidated = true;
-            }
-
-            protected _bp_containerElement():HTMLElement {
-                return this._bp_containerElem;
             }
 
             public accessibilityProperties:accessibility.AccessibilityProperties;
@@ -1959,7 +1913,8 @@ export module bulletproof.flash {
 
             public set alpha(v:number) {
                 this._alpha = mic.util.limit(v, 0, 1);
-                this._bp_displayBuffer.style.opacity = this._alpha.toString();
+                // HACK
+                (<SVGStylable><any>this._svgElement).style.opacity = v.toString();
             }
 
             public blendMode:string;
@@ -1986,24 +1941,34 @@ export module bulletproof.flash {
             }
 
             public set filters(v:Array<filters.BitmapFilter>) {
+                var _this = this;
+                if (this._filters != null && this._filters.length > 0) {
+                    this._filters.forEach((item) => {
+                        item.onRemoved(_this);
+                    });
+                }
                 if (v == null) {
                     this._filters = [];
                 } else {
                     this._filters = v;
                 }
-                this._bp_invalidate();
+                if (this._filters != null && this._filters.length > 0) {
+                    this._filters.forEach((item) => {
+                        item.onAdded(_this);
+                    });
+                }
+                this.invalidate();
             }
 
             public get height():number {
-                return this._bp_displayBuffer.clientHeight;
+                return this._height;
             }
 
             public set height(v:number) {
                 var b = this._height != v;
                 this._height = v;
-                this._bp_displayBuffer.style.height = v.toString() + 'px';
-                this._bp_displayBuffer.height = v;
-                b && this._bp_invalidate();
+                // Resizing is not supported
+                b && this.invalidate();
             }
 
             public get loaderInfo():LoaderInfo {
@@ -2117,22 +2082,21 @@ export module bulletproof.flash {
             public scrollRect:geom.Rectangle;
 
             public get stage():Stage {
-                return this._stage;
+                return <any>this._root;
             }
 
             public transform:geom.Transform;
             public visible:boolean;
 
             public get width():number {
-                return this._bp_displayBuffer.clientWidth;
+                return this._width;
             }
 
             public set width(v:number) {
                 var b = this._width != v;
                 this._width = v;
-                this._bp_displayBuffer.style.width = v.toString() + 'px';
-                this._bp_displayBuffer.width = v;
-                b && this._bp_invalidate();
+                // Resizing is not supported
+                b && this.invalidate();
             }
 
             public get x():number {
@@ -2142,7 +2106,7 @@ export module bulletproof.flash {
             public set x(v:number) {
                 var b = this._x != v;
                 this._x = v;
-                b && this._bp_invalidate();
+                b && this.invalidate();
             }
 
             public get y():number {
@@ -2152,7 +2116,7 @@ export module bulletproof.flash {
             public set y(v:number) {
                 var b = this._y != v;
                 this._y = v;
-                b && this._bp_invalidate();
+                b && this.invalidate();
             }
 
             public get z():number {
@@ -2196,8 +2160,13 @@ export module bulletproof.flash {
             }
 
             // Bulletproof
-            public getDisplayBuffer():HTMLCanvasElement {
-                return this._bp_displayBuffer;
+            protected createMySvgElement():SVGElement {
+                return null;
+            }
+
+            // Bulletproof
+            public get svgElement():SVGElement {
+                return this._svgElement;
             }
 
         }
@@ -2227,25 +2196,14 @@ export module bulletproof.flash {
 
             protected _children:Array<DisplayObject> = [];
 
-            public constructor(root:DisplayObject, parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
-                super(root, parent, createBuffer);
-                if (parent != null) {
-                    this._bp_containerElem = window.document.createElement('div');
-                    parent._bp_containerElement().appendChild(this._bp_containerElem);
-                }
+            public constructor(root:DisplayObject, parent:DisplayObjectContainer = null) {
+                super(root, parent, true);
             }
 
             public _bp_draw():void {
                 //super._bp_draw();
                 var len = this.numChildren;
-                if (this._bp_displayBuffer != null) {
-                    var context = this._bp_context();
-                    //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                    // 似乎无效
-                    context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                    // TODO: HACK: works under nw.js v0.12
-                    // DANGER: will reset styles
-                    //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
+                if (this._svgElement != null) {
                     if (this._bp_drawStateInvalidated) {
                         this._bp_draw_core();
                         this._bp_drawStateInvalidated = false;
@@ -2256,14 +2214,6 @@ export module bulletproof.flash {
                     child = this._children[i];
                     child._bp_draw();
                     //context.drawImage(this._children[i]._bp_displayBuffer, child.x, child.y);
-                }
-            }
-
-            public _bp_onSizeChanged(newSize:geom.Point):void {
-                super._bp_onSizeChanged(newSize);
-                var len = this.numChildren;
-                for (var i = 0; i < len; i++) {
-                    this._children[i]._bp_onSizeChanged(newSize);
                 }
             }
 
@@ -2332,7 +2282,7 @@ export module bulletproof.flash {
                     for (var i = child.childIndex + 1; i < this._children.length; i++) {
                         this._children[i].childIndex++;
                     }
-                    this._bp_containerElem.removeChild(child.getDisplayBuffer());
+                    this._svgElement.removeChild(child.svgElement);
                     this._children.splice(childIndex, 1);
                     return child;
                 } else {
@@ -2356,6 +2306,53 @@ export module bulletproof.flash {
                 throw new NotImplementedError();
             }
 
+            public get height():number {
+                return this._height;
+            }
+
+            public set height(v:number) {
+                var b = this._height != v;
+                this._height = v;
+                (<SVGSVGElement>this._svgElement).height.baseVal.valueInSpecifiedUnits = v;
+                b && this.invalidate();
+            }
+
+            public get width():number {
+                return this._width;
+            }
+
+            public set width(v:number) {
+                var b = this._width != v;
+                this._width = v;
+                (<SVGSVGElement>this._svgElement).width.baseVal.valueInSpecifiedUnits = v;
+                b && this.invalidate();
+            }
+
+            public get x():number {
+                return this._x;
+            }
+
+            public set x(v:number) {
+                var b = this._x != v;
+                this._x = v;
+                b && this.invalidate();
+            }
+
+            public get y():number {
+                return this._y;
+            }
+
+            public set y(v:number) {
+                var b = this._y != v;
+                this._y = v;
+                b && this.invalidate();
+            }
+
+            // Bulletproof
+            protected createMySvgElement():SVGElement {
+                return <SVGSVGElement>window.document.createElementNS(SVG_NAMESPACE, 'svg');
+            }
+
         }
 
         export class Stage extends DisplayObjectContainer {
@@ -2368,16 +2365,12 @@ export module bulletproof.flash {
 
             public constructor(_bp_container:HTMLElement) {
                 // 注意这里可能引起了循环引用，请手工释放
-                super(null, null, false);
-                this._bp_containerElem = _bp_container;
+                super(null, null);
                 this._root = this; // forced (= =)#
-            }
-
-            public _bp_onSizeChanged(newSize:geom.Point):void {
-                var len = this.numChildren;
-                for (var i = 0; i < len; i++) {
-                    this._children[i]._bp_onSizeChanged(newSize);
-                }
+                _bp_container.appendChild(this._svgElement);
+                var svgdoc = <SVGSVGElement>this._svgElement;
+                svgdoc.width.baseVal.unitType = SVG_LENGTHTYPE_PX;
+                svgdoc.height.baseVal.unitType = SVG_LENGTHTYPE_PX;
             }
 
             public raiseEnterFrame() {
@@ -2440,14 +2433,6 @@ export module bulletproof.flash {
                 return screen.width;
             }
 
-            public get height():number {
-                return this._bp_containerElem.clientHeight;
-            }
-
-            public set height(v:number) {
-                this._bp_containerElem.style.height = v.toString() + 'px';
-            }
-
             public mouseChildren:boolean;
 
             public get nativeWindow():NativeWindow {
@@ -2488,14 +2473,6 @@ export module bulletproof.flash {
                 throw new NotImplementedError();
             }
 
-            public get width():number {
-                return this._bp_containerElem.clientWidth;
-            }
-
-            public set width(v:number) {
-                this._bp_containerElem.style.width = v.toString() + 'px';
-            }
-
             public get x():number {
                 console.warn('Stage.x is always 0.');
                 return 0;
@@ -2514,12 +2491,55 @@ export module bulletproof.flash {
                 console.warn('Stage.y cannot be set manually.');
             }
 
-            public invalidate():void {
-                this._bp_invalidate();
+            public get height():number {
+                return this._height;
+            }
+
+            public set height(v:number) {
+                var b = this._height != v;
+                this._height = v;
+                var val = (<SVGSVGElement>this._svgElement).height.baseVal.newValueSpecifiedUnits(SVG_LENGTHTYPE_PX, v);
+                b && this.invalidate();
+            }
+
+            public get width():number {
+                return this._width;
+            }
+
+            public set width(v:number) {
+                var b = this._width != v;
+                this._width = v;
+                var val = (<SVGSVGElement>this._svgElement).width.baseVal.newValueSpecifiedUnits(SVG_LENGTHTYPE_PX, v);
+                b && this.invalidate();
             }
 
             public isFocusInaccessible():boolean {
                 throw new NotImplementedError();
+            }
+
+            // Bulletproof
+
+            private _currentFilterID:number = 0;
+
+            public addFilterDefinition(filter:SVGFilterElement):string {
+                var defs = <SVGDefsElement>window.document.createElementNS(SVG_NAMESPACE, 'defs');
+                var currentFilterString = 'feFilter' + (this._currentFilterID++).toString();
+                filter.id = currentFilterString;
+                defs.appendChild(filter);
+                var before = this._svgElement.firstChild;
+                this._svgElement.insertBefore(defs, before);
+                return currentFilterString;
+            }
+
+            public removeFilterDefinition(id:string):boolean {
+                var filter = (<SVGSVGElement>this._svgElement).getElementById(id);
+                if (filter != null) {
+                    var filterDef = filter.parentNode;
+                    this._svgElement.removeChild(filterDef);
+                    return true;
+                } else {
+                    return false;
+                }
             }
 
         }
@@ -2822,7 +2842,56 @@ export module bulletproof.flash {
             public _bp_draw_core():void {
                 if (this._graphics) {
                     this._graphics.redraw();
+                    this._graphics.outputDoDisplayObject();
                 }
+            }
+
+            public get height():number {
+                return this._height;
+            }
+
+            public set height(v:number) {
+                var b = this._height != v;
+                this._height = v;
+                (<SVGImageElement>this._svgElement).height.baseVal.valueInSpecifiedUnits = v;
+                b && this._graphics != null && this._graphics.updateCanvasSize();
+                b && this.invalidate();
+            }
+
+            public get width():number {
+                return this._width;
+            }
+
+            public set width(v:number) {
+                var b = this._width != v;
+                this._width = v;
+                (<SVGImageElement>this._svgElement).width.baseVal.valueInSpecifiedUnits = v;
+                b && this._graphics != null && this._graphics.updateCanvasSize();
+                b && this.invalidate();
+            }
+
+            public get x():number {
+                return this._x;
+            }
+
+            public set x(v:number) {
+                var b = this._x != v;
+                this._x = v;
+                b && this.invalidate();
+            }
+
+            public get y():number {
+                return this._y;
+            }
+
+            public set y(v:number) {
+                var b = this._y != v;
+                this._y = v;
+                b && this.invalidate();
+            }
+
+            protected createMySvgElement():SVGElement {
+                return <SVGImageElement>window.document.createElementNS(SVG_NAMESPACE, 'image');
             }
 
         }
@@ -2952,6 +3021,7 @@ export module bulletproof.flash {
 
         export class Graphics implements ICopyable<Graphics> {
 
+            private _svgImage:SVGImageElement;
             private _canvas:HTMLCanvasElement;
             private _displayObject:DisplayObject;
             private static _bp_defaultGraphicsSettings:IGraphicsSettings = {
@@ -2970,12 +3040,19 @@ export module bulletproof.flash {
 
             public constructor(attachedDisplayObject:DisplayObject) {
                 this._displayObject = attachedDisplayObject;
-                this._canvas = attachedDisplayObject.getDisplayBuffer();
+                this._svgImage = <SVGImageElement>attachedDisplayObject.svgElement;
+                this._canvas = window.document.createElement('canvas');
+                this._canvas.width = attachedDisplayObject.width;
+                this._canvas.height = attachedDisplayObject.height;
                 this.saveGraphicsSettings(); // saved as an origin
             }
 
             private _bp_context():CanvasRenderingContext2D {
                 return this._canvas.getContext('2d');
+            }
+
+            private _bp_invalidateParent():void {
+                this._displayObject.invalidate();
             }
 
             private static _bp_getSettings(context:CanvasRenderingContext2D):IGraphicsSettings {
@@ -3060,7 +3137,7 @@ export module bulletproof.flash {
                 //context.save();
                 this.resetTransform();
                 // 似乎无效
-                context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
+                context.clearRect(0, 0, this._canvas.width, this._canvas.height);
                 // TODO: HACK: works under nw.js v0.12
                 // DANGER: will reset styles
                 //this._canvas.width = this._canvas.width;
@@ -3071,10 +3148,11 @@ export module bulletproof.flash {
                 // Since all contents are clear, there should be nothing even if redraw() is called
                 // Also please free the history entries.
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue = [];
                     this.saveGraphicsSettings();
                 }
+                this._bp_invalidateParent();
             }
 
             public copyFrom(sourceGraphics:Graphics) {
@@ -3089,8 +3167,9 @@ export module bulletproof.flash {
                 context.stroke();
                 context.beginPath();
                 context.moveTo(anchorX, anchorY);
+                this._bp_invalidateParent();
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.CURVE_TO,
                         data: {
@@ -3114,8 +3193,9 @@ export module bulletproof.flash {
                 }
                 context.stroke();
                 context.beginPath();
+                this._bp_invalidateParent();
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.DRAW_CIRCLE,
                         data: {
@@ -3160,8 +3240,9 @@ export module bulletproof.flash {
                 }
                 context.stroke();
                 context.beginPath();
+                this._bp_invalidateParent();
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.DRAW_ELLIPSE,
                         data: {
@@ -3237,8 +3318,9 @@ export module bulletproof.flash {
                     context.fill();
                 }
                 context.stroke();
+                this._bp_invalidateParent();
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.DRAW_PATH,
                         data: {
@@ -3312,8 +3394,9 @@ export module bulletproof.flash {
                     context.fillRect(x, y, width, height);
                 }
                 context.strokeRect(x, y, width, height);
+                this._bp_invalidateParent();
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.DRAW_RECT,
                         data: {
@@ -3371,7 +3454,7 @@ export module bulletproof.flash {
                     commands.push(1, 2, 2, 2);
                     data.push(ax, ay, bx, by, cx, cy, ax, ay);
                 }
-                // 已经有 this._displayObject._bp_invalidate(); 了
+                // 已经有 this._displayObject.invalidate(); 了
                 // 历史记录由 drawPath() 代为完成
                 this.drawPath(commands, data, void(0), false);
             }
@@ -3379,7 +3462,7 @@ export module bulletproof.flash {
             public endFill():void {
                 // TODO: 文档上说似乎应该进行指令缓存，在 endFill() 时一起绘制？
                 this._isInFill = false;
-                //this._displayObject._bp_invalidate();
+                //this._displayObject.invalidate();
                 if (!this._isRedrawCalling) {
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.END_FILL,
@@ -3445,7 +3528,7 @@ export module bulletproof.flash {
                             scaleMode: scaleMode,
                             caps: caps,
                             joints: joints,
-                            miterLimt: miterLimit
+                            miterLimit: miterLimit
                         }
                     });
                 }
@@ -3461,8 +3544,9 @@ export module bulletproof.flash {
                 context.stroke();
                 context.beginPath();
                 context.moveTo(x, y);
+                this._bp_invalidateParent();
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.LINE_TO,
                         data: {
@@ -3477,10 +3561,9 @@ export module bulletproof.flash {
                 var context = this._bp_context();
                 this.resetTransform();
                 context.translate(this._displayObject.x, this._displayObject.y);
-                // HACK: Please update
                 context.moveTo(x, y);
                 if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
+                    this._displayObject.invalidate();
                     this._redrawHistoryQueue.push({
                         command: GraphicsHistoryCommand.MOVE_TO,
                         data: {
@@ -3606,6 +3689,18 @@ export module bulletproof.flash {
             private redoLastActiveTransform() {
                 this._bp_context().transform(this._transformMatrix[0], this._transformMatrix[3], this._transformMatrix[1],
                     this._transformMatrix[4], this._transformMatrix[2], this._transformMatrix[5]);
+            }
+
+            public updateCanvasSize():void {
+                console.log(this._displayObject.width + 'px, ' + this._displayObject.height + 'px');
+                this._canvas.width = this._displayObject.width;
+                this._canvas.height = this._displayObject.height;
+                this._displayObject.invalidate();
+            }
+
+            public outputDoDisplayObject():void {
+                // Note: This line fails when directly launched browsers locally.
+                this._svgImage.href.baseVal = this._canvas.toDataURL();
             }
 
         }

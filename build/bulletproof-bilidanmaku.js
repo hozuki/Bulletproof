@@ -21,6 +21,7 @@ var bulletproof;
     var mx = bulletproof_mx.bulletproof.mx;
     var NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
     var Bulletproof = bulletproof_main.bulletproof.Bulletproof;
+    var SVG_NAMESPACE = bulletproof_org.bulletproof.SVG_NAMESPACE;
     var AdvancedDanmaku = (function () {
         function AdvancedDanmaku() {
             this._objectMotions = [];
@@ -35,6 +36,8 @@ var bulletproof;
         AdvancedDanmaku.createInstance = function (root, video) {
             var ad = new AdvancedDanmaku();
             var stage = new flash.display.Stage(root);
+            stage.width = 682;
+            stage.height = 438;
             ad._startParams = {
                 root: root,
                 startDate: new Date(),
@@ -667,7 +670,7 @@ var bulletproof;
                 set: function (v) {
                     var b = this._background != v;
                     this._background = v;
-                    b && this._bp_invalidate();
+                    b && this.invalidate();
                 },
                 enumerable: true,
                 configurable: true
@@ -692,7 +695,7 @@ var bulletproof;
                 set: function (v) {
                     var b = this._border != v;
                     this._border = v;
-                    b && this._bp_invalidate();
+                    b && this.invalidate();
                 },
                 enumerable: true,
                 configurable: true
@@ -720,30 +723,31 @@ var bulletproof;
             CommentField.prototype._bp_draw_core = function () {
                 _super.prototype._bp_draw_core.call(this);
                 // clear the canvas
-                var context = this._bp_context();
-                var width = this._bp_displayBuffer.width;
-                var height = this._bp_displayBuffer.height;
-                context.clearRect(0, 0, width, height);
-                if (this.background) {
-                    context.fillStyle = this._backgroundFillStyle;
-                    context.fillRect(0, 0, width, height);
-                    context.fillStyle = this._textFillStyle;
-                }
-                if (this.autoSize) {
-                    context.fillText(this.text, 1, this.height - 1);
-                    context.strokeText(this.text, 1, this.height - 1);
-                }
-                else {
-                    context.fillText(this.text, 0, this.textHeight);
-                    context.strokeText(this.text, 0, this.textHeight);
-                }
-                if (this.border) {
-                    context.strokeStyle = this._borderStrokeStyle;
-                    context.lineWidth = 1;
-                    context.strokeRect(0, 0, width, height);
-                    context.strokeStyle = this._textStrokeStyle;
-                    context.lineWidth = this.thickness;
-                }
+                /*
+                 var context = this._bp_context();
+                 var width = this._bp_displayBuffer.width;
+                 var height = this._bp_displayBuffer.height;
+                 context.clearRect(0, 0, width, height);
+                 if (this.background) {
+                 context.fillStyle = this._backgroundFillStyle;
+                 context.fillRect(0, 0, width, height);
+                 context.fillStyle = this._textFillStyle;
+                 }
+                 if (this.autoSize) {
+                 context.fillText(this.text, 1, this.height - 1);
+                 context.strokeText(this.text, 1, this.height - 1);
+                 } else {
+                 context.fillText(this.text, 0, this.textHeight);
+                 context.strokeText(this.text, 0, this.textHeight);
+                 }
+                 if (this.border) {
+                 context.strokeStyle = this._borderStrokeStyle;
+                 context.lineWidth = 1;
+                 context.strokeRect(0, 0, width, height);
+                 context.strokeStyle = this._textStrokeStyle;
+                 context.lineWidth = this.thickness;
+                 }
+                 */
             };
             Object.defineProperty(CommentField.prototype, "htmlText", {
                 get: function () {
@@ -793,6 +797,7 @@ var bulletproof;
                 set: function (v) {
                     var b = this._text != v;
                     this._text = v;
+                    this._svgElement.textContent = v;
                     b && this.updateCanvasSettings();
                 },
                 enumerable: true,
@@ -894,7 +899,7 @@ var bulletproof;
                     return this._x;
                 },
                 set: function (v) {
-                    this._bp_displayBuffer.style.left = this._x.toString() + 'px';
+                    //this._bp_displayBuffer.style.left = this._x.toString() + 'px';
                 },
                 enumerable: true,
                 configurable: true
@@ -904,7 +909,7 @@ var bulletproof;
                     return this._y;
                 },
                 set: function (v) {
-                    this._bp_displayBuffer.style.top = this._y.toString() + 'px';
+                    //this._bp_displayBuffer.style.top = this._y.toString() + 'px';
                 },
                 enumerable: true,
                 configurable: true
@@ -920,26 +925,23 @@ var bulletproof;
             // WARNING: WILL CLEAR ALL STYLE SETTINGS AND DRAWINGS OF THE CANVAS
             CommentField.prototype.updateSizeIfAutoSized = function () {
                 if (this.autoSize) {
-                    var context = this._bp_context();
-                    var metrics = context.measureText(this.text);
-                    this._textWidth = metrics.width;
-                    this.width = this.textWidth + 2;
-                    this.height = this.textHeight + 2;
-                    this._bp_invalidate();
                 }
             };
             CommentField.prototype.updateCanvasSettings = function () {
-                this._fontString = this.getRenderFontStyleString();
-                var context = this._bp_context();
-                context.font = this._fontString;
+                /*
+                 this._fontString = this.getRenderFontStyleString();
+                 var context = this._bp_context();
+                 context.font = this._fontString;
+                 this.updateStyles();
+                 this.updateSizeIfAutoSized();
+                 if (this.autoSize) {
+                 // 因为上一步清除了样式，包括字体
+                 context.font = this._fontString;
+                 this.updateStyles();
+                 }
+                 this.invalidate();
+                 */
                 this.updateStyles();
-                this.updateSizeIfAutoSized();
-                if (this.autoSize) {
-                    // 因为上一步清除了样式，包括字体
-                    context.font = this._fontString;
-                    this.updateStyles();
-                }
-                this._bp_invalidate();
             };
             CommentField.prototype.getRenderFontStyleString = function () {
                 var fontString = '';
@@ -950,15 +952,26 @@ var bulletproof;
                 return fontString;
             };
             CommentField.prototype.updateStyles = function () {
-                var context = this._bp_context();
-                context.lineWidth = this.thickness;
-                this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
-                this._textStrokeStyle = this._textFillStyle;
-                context.fillStyle = this._textFillStyle;
-                context.strokeStyle = this._textStrokeStyle;
-                context.lineWidth = this.thickness;
-                this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
-                this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
+                /*
+                 var context = this._bp_context();
+                 context.lineWidth = this.thickness;
+                 this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
+                 this._textStrokeStyle = this._textFillStyle;
+                 context.fillStyle = this._textFillStyle;
+                 context.strokeStyle = this._textStrokeStyle;
+                 context.lineWidth = this.thickness;
+                 this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
+                 this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
+                 */
+                var c = this._svgElement;
+                c.style.fontFamily = 'SimHei';
+                c.style.fontSize = this.fontsize.toString();
+                c.style.fill = mic.Color.rgbNumberToCss(this.textColor);
+                c.setAttributeNS(SVG_NAMESPACE, 'x', '100');
+                c.setAttributeNS(SVG_NAMESPACE, 'y', '100');
+            };
+            CommentField.prototype.createMySvgElement = function () {
+                return window.document.createElementNS(SVG_NAMESPACE, 'text');
             };
             CommentField._defaultTextHeight = 12;
             CommentField._defaultTextFontFamily = 'SimHei';
