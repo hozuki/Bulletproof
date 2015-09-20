@@ -2,10 +2,6 @@
  * Created by MIC on 2015/9/10.
  */
 
-/// <reference path="../include/bulletproof-data-interface.d.ts"/>
-/// <reference path="../include/bulletproof-bilidanmaku.d.ts"/>
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-
 import bulletproof_flash = require("./bulletproof-flash");
 import bulletproof_data_interface = require("./bulletproof-data-interface");
 import bulletproof_mic = require("./bulletproof-mic");

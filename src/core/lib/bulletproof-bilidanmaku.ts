@@ -2,6 +2,8 @@
  * Created by MIC on 2015/8/27.
  */
 
+/// <reference path="../../../include/ext/pixi.js/pixi.js.d.ts"/>
+
 import bulletproof_main = require("./bulletproof");
 import bulletproof_data_interface = require("./bulletproof-data-interface");
 import bulletproof_flash = require("./bulletproof-flash");
@@ -39,10 +41,14 @@ export module bulletproof {
 
     export class AdvancedDanmaku {
 
+        public static DEFAULT_WIDTH:number = 682;
+        public static DEFAULT_HEIGHT:number = 438;
+
         private _startParams:bulletproof.IProofStartParams;
         private _objectMotions:Array<IMotion> = [];
         // TODO: Potential security issues.
         private _api:any;
+        private _renderer:PIXI.WebGLRenderer;
 
         public get startParams():IProofStartParams {
             return this._startParams;
@@ -50,7 +56,12 @@ export module bulletproof {
 
         public static createInstance(root:HTMLDivElement, video:HTMLVideoElement):AdvancedDanmaku {
             var ad = new AdvancedDanmaku();
-            var stage:flash.display.Stage = new flash.display.Stage(root);
+            ad._renderer = new PIXI.WebGLRenderer(AdvancedDanmaku.DEFAULT_WIDTH, AdvancedDanmaku.DEFAULT_HEIGHT, {
+                antialias: true,
+                autoResize: true,
+                transparent: true
+            });
+            var stage:flash.display.Stage = new flash.display.Stage(ad._renderer);
             ad._startParams = {
                 root: root,
                 startDate: new Date(),
@@ -58,14 +69,18 @@ export module bulletproof {
                 bp: Bulletproof.instance,
                 stage: stage
             };
+            root.appendChild(ad._renderer.view);
 
-            ad._startParams.bp.addEventListener(Bulletproof.RENDER_REQUESTED, function (event:Event) {
-                stage.raiseEnterFrame();
-                ad.calculateMotionGroups();
-                stage.redraw();
-            });
+            window.requestAnimationFrame(ad.animate.bind(ad));
 
             return ad;
+        }
+
+        public animate():void {
+            this._startParams.stage.raiseEnterFrame();
+            this.calculateMotionGroups();
+            this._startParams.stage.redraw();
+            window.requestAnimationFrame(this.animate.bind(this));
         }
 
         public start():void {
@@ -609,7 +624,6 @@ export module bulletproof {
                 this._createParams = createParams;
                 this._lifeTime = ad.startParams.bp.options.commentLifeTime;
                 this._ad = ad;
-                this.updateCanvasSettings();
             }
 
             public alwaysShowSelection:boolean = false;
@@ -621,7 +635,6 @@ export module bulletproof {
             public set background(v:boolean) {
                 var b = this._background != v;
                 this._background = v;
-                b && this._bp_invalidate();
             }
 
             public get backgroundColor():number {
@@ -632,7 +645,6 @@ export module bulletproof {
                 v |= 0;
                 var b = this._backgroundColor != v;
                 this._backgroundColor = v;
-                b && this.updateCanvasSettings();
             }
 
             public get border():boolean {
@@ -642,7 +654,6 @@ export module bulletproof {
             public set border(v:boolean) {
                 var b = this._border != v;
                 this._border = v;
-                b && this._bp_invalidate();
             }
 
             public get borderColor():number {
@@ -653,7 +664,6 @@ export module bulletproof {
                 v |= 0;
                 var b = this._borderColor != v;
                 this._borderColor = v;
-                b && this.updateCanvasSettings();
             }
 
             public get bottomScrollV():number {
@@ -663,34 +673,6 @@ export module bulletproof {
             public condenseWhite:boolean = true;
             public defaultTextFormat:flash.text.TextFormat = null;
             public gridFitType:string = GridFitType.NONE;
-
-            protected _bp_draw_core():void {
-                super._bp_draw_core();
-                // clear the canvas
-                var context = this._bp_context();
-                var width = this._bp_displayBuffer.width;
-                var height = this._bp_displayBuffer.height;
-                context.clearRect(0, 0, width, height);
-                if (this.background) {
-                    context.fillStyle = this._backgroundFillStyle;
-                    context.fillRect(0, 0, width, height);
-                    context.fillStyle = this._textFillStyle;
-                }
-                if (this.autoSize) {
-                    context.fillText(this.text, 1, this.height - 1);
-                    context.strokeText(this.text, 1, this.height - 1);
-                } else {
-                    context.fillText(this.text, 0, this.textHeight);
-                    context.strokeText(this.text, 0, this.textHeight);
-                }
-                if (this.border) {
-                    context.strokeStyle = this._borderStrokeStyle;
-                    context.lineWidth = 1;
-                    context.strokeRect(0, 0, width, height);
-                    context.strokeStyle = this._textStrokeStyle;
-                    context.lineWidth = this.thickness;
-                }
-            }
 
             public get htmlText():string {
                 throw new NotImplementedError();
@@ -732,7 +714,6 @@ export module bulletproof {
             public set text(v:string) {
                 var b = this._text != v;
                 this._text = v;
-                b && this.updateCanvasSettings();
             }
 
             public get textColor():number {
@@ -743,7 +724,6 @@ export module bulletproof {
                 v |= 0;
                 var b = this._textColor != v;
                 this._textColor = v;
-                b && this.updateCanvasSettings();
             }
 
             public get textHeight():number {
@@ -764,7 +744,6 @@ export module bulletproof {
                 }
                 var b = this._thickness != v;
                 this._thickness = v;
-                b && this.updateCanvasSettings();
             }
 
             public wordWrap:boolean = false;
@@ -779,7 +758,6 @@ export module bulletproof {
                 }
                 var b = this._fontsize != v;
                 this._fontsize = v;
-                b && this.updateCanvasSettings();
             }
 
             public get bold():boolean {
@@ -789,7 +767,6 @@ export module bulletproof {
             public set bold(v:boolean) {
                 var b = this._bold != v;
                 this._bold = v;
-                b && this.updateCanvasSettings();
             }
 
             public get italic():boolean {
@@ -799,7 +776,6 @@ export module bulletproof {
             public set italic(v:boolean) {
                 var b = this._italic != v;
                 this._italic = v;
-                b && this.updateCanvasSettings();
             }
 
             public appendText(newText:string):void {
@@ -810,72 +786,9 @@ export module bulletproof {
                 return this._createParams;
             }
 
-            public get x():number {
-                return this._x;
-            }
-
-            public set x(v:number) {
-                this._bp_displayBuffer.style.left = this._x.toString() + 'px';
-            }
-
-            public get y():number {
-                return this._y;
-            }
-
-            public set y(v:number) {
-                this._bp_displayBuffer.style.top = this._y.toString() + 'px';
-            }
-
             // Bulletproof
             public get lifeTime():number {
                 return this._lifeTime;
-            }
-
-            // WARNING: WILL CLEAR ALL STYLE SETTINGS AND DRAWINGS OF THE CANVAS
-            private updateSizeIfAutoSized():void {
-                if (this.autoSize) {
-                    var context = this._bp_context();
-                    var metrics = context.measureText(this.text);
-                    this._textWidth = metrics.width;
-                    this.width = this.textWidth + 2;
-                    this.height = this.textHeight + 2;
-                    this._bp_invalidate();
-                }
-            }
-
-            private updateCanvasSettings():void {
-                this._fontString = this.getRenderFontStyleString();
-                var context = this._bp_context();
-                context.font = this._fontString;
-                this.updateStyles();
-                this.updateSizeIfAutoSized();
-                if (this.autoSize) {
-                    // 因为上一步清除了样式，包括字体
-                    context.font = this._fontString;
-                    this.updateStyles();
-                }
-                this._bp_invalidate();
-            }
-
-            private getRenderFontStyleString():string {
-                var fontString = '';
-                this.bold && (fontString += ' bold');
-                this.italic && (fontString += ' italic');
-                fontString += ' ' + this.fontsize.toString() + 'pt ';
-                fontString += CommentField._defaultTextFontFamily;
-                return fontString;
-            }
-
-            private updateStyles():void {
-                var context = this._bp_context();
-                context.lineWidth = this.thickness;
-                this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
-                this._textStrokeStyle = this._textFillStyle;
-                context.fillStyle = this._textFillStyle;
-                context.strokeStyle = this._textStrokeStyle;
-                context.lineWidth = this.thickness;
-                this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
-                this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
             }
 
             private _background:boolean = false;

@@ -2,11 +2,7 @@
  * Created by MIC on 2015/8/27.
  */
 
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-data-interface.d.ts"/>
-/// <reference path="../include/bulletproof-mic.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
-/// <reference path="../include/bulletproof-thirdparty.d.ts"/>
+/// <reference path="../../../include/ext/pixi.js/pixi.js.d.ts"/>
 
 import bulletproof_org = require("./bulletproof-org");
 import bulletproof_mic = require("./bulletproof-mic");
@@ -1505,12 +1501,11 @@ export module bulletproof.flash {
 
         export interface IBitmapFilter extends ICloneable<IBitmapFilter> {
 
-            filterType:string;
-            apply(canvas:HTMLCanvasElement):void;
+            filterType:string
 
         }
 
-        export class BitmapFilter implements IBitmapFilter {
+        export class BitmapFilter extends PIXI.AbstractFilter implements IBitmapFilter {
 
             public get filterType():string {
                 return 'filter';
@@ -1518,10 +1513,6 @@ export module bulletproof.flash {
 
             public clone():BitmapFilter {
                 return null;
-            }
-
-            public apply(canvas:HTMLCanvasElement):void {
-                throw new NotImplementedError();
             }
 
             public static get FILTER_BLUR():string {
@@ -1552,21 +1543,67 @@ export module bulletproof.flash {
 
         export class GlowFilter extends BitmapFilter {
 
-            public alpha:number;
-            public blurX:number;
-            public blurY:number;
-            public color:number;
+            private _f1:PIXI.filters.ColorMatrixFilter;
+            private _f2:PIXI.filters.BlurFilter;
+            private _f3:PIXI.filters.ColorMatrixFilter;
+            private _color:number;
+            private _alpha:number;
+
+            public get alpha():number {
+                return this._alpha;
+            }
+
+            public set alpha(v:number) {
+                this._alpha = v;
+                var clr = mic.Color.fromNumber(this.color);
+                this._updateColorMatrix(clr.r, clr.g, clr.b, v);
+            }
+
+            public get blurX():number {
+                return this._f2.blurX;
+            }
+
+            public set blurX(v:number) {
+                this._f2.blurX = v;
+            }
+
+            public get blurY():number {
+                return this._f2.blurY;
+            }
+
+            public set blurY(v:number) {
+                this._f2.blurY = v;
+            }
+
+            public get color():number {
+                return this._color;
+            }
+
+            public set color(v:number) {
+                this._color = v;
+                var clr = mic.Color.fromNumber(v);
+                this._updateColorMatrix(clr.r, clr.g, clr.b, this.alpha);
+            }
+
             public inner:boolean;
             public knockout:boolean;
-            public quality:number;
-            public strength:number;
 
-            private _bufferCanvas:HTMLCanvasElement;
-            private _bufferContext:CanvasRenderingContext2D;
+            public get quality():number {
+                return this._f2.passes;
+            }
+
+            public set quality(v:number) {
+                this._f2.passes = v;
+            }
+
+            public strength:number;
 
             public constructor(color:number = 0xff0000, alpha:number = 1.0, blurX:number = 6.0, blurY:number = 6.0,
                                strength:number = 2, quality:number = BitmapFilterQuality.LOW, inner:boolean = false, knockout:boolean = false) {
                 super();
+                this._f1 = new PIXI.filters.ColorMatrixFilter();
+                this._f2 = new PIXI.filters.BlurFilter();
+                this._f3 = new PIXI.filters.ColorMatrixFilter();
                 this.color = color;
                 this.alpha = mic.util.limit(alpha, 0, 1);
                 this.blurX = blurX;
@@ -1586,114 +1623,59 @@ export module bulletproof.flash {
                 return BitmapFilter.FILTER_GLOW;
             }
 
-            private updateBuffer(sourceCanvas:HTMLCanvasElement):void {
-                if (sourceCanvas != null) {
-                    if (this._bufferCanvas == null) {
-                        this._bufferCanvas = window.document.createElement('canvas');
-                        this._bufferContext = this._bufferCanvas.getContext('2d');
-                    }
-                    if (this._bufferCanvas.width != sourceCanvas.width || this._bufferCanvas.height != sourceCanvas.height) {
-                        this._bufferCanvas.width = sourceCanvas.width;
-                        this._bufferCanvas.height = sourceCanvas.height;
-                    }
-                    this._bufferContext.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-                    this._bufferContext.drawImage(sourceCanvas, 0, 0);
-                }
+            // Bulletproof, PIXI
+            // See PIXI.filters.BlurFilter
+            public applyFilter(renderer:PIXI.WebGLRenderer, input:PIXI.RenderTarget, output:PIXI.RenderTarget, clear?:boolean):void {
+                var renderTarget = renderer.filterManager.getRenderTarget(true);
+                this._f1.applyFilter(renderer, input, renderTarget);
+                this._f2.applyFilter(renderer, renderTarget, output);
+                this._f3.applyFilter(renderer, input, output);
+                // type casting: trick
+                (<any>renderer.filterManager).returnRenderTarget(renderTarget);
             }
 
-            private releaseBuffer():void {
-                this._bufferContext = null;
-                if (this._bufferCanvas && this._bufferCanvas.parentElement) {
-                    this._bufferCanvas.parentElement.removeChild(this._bufferCanvas);
-                }
-                this._bufferCanvas = null;
-            }
-
-            private solidifyBuffer():void {
-                var sourceImageData:ImageData = this._bufferContext.getImageData(0, 0, this._bufferCanvas.width, this._bufferCanvas.height);
-                var position:number;
-                var i:number, j:number;
-                var r:number, g:number, b:number;
-                r = (this.color & 0x00ff0000) >> 16;
-                g = (this.color & 0x0000ff00) >> 8;
-                b = (this.color & 0x000000ff) | 0;
-                for (j = 0; j < sourceImageData.height; j++) {
-                    for (i = 0; i < sourceImageData.width; i++) {
-                        position = ((j * sourceImageData.width) + i) * 4;
-                        if (sourceImageData.data[position + 3] != 0) {
-                            sourceImageData.data[position] = r;
-                            sourceImageData.data[position + 1] = g;
-                            sourceImageData.data[position + 2] = b;
-                            sourceImageData.data[position + 3] *= this.alpha;
-                        }
-                    }
-                }
-                this._bufferContext.putImageData(sourceImageData, 0, 0);
-                sourceImageData = null;
-            }
-
-            private static mixUp(blurredContext:CanvasRenderingContext2D, targetContext:CanvasRenderingContext2D,
-                                 blurredCanvas:HTMLCanvasElement, targetCanvas:HTMLCanvasElement,
-                                 width:number, height:number):void {
-                var tmp:mic.Color;
-                //var blurImageData:ImageData = blurredContext.getImageData(0, 0, width, height);
-                //var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
-                var position:number;
-                var i:number, j:number;
-                var sr:number, sg:number, sb:number, sa:number;
-                var tr:number, tg:number, tb:number, ta:number;
-                blurredContext.drawImage(targetCanvas, 0, 0);
-                targetContext.setTransform(1, 0, 0, 1, 0, 0);
-                targetContext.clearRect(0, 0, width, height);
-                targetContext.drawImage(blurredCanvas, 0, 0);
-                /*
-                 for (j = 0; j < height; j++) {
-                 for (i = 0; i < width; i++) {
-                 position = ((j * width) + i) * 4;
-                 sr = blurImageData.data[position];
-                 sg = blurImageData.data[position + 1];
-                 sb = blurImageData.data[position + 2];
-                 sa = blurImageData.data [position + 3];
-                 tr = targetImageData.data[position];
-                 tg = targetImageData.data[position + 1];
-                 tb = targetImageData.data[position + 2];
-                 ta = targetImageData.data[position + 3];
-                 tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
-                 targetImageData.data[position] = tmp.r;
-                 targetImageData.data[position + 1] = tmp.g;
-                 targetImageData.data[position + 2] = tmp.b;
-                 targetImageData.data[position + 3] = tmp.a;
-                 }
-                 }
-                 */
-                //targetContext.putImageData(targetImageData, 0, 0);
-                //targetImageData = null;
-                //blurImageData = null;
-            }
-
-            public apply(canvas:HTMLCanvasElement):void {
-                if (canvas != null) {
-                    this.updateBuffer(canvas);
-                    this.solidifyBuffer();
-                    var radius = (this.blurX + this.blurY ) / 2;
-                    thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
-                    var targetContext = canvas.getContext('2d');
-                    GlowFilter.mixUp(this._bufferContext, targetContext,
-                        this._bufferCanvas, canvas,
-                        canvas.width, canvas.height);
-                }
+            private _updateColorMatrix(r:number, g:number, b:number, a:number):void {
+                this._f1.matrix = [
+                    0, 0, 0, r, 0,
+                    0, 0, 0, g, 0,
+                    0, 0, 0, b, 0,
+                    0, 0, 0, a, 0
+                ];
             }
 
         }
 
         export class BlurFilter extends BitmapFilter {
 
-            public blurX:number;
-            public blurY:number;
-            public quality:number;
+            private _f1:PIXI.filters.BlurFilter;
+
+            public get blurX():number {
+                return this._f1.blurX;
+            }
+
+            public set blurX(v:number) {
+                this._f1.blurX = v;
+            }
+
+            public get blurY():number {
+                return this._f1.blurY;
+            }
+
+            public set blurY(v:number) {
+                this._f1.blurY = v;
+            }
+
+            public get quality():number {
+                return this._f1.passes;
+            }
+
+            public set quality(v:number) {
+                this._f1.passes = v;
+            }
 
             public constructor(blurX:number = 4.0, blurY:number = 4.0, quality:number = BitmapFilterQuality.LOW) {
                 super();
+                this._f1 = new PIXI.filters.BlurFilter();
                 this.blurX = blurX;
                 this.blurY = blurY;
                 this.quality = quality;
@@ -1707,9 +1689,14 @@ export module bulletproof.flash {
                 return BitmapFilter.FILTER_BLUR;
             }
 
-            public apply(canvas:HTMLCanvasElement):void {
-                var radius = (this.blurX + this.blurY ) / 2;
-                thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
+            // Bulletproof
+            public get pixiFilters():Array<PIXI.AbstractFilter> {
+                return [this._f1];
+            }
+
+            // Bulletproof, PIXI
+            public applyFilter(renderer:PIXI.WebGLRenderer, input:PIXI.RenderTarget, output:PIXI.RenderTarget, clear?:boolean):void {
+                return this._f1.applyFilter(renderer, input, output, clear);
             }
 
         }
@@ -1873,13 +1860,12 @@ export module bulletproof.flash {
 
         export class DisplayObject extends events.EventDispatcher implements IBitmapDrawable {
 
-            protected _alpha:number;
             protected _blendShader:Shader;
-            protected _filters:Array<filters.BitmapFilter>;
             protected _height:number;
             protected _loaderInfo:LoaderInfo;
             protected _parent:DisplayObjectContainer;
             protected _root:DisplayObject;
+            protected _name:string;
             protected _rotation:number;
             protected _rotationX:number;
             protected _rotationY:number;
@@ -1893,73 +1879,40 @@ export module bulletproof.flash {
             protected _y:number = 0;
             protected _z:number = 0;
             protected _childIndex:number;
-            protected _bp_displayBuffer:HTMLCanvasElement;
-            protected _bp_containerElem:HTMLElement = null;
-            protected _bp_drawStateInvalidated:boolean = false;
+            protected _pixiObject:PIXI.DisplayObject;
 
-            public constructor(_bp_root:DisplayObject, _bp_parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
+            public constructor(root:DisplayObject, parent:DisplayObjectContainer) {
                 super();
-                this._root = _bp_root;
-                this._parent = _bp_parent;
-                if (_bp_parent != null) {
-                    this._childIndex = _bp_parent.numChildren;
-                    _bp_parent.addChild(this);
-                }
-                if (createBuffer) {
-                    this._bp_displayBuffer = window.document.createElement('canvas');
-                    if (_bp_parent != null) {
-                        _bp_parent._bp_containerElement().appendChild(this._bp_displayBuffer);
-                    }
-                    this._bp_displayBuffer.style.left = '0';
-                    this._bp_displayBuffer.style.top = '0';
-                    this._bp_displayBuffer.style.position = 'absolute';
-                    this.width = _bp_parent.width;
-                    this.height = _bp_parent.height;
+                this._pixiObject = this._getNewPixiObject();
+                this._root = root;
+                this._parent = parent;
+                if (parent != null) {
+                    this._childIndex = parent.numChildren;
+                    parent.addChild(this);
                 }
             }
 
-            public _bp_draw():void {
-                if (this._bp_drawStateInvalidated) {
-                    this._bp_draw_core();
-                    var filters = this.filters;
-                    if (filters && filters.length > 0) {
-                        for (var i = 0; i < filters.length; i++) {
-                            filters[i].apply(this._bp_displayBuffer);
-                        }
-                    }
-                    this._bp_drawStateInvalidated = false;
-                }
+            // Bulletproof
+            protected _getNewPixiObject():PIXI.DisplayObject {
+                return new PIXI.DisplayObject();
             }
 
-            protected _bp_draw_core():void {
+            // Bulletproof
+            public draw():void {
             }
 
-            protected _bp_context():CanvasRenderingContext2D {
-                return this._bp_displayBuffer.getContext('2d');
-            }
-
-            public _bp_onSizeChanged(newSize:geom.Point):void {
-                this._bp_displayBuffer.style.width = newSize.x.toString() + 'px';
-                this._bp_displayBuffer.style.height = newSize.y.toString() + 'px';
-            }
-
-            public _bp_invalidate():void {
-                this._bp_drawStateInvalidated = true;
-            }
-
-            protected _bp_containerElement():HTMLElement {
-                return this._bp_containerElem;
+            // Bulletproof
+            protected drawInternal():void {
             }
 
             public accessibilityProperties:accessibility.AccessibilityProperties;
 
             public get alpha():number {
-                return this._alpha;
+                return this._pixiObject.alpha;
             }
 
             public set alpha(v:number) {
-                this._alpha = mic.util.limit(v, 0, 1);
-                this._bp_displayBuffer.style.opacity = this._alpha.toString();
+                this._pixiObject.alpha = v;
             }
 
             public blendMode:string;
@@ -1968,7 +1921,13 @@ export module bulletproof.flash {
                 this._blendShader = v;
             }
 
-            public cacheAsBitmap:boolean;
+            public get cacheAsBitmap():boolean {
+                return this._pixiObject.cacheAsBitmap;
+            }
+
+            public set cacheAsBitmap(v:boolean) {
+                this._pixiObject.cacheAsBitmap = v;
+            }
 
             // Bulletproof
             public get childIndex():number {
@@ -1982,28 +1941,19 @@ export module bulletproof.flash {
             }
 
             public get filters():Array<filters.BitmapFilter> {
-                return this._filters;
+                return <Array<filters.BitmapFilter>>this._pixiObject.filters;
             }
 
             public set filters(v:Array<filters.BitmapFilter>) {
-                if (v == null) {
-                    this._filters = [];
-                } else {
-                    this._filters = v;
-                }
-                this._bp_invalidate();
+                this._pixiObject.filters = v;
             }
 
             public get height():number {
-                return this._bp_displayBuffer.clientHeight;
+                return this._height;
             }
 
             public set height(v:number) {
-                var b = this._height != v;
                 this._height = v;
-                this._bp_displayBuffer.style.height = v.toString() + 'px';
-                this._bp_displayBuffer.height = v;
-                b && this._bp_invalidate();
             }
 
             public get loaderInfo():LoaderInfo {
@@ -2021,7 +1971,14 @@ export module bulletproof.flash {
                 throw new NotImplementedError();
             }
 
-            public name:string;
+            public get name():string {
+                return this._name;
+            }
+
+            public set name(v:string) {
+                this._name = v;
+            }
+
             public opaqueBackground:Object;
 
             public get parent():DisplayObjectContainer {
@@ -2124,35 +2081,27 @@ export module bulletproof.flash {
             public visible:boolean;
 
             public get width():number {
-                return this._bp_displayBuffer.clientWidth;
+                return this._width;
             }
 
             public set width(v:number) {
-                var b = this._width != v;
                 this._width = v;
-                this._bp_displayBuffer.style.width = v.toString() + 'px';
-                this._bp_displayBuffer.width = v;
-                b && this._bp_invalidate();
             }
 
             public get x():number {
-                return this._x;
+                return this._pixiObject.x;
             }
 
             public set x(v:number) {
-                var b = this._x != v;
-                this._x = v;
-                b && this._bp_invalidate();
+                this._pixiObject.x = v;
             }
 
             public get y():number {
-                return this._y;
+                return this._pixiObject.y;
             }
 
             public set y(v:number) {
-                var b = this._y != v;
-                this._y = v;
-                b && this._bp_invalidate();
+                this._pixiObject.y = v;
             }
 
             public get z():number {
@@ -2196,8 +2145,8 @@ export module bulletproof.flash {
             }
 
             // Bulletproof
-            public getDisplayBuffer():HTMLCanvasElement {
-                return this._bp_displayBuffer;
+            public get pixiObject():PIXI.DisplayObject {
+                return this._pixiObject;
             }
 
         }
@@ -2213,8 +2162,8 @@ export module bulletproof.flash {
             public tabEnabled:boolean;
             public tabIndex:number;
 
-            public constructor(root:DisplayObject, parent:DisplayObjectContainer, createBuffer:boolean = true) {
-                super(root, parent, createBuffer);
+            public constructor(root:DisplayObject, parent:DisplayObjectContainer) {
+                super(root, parent);
             }
 
             public requestSoftKeyboard():boolean {
@@ -2226,45 +2175,16 @@ export module bulletproof.flash {
         export class DisplayObjectContainer extends InteractiveObject {
 
             protected _children:Array<DisplayObject> = [];
+            // This is trick since this TypeScript statement will not be converted to any JavaScript statement
+            // after compilation, but will affect TypeScript parsers.
+            protected _pixiObject:PIXI.Container;
 
-            public constructor(root:DisplayObject, parent:DisplayObjectContainer = null, createBuffer:boolean = true) {
-                super(root, parent, createBuffer);
-                if (parent != null) {
-                    this._bp_containerElem = window.document.createElement('div');
-                    parent._bp_containerElement().appendChild(this._bp_containerElem);
-                }
+            public constructor(root:DisplayObject, parent:DisplayObjectContainer) {
+                super(root, parent);
             }
 
-            public _bp_draw():void {
-                //super._bp_draw();
-                var len = this.numChildren;
-                if (this._bp_displayBuffer != null) {
-                    var context = this._bp_context();
-                    //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                    // 似乎无效
-                    context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                    // TODO: HACK: works under nw.js v0.12
-                    // DANGER: will reset styles
-                    //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
-                    if (this._bp_drawStateInvalidated) {
-                        this._bp_draw_core();
-                        this._bp_drawStateInvalidated = false;
-                    }
-                }
-                var child:DisplayObject;
-                for (var i = 0; i < len; i++) {
-                    child = this._children[i];
-                    child._bp_draw();
-                    //context.drawImage(this._children[i]._bp_displayBuffer, child.x, child.y);
-                }
-            }
-
-            public _bp_onSizeChanged(newSize:geom.Point):void {
-                super._bp_onSizeChanged(newSize);
-                var len = this.numChildren;
-                for (var i = 0; i < len; i++) {
-                    this._children[i]._bp_onSizeChanged(newSize);
-                }
+            protected _getNewPixiObject():PIXI.Container {
+                return new PIXI.Container();
             }
 
             public dispatchEvent(event:Event, data?:any):boolean {
@@ -2274,6 +2194,15 @@ export module bulletproof.flash {
                     this._children[i].dispatchEvent(event, data);
                 }
                 return r;
+            }
+
+            // Bulletproof
+            public draw():void {
+                this.drawInternal();
+                var l = this.numChildren;
+                for (var i = 0; i < l; i++) {
+                    this._children[i].draw();
+                }
             }
 
             public mouseChildren:boolean;
@@ -2291,6 +2220,7 @@ export module bulletproof.flash {
             public addChild(child:DisplayObject):DisplayObject {
                 if (this._children.indexOf(child) < 0) {
                     this._children.push(child);
+                    this._pixiObject.addChild(child.pixiObject);
                 }
                 return child;
             }
@@ -2298,6 +2228,7 @@ export module bulletproof.flash {
             public addChildAt(child:DisplayObject, index:number):DisplayObject {
                 if (this._children.indexOf(child) < 0) {
                     this._children = this._children.slice(0, index - 1).concat(child).concat(this._children.slice(index, this._children.length - 1));
+                    this._pixiObject.addChildAt(child.pixiObject, index);
                 }
                 return child;
             }
@@ -2332,8 +2263,8 @@ export module bulletproof.flash {
                     for (var i = child.childIndex + 1; i < this._children.length; i++) {
                         this._children[i].childIndex++;
                     }
-                    this._bp_containerElem.removeChild(child.getDisplayBuffer());
                     this._children.splice(childIndex, 1);
+                    this._pixiObject.removeChild(child.pixiObject);
                     return child;
                 } else {
                     return null;
@@ -2356,6 +2287,27 @@ export module bulletproof.flash {
                 throw new NotImplementedError();
             }
 
+            public get width():number {
+                return this._pixiObject.width;
+            }
+
+            public set width(v:number) {
+                this._pixiObject.width = v;
+            }
+
+            public get height():number {
+                return this._pixiObject.height;
+            }
+
+            public set height(v:number) {
+                this._pixiObject.height = v;
+            }
+
+            // Bulletproof
+            public get pixiObject():PIXI.Container {
+                return this._pixiObject;
+            }
+
         }
 
         export class Stage extends DisplayObjectContainer {
@@ -2365,48 +2317,24 @@ export module bulletproof.flash {
             private _colorCorrectionSupport:string;
             private _stageHeight:number;
             private _stageWidth:number;
+            private _renderer:PIXI.WebGLRenderer;
 
-            public constructor(_bp_container:HTMLElement) {
+            public constructor(renderer:PIXI.WebGLRenderer) {
                 // 注意这里可能引起了循环引用，请手工释放
-                super(null, null, false);
-                this._bp_containerElem = _bp_container;
+                super(null, null);
                 this._root = this; // forced (= =)#
+                this._renderer = renderer;
             }
 
-            public _bp_onSizeChanged(newSize:geom.Point):void {
-                var len = this.numChildren;
-                for (var i = 0; i < len; i++) {
-                    this._children[i]._bp_onSizeChanged(newSize);
-                }
-            }
-
+            // Bulletproof
             public raiseEnterFrame() {
                 var event = mic.util.createTestEvent(events.FlashEvent.ENTER_FRAME);
                 this.dispatchEvent(event);
             }
 
             // Bulletproof
-            public _bp_stageReleaseRoot():void {
-                this._root = null;
-            }
-
             public redraw() {
-                this._bp_draw();
-            }
-
-            public _bp_draw() {
-                //super._bp_draw();
-                var len = this.numChildren;
-                var child:DisplayObject;
-                for (var i = 0; i < len; i++) {
-                    child = this._children[i];
-                    child._bp_draw();
-                }
-                /*
-                 var context = this._bp_outputCanvas.getContext('2d');
-                 context.clearRect(0, 0, this._bp_outputCanvas.clientWidth, this._bp_outputCanvas.clientHeight);
-                 context.drawImage(this._bp_displayBuffer, 0, 0);
-                 */
+                this._renderer.render(this._pixiObject);
             }
 
             public align:string;
@@ -2438,14 +2366,6 @@ export module bulletproof.flash {
 
             public get fullScreenWidth():number {
                 return screen.width;
-            }
-
-            public get height():number {
-                return this._bp_containerElem.clientHeight;
-            }
-
-            public set height(v:number) {
-                this._bp_containerElem.style.height = v.toString() + 'px';
             }
 
             public mouseChildren:boolean;
@@ -2488,14 +2408,6 @@ export module bulletproof.flash {
                 throw new NotImplementedError();
             }
 
-            public get width():number {
-                return this._bp_containerElem.clientWidth;
-            }
-
-            public set width(v:number) {
-                this._bp_containerElem.style.width = v.toString() + 'px';
-            }
-
             public get x():number {
                 console.warn('Stage.x is always 0.');
                 return 0;
@@ -2515,7 +2427,7 @@ export module bulletproof.flash {
             }
 
             public invalidate():void {
-                this._bp_invalidate();
+                throw new NotImplementedError();
             }
 
             public isFocusInaccessible():boolean {
@@ -2806,23 +2718,18 @@ export module bulletproof.flash {
         export class Bitmap extends DisplayObject {
         }
 
-        export class Shape extends DisplayObject {
+        // Bulletproof: Non-standard inheritance
+        export class Shape extends DisplayObjectContainer {
 
             private _graphics:Graphics;
 
             public constructor(root:DisplayObject, parent:DisplayObjectContainer) {
-                super(root, parent, true);
+                super(root, parent);
                 this._graphics = new Graphics(this);
             }
 
             public get graphics():Graphics {
                 return this._graphics;
-            }
-
-            public _bp_draw_core():void {
-                if (this._graphics) {
-                    this._graphics.redraw();
-                }
             }
 
         }
@@ -2857,103 +2764,9 @@ export module bulletproof.flash {
 
         }
 
-        // Bulletproof
-        class GraphicsHistoryCommand {
-
-            public static get BEGIN_BITMAP_FILL():number {
-                return 120;
-            }
-
-            public static get BEGIN_FILL():number {
-                return 110;
-            }
-
-            public static get BEGIN_GRADIENT_FILL():number {
-                return 130;
-            }
-
-            public static get BEGIN_SHADER_FILL():number {
-                return 140;
-            }
-
-            public static get CLEAR():number {
-                return 100;
-            }
-
-            public static get CURVE_TO():number {
-                return 90;
-            }
-
-            public static get DRAW_CIRCLE():number {
-                return 70;
-            }
-
-            public static get DRAW_ELLIPSE():number {
-                return 80;
-            }
-
-            public static get DRAW_GRAPHICS_DATA():number {
-                return 150;
-            }
-
-            public static get DRAW_PATH():number {
-                return 50;
-            }
-
-            public static get DRAW_RECT():number {
-                return 30;
-            }
-
-            public static get DRAW_ROUND_RECT():number {
-                return 60;
-            }
-
-            public static get DRAW_TRIANGLES():number {
-                return 40;
-            }
-
-            public static get END_FILL():number {
-                return 160;
-            }
-
-            public static get LINE_BITMAP_STYLE():number {
-                return 170;
-            }
-
-            public static get LINE_GRADIENT_STYLE():number {
-                return 180;
-            }
-
-            public static get LINE_SHADER_STYLE():number {
-                return 190;
-            }
-
-            public static get LINE_STYLE():number {
-                return 200;
-            }
-
-            public static get LINE_TO():number {
-                return 20;
-            }
-
-            public static get MOVE_TO():number {
-                return 10;
-            }
-
-        }
-
-        // Bulletproof
-        interface IGraphicsHistoryEntry {
-
-            command:number;
-            data:any;
-
-        }
-
         export class Graphics implements ICopyable<Graphics> {
 
-            private _canvas:HTMLCanvasElement;
-            private _displayObject:DisplayObject;
+            private _displayObjectContainer:DisplayObjectContainer;
             private static _bp_defaultGraphicsSettings:IGraphicsSettings = {
                 fillStyle: "#000000",
                 strokeStyle: "#000000",
@@ -2962,20 +2775,12 @@ export module bulletproof.flash {
                 miterLimit: 10,
                 font: "10px sans-serif"
             };
-            private _currentGraphicsSettings:IGraphicsSettings;
-            private _isInFill = false;
-            private _transformMatrix:Array<number> = [1, 0, 0, 1, 0, 0, 0, 0, 1];
-            private _isRedrawCalling:boolean = false;
-            private _redrawHistoryQueue:Array<IGraphicsHistoryEntry> = [];
+            private _pixiGraphics:PIXI.Graphics;
 
-            public constructor(attachedDisplayObject:DisplayObject) {
-                this._displayObject = attachedDisplayObject;
-                this._canvas = attachedDisplayObject.getDisplayBuffer();
-                this.saveGraphicsSettings(); // saved as an origin
-            }
-
-            private _bp_context():CanvasRenderingContext2D {
-                return this._canvas.getContext('2d');
+            public constructor(attachedDisplayObjectContainer:DisplayObjectContainer) {
+                this._displayObjectContainer = attachedDisplayObjectContainer;
+                this._pixiGraphics = new PIXI.Graphics();
+                attachedDisplayObjectContainer.pixiObject.addChild(this._pixiGraphics);
             }
 
             private static _bp_getSettings(context:CanvasRenderingContext2D):IGraphicsSettings {
@@ -2987,16 +2792,6 @@ export module bulletproof.flash {
                     miterLimit: context.miterLimit,
                     font: context.font
                 };
-            }
-
-            // Bulletproof
-            private saveGraphicsSettings():void {
-                this._currentGraphicsSettings = Graphics._bp_getSettings(this._bp_context());
-            }
-
-            // Bulletproof
-            private restoreGraphicsSettings():void {
-                Graphics._bp_setSettings(this._bp_context(), this._currentGraphicsSettings);
             }
 
             private static _bp_setSettings(context:CanvasRenderingContext2D, settings:IGraphicsSettings):void {
@@ -3013,42 +2808,14 @@ export module bulletproof.flash {
             }
 
             public beginFill(color:number, alpha:number = 1.0):void {
-                this._bp_context().fillStyle = mic.Color.argbNumberToCss(color, alpha);
-                this._isInFill = true;
-                if (!this._isRedrawCalling) {
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.BEGIN_FILL,
-                        data: {
-                            color: color,
-                            alpha: alpha
-                        }
-                    });
-                }
+                this._pixiGraphics.beginFill(color, alpha);
             }
 
             public beginGradientFill(type:string, colors:Array<number>, alphas:Array<number>, ratios:Array<number>,
                                      matrix:geom.Matrix = null, spreadMethod:string = SpreadMethod.PAD,
                                      interpolationMethod:string = InterpolationMethod.RGB, focalPointRatio:number = 0):void {
-                var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-                if (gradient != null) {
-                    this._bp_context().fillStyle = gradient;
-                }
-                this._isInFill = true;
-                if (!this._isRedrawCalling) {
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.BEGIN_GRADIENT_FILL,
-                        data: {
-                            type: type,
-                            colors: colors,
-                            alphas: alphas,
-                            ratios: ratios,
-                            matrix: matrix,
-                            spreadMethod: spreadMethod,
-                            interpolationMethod: interpolationMethod,
-                            focalPointRatio: focalPointRatio
-                        }
-                    });
-                }
+                // Gradient fill is not supported in PIXI
+                throw new NotImplementedError();
             }
 
             public beginShaderFill(shader:Shader, matrix:geom.Matrix = null):void {
@@ -3056,25 +2823,7 @@ export module bulletproof.flash {
             }
 
             public clear():void {
-                var context = this._bp_context();
-                //context.save();
-                this.resetTransform();
-                // 似乎无效
-                context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
-                // TODO: HACK: works under nw.js v0.12
-                // DANGER: will reset styles
-                //this._canvas.width = this._canvas.width;
-                //context.restore();
-                Graphics._bp_setSettings(context, Graphics._bp_defaultGraphicsSettings);
-                context.beginPath();
-                this._isInFill = false;
-                // Since all contents are clear, there should be nothing even if redraw() is called
-                // Also please free the history entries.
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue = [];
-                    this.saveGraphicsSettings();
-                }
+                this._pixiGraphics.clear();
             }
 
             public copyFrom(sourceGraphics:Graphics) {
@@ -3082,96 +2831,15 @@ export module bulletproof.flash {
             }
 
             public curveTo(controlX:number, controlY:number, anchorX:number, anchorY:number):void {
-                var context = this._bp_context();
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                context.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
-                context.stroke();
-                context.beginPath();
-                context.moveTo(anchorX, anchorY);
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.CURVE_TO,
-                        data: {
-                            controlX: controlX,
-                            controlY: controlY,
-                            anchorX: anchorX,
-                            anchorY: anchorY
-                        }
-                    });
-                }
+                this._pixiGraphics.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
             }
 
             public drawCircle(x:number, y:number, radius:number):void {
-                var context = this._bp_context();
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                context.moveTo(x + radius, y);
-                context.arc(x, y, radius, 0, Math.PI * 2);
-                if (this._isInFill) {
-                    context.fill();
-                }
-                context.stroke();
-                context.beginPath();
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.DRAW_CIRCLE,
-                        data: {
-                            x: x,
-                            y: y,
-                            radius: radius
-                        }
-                    });
-                }
+                this._pixiGraphics.drawCircle(x, y, radius);
             }
 
             public drawEllipse(x:number, y:number, width:number, height:number):void {
-                // http://www.cnblogs.com/shn11160/archive/2012/08/27/2658057.html
-                var context = this._bp_context();
-                //context.save();
-                /*
-                 var ox = 0.5 * width, oy = 0.6 * height;
-                 context.translate(x, y);
-                 context.beginPath();
-                 context.moveTo(0, height);
-                 context.bezierCurveTo(ox, height, width, oy, width, 0);
-                 context.bezierCurveTo(width, -oy, ox, -height, 0, -height);
-                 context.bezierCurveTo(-ox, -height, -width, -oy, -width, 0);
-                 context.bezierCurveTo(-width, oy, -ox, height, 0, height);
-                 context.closePath();
-                 context.fill();
-                 context.stroke();
-                 */
-                //context.restore();
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                context.save();
-                var ratio = height / width;
-                var centerX = x + width / 2;
-                var centerY = y + width / 2;
-                context.moveTo(centerX + width / 2, centerY);
-                context.scale(1, ratio);
-                context.arc(centerX, centerY, width / 2, 0, Math.PI * 2, true);
-                context.restore();
-                if (this._isInFill) {
-                    context.fill();
-                }
-                context.stroke();
-                context.beginPath();
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.DRAW_ELLIPSE,
-                        data: {
-                            x: x,
-                            y: y,
-                            width: width,
-                            height: height
-                        }
-                    });
-                }
+                this._pixiGraphics.drawEllipse(x, y, width, height);
             }
 
             public drawGraphicsData(graphicsData:Array<IGraphicsData>):void {
@@ -3186,68 +2854,46 @@ export module bulletproof.flash {
              * @param checkCommands Bulletproof
              */
             public drawPath(commands:Array<number>, data:Array<number>, winding:string = GraphicsPathWinding.EVEN_ODD, checkCommands:boolean = true):void {
-                var context = this._bp_context();
                 if (checkCommands && !Graphics._bp_checkPathCommands(commands, data)) {
                     return;
                 }
                 var commandLength = commands.length;
-                var dataLength = data.length;
                 var j = 0;
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                context.beginPath();
                 for (var i = 0; i < commandLength; i++) {
                     switch (commands[i]) {
                         case GraphicsPathCommand.CUBIC_CURVE_TO:
-                            context.bezierCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3], data[j + 4], data[j + 5]);
+                            this._pixiGraphics.bezierCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3], data[j + 4], data[j + 5]);
                             j += 6;
                             break;
                         case GraphicsPathCommand.CURVE_TO:
-                            context.quadraticCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3]);
+                            this._pixiGraphics.quadraticCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3]);
                             j += 4;
                             break;
                         case GraphicsPathCommand.LINE_TO:
                             // HACK: please update the x and y properties
                             //context.lineTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
-                            context.lineTo(data[j], data[j + 1]);
+                            this._pixiGraphics.lineTo(data[j], data[j + 1]);
                             j += 2;
                             break;
                         case GraphicsPathCommand.MOVE_TO:
                             // HACK: please update the x and y properties
                             //context.moveTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
-                            context.moveTo(data[j], data[j + 1]);
+                            this._pixiGraphics.moveTo(data[j], data[j + 1]);
                             j += 2;
                             break;
                         case GraphicsPathCommand.NO_OP:
                             break;
                         case GraphicsPathCommand.WIDE_LINE_TO:
-                            context.lineTo(data[j + 2], data[j + 3]);
+                            this._pixiGraphics.lineTo(data[j + 2], data[j + 3]);
                             j += 4;
                             break;
                         case GraphicsPathCommand.WIDE_MOVE_TO:
-                            context.moveTo(data[j + 2], data[j + 3]);
+                            this._pixiGraphics.moveTo(data[j + 2], data[j + 3]);
                             j += 4;
                             break;
                         default:
                             break;
                     }
-                }
-                context.closePath();
-                if (this._isInFill) {
-                    context.fill();
-                }
-                context.stroke();
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.DRAW_PATH,
-                        data: {
-                            commands: commands,
-                            data: data,
-                            winding: winding,
-                            checkCommands: checkCommands
-                        }
-                    });
                 }
             }
 
@@ -3305,29 +2951,14 @@ export module bulletproof.flash {
             }
 
             public drawRect(x:number, y:number, width:number, height:number):void {
-                var context = this._bp_context();
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                if (this._isInFill) {
-                    context.fillRect(x, y, width, height);
-                }
-                context.strokeRect(x, y, width, height);
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.DRAW_RECT,
-                        data: {
-                            x: x,
-                            y: y,
-                            width: width,
-                            height: height
-                        }
-                    });
-                }
+                this._pixiGraphics.drawRect(x, y, width, height);
             }
 
             public drawRoundRect(x:number, y:number, width:number, height:number, ellipseWidth:number, ellipseHeight:number = NaN):void {
-                throw new NotImplementedError();
+                if (ellipseHeight === NaN) {
+                    ellipseHeight = ellipseWidth;
+                }
+                this._pixiGraphics.drawRoundedRect(x, y, width, height, (ellipseWidth + ellipseHeight) / 2);
             }
 
             public drawTriangles(vectors:Array<number>, indices:Array<number> = null, uvtData:Array<number> = null, culling:string = TriangleCulling.NONE):void {
@@ -3377,15 +3008,7 @@ export module bulletproof.flash {
             }
 
             public endFill():void {
-                // TODO: 文档上说似乎应该进行指令缓存，在 endFill() 时一起绘制？
-                this._isInFill = false;
-                //this._displayObject._bp_invalidate();
-                if (!this._isRedrawCalling) {
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.END_FILL,
-                        data: null
-                    });
-                }
+                this._pixiGraphics.endFill();
             }
 
             public lineBitmapStyle(bitmap:BitmapData, matrix:geom.Matrix = null, repeat:boolean = true, smooth:boolean = false):void {
@@ -3395,25 +3018,8 @@ export module bulletproof.flash {
             public lineGradientStyle(type:string, colors:Array<number>, alphas:Array<number>, ratios:Array<number>,
                                      matrix:geom.Matrix = null, spreadMethod:string = SpreadMethod.PAD,
                                      interpolationMethod:string = InterpolationMethod.RGB, focalPointRatio:number = 0):void {
-                var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-                if (gradient != null) {
-                    this._bp_context().strokeStyle = gradient;
-                }
-                if (!this._isRedrawCalling) {
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.LINE_BITMAP_STYLE,
-                        data: {
-                            type: type,
-                            colors: colors,
-                            alphas: alphas,
-                            ratios: ratios,
-                            matrix: matrix,
-                            spreadMethod: spreadMethod,
-                            interpolationMethod: interpolationMethod,
-                            focalPointRatio: focalPointRatio
-                        }
-                    });
-                }
+                // Gradient is not supported in PIXI
+                throw new NotImplementedError();
             }
 
             public lineShaderStyle(shader:Shader, matrix:geom.Matrix = null):void {
@@ -3422,190 +3028,15 @@ export module bulletproof.flash {
 
             public lineStyle(thickness:number = NaN, color:number = 0, alpha:number = 1.0, pixelHinting:boolean = false,
                              scaleMode:string = LineScaleMode.NORMAL, caps:string = null, joints:string = null, miterLimit:number = 3):void {
-                var context = this._bp_context();
-                if (thickness != null && !isNaN(thickness)) {
-                    context.lineWidth = thickness;
-                }
-                context.strokeStyle = mic.Color.argbNumberToCss(color, alpha);
-                if (caps != null) {
-                    context.lineCap = caps;
-                }
-                if (joints != null) {
-                    context.lineJoin = joints;
-                }
-                context.miterLimit = miterLimit;
-                if (!this._isRedrawCalling) {
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.LINE_STYLE,
-                        data: {
-                            thickness: thickness,
-                            color: color,
-                            alpha: alpha,
-                            pixelHinting: pixelHinting,
-                            scaleMode: scaleMode,
-                            caps: caps,
-                            joints: joints,
-                            miterLimt: miterLimit
-                        }
-                    });
-                }
+                this._pixiGraphics.lineStyle(thickness, color, alpha);
             }
 
             public lineTo(x:number, y:number):void {
-                var context = this._bp_context();
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                context.lineTo(x, y);
-                // HACK: Please update
-                //context.lineTo(x + this._displayObject.x, y + this._displayObject.y);
-                context.stroke();
-                context.beginPath();
-                context.moveTo(x, y);
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.LINE_TO,
-                        data: {
-                            x: x,
-                            y: y
-                        }
-                    });
-                }
+                this._pixiGraphics.lineTo(x, y);
             }
 
             public moveTo(x:number, y:number):void {
-                var context = this._bp_context();
-                this.resetTransform();
-                context.translate(this._displayObject.x, this._displayObject.y);
-                // HACK: Please update
-                context.moveTo(x, y);
-                if (!this._isRedrawCalling) {
-                    this._displayObject._bp_invalidate();
-                    this._redrawHistoryQueue.push({
-                        command: GraphicsHistoryCommand.MOVE_TO,
-                        data: {
-                            x: x,
-                            y: y
-                        }
-                    });
-                }
-            }
-
-            public redraw():void {
-                if (this._isRedrawCalling) {
-                    return;
-                }
-                this._isRedrawCalling = true;
-                this.clear();
-                var len = this._redrawHistoryQueue.length;
-                var cmd:IGraphicsHistoryEntry;
-                for (var i = 0; i < len; i++) {
-                    cmd = this._redrawHistoryQueue[i];
-                    switch (cmd.command) {
-                        case GraphicsHistoryCommand.LINE_TO:
-                            this.lineTo(cmd.data.x, cmd.data.y);
-                            break;
-                        case GraphicsHistoryCommand.MOVE_TO:
-                            this.moveTo(cmd.data.x, cmd.data.y);
-                            break;
-                        case GraphicsHistoryCommand.CURVE_TO:
-                            this.curveTo(cmd.data.controlX, cmd.data.controlY, cmd.data.anchorX, cmd.data.anchorY);
-                            break;
-                        case GraphicsHistoryCommand.DRAW_RECT:
-                            this.drawRect(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
-                            break;
-                        case GraphicsHistoryCommand.DRAW_CIRCLE:
-                            this.drawCircle(cmd.data.x, cmd.data.y, cmd.data.radius);
-                            break;
-                        case GraphicsHistoryCommand.DRAW_ELLIPSE:
-                            this.drawEllipse(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
-                            break;
-                        case GraphicsHistoryCommand.DRAW_PATH:
-                            this.drawPath(cmd.data.commands, cmd.data.data, cmd.data.winding, cmd.data.checkCommands);
-                            break;
-                        case GraphicsHistoryCommand.BEGIN_BITMAP_FILL:
-                            break;
-                        case GraphicsHistoryCommand.BEGIN_FILL:
-                            this.beginFill(cmd.data.color, cmd.data.alpha);
-                            break;
-                        case GraphicsHistoryCommand.BEGIN_GRADIENT_FILL:
-                            this.beginGradientFill(cmd.data.type, cmd.data.colors, cmd.data.alphas, cmd.data.ratios,
-                                cmd.data.matrix, cmd.data.spreadMethod, cmd.data.interpolationMethod, cmd.data.focalPointRatio);
-                            break;
-                        case GraphicsHistoryCommand.BEGIN_SHADER_FILL:
-                            break;
-                        case GraphicsHistoryCommand.CLEAR:
-                            break;
-                        case GraphicsHistoryCommand.DRAW_GRAPHICS_DATA:
-                            break;
-                        case GraphicsHistoryCommand.DRAW_ROUND_RECT:
-                            break;
-                        case GraphicsHistoryCommand.END_FILL:
-                            this.endFill();
-                            break;
-                        case GraphicsHistoryCommand.LINE_BITMAP_STYLE:
-                            break;
-                        case GraphicsHistoryCommand.LINE_GRADIENT_STYLE:
-                            this.lineGradientStyle(cmd.data.type, cmd.data.colors, cmd.data.alphas, cmd.data.ratios,
-                                cmd.data.matrix, cmd.data.spreadMethod, cmd.data.interpolationMethod, cmd.data.focalPointRatio);
-                            break;
-                        case GraphicsHistoryCommand.LINE_SHADER_STYLE:
-                            break;
-                        case GraphicsHistoryCommand.LINE_STYLE:
-                            this.lineStyle(cmd.data.thickness, cmd.data.color, cmd.data.alpha, cmd.data.pixelHinting,
-                                cmd.data.scaleMode, cmd.data.caps, cmd.data.joints, cmd.data.miterLimit);
-                            break;
-                        case GraphicsHistoryCommand.DRAW_TRIANGLES:
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                this._isRedrawCalling = false;
-            }
-
-            private createGradient(type:string, colors:Array<number>, alphas:Array<number>, ratios:Array<number>,
-                                   matrix:geom.Matrix = null, spreadMethod = SpreadMethod.PAD,
-                                   interpolationMethod:string = InterpolationMethod.RGB, focalPointRatio:number = 0):CanvasGradient {
-                var context = this._bp_context();
-                var gradient:CanvasGradient;
-                if (colors != null || alphas != null || ratios != null) {
-                    // 保证所有数组都有值而且长度相等
-                    if (colors == null || alphas == null || ratios == null) {
-                        throw new ArgumentError('colors, alphas and ratios cannot be null.');
-                    }
-                    if (colors.length !== alphas.length && alphas.length !== ratios.length) {
-                        throw new ArgumentError('Array lengths are unequal.');
-                    }
-                }
-                var arrayLen = colors != null ? colors.length : 0;
-                var i:number;
-                var pt = new geom.Point(0, 1);
-                (matrix != null) && (pt = matrix.transformPoint(pt));
-                switch (type) {
-                    case GradientType.LINEAR:
-                        gradient = context.createLinearGradient(0, 0, pt.x, pt.y);
-                        break;
-                    case GradientType.RADIAL:
-                        gradient = context.createRadialGradient(0, 0, matrix != null ? matrix.a / 2 : 1, pt.x, pt.y, matrix != null ? matrix.d / 2 : 1);
-                        break;
-                    default:
-                        return null;
-                }
-                for (i = 0; i < arrayLen; i++) {
-                    gradient.addColorStop(mic.util.limit(ratios[i], 0, 255) / 255,
-                        mic.Color.argbNumberToCss(mic.Color.colorCombine(colors[i], alphas[i])));
-                }
-                return gradient;
-            }
-
-            private resetTransform() {
-                this._bp_context().setTransform(1, 0, 0, 1, 0, 0);
-            }
-
-            private redoLastActiveTransform() {
-                this._bp_context().transform(this._transformMatrix[0], this._transformMatrix[3], this._transformMatrix[1],
-                    this._transformMatrix[4], this._transformMatrix[2], this._transformMatrix[5]);
+                this._pixiGraphics.moveTo(x, y);
             }
 
         }
@@ -3856,7 +3287,7 @@ export module bulletproof.flash {
             protected _bp_timerCallbackInternal():void {
             }
 
-            protected _bp_timerCallback():void {
+            private _bp_timerCallback():void {
                 if (this.enabled) {
                     this._currentCount++;
                     if (this.repeatCount > 0 && this.currentCount > this.repeatCount) {

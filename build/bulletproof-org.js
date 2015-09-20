@@ -1,7 +1,6 @@
 /**
  * Created by MIC on 2015/8/28.
  */
-/// <reference path="../include/bulletproof-org.d.ts"/>
 var bulletproof;
 (function (bulletproof) {
     var NotImplementedError = (function () {

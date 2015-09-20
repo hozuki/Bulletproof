@@ -7,7 +7,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../include/bulletproof-flash.d.ts"/>
 var bulletproof_flash = require("./bulletproof-flash");
 var bulletproof;
 (function (bulletproof) {
@@ -22,7 +21,7 @@ var bulletproof;
             var Canvas = (function (_super) {
                 __extends(Canvas, _super);
                 function Canvas(root, parent) {
-                    _super.call(this, root, parent, false);
+                    _super.call(this, root, parent);
                 }
                 return Canvas;
             })(flash.display.DisplayObjectContainer);

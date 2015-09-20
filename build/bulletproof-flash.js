@@ -7,11 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-data-interface.d.ts"/>
-/// <reference path="../include/bulletproof-mic.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
-/// <reference path="../include/bulletproof-thirdparty.d.ts"/>
+/// <reference path="../../../include/ext/pixi.js/pixi.js.d.ts"/>
 var bulletproof_org = require("./bulletproof-org");
 var bulletproof_mic = require("./bulletproof-mic");
 var bulletproof_thirdparty = require("./bulletproof-thirdparty");
@@ -20,9 +16,7 @@ var bulletproof;
     var flash;
     (function (flash) {
         var mic = bulletproof_mic.bulletproof.mic;
-        var thirdparty = bulletproof_thirdparty.bulletproof.thirdparty;
         var NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
-        var ArgumentError = bulletproof_org.bulletproof.ArgumentError;
         var events;
         (function (events) {
             var EventClass = bulletproof_org.bulletproof.EventClass;
@@ -1745,8 +1739,10 @@ var bulletproof;
         })(geom = flash.geom || (flash.geom = {}));
         var filters;
         (function (filters) {
-            var BitmapFilter = (function () {
+            var BitmapFilter = (function (_super) {
+                __extends(BitmapFilter, _super);
                 function BitmapFilter() {
+                    _super.apply(this, arguments);
                 }
                 Object.defineProperty(BitmapFilter.prototype, "filterType", {
                     get: function () {
@@ -1757,9 +1753,6 @@ var bulletproof;
                 });
                 BitmapFilter.prototype.clone = function () {
                     return null;
-                };
-                BitmapFilter.prototype.apply = function (canvas) {
-                    throw new NotImplementedError();
                 };
                 Object.defineProperty(BitmapFilter, "FILTER_BLUR", {
                     get: function () {
@@ -1776,7 +1769,7 @@ var bulletproof;
                     configurable: true
                 });
                 return BitmapFilter;
-            })();
+            })(PIXI.AbstractFilter);
             filters.BitmapFilter = BitmapFilter;
             var BitmapFilterQuality = (function () {
                 function BitmapFilterQuality() {
@@ -1817,6 +1810,9 @@ var bulletproof;
                     if (inner === void 0) { inner = false; }
                     if (knockout === void 0) { knockout = false; }
                     _super.call(this);
+                    this._f1 = new PIXI.filters.ColorMatrixFilter();
+                    this._f2 = new PIXI.filters.BlurFilter();
+                    this._f3 = new PIXI.filters.ColorMatrixFilter();
                     this.color = color;
                     this.alpha = mic.util.limit(alpha, 0, 1);
                     this.blurX = blurX;
@@ -1826,6 +1822,60 @@ var bulletproof;
                     this.inner = inner;
                     this.knockout = knockout;
                 }
+                Object.defineProperty(GlowFilter.prototype, "alpha", {
+                    get: function () {
+                        return this._alpha;
+                    },
+                    set: function (v) {
+                        this._alpha = v;
+                        var clr = mic.Color.fromNumber(this.color);
+                        this._updateColorMatrix(clr.r, clr.g, clr.b, v);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(GlowFilter.prototype, "blurX", {
+                    get: function () {
+                        return this._f2.blurX;
+                    },
+                    set: function (v) {
+                        this._f2.blurX = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(GlowFilter.prototype, "blurY", {
+                    get: function () {
+                        return this._f2.blurY;
+                    },
+                    set: function (v) {
+                        this._f2.blurY = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(GlowFilter.prototype, "color", {
+                    get: function () {
+                        return this._color;
+                    },
+                    set: function (v) {
+                        this._color = v;
+                        var clr = mic.Color.fromNumber(v);
+                        this._updateColorMatrix(clr.r, clr.g, clr.b, this.alpha);
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(GlowFilter.prototype, "quality", {
+                    get: function () {
+                        return this._f2.passes;
+                    },
+                    set: function (v) {
+                        this._f2.passes = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 GlowFilter.prototype.clone = function () {
                     return new GlowFilter(this.color, this.alpha, this.blurX, this.blurY, this.strength, this.quality, this.inner, this.knockout);
                 };
@@ -1836,94 +1886,39 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                GlowFilter.prototype.updateBuffer = function (sourceCanvas) {
-                    if (sourceCanvas != null) {
-                        if (this._bufferCanvas == null) {
-                            this._bufferCanvas = window.document.createElement('canvas');
-                            this._bufferContext = this._bufferCanvas.getContext('2d');
-                        }
-                        if (this._bufferCanvas.width != sourceCanvas.width || this._bufferCanvas.height != sourceCanvas.height) {
-                            this._bufferCanvas.width = sourceCanvas.width;
-                            this._bufferCanvas.height = sourceCanvas.height;
-                        }
-                        this._bufferContext.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-                        this._bufferContext.drawImage(sourceCanvas, 0, 0);
-                    }
+                // Bulletproof, PIXI
+                // See PIXI.filters.BlurFilter
+                GlowFilter.prototype.applyFilter = function (renderer, input, output, clear) {
+                    var renderTarget = renderer.filterManager.getRenderTarget(true);
+                    this._f1.applyFilter(renderer, input, renderTarget);
+                    this._f2.applyFilter(renderer, renderTarget, output);
+                    this._f3.applyFilter(renderer, input, output);
+                    // type casting: trick
+                    renderer.filterManager.returnRenderTarget(renderTarget);
                 };
-                GlowFilter.prototype.releaseBuffer = function () {
-                    this._bufferContext = null;
-                    if (this._bufferCanvas && this._bufferCanvas.parentElement) {
-                        this._bufferCanvas.parentElement.removeChild(this._bufferCanvas);
-                    }
-                    this._bufferCanvas = null;
-                };
-                GlowFilter.prototype.solidifyBuffer = function () {
-                    var sourceImageData = this._bufferContext.getImageData(0, 0, this._bufferCanvas.width, this._bufferCanvas.height);
-                    var position;
-                    var i, j;
-                    var r, g, b;
-                    r = (this.color & 0x00ff0000) >> 16;
-                    g = (this.color & 0x0000ff00) >> 8;
-                    b = (this.color & 0x000000ff) | 0;
-                    for (j = 0; j < sourceImageData.height; j++) {
-                        for (i = 0; i < sourceImageData.width; i++) {
-                            position = ((j * sourceImageData.width) + i) * 4;
-                            if (sourceImageData.data[position + 3] != 0) {
-                                sourceImageData.data[position] = r;
-                                sourceImageData.data[position + 1] = g;
-                                sourceImageData.data[position + 2] = b;
-                                sourceImageData.data[position + 3] *= this.alpha;
-                            }
-                        }
-                    }
-                    this._bufferContext.putImageData(sourceImageData, 0, 0);
-                    sourceImageData = null;
-                };
-                GlowFilter.mixUp = function (blurredContext, targetContext, blurredCanvas, targetCanvas, width, height) {
-                    var tmp;
-                    //var blurImageData:ImageData = blurredContext.getImageData(0, 0, width, height);
-                    //var targetImageData:ImageData = targetContext.getImageData(0, 0, width, height);
-                    var position;
-                    var i, j;
-                    var sr, sg, sb, sa;
-                    var tr, tg, tb, ta;
-                    blurredContext.drawImage(targetCanvas, 0, 0);
-                    targetContext.setTransform(1, 0, 0, 1, 0, 0);
-                    targetContext.clearRect(0, 0, width, height);
-                    targetContext.drawImage(blurredCanvas, 0, 0);
-                    /*
-                     for (j = 0; j < height; j++) {
-                     for (i = 0; i < width; i++) {
-                     position = ((j * width) + i) * 4;
-                     sr = blurImageData.data[position];
-                     sg = blurImageData.data[position + 1];
-                     sb = blurImageData.data[position + 2];
-                     sa = blurImageData.data [position + 3];
-                     tr = targetImageData.data[position];
-                     tg = targetImageData.data[position + 1];
-                     tb = targetImageData.data[position + 2];
-                     ta = targetImageData.data[position + 3];
-                     tmp = mic.util.alphaBlend(tr, tg, tb, ta, sr, sg, sb, sa);
-                     targetImageData.data[position] = tmp.r;
-                     targetImageData.data[position + 1] = tmp.g;
-                     targetImageData.data[position + 2] = tmp.b;
-                     targetImageData.data[position + 3] = tmp.a;
-                     }
-                     }
-                     */
-                    //targetContext.putImageData(targetImageData, 0, 0);
-                    //targetImageData = null;
-                    //blurImageData = null;
-                };
-                GlowFilter.prototype.apply = function (canvas) {
-                    if (canvas != null) {
-                        this.updateBuffer(canvas);
-                        this.solidifyBuffer();
-                        var radius = (this.blurX + this.blurY) / 2;
-                        thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(this._bufferCanvas, 0, 0, this._bufferCanvas.width, this._bufferCanvas.height, radius, this.quality);
-                        var targetContext = canvas.getContext('2d');
-                        GlowFilter.mixUp(this._bufferContext, targetContext, this._bufferCanvas, canvas, canvas.width, canvas.height);
-                    }
+                GlowFilter.prototype._updateColorMatrix = function (r, g, b, a) {
+                    this._f1.matrix = [
+                        0,
+                        0,
+                        0,
+                        r,
+                        0,
+                        0,
+                        0,
+                        0,
+                        g,
+                        0,
+                        0,
+                        0,
+                        0,
+                        b,
+                        0,
+                        0,
+                        0,
+                        0,
+                        a,
+                        0
+                    ];
                 };
                 return GlowFilter;
             })(BitmapFilter);
@@ -1935,10 +1930,41 @@ var bulletproof;
                     if (blurY === void 0) { blurY = 4.0; }
                     if (quality === void 0) { quality = BitmapFilterQuality.LOW; }
                     _super.call(this);
+                    this._f1 = new PIXI.filters.BlurFilter();
                     this.blurX = blurX;
                     this.blurY = blurY;
                     this.quality = quality;
                 }
+                Object.defineProperty(BlurFilter.prototype, "blurX", {
+                    get: function () {
+                        return this._f1.blurX;
+                    },
+                    set: function (v) {
+                        this._f1.blurX = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(BlurFilter.prototype, "blurY", {
+                    get: function () {
+                        return this._f1.blurY;
+                    },
+                    set: function (v) {
+                        this._f1.blurY = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(BlurFilter.prototype, "quality", {
+                    get: function () {
+                        return this._f1.passes;
+                    },
+                    set: function (v) {
+                        this._f1.passes = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 BlurFilter.prototype.clone = function () {
                     return new BlurFilter(this.blurX, this.blurY, this.quality);
                 };
@@ -1949,9 +1975,17 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                BlurFilter.prototype.apply = function (canvas) {
-                    var radius = (this.blurX + this.blurY) / 2;
-                    thirdparty.Klingemann.StackBoxBlur.stackBoxBlurCanvasRGBA2(canvas, 0, 0, canvas.width, canvas.height, radius, this.quality);
+                Object.defineProperty(BlurFilter.prototype, "pixiFilters", {
+                    // Bulletproof
+                    get: function () {
+                        return [this._f1];
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                // Bulletproof, PIXI
+                BlurFilter.prototype.applyFilter = function (renderer, input, output, clear) {
+                    return this._f1.applyFilter(renderer, input, output, clear);
                 };
                 return BlurFilter;
             })(BitmapFilter);
@@ -2102,67 +2136,35 @@ var bulletproof;
         (function (display) {
             var DisplayObject = (function (_super) {
                 __extends(DisplayObject, _super);
-                function DisplayObject(_bp_root, _bp_parent, createBuffer) {
-                    if (_bp_parent === void 0) { _bp_parent = null; }
-                    if (createBuffer === void 0) { createBuffer = true; }
+                function DisplayObject(root, parent) {
                     _super.call(this);
                     this._x = 0;
                     this._y = 0;
                     this._z = 0;
-                    this._bp_containerElem = null;
-                    this._bp_drawStateInvalidated = false;
-                    this._root = _bp_root;
-                    this._parent = _bp_parent;
-                    if (_bp_parent != null) {
-                        this._childIndex = _bp_parent.numChildren;
-                        _bp_parent.addChild(this);
-                    }
-                    if (createBuffer) {
-                        this._bp_displayBuffer = window.document.createElement('canvas');
-                        if (_bp_parent != null) {
-                            _bp_parent._bp_containerElement().appendChild(this._bp_displayBuffer);
-                        }
-                        this._bp_displayBuffer.style.left = '0';
-                        this._bp_displayBuffer.style.top = '0';
-                        this._bp_displayBuffer.style.position = 'absolute';
-                        this.width = _bp_parent.width;
-                        this.height = _bp_parent.height;
+                    this._pixiObject = this._getNewPixiObject();
+                    this._root = root;
+                    this._parent = parent;
+                    if (parent != null) {
+                        this._childIndex = parent.numChildren;
+                        parent.addChild(this);
                     }
                 }
-                DisplayObject.prototype._bp_draw = function () {
-                    if (this._bp_drawStateInvalidated) {
-                        this._bp_draw_core();
-                        var filters = this.filters;
-                        if (filters && filters.length > 0) {
-                            for (var i = 0; i < filters.length; i++) {
-                                filters[i].apply(this._bp_displayBuffer);
-                            }
-                        }
-                        this._bp_drawStateInvalidated = false;
-                    }
+                // Bulletproof
+                DisplayObject.prototype._getNewPixiObject = function () {
+                    return new PIXI.DisplayObject();
                 };
-                DisplayObject.prototype._bp_draw_core = function () {
+                // Bulletproof
+                DisplayObject.prototype.draw = function () {
                 };
-                DisplayObject.prototype._bp_context = function () {
-                    return this._bp_displayBuffer.getContext('2d');
-                };
-                DisplayObject.prototype._bp_onSizeChanged = function (newSize) {
-                    this._bp_displayBuffer.style.width = newSize.x.toString() + 'px';
-                    this._bp_displayBuffer.style.height = newSize.y.toString() + 'px';
-                };
-                DisplayObject.prototype._bp_invalidate = function () {
-                    this._bp_drawStateInvalidated = true;
-                };
-                DisplayObject.prototype._bp_containerElement = function () {
-                    return this._bp_containerElem;
+                // Bulletproof
+                DisplayObject.prototype.drawInternal = function () {
                 };
                 Object.defineProperty(DisplayObject.prototype, "alpha", {
                     get: function () {
-                        return this._alpha;
+                        return this._pixiObject.alpha;
                     },
                     set: function (v) {
-                        this._alpha = mic.util.limit(v, 0, 1);
-                        this._bp_displayBuffer.style.opacity = this._alpha.toString();
+                        this._pixiObject.alpha = v;
                     },
                     enumerable: true,
                     configurable: true
@@ -2170,6 +2172,16 @@ var bulletproof;
                 Object.defineProperty(DisplayObject.prototype, "blendShader", {
                     set: function (v) {
                         this._blendShader = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObject.prototype, "cacheAsBitmap", {
+                    get: function () {
+                        return this._pixiObject.cacheAsBitmap;
+                    },
+                    set: function (v) {
+                        this._pixiObject.cacheAsBitmap = v;
                     },
                     enumerable: true,
                     configurable: true
@@ -2189,30 +2201,20 @@ var bulletproof;
                 });
                 Object.defineProperty(DisplayObject.prototype, "filters", {
                     get: function () {
-                        return this._filters;
+                        return this._pixiObject.filters;
                     },
                     set: function (v) {
-                        if (v == null) {
-                            this._filters = [];
-                        }
-                        else {
-                            this._filters = v;
-                        }
-                        this._bp_invalidate();
+                        this._pixiObject.filters = v;
                     },
                     enumerable: true,
                     configurable: true
                 });
                 Object.defineProperty(DisplayObject.prototype, "height", {
                     get: function () {
-                        return this._bp_displayBuffer.clientHeight;
+                        return this._height;
                     },
                     set: function (v) {
-                        var b = this._height != v;
                         this._height = v;
-                        this._bp_displayBuffer.style.height = v.toString() + 'px';
-                        this._bp_displayBuffer.height = v;
-                        b && this._bp_invalidate();
                     },
                     enumerable: true,
                     configurable: true
@@ -2234,6 +2236,16 @@ var bulletproof;
                 Object.defineProperty(DisplayObject.prototype, "mouseY", {
                     get: function () {
                         throw new NotImplementedError();
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObject.prototype, "name", {
+                    get: function () {
+                        return this._name;
+                    },
+                    set: function (v) {
+                        this._name = v;
                     },
                     enumerable: true,
                     configurable: true
@@ -2355,38 +2367,30 @@ var bulletproof;
                 });
                 Object.defineProperty(DisplayObject.prototype, "width", {
                     get: function () {
-                        return this._bp_displayBuffer.clientWidth;
+                        return this._width;
                     },
                     set: function (v) {
-                        var b = this._width != v;
                         this._width = v;
-                        this._bp_displayBuffer.style.width = v.toString() + 'px';
-                        this._bp_displayBuffer.width = v;
-                        b && this._bp_invalidate();
                     },
                     enumerable: true,
                     configurable: true
                 });
                 Object.defineProperty(DisplayObject.prototype, "x", {
                     get: function () {
-                        return this._x;
+                        return this._pixiObject.x;
                     },
                     set: function (v) {
-                        var b = this._x != v;
-                        this._x = v;
-                        b && this._bp_invalidate();
+                        this._pixiObject.x = v;
                     },
                     enumerable: true,
                     configurable: true
                 });
                 Object.defineProperty(DisplayObject.prototype, "y", {
                     get: function () {
-                        return this._y;
+                        return this._pixiObject.y;
                     },
                     set: function (v) {
-                        var b = this._y != v;
-                        this._y = v;
-                        b && this._bp_invalidate();
+                        this._pixiObject.y = v;
                     },
                     enumerable: true,
                     configurable: true
@@ -2426,18 +2430,21 @@ var bulletproof;
                 DisplayObject.prototype.localToGlobal = function (point) {
                     throw new NotImplementedError();
                 };
-                // Bulletproof
-                DisplayObject.prototype.getDisplayBuffer = function () {
-                    return this._bp_displayBuffer;
-                };
+                Object.defineProperty(DisplayObject.prototype, "pixiObject", {
+                    // Bulletproof
+                    get: function () {
+                        return this._pixiObject;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return DisplayObject;
             })(events.EventDispatcher);
             display.DisplayObject = DisplayObject;
             var InteractiveObject = (function (_super) {
                 __extends(InteractiveObject, _super);
-                function InteractiveObject(root, parent, createBuffer) {
-                    if (createBuffer === void 0) { createBuffer = true; }
-                    _super.call(this, root, parent, createBuffer);
+                function InteractiveObject(root, parent) {
+                    _super.call(this, root, parent);
                 }
                 InteractiveObject.prototype.requestSoftKeyboard = function () {
                     return false;
@@ -2447,44 +2454,12 @@ var bulletproof;
             display.InteractiveObject = InteractiveObject;
             var DisplayObjectContainer = (function (_super) {
                 __extends(DisplayObjectContainer, _super);
-                function DisplayObjectContainer(root, parent, createBuffer) {
-                    if (parent === void 0) { parent = null; }
-                    if (createBuffer === void 0) { createBuffer = true; }
-                    _super.call(this, root, parent, createBuffer);
+                function DisplayObjectContainer(root, parent) {
+                    _super.call(this, root, parent);
                     this._children = [];
-                    if (parent != null) {
-                        this._bp_containerElem = window.document.createElement('div');
-                        parent._bp_containerElement().appendChild(this._bp_containerElem);
-                    }
                 }
-                DisplayObjectContainer.prototype._bp_draw = function () {
-                    //super._bp_draw();
-                    var len = this.numChildren;
-                    if (this._bp_displayBuffer != null) {
-                        var context = this._bp_context();
-                        //context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                        // 似乎无效
-                        context.clearRect(0, 0, this._bp_displayBuffer.clientWidth, this._bp_displayBuffer.clientHeight);
-                        // TODO: HACK: works under nw.js v0.12
-                        // DANGER: will reset styles
-                        //this._bp_displayBuffer.width = this._bp_displayBuffer.width;
-                        if (this._bp_drawStateInvalidated) {
-                            this._bp_draw_core();
-                            this._bp_drawStateInvalidated = false;
-                        }
-                    }
-                    var child;
-                    for (var i = 0; i < len; i++) {
-                        child = this._children[i];
-                        child._bp_draw();
-                    }
-                };
-                DisplayObjectContainer.prototype._bp_onSizeChanged = function (newSize) {
-                    _super.prototype._bp_onSizeChanged.call(this, newSize);
-                    var len = this.numChildren;
-                    for (var i = 0; i < len; i++) {
-                        this._children[i]._bp_onSizeChanged(newSize);
-                    }
+                DisplayObjectContainer.prototype._getNewPixiObject = function () {
+                    return new PIXI.Container();
                 };
                 DisplayObjectContainer.prototype.dispatchEvent = function (event, data) {
                     var r = _super.prototype.dispatchEvent.call(this, event, data);
@@ -2493,6 +2468,14 @@ var bulletproof;
                         this._children[i].dispatchEvent(event, data);
                     }
                     return r;
+                };
+                // Bulletproof
+                DisplayObjectContainer.prototype.draw = function () {
+                    this.drawInternal();
+                    var l = this.numChildren;
+                    for (var i = 0; i < l; i++) {
+                        this._children[i].draw();
+                    }
                 };
                 Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
                     get: function () {
@@ -2511,12 +2494,14 @@ var bulletproof;
                 DisplayObjectContainer.prototype.addChild = function (child) {
                     if (this._children.indexOf(child) < 0) {
                         this._children.push(child);
+                        this._pixiObject.addChild(child.pixiObject);
                     }
                     return child;
                 };
                 DisplayObjectContainer.prototype.addChildAt = function (child, index) {
                     if (this._children.indexOf(child) < 0) {
                         this._children = this._children.slice(0, index - 1).concat(child).concat(this._children.slice(index, this._children.length - 1));
+                        this._pixiObject.addChildAt(child.pixiObject, index);
                     }
                     return child;
                 };
@@ -2544,8 +2529,8 @@ var bulletproof;
                         for (var i = child.childIndex + 1; i < this._children.length; i++) {
                             this._children[i].childIndex++;
                         }
-                        this._bp_containerElem.removeChild(child.getDisplayBuffer());
                         this._children.splice(childIndex, 1);
+                        this._pixiObject.removeChild(child.pixiObject);
                         return child;
                     }
                     else {
@@ -2564,47 +2549,53 @@ var bulletproof;
                 DisplayObjectContainer.prototype.swapChildrenAt = function (index1, index2) {
                     throw new NotImplementedError();
                 };
+                Object.defineProperty(DisplayObjectContainer.prototype, "width", {
+                    get: function () {
+                        return this._pixiObject.width;
+                    },
+                    set: function (v) {
+                        this._pixiObject.width = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObjectContainer.prototype, "height", {
+                    get: function () {
+                        return this._pixiObject.height;
+                    },
+                    set: function (v) {
+                        this._pixiObject.height = v;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                Object.defineProperty(DisplayObjectContainer.prototype, "pixiObject", {
+                    // Bulletproof
+                    get: function () {
+                        return this._pixiObject;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return DisplayObjectContainer;
             })(InteractiveObject);
             display.DisplayObjectContainer = DisplayObjectContainer;
             var Stage = (function (_super) {
                 __extends(Stage, _super);
-                function Stage(_bp_container) {
+                function Stage(renderer) {
                     // 注意这里可能引起了循环引用，请手工释放
-                    _super.call(this, null, null, false);
-                    this._bp_containerElem = _bp_container;
+                    _super.call(this, null, null);
                     this._root = this; // forced (= =)#
+                    this._renderer = renderer;
                 }
-                Stage.prototype._bp_onSizeChanged = function (newSize) {
-                    var len = this.numChildren;
-                    for (var i = 0; i < len; i++) {
-                        this._children[i]._bp_onSizeChanged(newSize);
-                    }
-                };
+                // Bulletproof
                 Stage.prototype.raiseEnterFrame = function () {
                     var event = mic.util.createTestEvent(events.FlashEvent.ENTER_FRAME);
                     this.dispatchEvent(event);
                 };
                 // Bulletproof
-                Stage.prototype._bp_stageReleaseRoot = function () {
-                    this._root = null;
-                };
                 Stage.prototype.redraw = function () {
-                    this._bp_draw();
-                };
-                Stage.prototype._bp_draw = function () {
-                    //super._bp_draw();
-                    var len = this.numChildren;
-                    var child;
-                    for (var i = 0; i < len; i++) {
-                        child = this._children[i];
-                        child._bp_draw();
-                    }
-                    /*
-                     var context = this._bp_outputCanvas.getContext('2d');
-                     context.clearRect(0, 0, this._bp_outputCanvas.clientWidth, this._bp_outputCanvas.clientHeight);
-                     context.drawImage(this._bp_displayBuffer, 0, 0);
-                     */
+                    this._renderer.render(this._pixiObject);
                 };
                 Object.defineProperty(Stage.prototype, "allowFullScreen", {
                     get: function () {
@@ -2637,16 +2628,6 @@ var bulletproof;
                 Object.defineProperty(Stage.prototype, "fullScreenWidth", {
                     get: function () {
                         return screen.width;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(Stage.prototype, "height", {
-                    get: function () {
-                        return this._bp_containerElem.clientHeight;
-                    },
-                    set: function (v) {
-                        this._bp_containerElem.style.height = v.toString() + 'px';
                     },
                     enumerable: true,
                     configurable: true
@@ -2699,16 +2680,6 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                Object.defineProperty(Stage.prototype, "width", {
-                    get: function () {
-                        return this._bp_containerElem.clientWidth;
-                    },
-                    set: function (v) {
-                        this._bp_containerElem.style.width = v.toString() + 'px';
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
                 Object.defineProperty(Stage.prototype, "x", {
                     get: function () {
                         console.warn('Stage.x is always 0.');
@@ -2732,7 +2703,7 @@ var bulletproof;
                     configurable: true
                 });
                 Stage.prototype.invalidate = function () {
-                    this._bp_invalidate();
+                    throw new NotImplementedError();
                 };
                 Stage.prototype.isFocusInaccessible = function () {
                     throw new NotImplementedError();
@@ -3222,10 +3193,11 @@ var bulletproof;
                 return Bitmap;
             })(DisplayObject);
             display.Bitmap = Bitmap;
+            // Bulletproof: Non-standard inheritance
             var Shape = (function (_super) {
                 __extends(Shape, _super);
                 function Shape(root, parent) {
-                    _super.call(this, root, parent, true);
+                    _super.call(this, root, parent);
                     this._graphics = new Graphics(this);
                 }
                 Object.defineProperty(Shape.prototype, "graphics", {
@@ -3235,13 +3207,8 @@ var bulletproof;
                     enumerable: true,
                     configurable: true
                 });
-                Shape.prototype._bp_draw_core = function () {
-                    if (this._graphics) {
-                        this._graphics.redraw();
-                    }
-                };
                 return Shape;
-            })(DisplayObject);
+            })(DisplayObjectContainer);
             display.Shape = Shape;
             var GraphicsTrianglePath = (function () {
                 function GraphicsTrianglePath(vertices, indices, uvtData, culling) {
@@ -3257,165 +3224,12 @@ var bulletproof;
                 return GraphicsTrianglePath;
             })();
             display.GraphicsTrianglePath = GraphicsTrianglePath;
-            // Bulletproof
-            var GraphicsHistoryCommand = (function () {
-                function GraphicsHistoryCommand() {
-                }
-                Object.defineProperty(GraphicsHistoryCommand, "BEGIN_BITMAP_FILL", {
-                    get: function () {
-                        return 120;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "BEGIN_FILL", {
-                    get: function () {
-                        return 110;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "BEGIN_GRADIENT_FILL", {
-                    get: function () {
-                        return 130;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "BEGIN_SHADER_FILL", {
-                    get: function () {
-                        return 140;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "CLEAR", {
-                    get: function () {
-                        return 100;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "CURVE_TO", {
-                    get: function () {
-                        return 90;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_CIRCLE", {
-                    get: function () {
-                        return 70;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_ELLIPSE", {
-                    get: function () {
-                        return 80;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_GRAPHICS_DATA", {
-                    get: function () {
-                        return 150;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_PATH", {
-                    get: function () {
-                        return 50;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_RECT", {
-                    get: function () {
-                        return 30;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_ROUND_RECT", {
-                    get: function () {
-                        return 60;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "DRAW_TRIANGLES", {
-                    get: function () {
-                        return 40;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "END_FILL", {
-                    get: function () {
-                        return 160;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "LINE_BITMAP_STYLE", {
-                    get: function () {
-                        return 170;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "LINE_GRADIENT_STYLE", {
-                    get: function () {
-                        return 180;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "LINE_SHADER_STYLE", {
-                    get: function () {
-                        return 190;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "LINE_STYLE", {
-                    get: function () {
-                        return 200;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "LINE_TO", {
-                    get: function () {
-                        return 20;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                Object.defineProperty(GraphicsHistoryCommand, "MOVE_TO", {
-                    get: function () {
-                        return 10;
-                    },
-                    enumerable: true,
-                    configurable: true
-                });
-                return GraphicsHistoryCommand;
-            })();
             var Graphics = (function () {
-                function Graphics(attachedDisplayObject) {
-                    this._isInFill = false;
-                    this._transformMatrix = [1, 0, 0, 1, 0, 0, 0, 0, 1];
-                    this._isRedrawCalling = false;
-                    this._redrawHistoryQueue = [];
-                    this._displayObject = attachedDisplayObject;
-                    this._canvas = attachedDisplayObject.getDisplayBuffer();
-                    this.saveGraphicsSettings(); // saved as an origin
+                function Graphics(attachedDisplayObjectContainer) {
+                    this._displayObjectContainer = attachedDisplayObjectContainer;
+                    this._pixiGraphics = new PIXI.Graphics();
+                    attachedDisplayObjectContainer.pixiObject.addChild(this._pixiGraphics);
                 }
-                Graphics.prototype._bp_context = function () {
-                    return this._canvas.getContext('2d');
-                };
                 Graphics._bp_getSettings = function (context) {
                     return {
                         fillStyle: context.fillStyle,
@@ -3425,14 +3239,6 @@ var bulletproof;
                         miterLimit: context.miterLimit,
                         font: context.font
                     };
-                };
-                // Bulletproof
-                Graphics.prototype.saveGraphicsSettings = function () {
-                    this._currentGraphicsSettings = Graphics._bp_getSettings(this._bp_context());
-                };
-                // Bulletproof
-                Graphics.prototype.restoreGraphicsSettings = function () {
-                    Graphics._bp_setSettings(this._bp_context(), this._currentGraphicsSettings);
                 };
                 Graphics._bp_setSettings = function (context, settings) {
                     context.fillStyle = settings.fillStyle;
@@ -3450,161 +3256,33 @@ var bulletproof;
                 };
                 Graphics.prototype.beginFill = function (color, alpha) {
                     if (alpha === void 0) { alpha = 1.0; }
-                    this._bp_context().fillStyle = mic.Color.argbNumberToCss(color, alpha);
-                    this._isInFill = true;
-                    if (!this._isRedrawCalling) {
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.BEGIN_FILL,
-                            data: {
-                                color: color,
-                                alpha: alpha
-                            }
-                        });
-                    }
+                    this._pixiGraphics.beginFill(color, alpha);
                 };
                 Graphics.prototype.beginGradientFill = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
                     if (matrix === void 0) { matrix = null; }
                     if (spreadMethod === void 0) { spreadMethod = SpreadMethod.PAD; }
                     if (interpolationMethod === void 0) { interpolationMethod = InterpolationMethod.RGB; }
                     if (focalPointRatio === void 0) { focalPointRatio = 0; }
-                    var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-                    if (gradient != null) {
-                        this._bp_context().fillStyle = gradient;
-                    }
-                    this._isInFill = true;
-                    if (!this._isRedrawCalling) {
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.BEGIN_GRADIENT_FILL,
-                            data: {
-                                type: type,
-                                colors: colors,
-                                alphas: alphas,
-                                ratios: ratios,
-                                matrix: matrix,
-                                spreadMethod: spreadMethod,
-                                interpolationMethod: interpolationMethod,
-                                focalPointRatio: focalPointRatio
-                            }
-                        });
-                    }
+                    throw new NotImplementedError();
                 };
                 Graphics.prototype.beginShaderFill = function (shader, matrix) {
                     if (matrix === void 0) { matrix = null; }
                     throw new NotImplementedError();
                 };
                 Graphics.prototype.clear = function () {
-                    var context = this._bp_context();
-                    //context.save();
-                    this.resetTransform();
-                    // 似乎无效
-                    context.clearRect(0, 0, this._canvas.clientWidth, this._canvas.clientHeight);
-                    // TODO: HACK: works under nw.js v0.12
-                    // DANGER: will reset styles
-                    //this._canvas.width = this._canvas.width;
-                    //context.restore();
-                    Graphics._bp_setSettings(context, Graphics._bp_defaultGraphicsSettings);
-                    context.beginPath();
-                    this._isInFill = false;
-                    // Since all contents are clear, there should be nothing even if redraw() is called
-                    // Also please free the history entries.
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue = [];
-                        this.saveGraphicsSettings();
-                    }
+                    this._pixiGraphics.clear();
                 };
                 Graphics.prototype.copyFrom = function (sourceGraphics) {
                     throw new NotImplementedError();
                 };
                 Graphics.prototype.curveTo = function (controlX, controlY, anchorX, anchorY) {
-                    var context = this._bp_context();
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    context.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
-                    context.stroke();
-                    context.beginPath();
-                    context.moveTo(anchorX, anchorY);
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.CURVE_TO,
-                            data: {
-                                controlX: controlX,
-                                controlY: controlY,
-                                anchorX: anchorX,
-                                anchorY: anchorY
-                            }
-                        });
-                    }
+                    this._pixiGraphics.quadraticCurveTo(controlX, controlY, anchorX, anchorY);
                 };
                 Graphics.prototype.drawCircle = function (x, y, radius) {
-                    var context = this._bp_context();
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    context.moveTo(x + radius, y);
-                    context.arc(x, y, radius, 0, Math.PI * 2);
-                    if (this._isInFill) {
-                        context.fill();
-                    }
-                    context.stroke();
-                    context.beginPath();
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.DRAW_CIRCLE,
-                            data: {
-                                x: x,
-                                y: y,
-                                radius: radius
-                            }
-                        });
-                    }
+                    this._pixiGraphics.drawCircle(x, y, radius);
                 };
                 Graphics.prototype.drawEllipse = function (x, y, width, height) {
-                    // http://www.cnblogs.com/shn11160/archive/2012/08/27/2658057.html
-                    var context = this._bp_context();
-                    //context.save();
-                    /*
-                     var ox = 0.5 * width, oy = 0.6 * height;
-                     context.translate(x, y);
-                     context.beginPath();
-                     context.moveTo(0, height);
-                     context.bezierCurveTo(ox, height, width, oy, width, 0);
-                     context.bezierCurveTo(width, -oy, ox, -height, 0, -height);
-                     context.bezierCurveTo(-ox, -height, -width, -oy, -width, 0);
-                     context.bezierCurveTo(-width, oy, -ox, height, 0, height);
-                     context.closePath();
-                     context.fill();
-                     context.stroke();
-                     */
-                    //context.restore();
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    context.save();
-                    var ratio = height / width;
-                    var centerX = x + width / 2;
-                    var centerY = y + width / 2;
-                    context.moveTo(centerX + width / 2, centerY);
-                    context.scale(1, ratio);
-                    context.arc(centerX, centerY, width / 2, 0, Math.PI * 2, true);
-                    context.restore();
-                    if (this._isInFill) {
-                        context.fill();
-                    }
-                    context.stroke();
-                    context.beginPath();
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.DRAW_ELLIPSE,
-                            data: {
-                                x: x,
-                                y: y,
-                                width: width,
-                                height: height
-                            }
-                        });
-                    }
+                    this._pixiGraphics.drawEllipse(x, y, width, height);
                 };
                 Graphics.prototype.drawGraphicsData = function (graphicsData) {
                     throw new NotImplementedError();
@@ -3619,68 +3297,46 @@ var bulletproof;
                 Graphics.prototype.drawPath = function (commands, data, winding, checkCommands) {
                     if (winding === void 0) { winding = GraphicsPathWinding.EVEN_ODD; }
                     if (checkCommands === void 0) { checkCommands = true; }
-                    var context = this._bp_context();
                     if (checkCommands && !Graphics._bp_checkPathCommands(commands, data)) {
                         return;
                     }
                     var commandLength = commands.length;
-                    var dataLength = data.length;
                     var j = 0;
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    context.beginPath();
                     for (var i = 0; i < commandLength; i++) {
                         switch (commands[i]) {
                             case GraphicsPathCommand.CUBIC_CURVE_TO:
-                                context.bezierCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3], data[j + 4], data[j + 5]);
+                                this._pixiGraphics.bezierCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3], data[j + 4], data[j + 5]);
                                 j += 6;
                                 break;
                             case GraphicsPathCommand.CURVE_TO:
-                                context.quadraticCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3]);
+                                this._pixiGraphics.quadraticCurveTo(data[j], data[j + 1], data[j + 2], data[j + 3]);
                                 j += 4;
                                 break;
                             case GraphicsPathCommand.LINE_TO:
                                 // HACK: please update the x and y properties
                                 //context.lineTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
-                                context.lineTo(data[j], data[j + 1]);
+                                this._pixiGraphics.lineTo(data[j], data[j + 1]);
                                 j += 2;
                                 break;
                             case GraphicsPathCommand.MOVE_TO:
                                 // HACK: please update the x and y properties
                                 //context.moveTo(data[j] + this._displayObject.x, data[j + 1] + this._displayObject.y);
-                                context.moveTo(data[j], data[j + 1]);
+                                this._pixiGraphics.moveTo(data[j], data[j + 1]);
                                 j += 2;
                                 break;
                             case GraphicsPathCommand.NO_OP:
                                 break;
                             case GraphicsPathCommand.WIDE_LINE_TO:
-                                context.lineTo(data[j + 2], data[j + 3]);
+                                this._pixiGraphics.lineTo(data[j + 2], data[j + 3]);
                                 j += 4;
                                 break;
                             case GraphicsPathCommand.WIDE_MOVE_TO:
-                                context.moveTo(data[j + 2], data[j + 3]);
+                                this._pixiGraphics.moveTo(data[j + 2], data[j + 3]);
                                 j += 4;
                                 break;
                             default:
                                 break;
                         }
-                    }
-                    context.closePath();
-                    if (this._isInFill) {
-                        context.fill();
-                    }
-                    context.stroke();
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.DRAW_PATH,
-                            data: {
-                                commands: commands,
-                                data: data,
-                                winding: winding,
-                                checkCommands: checkCommands
-                            }
-                        });
                     }
                 };
                 Graphics._bp_checkPathCommands = function (commands, data) {
@@ -3736,29 +3392,14 @@ var bulletproof;
                     return true;
                 };
                 Graphics.prototype.drawRect = function (x, y, width, height) {
-                    var context = this._bp_context();
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    if (this._isInFill) {
-                        context.fillRect(x, y, width, height);
-                    }
-                    context.strokeRect(x, y, width, height);
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.DRAW_RECT,
-                            data: {
-                                x: x,
-                                y: y,
-                                width: width,
-                                height: height
-                            }
-                        });
-                    }
+                    this._pixiGraphics.drawRect(x, y, width, height);
                 };
                 Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
                     if (ellipseHeight === void 0) { ellipseHeight = NaN; }
-                    throw new NotImplementedError();
+                    if (ellipseHeight === NaN) {
+                        ellipseHeight = ellipseWidth;
+                    }
+                    this._pixiGraphics.drawRoundedRect(x, y, width, height, (ellipseWidth + ellipseHeight) / 2);
                 };
                 Graphics.prototype.drawTriangles = function (vectors, indices, uvtData, culling) {
                     if (indices === void 0) { indices = null; }
@@ -3804,15 +3445,7 @@ var bulletproof;
                     this.drawPath(commands, data, void (0), false);
                 };
                 Graphics.prototype.endFill = function () {
-                    // TODO: 文档上说似乎应该进行指令缓存，在 endFill() 时一起绘制？
-                    this._isInFill = false;
-                    //this._displayObject._bp_invalidate();
-                    if (!this._isRedrawCalling) {
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.END_FILL,
-                            data: null
-                        });
-                    }
+                    this._pixiGraphics.endFill();
                 };
                 Graphics.prototype.lineBitmapStyle = function (bitmap, matrix, repeat, smooth) {
                     if (matrix === void 0) { matrix = null; }
@@ -3825,25 +3458,7 @@ var bulletproof;
                     if (spreadMethod === void 0) { spreadMethod = SpreadMethod.PAD; }
                     if (interpolationMethod === void 0) { interpolationMethod = InterpolationMethod.RGB; }
                     if (focalPointRatio === void 0) { focalPointRatio = 0; }
-                    var gradient = this.createGradient(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
-                    if (gradient != null) {
-                        this._bp_context().strokeStyle = gradient;
-                    }
-                    if (!this._isRedrawCalling) {
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.LINE_BITMAP_STYLE,
-                            data: {
-                                type: type,
-                                colors: colors,
-                                alphas: alphas,
-                                ratios: ratios,
-                                matrix: matrix,
-                                spreadMethod: spreadMethod,
-                                interpolationMethod: interpolationMethod,
-                                focalPointRatio: focalPointRatio
-                            }
-                        });
-                    }
+                    throw new NotImplementedError();
                 };
                 Graphics.prototype.lineShaderStyle = function (shader, matrix) {
                     if (matrix === void 0) { matrix = null; }
@@ -3858,181 +3473,13 @@ var bulletproof;
                     if (caps === void 0) { caps = null; }
                     if (joints === void 0) { joints = null; }
                     if (miterLimit === void 0) { miterLimit = 3; }
-                    var context = this._bp_context();
-                    if (thickness != null && !isNaN(thickness)) {
-                        context.lineWidth = thickness;
-                    }
-                    context.strokeStyle = mic.Color.argbNumberToCss(color, alpha);
-                    if (caps != null) {
-                        context.lineCap = caps;
-                    }
-                    if (joints != null) {
-                        context.lineJoin = joints;
-                    }
-                    context.miterLimit = miterLimit;
-                    if (!this._isRedrawCalling) {
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.LINE_STYLE,
-                            data: {
-                                thickness: thickness,
-                                color: color,
-                                alpha: alpha,
-                                pixelHinting: pixelHinting,
-                                scaleMode: scaleMode,
-                                caps: caps,
-                                joints: joints,
-                                miterLimt: miterLimit
-                            }
-                        });
-                    }
+                    this._pixiGraphics.lineStyle(thickness, color, alpha);
                 };
                 Graphics.prototype.lineTo = function (x, y) {
-                    var context = this._bp_context();
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    context.lineTo(x, y);
-                    // HACK: Please update
-                    //context.lineTo(x + this._displayObject.x, y + this._displayObject.y);
-                    context.stroke();
-                    context.beginPath();
-                    context.moveTo(x, y);
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.LINE_TO,
-                            data: {
-                                x: x,
-                                y: y
-                            }
-                        });
-                    }
+                    this._pixiGraphics.lineTo(x, y);
                 };
                 Graphics.prototype.moveTo = function (x, y) {
-                    var context = this._bp_context();
-                    this.resetTransform();
-                    context.translate(this._displayObject.x, this._displayObject.y);
-                    // HACK: Please update
-                    context.moveTo(x, y);
-                    if (!this._isRedrawCalling) {
-                        this._displayObject._bp_invalidate();
-                        this._redrawHistoryQueue.push({
-                            command: GraphicsHistoryCommand.MOVE_TO,
-                            data: {
-                                x: x,
-                                y: y
-                            }
-                        });
-                    }
-                };
-                Graphics.prototype.redraw = function () {
-                    if (this._isRedrawCalling) {
-                        return;
-                    }
-                    this._isRedrawCalling = true;
-                    this.clear();
-                    var len = this._redrawHistoryQueue.length;
-                    var cmd;
-                    for (var i = 0; i < len; i++) {
-                        cmd = this._redrawHistoryQueue[i];
-                        switch (cmd.command) {
-                            case GraphicsHistoryCommand.LINE_TO:
-                                this.lineTo(cmd.data.x, cmd.data.y);
-                                break;
-                            case GraphicsHistoryCommand.MOVE_TO:
-                                this.moveTo(cmd.data.x, cmd.data.y);
-                                break;
-                            case GraphicsHistoryCommand.CURVE_TO:
-                                this.curveTo(cmd.data.controlX, cmd.data.controlY, cmd.data.anchorX, cmd.data.anchorY);
-                                break;
-                            case GraphicsHistoryCommand.DRAW_RECT:
-                                this.drawRect(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
-                                break;
-                            case GraphicsHistoryCommand.DRAW_CIRCLE:
-                                this.drawCircle(cmd.data.x, cmd.data.y, cmd.data.radius);
-                                break;
-                            case GraphicsHistoryCommand.DRAW_ELLIPSE:
-                                this.drawEllipse(cmd.data.x, cmd.data.y, cmd.data.width, cmd.data.height);
-                                break;
-                            case GraphicsHistoryCommand.DRAW_PATH:
-                                this.drawPath(cmd.data.commands, cmd.data.data, cmd.data.winding, cmd.data.checkCommands);
-                                break;
-                            case GraphicsHistoryCommand.BEGIN_BITMAP_FILL:
-                                break;
-                            case GraphicsHistoryCommand.BEGIN_FILL:
-                                this.beginFill(cmd.data.color, cmd.data.alpha);
-                                break;
-                            case GraphicsHistoryCommand.BEGIN_GRADIENT_FILL:
-                                this.beginGradientFill(cmd.data.type, cmd.data.colors, cmd.data.alphas, cmd.data.ratios, cmd.data.matrix, cmd.data.spreadMethod, cmd.data.interpolationMethod, cmd.data.focalPointRatio);
-                                break;
-                            case GraphicsHistoryCommand.BEGIN_SHADER_FILL:
-                                break;
-                            case GraphicsHistoryCommand.CLEAR:
-                                break;
-                            case GraphicsHistoryCommand.DRAW_GRAPHICS_DATA:
-                                break;
-                            case GraphicsHistoryCommand.DRAW_ROUND_RECT:
-                                break;
-                            case GraphicsHistoryCommand.END_FILL:
-                                this.endFill();
-                                break;
-                            case GraphicsHistoryCommand.LINE_BITMAP_STYLE:
-                                break;
-                            case GraphicsHistoryCommand.LINE_GRADIENT_STYLE:
-                                this.lineGradientStyle(cmd.data.type, cmd.data.colors, cmd.data.alphas, cmd.data.ratios, cmd.data.matrix, cmd.data.spreadMethod, cmd.data.interpolationMethod, cmd.data.focalPointRatio);
-                                break;
-                            case GraphicsHistoryCommand.LINE_SHADER_STYLE:
-                                break;
-                            case GraphicsHistoryCommand.LINE_STYLE:
-                                this.lineStyle(cmd.data.thickness, cmd.data.color, cmd.data.alpha, cmd.data.pixelHinting, cmd.data.scaleMode, cmd.data.caps, cmd.data.joints, cmd.data.miterLimit);
-                                break;
-                            case GraphicsHistoryCommand.DRAW_TRIANGLES:
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    this._isRedrawCalling = false;
-                };
-                Graphics.prototype.createGradient = function (type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio) {
-                    if (matrix === void 0) { matrix = null; }
-                    if (spreadMethod === void 0) { spreadMethod = SpreadMethod.PAD; }
-                    if (interpolationMethod === void 0) { interpolationMethod = InterpolationMethod.RGB; }
-                    if (focalPointRatio === void 0) { focalPointRatio = 0; }
-                    var context = this._bp_context();
-                    var gradient;
-                    if (colors != null || alphas != null || ratios != null) {
-                        // 保证所有数组都有值而且长度相等
-                        if (colors == null || alphas == null || ratios == null) {
-                            throw new ArgumentError('colors, alphas and ratios cannot be null.');
-                        }
-                        if (colors.length !== alphas.length && alphas.length !== ratios.length) {
-                            throw new ArgumentError('Array lengths are unequal.');
-                        }
-                    }
-                    var arrayLen = colors != null ? colors.length : 0;
-                    var i;
-                    var pt = new geom.Point(0, 1);
-                    (matrix != null) && (pt = matrix.transformPoint(pt));
-                    switch (type) {
-                        case GradientType.LINEAR:
-                            gradient = context.createLinearGradient(0, 0, pt.x, pt.y);
-                            break;
-                        case GradientType.RADIAL:
-                            gradient = context.createRadialGradient(0, 0, matrix != null ? matrix.a / 2 : 1, pt.x, pt.y, matrix != null ? matrix.d / 2 : 1);
-                            break;
-                        default:
-                            return null;
-                    }
-                    for (i = 0; i < arrayLen; i++) {
-                        gradient.addColorStop(mic.util.limit(ratios[i], 0, 255) / 255, mic.Color.argbNumberToCss(mic.Color.colorCombine(colors[i], alphas[i])));
-                    }
-                    return gradient;
-                };
-                Graphics.prototype.resetTransform = function () {
-                    this._bp_context().setTransform(1, 0, 0, 1, 0, 0);
-                };
-                Graphics.prototype.redoLastActiveTransform = function () {
-                    this._bp_context().transform(this._transformMatrix[0], this._transformMatrix[3], this._transformMatrix[1], this._transformMatrix[4], this._transformMatrix[2], this._transformMatrix[5]);
+                    this._pixiGraphics.moveTo(x, y);
                 };
                 Graphics._bp_defaultGraphicsSettings = {
                     fillStyle: "#000000",

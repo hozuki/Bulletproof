@@ -7,6 +7,7 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
+/// <reference path="../../../include/ext/pixi.js/pixi.js.d.ts"/>
 var bulletproof_main = require("./bulletproof");
 var bulletproof_flash = require("./bulletproof-flash");
 var bulletproof_org = require("./bulletproof-org");
@@ -34,7 +35,12 @@ var bulletproof;
         });
         AdvancedDanmaku.createInstance = function (root, video) {
             var ad = new AdvancedDanmaku();
-            var stage = new flash.display.Stage(root);
+            ad._renderer = new PIXI.WebGLRenderer(AdvancedDanmaku.DEFAULT_WIDTH, AdvancedDanmaku.DEFAULT_HEIGHT, {
+                antialias: true,
+                autoResize: true,
+                transparent: true
+            });
+            var stage = new flash.display.Stage(ad._renderer);
             ad._startParams = {
                 root: root,
                 startDate: new Date(),
@@ -42,12 +48,15 @@ var bulletproof;
                 bp: Bulletproof.instance,
                 stage: stage
             };
-            ad._startParams.bp.addEventListener(Bulletproof.RENDER_REQUESTED, function (event) {
-                stage.raiseEnterFrame();
-                ad.calculateMotionGroups();
-                stage.redraw();
-            });
+            root.appendChild(ad._renderer.view);
+            window.requestAnimationFrame(ad.animate.bind(ad));
             return ad;
+        };
+        AdvancedDanmaku.prototype.animate = function () {
+            this._startParams.stage.raiseEnterFrame();
+            this.calculateMotionGroups();
+            this._startParams.stage.redraw();
+            window.requestAnimationFrame(this.animate.bind(this));
         };
         AdvancedDanmaku.prototype.start = function () {
             this._startParams.bp.enterMainLoop();
@@ -105,6 +114,8 @@ var bulletproof;
             enumerable: true,
             configurable: true
         });
+        AdvancedDanmaku.DEFAULT_WIDTH = 682;
+        AdvancedDanmaku.DEFAULT_HEIGHT = 438;
         return AdvancedDanmaku;
     })();
     bulletproof.AdvancedDanmaku = AdvancedDanmaku;
@@ -658,7 +669,6 @@ var bulletproof;
                 this._createParams = createParams;
                 this._lifeTime = ad.startParams.bp.options.commentLifeTime;
                 this._ad = ad;
-                this.updateCanvasSettings();
             }
             Object.defineProperty(CommentField.prototype, "background", {
                 get: function () {
@@ -667,7 +677,6 @@ var bulletproof;
                 set: function (v) {
                     var b = this._background != v;
                     this._background = v;
-                    b && this._bp_invalidate();
                 },
                 enumerable: true,
                 configurable: true
@@ -680,7 +689,6 @@ var bulletproof;
                     v |= 0;
                     var b = this._backgroundColor != v;
                     this._backgroundColor = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -692,7 +700,6 @@ var bulletproof;
                 set: function (v) {
                     var b = this._border != v;
                     this._border = v;
-                    b && this._bp_invalidate();
                 },
                 enumerable: true,
                 configurable: true
@@ -705,7 +712,6 @@ var bulletproof;
                     v |= 0;
                     var b = this._borderColor != v;
                     this._borderColor = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -717,34 +723,6 @@ var bulletproof;
                 enumerable: true,
                 configurable: true
             });
-            CommentField.prototype._bp_draw_core = function () {
-                _super.prototype._bp_draw_core.call(this);
-                // clear the canvas
-                var context = this._bp_context();
-                var width = this._bp_displayBuffer.width;
-                var height = this._bp_displayBuffer.height;
-                context.clearRect(0, 0, width, height);
-                if (this.background) {
-                    context.fillStyle = this._backgroundFillStyle;
-                    context.fillRect(0, 0, width, height);
-                    context.fillStyle = this._textFillStyle;
-                }
-                if (this.autoSize) {
-                    context.fillText(this.text, 1, this.height - 1);
-                    context.strokeText(this.text, 1, this.height - 1);
-                }
-                else {
-                    context.fillText(this.text, 0, this.textHeight);
-                    context.strokeText(this.text, 0, this.textHeight);
-                }
-                if (this.border) {
-                    context.strokeStyle = this._borderStrokeStyle;
-                    context.lineWidth = 1;
-                    context.strokeRect(0, 0, width, height);
-                    context.strokeStyle = this._textStrokeStyle;
-                    context.lineWidth = this.thickness;
-                }
-            };
             Object.defineProperty(CommentField.prototype, "htmlText", {
                 get: function () {
                     throw new NotImplementedError();
@@ -793,7 +771,6 @@ var bulletproof;
                 set: function (v) {
                     var b = this._text != v;
                     this._text = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -806,7 +783,6 @@ var bulletproof;
                     v |= 0;
                     var b = this._textColor != v;
                     this._textColor = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -835,7 +811,6 @@ var bulletproof;
                     }
                     var b = this._thickness != v;
                     this._thickness = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -850,7 +825,6 @@ var bulletproof;
                     }
                     var b = this._fontsize != v;
                     this._fontsize = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -862,7 +836,6 @@ var bulletproof;
                 set: function (v) {
                     var b = this._bold != v;
                     this._bold = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -874,7 +847,6 @@ var bulletproof;
                 set: function (v) {
                     var b = this._italic != v;
                     this._italic = v;
-                    b && this.updateCanvasSettings();
                 },
                 enumerable: true,
                 configurable: true
@@ -889,26 +861,6 @@ var bulletproof;
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(CommentField.prototype, "x", {
-                get: function () {
-                    return this._x;
-                },
-                set: function (v) {
-                    this._bp_displayBuffer.style.left = this._x.toString() + 'px';
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(CommentField.prototype, "y", {
-                get: function () {
-                    return this._y;
-                },
-                set: function (v) {
-                    this._bp_displayBuffer.style.top = this._y.toString() + 'px';
-                },
-                enumerable: true,
-                configurable: true
-            });
             Object.defineProperty(CommentField.prototype, "lifeTime", {
                 // Bulletproof
                 get: function () {
@@ -917,49 +869,6 @@ var bulletproof;
                 enumerable: true,
                 configurable: true
             });
-            // WARNING: WILL CLEAR ALL STYLE SETTINGS AND DRAWINGS OF THE CANVAS
-            CommentField.prototype.updateSizeIfAutoSized = function () {
-                if (this.autoSize) {
-                    var context = this._bp_context();
-                    var metrics = context.measureText(this.text);
-                    this._textWidth = metrics.width;
-                    this.width = this.textWidth + 2;
-                    this.height = this.textHeight + 2;
-                    this._bp_invalidate();
-                }
-            };
-            CommentField.prototype.updateCanvasSettings = function () {
-                this._fontString = this.getRenderFontStyleString();
-                var context = this._bp_context();
-                context.font = this._fontString;
-                this.updateStyles();
-                this.updateSizeIfAutoSized();
-                if (this.autoSize) {
-                    // 因为上一步清除了样式，包括字体
-                    context.font = this._fontString;
-                    this.updateStyles();
-                }
-                this._bp_invalidate();
-            };
-            CommentField.prototype.getRenderFontStyleString = function () {
-                var fontString = '';
-                this.bold && (fontString += ' bold');
-                this.italic && (fontString += ' italic');
-                fontString += ' ' + this.fontsize.toString() + 'pt ';
-                fontString += CommentField._defaultTextFontFamily;
-                return fontString;
-            };
-            CommentField.prototype.updateStyles = function () {
-                var context = this._bp_context();
-                context.lineWidth = this.thickness;
-                this._textFillStyle = mic.Color.rgbNumberToCssSharp(this.textColor);
-                this._textStrokeStyle = this._textFillStyle;
-                context.fillStyle = this._textFillStyle;
-                context.strokeStyle = this._textStrokeStyle;
-                context.lineWidth = this.thickness;
-                this._backgroundFillStyle = mic.Color.rgbNumberToCss(this.backgroundColor);
-                this._borderStrokeStyle = mic.Color.rgbNumberToCssSharp(this.borderColor);
-            };
             CommentField._defaultTextHeight = 12;
             CommentField._defaultTextFontFamily = 'SimHei';
             CommentField._defaultBorderWidth = 1;

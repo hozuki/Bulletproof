@@ -2,9 +2,6 @@
  * Created by MIC on 2015/8/27.
  */
 
-/// <reference path="../include/bulletproof-org.d.ts"/>
-/// <reference path="../include/bulletproof-mic.d.ts"/>
-
 import bulletproof_org = require("./bulletproof-org");
 
 export module bulletproof.mic {

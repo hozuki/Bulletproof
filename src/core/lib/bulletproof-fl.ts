@@ -2,10 +2,6 @@
  * Created by MIC on 2015/8/29.
  */
 
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-org.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
-
 import bulletproof_org = require("./bulletproof-org");
 import bulletproof_flash = require("./bulletproof-flash");
 

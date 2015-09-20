@@ -2,8 +2,6 @@
  * Created by MIC on 2015/9/9.
  */
 
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-
 import bulletproof_flash = require("./bulletproof-flash");
 
 export module bulletproof.mx {
@@ -18,7 +16,7 @@ export module bulletproof.mx {
         export class Canvas extends flash.display.DisplayObjectContainer {
 
             public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer) {
-                super(root, parent, false);
+                super(root, parent);
             }
 
         }

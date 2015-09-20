@@ -7,9 +7,6 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-/// <reference path="../include/bulletproof-flash.d.ts"/>
-/// <reference path="../include/bulletproof-org.d.ts"/>
-/// <reference path="../include/bulletproof.d.ts"/>
 var bulletproof_org = require("./bulletproof-org");
 var bulletproof_flash = require("./bulletproof-flash");
 var bulletproof;
