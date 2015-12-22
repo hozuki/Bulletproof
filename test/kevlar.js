@@ -4,7 +4,7 @@
 
 (function (container, video) {
     var bulletproof = {};
-    var injector = require("../build/bulletproof-injector");
+    var injector = require("../src/core/lib/bulletproof-injector");
 
     function appendBulletproofModule(bp, injector, moduleName) {
         "use strict";
@@ -12,15 +12,19 @@
         injector.inject(module.bulletproof, bp);
     }
 
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-org");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-mic");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-thirdparty");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-flash");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-fl");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-mx");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-data-interface");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof-bilidanmaku");
-    appendBulletproofModule(bulletproof, injector, "../build/bulletproof");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-org");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-mic");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-thirdparty");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-flash-base");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-shaders");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-webgl");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-flash-display");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-flash-graphics");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-fl");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-mx");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-data-interface");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof-bilidanmaku");
+    appendBulletproofModule(bulletproof, injector, "../src/core/lib/bulletproof");
 
     this.bp = bulletproof;
     this.bulletproof = new bulletproof.Bulletproof();
@@ -38,7 +42,9 @@
         }
     })(this.ad);
 
-    this.ad.start();
+    this.startAnimation = function () {
+        this.ad.start();
+    }.bind(this);
 })(document.getElementById('bp-div'), document.getElementById('bp-video'));
 
 

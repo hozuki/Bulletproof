@@ -2,11 +2,11 @@
  * Created by MIC on 2015/9/12.
  */
 
-import bulletproof_flash = require("./bulletproof-flash");
+import bulletproof_flash_display = require("./bulletproof-flash-display");
 
 export module bulletproof {
 
-    import flash = bulletproof_flash.bulletproof.flash;
+    import flash = bulletproof_flash_display.bulletproof.flash;
 
     export module bilidanmaku {
 

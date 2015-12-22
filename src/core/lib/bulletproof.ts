@@ -2,7 +2,7 @@
  * Created by MIC on 2015/9/10.
  */
 
-import bulletproof_flash = require("./bulletproof-flash");
+import bulletproof_flash_base = require("./bulletproof-flash-base");
 import bulletproof_data_interface = require("./bulletproof-data-interface");
 import bulletproof_mic = require("./bulletproof-mic");
 
@@ -10,7 +10,7 @@ export module bulletproof {
 
     import mic = bulletproof_mic.bulletproof.mic;
     import bilidanmaku = bulletproof_data_interface.bulletproof.bilidanmaku;
-    import flash = bulletproof_flash.bulletproof.flash;
+    import flash = bulletproof_flash_base.bulletproof.flash;
 
     export interface IBulletproofOptions {
 

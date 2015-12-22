@@ -2,11 +2,11 @@
  * Created by MIC on 2015/9/9.
  */
 
-import bulletproof_flash = require("./bulletproof-flash");
+import bulletproof_flash_display = require("./bulletproof-flash-display");
 
 export module bulletproof.mx {
 
-    import flash = bulletproof_flash.bulletproof.flash;
+    import flash = bulletproof_flash_display.bulletproof.flash;
 
     export module containers {
 
@@ -15,7 +15,7 @@ export module bulletproof.mx {
         // However, the hierarchy is too complicated, so only the most important members are implemented here.
         export class Canvas extends flash.display.DisplayObjectContainer {
 
-            public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer) {
+            public constructor(root:flash.display.Stage, parent:flash.display.DisplayObjectContainer) {
                 super(root, parent);
             }
 

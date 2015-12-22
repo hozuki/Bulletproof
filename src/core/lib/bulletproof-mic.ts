@@ -276,6 +276,7 @@ export module bulletproof.mic {
 export module bulletproof.mic.util {
 
     import EventClass = bulletproof_org.bulletproof.EventClass;
+    import OMap = bulletproof_org.bulletproof.OMap;
 
     export function limit(v:number, min:number, max:number):number {
         (v < min) && (v = min);
@@ -283,24 +284,23 @@ export module bulletproof.mic.util {
         return v;
     }
 
-    var __stringFormattingParams:any[] = null;
-
-    function __stringFormatter(matched:string):string {
-        var index = matched.substring(1, matched.length - 1);
-        if (__stringFormattingParams != null && __stringFormattingParams.hasOwnProperty(index)) {
-            var indexValue = parseInt(index);
-            return __stringFormattingParams[indexValue].toString();
-        } else {
-            return matched;
-        }
-    }
-
     export function format(s:string, ...args:any[]):string {
+        var replaceWithArray:any[];
         var regex = /{[\d]+}/g;
-        __stringFormattingParams = args;
+        replaceWithArray = args;
         var r = s.replace(regex, __stringFormatter);
-        __stringFormattingParams = null;
+        replaceWithArray = null;
         return r;
+
+        function __stringFormatter(matched:string):string {
+            var index = matched.substring(1, matched.length - 1);
+            if (replaceWithArray != null && replaceWithArray.hasOwnProperty(index)) {
+                var indexValue = parseInt(index);
+                return replaceWithArray[indexValue].toString();
+            } else {
+                return matched;
+            }
+        }
     }
 
     /**
@@ -312,6 +312,27 @@ export module bulletproof.mic.util {
      */
     export function valueBetweenNE(v:number, min:number, max:number):boolean {
         return min < v && v < max;
+    }
+
+    export function isPowerOfTwo(positiveNumber:number):boolean {
+        var num = positiveNumber | 0;
+        if (num != positiveNumber) {
+            return false;
+        } else {
+            return num > 0 && (num & (num - 1)) === 0;
+        }
+    }
+
+    export function power2Roundup(positiveNumber:number):number {
+        if (positiveNumber < 0)
+            return 0;
+        --positiveNumber;
+        positiveNumber |= positiveNumber >>> 1;
+        positiveNumber |= positiveNumber >>> 2;
+        positiveNumber |= positiveNumber >>> 4;
+        positiveNumber |= positiveNumber >>> 8;
+        positiveNumber |= positiveNumber >>> 16;
+        return positiveNumber + 1;
     }
 
     export function matrixInvert(v:Array<number>, rank:number = 3):IMatrixInvertResult {
@@ -420,7 +441,7 @@ export module bulletproof.mic.util {
         return r;
     }
 
-    export function loadFile(url:string, headers:Map<string, string> = null):IXhrResult {
+    export function loadFile(url:string, headers:OMap<string, string> = null):IXhrResult {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, false);
         if (headers != null && headers.size > 0) {
@@ -436,7 +457,7 @@ export module bulletproof.mic.util {
         return r;
     }
 
-    export function loadFileAsync(url:string, onFinished:(result:IXhrResult)=>void, headers:Map<string, string> = null):void {
+    export function loadFileAsync(url:string, onFinished:(result:IXhrResult)=>void, headers:OMap<string, string> = null):void {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, false);
         if (headers != null && headers.size > 0) {

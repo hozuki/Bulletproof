@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebGL Test 4</title>
+    <style type="text/css" rel="stylesheet">
+        .shader {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="canvas-frame">
+    <canvas width="640" height="480" id="canvas">
+    </canvas>
+    <div>
+        Try
+        <button type="button" id="btnShowOriginal">Original</button>
+        ,
+        <button type="button" id="btnShowPixelate">Pixelate</button>
+        , or
+        <button type="button" id="btnAnimate">Animate</button>
+    </div>
+</div>
+<script id="vshader-raw" type="x-shader/x-vertex" class="shader">
+    attribute vec3 aVertexPosition;
+    attribute vec4 aColor;
+
+    uniform mat4 uProjMatrix;
+
+    varying vec4 vColor;
+
+    void main() {
+        gl_Position = uProjMatrix * vec4(aVertexPosition.xyz, 1.0);
+        vColor = aColor;
+    }
+</script>
+<script id="fshader-raw" type="x-shader/x-fragment" class="shader">
+    precision mediump float;
+
+    varying vec4 vColor;
+
+    void main() {
+        gl_FragColor = vColor;
+    }
+</script>
+<script id="vshader-screen" type="x-shader/x-vertex" class="shader">
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+
+    uniform mat4 uProjMatrix;
+
+    varying vec2 vTextureCoord;
+
+    void main() {
+        gl_Position = uProjMatrix * vec4(aVertexPosition.xyz, 1.0);
+        vTextureCoord = aTextureCoord;
+    }
+</script>
+<script id="fshader-screen" type="x-shader/x-fragment" class="shader">
+    precision mediump float;
+
+    uniform sampler2D uSampler;
+
+    varying vec2 vTextureCoord;
+
+    void main() {
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
+    }
+</script>
+<script id="vshader-pixelate" type="x-shader/x-vertex" class="shader">
+    // Borrowed from pixi.js - default vertex shader
+    precision lowp float;
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+    attribute vec4 aColor;
+
+    uniform mat4 uProjMatrix;
+
+    varying vec2 vTextureCoord;
+    varying vec4 vColor;
+
+    void main() {
+        gl_Position = uProjMatrix * vec4(aVertexPosition.xyz, 1.0);
+        vTextureCoord = aTextureCoord;
+        vColor = vec4(aColor.rgb * aColor.a, aColor.a);
+    }
+</script>
+<script id="fshader-pixelate" type="x-shader/x-fragment" class="shader">
+    // Borrowed from pixi.js - pixelate filter - fragment shader
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+
+    uniform vec4 dimensions;
+    uniform vec2 pixelSize;
+    uniform sampler2D uSampler;
+
+    void main()
+    {
+        vec2 coord = vTextureCoord;
+        vec2 size = dimensions.xy / pixelSize;
+        vec2 color = floor((vTextureCoord * size)) / size + pixelSize / dimensions.xy * 0.5;
+        gl_FragColor = texture2D(uSampler, color);
+    }
+</script>
+<script type="text/javascript" src="http://threejs.org/examples/js/libs/stats.min.js"></script>
+<script type="text/javascript">
+    function initStatElement(parentID) {
+        var stats = new Stats();
+        var d = stats.domElement;
+        d.style.position = "absolute";
+        d.style.right = "0";
+        d.style.top = "0";
+        document.getElementById(parentID).appendChild(d);
+        return stats;
+    }
+
+    /**
+     * @type {Function[]}
+     */
+    var fs = [];
+    var fthis = [];
+    var fargs = [];
+
+    /**
+     * @param {Function} f
+     * @param {*} _this
+     * @param {*[]} [args]
+     */
+    function addToAnimationLoop(f, _this, args) {
+        fs.push(f);
+        fthis.push(_this);
+        fargs.push(args);
+    }
+
+    var stats = initStatElement("canvas-frame");
+    addToAnimationLoop(stats.update, stats);
+</script>
+<script type="text/javascript" src="scripts/cuon-matrix.js"></script>
+<script type="text/javascript" src="scripts/webgl-utils.js"></script>
+<script type="text/javascript" src="scripts/webgl-test-4.js"></script>
+<script type="text/javascript">
+    function animate() {
+        for (var k = 0; k < fs.length; k++) {
+            // apply 展开参数数组，call 内联参数数组
+            fs[k].apply(fthis[k], fargs[k]);
+        }
+        // from webgl-utils.js
+        window.requestAnimFrame(animate);
+    }
+    animate();
+</script>
+</body>
+</html>

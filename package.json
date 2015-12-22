@@ -1,11 +1,40 @@
 {
-  "name": "Bulletproof",
+  "name": "bulletproof",
   "version": "0.1.0",
-  "description": "Bulletproof",
+  "description": "Bulletproof is a HTML5 advanced live comment rendering engine",
   "main": "test/index.html",
-  "engines" : { 
-    "node" : ">=0.12" 
+  "keywords": [
+    "live comment"
+  ],
+  "engines": {
+    "node": ">=0.12"
   },
+  "dependencies": {
+    "libtess": "^1.2.1"
+  },
+  "maintainers": [
+    {
+      "name": "George Wu",
+      "email": "uiharu@buaa.edu.cn",
+      "web": "http://uiharu.moe/"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "George Wu",
+      "email": "uiharu@buaa.edu.cn",
+      "web": "http://uiharu.moe/"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Hozuki/Bulletproof.git"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "http://mitlicense.org/"
+  },
+  "bugs": "http://github.com/Hozuki/Bulletproof/issues",
   "window": {
     "title": "Bulletproof",
     "show": true,
@@ -15,6 +44,10 @@
     "width": 800,
     "height": 600,
     "min_width": 800,
-    "min_height": 600
+    "min_height": 600,
+    "position": "center"
+  },
+  "webkit": {
+    "page-cache": false
   }
 }

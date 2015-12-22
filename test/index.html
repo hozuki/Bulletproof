@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Bulletproof Showcase</title>
-    <script type="text/javascript" src="http://cdn.bootcss.com/pixi.js/3.0.7/pixi.min.js"></script>
+    <!--<script type="text/javascript" src="http://cdn.bootcss.com/pixi.js/3.0.7/pixi.min.js"></script>-->
     <!--<script type="text/javascript" src="../src/ext/pixi.js/pixi.js"></script>-->
     <style>
         #bp-div {
@@ -11,8 +11,6 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 682px;
-            height: 438px;
         }
     </style>
 </head>
@@ -25,7 +23,9 @@
         var sources = [
             "scripts/3d-ball.js",
             "scripts/kanpai-lbn.js",
-            "scripts/kanpai-madoka.js"
+            "scripts/kanpai-madoka.js",
+            "scripts/tt-test-case-1.js",
+            "scripts/tt-test-case-2.js"
         ];
         var sel;
         if (0 <= num && num <= sources.length - 1) {
@@ -38,13 +38,19 @@
             stag.src = sel;
             document.body.appendChild(stag);
         }
+        window.startAnimation();
     }
 </script>
 <div id="test-cases-selection">
     <div><strong>测试选择 (Test case selection)</strong></div>
-    <a href="javascript:;" onclick="selectTest(0);">三维球体 (3D ball)</a>
-    <a href="javascript:;" onclick="selectTest(1);">绿坝娘 (Green Dam Musume)</a>
-    <a href="javascript:;" onclick="selectTest(2);">小圆脸 (Madoka etc.)</a>
+    <ul>
+        <li><a href="javascript:;" onclick="selectTest(0);">三维球体 (3D ball)</a></li>
+        <li><a href="javascript:;" onclick="selectTest(1);">绿坝娘 (Green Dam Musume)</a></li>
+        <li><a href="javascript:;" onclick="selectTest(2);">小圆脸 (Madoka etc.)</a></li>
+        <li><a href="javascript:;" onclick="selectTest(3);">TT测试1</a></li>
+        <li><a href="javascript:;" onclick="selectTest(4);">TT测试2</a></li>
+    </ul>
 </div>
+<script type="text/javascript" src="scripts/inject-script.js"></script>
 </body>
 </html>

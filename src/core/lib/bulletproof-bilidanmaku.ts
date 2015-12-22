@@ -2,22 +2,24 @@
  * Created by MIC on 2015/8/27.
  */
 
-/// <reference path="../../../include/ext/pixi.js/pixi.js.d.ts"/>
-
 import bulletproof_main = require("./bulletproof");
 import bulletproof_data_interface = require("./bulletproof-data-interface");
-import bulletproof_flash = require("./bulletproof-flash");
+import bulletproof_flash_base = require("./bulletproof-flash-base");
+import bulletproof_flash_display = require("./bulletproof-flash-display");
+import bulletproof_flash_graphics = require("./bulletproof-flash-graphics");
 import bulletproof_org = require("./bulletproof-org");
 import bulletproof_mic = require("./bulletproof-mic");
 import bulletproof_fl = require("./bulletproof-fl");
 import bulletproof_mx = require("./bulletproof-mx");
+import bulletproof_webgl = require("./bulletproof-webgl");
 
 export module bulletproof {
 
-    import flash = bulletproof_flash.bulletproof.flash;
     import mic = bulletproof_mic.bulletproof.mic;
     import fl = bulletproof_fl.bulletproof.fl;
     import mx = bulletproof_mx.bulletproof.mx;
+    import webgl = bulletproof_webgl.bulletproof.webgl;
+    import flash = bulletproof_flash_base.bulletproof.flash;
 
     import IGeneralCreateParams = bulletproof_data_interface.bulletproof.bilidanmaku.IGeneralCreateParams;
     import ICommentBitmapCreateParams = bulletproof_data_interface.bulletproof.bilidanmaku.ICommentBitmapCreateParams;
@@ -25,6 +27,19 @@ export module bulletproof {
     import IMotionPropertyAnimation = bulletproof_data_interface.bulletproof.bilidanmaku.IMotionPropertyAnimation;
     import NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
     import Bulletproof = bulletproof_main.bulletproof.Bulletproof;
+    import OMap = bulletproof_org.bulletproof.OMap;
+
+    import DisplayObject = bulletproof_flash_display.bulletproof.flash.display.DisplayObject;
+    import DisplayObjectContainer = bulletproof_flash_display.bulletproof.flash.display.DisplayObjectContainer;
+    import Stage = bulletproof_flash_display.bulletproof.flash.display.Stage;
+    import FlashShape = bulletproof_flash_graphics.bulletproof.flash.display.Shape;
+    import BitmapFilter = bulletproof_flash_display.bulletproof.flash.filters.BitmapFilter;
+    import BitmapFilterQuality = bulletproof_flash_display.bulletproof.flash.filters.BitmapFilterQuality;
+    import GlowFilter = bulletproof_flash_display.bulletproof.flash.filters.GlowFilter;
+    import BlurFilter = bulletproof_flash_display.bulletproof.flash.filters.BlurFilter;
+    import Graphics = bulletproof_flash_graphics.bulletproof.flash.display.Graphics;
+    import FlashBitmap = bulletproof_flash_display.bulletproof.flash.display.Bitmap;
+    import FlashBitmapData = bulletproof_flash_display.bulletproof.flash.display.BitmapData;
 
     export interface IProofDanmakuObject {
         createParams:IGeneralCreateParams;
@@ -36,7 +51,7 @@ export module bulletproof {
         root:HTMLDivElement;
         video:HTMLVideoElement;
         bp:Bulletproof;
-        stage:flash.display.Stage;
+        stage:Stage;
     }
 
     export class AdvancedDanmaku {
@@ -48,7 +63,7 @@ export module bulletproof {
         private _objectMotions:Array<IMotion> = [];
         // TODO: Potential security issues.
         private _api:any;
-        private _renderer:PIXI.WebGLRenderer;
+        private _renderer:webgl.WebGLRenderer;
 
         public get startParams():IProofStartParams {
             return this._startParams;
@@ -56,12 +71,13 @@ export module bulletproof {
 
         public static createInstance(root:HTMLDivElement, video:HTMLVideoElement):AdvancedDanmaku {
             var ad = new AdvancedDanmaku();
-            ad._renderer = new PIXI.WebGLRenderer(AdvancedDanmaku.DEFAULT_WIDTH, AdvancedDanmaku.DEFAULT_HEIGHT, {
-                antialias: true,
+            ad._renderer = new webgl.WebGLRenderer(AdvancedDanmaku.DEFAULT_WIDTH, AdvancedDanmaku.DEFAULT_HEIGHT, {
+                antialias: false,
                 autoResize: true,
-                transparent: true
+                transparent: true,
+                depth: false
             });
-            var stage:flash.display.Stage = new flash.display.Stage(ad._renderer);
+            var stage:Stage = new Stage(ad._renderer);
             ad._startParams = {
                 root: root,
                 startDate: new Date(),
@@ -71,20 +87,21 @@ export module bulletproof {
             };
             root.appendChild(ad._renderer.view);
 
-            window.requestAnimationFrame(ad.animate.bind(ad));
-
             return ad;
         }
 
         public animate():void {
-            this._startParams.stage.raiseEnterFrame();
+            var stage = this._startParams.stage;
+            stage.raiseEnterFrame();
             this.calculateMotionGroups();
-            this._startParams.stage.redraw();
+            stage.update();
+            stage.redraw();
             window.requestAnimationFrame(this.animate.bind(this));
         }
 
         public start():void {
-            this._startParams.bp.enterMainLoop();
+            //this._startParams.bp.enterMainLoop();
+            window.requestAnimationFrame(this.animate.bind(this));
         }
 
         public registerMotion(motion:IMotion):void {
@@ -208,13 +225,13 @@ export module bulletproof {
 
             }
 
-            export class Shape extends flash.display.Shape implements IProofDanmakuObject {
+            export class Shape extends FlashShape implements IProofDanmakuObject {
 
                 private _ad:AdvancedDanmaku;
                 private _createParams:IGeneralCreateParams;
                 private _lifeTime:number;
 
-                public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                public constructor(root:Stage, parent:DisplayObjectContainer,
                                    createParams:IGeneralCreateParams, ad:AdvancedDanmaku) {
                     super(root, parent);
                     this._lifeTime = ad.startParams.bp.options.commentLifeTime;
@@ -238,7 +255,7 @@ export module bulletproof {
                 private _createParams:IGeneralCreateParams;
                 private _lifeTime:number;
 
-                public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+                public constructor(root:Stage, parent:DisplayObjectContainer,
                                    createParams:IGeneralCreateParams, ad:AdvancedDanmaku) {
                     super(root, parent);
                     this._lifeTime = ad.startParams.bp.options.commentLifeTime;
@@ -265,8 +282,6 @@ export module bulletproof {
         }
 
         export class Display extends ProofObject {
-
-            private _ad:AdvancedDanmaku;
 
             public constructor(ad:AdvancedDanmaku) {
                 super();
@@ -382,13 +397,14 @@ export module bulletproof {
             }
 
             public createGlowFilter(color:number = 0xff0000, alpha:number = 1.0, blurX:number = 6.0,
-                                    blurY:number = 6.0, strength:number = 2, quality:number = flash.filters.BitmapFilterQuality.LOW,
-                                    inner:boolean = false, knockout:boolean = false):flash.filters.GlowFilter {
-                return new flash.filters.GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout);
+                                    blurY:number = 6.0, strength:number = 2, quality:number = BitmapFilterQuality.LOW,
+                                    inner:boolean = false, knockout:boolean = false):GlowFilter {
+                return new GlowFilter(this._ad.startParams.stage.worldRenderer.filterManager,
+                    color, alpha, blurX, blurY, strength, quality, inner, knockout);
             }
 
-            public createBlurFilter(blurX:number = 4.0, blurY:number = 4.0, quality:number = 1):flash.filters.BlurFilter {
-                return new flash.filters.BlurFilter(blurX, blurY, quality);
+            public createBlurFilter(blurX:number = 4.0, blurY:number = 4.0, quality:number = 1):BlurFilter {
+                return new BlurFilter(this._ad.startParams.stage.worldRenderer.filterManager, blurX, blurY, quality);
             }
 
             public toIntVector(array:Array<number>):Array<number> {
@@ -446,7 +462,7 @@ export module bulletproof {
                 return new flash.text.TextFormat();
             }
 
-            public createGraphic():flash.display.Graphics {
+            public createGraphic():Graphics {
                 throw new NotImplementedError();
             }
 
@@ -474,10 +490,12 @@ export module bulletproof {
                 }
             }
 
-            public get root():flash.display.Stage {
+            public get root():Stage {
                 // TODO: Remove force type cast when flash.d.ts is fully synced with implementations.
                 return this._ad.startParams.stage;
             }
+
+            private _ad:AdvancedDanmaku;
 
         }
 
@@ -522,11 +540,11 @@ export module bulletproof {
                 throw new NotImplementedError();
             }
 
-            public setMask(obj:flash.display.DisplayObject):void {
+            public setMask(obj:DisplayObject):void {
                 throw new NotImplementedError();
             }
 
-            public createSound(t:string, onLoad:Function = null):flash.media.Sound {
+            public createSound(t:string, onLoad:Function = null):any {
                 throw new NotImplementedError();
             }
 
@@ -614,11 +632,11 @@ export module bulletproof {
 
         }
 
-        export class CommentField extends flash.display.DisplayObject implements IProofDanmakuObject {
+        export class CommentField extends DisplayObject implements IProofDanmakuObject {
 
             private _ad:AdvancedDanmaku;
 
-            public constructor(root:flash.display.DisplayObject, parent:flash.display.DisplayObjectContainer,
+            public constructor(root:Stage, parent:DisplayObjectContainer,
                                createParams:IGeneralCreateParams, ad:AdvancedDanmaku) {
                 super(root, parent);
                 this._createParams = createParams;
@@ -818,12 +836,12 @@ export module bulletproof {
 
         }
 
-        export class CommentBitmap extends flash.display.Bitmap {
+        export class CommentBitmap extends FlashBitmap {
         }
 
         export class Global {
 
-            private _map:Map<string, any> = new Map<string, any>();
+            private _map:OMap<string, any> = new OMap<string, any>();
             private _ad:AdvancedDanmaku;
 
             public constructor(ad:AdvancedDanmaku) {
@@ -951,7 +969,7 @@ export module bulletproof {
                 this._ad = ad;
             }
 
-            public createBitmapData(width:number, height:number, transparent:boolean = true, fillColor:number = 0xffffffff):flash.display.BitmapData {
+            public createBitmapData(width:number, height:number, transparent:boolean = true, fillColor:number = 0xffffffff):FlashBitmapData {
                 throw new NotImplementedError();
             }
 

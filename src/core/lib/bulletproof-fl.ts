@@ -3,14 +3,13 @@
  */
 
 import bulletproof_org = require("./bulletproof-org");
-import bulletproof_flash = require("./bulletproof-flash");
+import bulletproof_flash_base = require("./bulletproof-flash-base");
 
 export module bulletproof.fl {
 
-    import flash = bulletproof_flash.bulletproof.flash;
-
     import NotImplementedError = bulletproof_org.bulletproof.NotImplementedError;
     import ICloneable = bulletproof_org.bulletproof.ICloneable;
+    import flash = bulletproof_flash_base.bulletproof.flash;
 
     export module transitions {
 
