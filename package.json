@@ -1,16 +1,29 @@
 {
   "name": "bulletproof",
-  "version": "0.1.0",
-  "description": "Bulletproof is a HTML5 advanced live comment rendering engine",
-  "main": "test/index.html",
+  "version": "0.5.0-alpha",
+  "description": "Bulletproof is a HTML5 advanced danmaku (live comment) rendering engine.",
+  "main": "build/node/index",
   "keywords": [
-    "live comment"
+    "live comment",
+    "danmaku",
+    "webgl",
+    "html5",
+    "render engine"
   ],
   "engines": {
     "node": ">=0.12"
   },
   "dependencies": {
-    "libtess": "^1.2.1"
+    "browserify": "^12.0.1",
+    "gulp": "^3.9.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^2.10.0",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "^3.0.7",
+    "libtess": "^1.2.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
   },
   "maintainers": [
     {
@@ -28,25 +41,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/Hozuki/Bulletproof.git"
+    "url": "https://github.com/Hozuki/Bulletproof.git"
   },
-  "license": {
-    "type": "MIT",
-    "url": "http://mitlicense.org/"
-  },
+  "license": "MIT",
   "bugs": "http://github.com/Hozuki/Bulletproof/issues",
-  "window": {
-    "title": "Bulletproof",
-    "show": true,
-    "toolbar": true,
-    "frame": true,
-    "transparent": false,
-    "width": 800,
-    "height": 600,
-    "min_width": 800,
-    "min_height": 600,
-    "position": "center"
-  },
   "webkit": {
     "page-cache": false
   }

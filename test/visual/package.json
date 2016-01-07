@@ -1,0 +1,16 @@
+{
+  "name": "bulletproof",
+  "main": "index.html",
+  "window": {
+    "title": "Bulletproof showcase",
+    "show": true,
+    "toolbar": true,
+    "frame": true,
+    "transparent": false,
+    "width": 800,
+    "height": 600,
+    "min_width": 800,
+    "min_height": 600,
+    "position": "center"
+  }
+}

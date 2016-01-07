@@ -1,0 +1,3 @@
+[submodule "lib/glantern"]
+	path = lib/glantern
+	url = https://github.com/Hozuki/GLantern.git

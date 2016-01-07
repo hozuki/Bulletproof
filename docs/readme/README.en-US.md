@@ -5,7 +5,7 @@ The meaning, coming from [bullet hell](//en.wikipedia.org/wiki/Shoot_%27em_up#Bu
 a analogy of "live" comments going through the player like barrages. The original word danmaku
 also means barrage (of military). With some technical support provided by some specific players
 (usually web players), a skilled danamku maker can write programs to create special danmakus,
-which started a kind of art of creating splendid danmakus. All started in [Niconico](http://www.nicovideo.jp/).
+which started a kind of art of creating splendid danmakus. It was all started in [Niconico](http://www.nicovideo.jp/).
 
 The target of this project is to create a danmaku player based on HTML5. Currently the whole project and
 tests run on nw.js (node-webkit).
@@ -13,56 +13,77 @@ tests run on nw.js (node-webkit).
 ## Playing with Bulletproof
 
 The source files are compiled. However, playing with the tests needs [nw.js](http://nwjs.io).
-You can get it from its homepage. 
-
-You can launch the tests with nw.js executable:
-
-Windows:
-
-```
-nw.exe C:\path\to\Bulletproof\
-```
-
-(Or, just drag the project directory onto `nw.exe` and release the mouse.)
-
-Mac/Linux:
-
-```
-nw /path/to/Bulletproof/
-```
-
-The homepage for testing (`test/index.html`) already included current tests. They are:
+You can get it from its homepage. Browse `test/visual/index.html` in modern browsers to start
+selecting test cases. The test cases are:
 
 - A spinning 3-D ball (`3d-ball.js`);
-- Green Dam Musume (`kanpai-lbn.js`);
-- Madoka and other Mahou Shoujos (`kanpai-madoka.js`).
+- Green Dam Musume (`kanpai-green-dam.js`);
+- Madoka and her friends (`kanpai-madoka.js`).
 
-You are able to select the tests from the homepage. Source code of the tests can be found in `/test/scripts/`.
+You are able to select the tests from the homepage. Source code of the tests can be found in `test/visual/test-scripts/`.
+
+Want to see some screenshots? [Here they are.](../images/)
 
 ## Building
 
-Before building, you will need [Node.js](https://nodejs.org/en/) and [TypeScript](http://www.typescriptlang.org/).
+Before building, you will need [Node.js](https://nodejs.org/en/) and [NPM](https://www.npmjs.org/).
 
-TypeScript may be installed via [NPM](https://www.npmjs.org/) (which is bundled with latest versions of Node.js):
+### Automated Building with Gulp
+
+Gulp options are configured, so using Gulp is simple:
+
+```bash
+cd /path/to/project
+npm install
+gulp build
+```
+
+Generated files will be in `build` directory, with:
+
+1. a `build/node` directory for using as a Node.js module;
+2. a `Bulletproof-browser.js` for browsers;
+3. a `Bulletproof-browser.min.js` and corresponding source mapping for
+browsers under production environments.
+
+### Manual Building with `tsc`
+
+If you prefer the old-fashioned way, you have to obtain TypeScript via NPM:
+
+```bash
+$ npm install -g typescript
+```
+
+After installing, compile the TypeScript files:
 
 ```
-npm install -g typescript
+$ cd /path/to/project
+$ tsc -p .
 ```
 
-After installing, please compile the TypeScript files:
+Generated files will be in the same position where the TypeScript sources are.
+Note that there are only loose CommonJS style JavaScript files generated in this way.
 
+## Using Bulletproof in Projects
+
+If the environment supports Node.js (e.g. NW.js), please `require()` the entry JavaScript file:
+
+```javascript
+var Bulletproof = require("./Bulletproof/build/node/index");
 ```
-cd {path-to-project}
-tsc -p .
+
+In other cases, please import the files using `<script>` tag:
+
+```html
+<script type="text/javascript" src="./Bulletproof/build/Bulletproof-browser.min.js"></script>
 ```
+
+After either way of importing, the `Bulletproof` namespace can be accessed in global scope.
+An example usage can be found [here](../../test/visual/bootstrap.js).
 
 ## Project Status
 
-The project is pre-alpha now. The classes are not fully implemented yet, and there are code hacks crawling.
-
-## License
-
-[MIT License](http://mitlicense.org/)
+The project is in its alpha age now (oh yeah no pre-alpha again). The classes are not fully implemented yet,
+but main features are active.
 
 ## Credits
 
