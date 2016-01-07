@@ -14,9 +14,6 @@ window.addEventListener("unload", function () {
 });
 
 (function initList() {
-
-    var fs = require("fs");
-
     var testCases = {
         "3D ball": "3d-ball.js",
         "Green Dam Musume": "kanpai-green-dam.js",
@@ -64,9 +61,32 @@ window.addEventListener("unload", function () {
      * @param fileName {String} Full JavaScript file name.
      */
     function injectAndExecute(fileName) {
-        var content = fs.readFileSync(fileName, "utf-8");
+        var content;
+        if (typeof global !== typeof undefined) {
+            // In Node.js environments
+            var fs = require("fs");
+            content = fs.readFileSync(fileName, "utf-8");
+        } else {
+            // In common browsers
+            // Note: Please view on a server. Local file access is forbidden due to safety restrictions.
+            content = loadFileSync(fileName);
+        }
         var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
         codeProvider.addDanmaku(content);
         bp.startAnimation();
+    }
+
+    /**
+     * Load a text file content from specified path.
+     * @param path {String} The file path.
+     */
+    function loadFileSync(path) {
+        /**
+         * @type {XMLHttpRequest}
+         */
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", path, false);
+        xhr.send();
+        return xhr.responseText;
     }
 })();
