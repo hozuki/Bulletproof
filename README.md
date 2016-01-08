@@ -3,6 +3,8 @@
 
 Advanced danmaku render engine under HTML5 / HTML5 高级弹幕渲染引擎
 
+You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
+
 ## Readme
 
 - [English (en-US)](/docs/readme/README.en-US.md)
