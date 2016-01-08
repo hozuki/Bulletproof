@@ -12,9 +12,8 @@ tests run on nw.js (node-webkit).
 
 ## Playing with Bulletproof
 
-The source files are compiled. However, playing with the tests needs [nw.js](http://nwjs.io).
-You can get it from its homepage. Browse `test/visual/index.html` in modern browsers to start
-selecting test cases. The test cases are:
+The source files are compiled. Browse `test/visual/index.html` in modern browsers to start selecting
+test cases. The test cases are:
 
 - A spinning 3-D ball (`3d-ball.js`);
 - Green Dam Musume (`kanpai-green-dam.js`);
