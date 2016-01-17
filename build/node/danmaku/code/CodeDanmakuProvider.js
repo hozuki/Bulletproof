@@ -9,8 +9,11 @@ var __extends = (this && this.__extends) || function (d, b) {
 var DanmakuProviderBase_1 = require("../DanmakuProviderBase");
 var DanmakuKind_1 = require("../DanmakuKind");
 var CodeDanmakuLayoutManager_1 = require("./CodeDanmakuLayoutManager");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var CodeDanmaku_1 = require("./CodeDanmaku");
+var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
+/**
+ * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
+ */
 var CodeDanmakuProvider = (function (_super) {
     __extends(CodeDanmakuProvider, _super);
     function CodeDanmakuProvider(coordinator) {
@@ -27,16 +30,26 @@ var CodeDanmakuProvider = (function (_super) {
     CodeDanmakuProvider.prototype.dispose = function () {
         this._layoutManager.dispose();
         this._layoutManager = null;
-        throw new NotImplementedError_1.NotImplementedError();
+        for (var i = 0; i < this.danmakuList.length; ++i) {
+            this.danmakuList[i].dispose();
+        }
+        while (this.danmakuList.length > 0) {
+            this.danmakuList.pop();
+        }
     };
     CodeDanmakuProvider.prototype.addDanmaku = function (content) {
-        var bulletproof = this.danmakuCoordinator.bulletproof;
-        var danmaku = new CodeDanmaku_1.CodeDanmaku(bulletproof.stage, bulletproof.stage, this.layoutManager);
-        // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        bulletproof.stage.addChild(danmaku);
-        danmaku.initialize(content, bulletproof.timeElapsed);
-        this.danmakuList.unshift(danmaku);
-        return danmaku;
+        if (this.danmakuCoordinator.shouldCreateDanmaku(this)) {
+            var bulletproof = this.danmakuCoordinator.bulletproof;
+            var danmaku = new CodeDanmaku_1.CodeDanmaku(bulletproof.stage, bulletproof.stage, this.layoutManager);
+            // Add to the last position of all currently active damakus to ensure being drawn as topmost.
+            bulletproof.stage.addChild(danmaku);
+            danmaku.initialize(content, bulletproof.timeElapsed);
+            this.danmakuList.unshift(danmaku);
+            return danmaku;
+        }
+        else {
+            return null;
+        }
     };
     CodeDanmakuProvider.prototype.removeDanmaku = function (danmaku) {
         var index = this.danmakuList.indexOf(danmaku);
@@ -61,6 +74,13 @@ var CodeDanmakuProvider = (function (_super) {
     Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuList", {
         get: function () {
             return this._danmakuList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CodeDanmakuProvider.prototype, "flags", {
+        get: function () {
+            return DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation;
         },
         enumerable: true,
         configurable: true

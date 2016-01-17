@@ -2,18 +2,37 @@
  * Created by MIC on 2015/12/29.
  */
 
-var bp = new Bulletproof.Bulletproof();
-bp.initialize(682, 438);
-(function (selector) {
-    var elem = document.querySelector(selector);
-    elem.appendChild(bp.view);
-})("#glantern-container");
+/**
+ * @type {Bulletproof}
+ */
+var bp = null;
+/**
+ * @type {number}
+ * @private
+ */
+var __timerHandle = 0;
 
-window.addEventListener("unload", function () {
+window.document.body.onload = function () {
+    initEnv();
+    initList();
+};
+
+window.addEventListener("beforeunload", function (ev) {
+    uninitFps();
     bp.dispose();
+    bp = null;
 });
 
-(function initList() {
+function initEnv() {
+    bp = new Bulletproof.Bulletproof();
+    bp.initialize(682, 438);
+    (function (selector) {
+        var elem = document.querySelector(selector);
+        elem.appendChild(bp.view);
+    })("#glantern-container");
+}
+
+function initList() {
     var testCases = {
         "3D ball": "3d-ball.js",
         "Green Dam Musume": "kanpai-green-dam.js",
@@ -53,6 +72,15 @@ window.addEventListener("unload", function () {
             aElem.onclick = onClick.bind(aElem);
             liElem.appendChild(aElem);
             caseListElem.appendChild(liElem);
+
+            var blankElem = document.createElement("span");
+            blankElem.textContent = " #";
+            var viewSourceElem = document.createElement("a");
+            viewSourceElem.href = aElem.name;
+            viewSourceElem.textContent = "View source";
+            viewSourceElem.target = "_blank";
+            liElem.appendChild(blankElem);
+            liElem.appendChild(viewSourceElem);
         }
     }
 
@@ -74,6 +102,7 @@ window.addEventListener("unload", function () {
         var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
         codeProvider.addDanmaku(content);
         bp.startAnimation();
+        initFps();
     }
 
     /**
@@ -89,4 +118,16 @@ window.addEventListener("unload", function () {
         xhr.send();
         return xhr.responseText;
     }
-})();
+}
+
+function initFps() {
+    __timerHandle = setInterval(function () {
+        document.getElementById("fps-indicator").textContent = (Math.round(bp.fps * 100) / 100).toString();
+    }, 1000);
+}
+
+function uninitFps() {
+    if (__timerHandle !== 0) {
+        clearInterval(__timerHandle);
+    }
+}

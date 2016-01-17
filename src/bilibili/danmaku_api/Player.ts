@@ -8,6 +8,7 @@ import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplemente
 import {DisplayObject} from "../../../lib/glantern/src/flash/display/DisplayObject";
 import {CommentData} from "./CommentData";
 import {Sound} from "../../../lib/glantern/src/flash/media/Sound";
+import {_util} from "../../../lib/glantern/src/_util/_util";
 
 export class Player extends BiliBiliDamakuApiObject {
 
@@ -28,7 +29,12 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     jump(av:string, page:number = 1, newWindow:boolean = false):void {
-        throw new NotImplementedError();
+        var url = _util.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+        if (newWindow) {
+            window.open(url, "_blank");
+        } else {
+            window.location.href = url;
+        }
     }
 
     get state():string {
@@ -36,14 +42,14 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get time():number {
+        return this.apiContainer.bulletproof.timeElapsed;
+    }
+
+    commentTrigger(f:(cd:CommentData) => void, timeout:number = 1000):number {
         throw new NotImplementedError();
     }
 
-    commentTrigger(f:(cd:CommentData)=>void, timeout:number = 1000):number {
-        throw new NotImplementedError();
-    }
-
-    keyTrigger(f:(key:number)=>void, timeout:number = 1000, up:boolean = false):number {
+    keyTrigger(f:(key:number) => void, timeout:number = 1000, up:boolean = false):number {
         throw new NotImplementedError();
     }
 
@@ -62,11 +68,11 @@ export class Player extends BiliBiliDamakuApiObject {
     refreshRate:number = 0;
 
     get width():number {
-        throw new NotImplementedError();
+        return this.apiContainer.bulletproof.stage.width;
     }
 
     get height():number {
-        throw new NotImplementedError();
+        return this.apiContainer.bulletproof.stage.height;
     }
 
     get videoWidth():number {

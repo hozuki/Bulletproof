@@ -36,6 +36,13 @@ var CodeDanmaku = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CodeDanmaku.prototype, "danmakuProvider", {
+        get: function () {
+            return this._danmakuProvider;
+        },
+        enumerable: true,
+        configurable: true
+    });
     CodeDanmaku.prototype.getContent = function () {
         return this._content;
     };

@@ -9,7 +9,11 @@ import {CodeDanmakuLayoutManager} from "./CodeDanmakuLayoutManager";
 import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {DanmakuCoordinator} from "../DanmakuCoordinator";
 import {CodeDanmaku} from "./CodeDanmaku";
+import {DanmakuProviderFlag} from "../DanmakuProviderFlag";
 
+/**
+ * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
+ */
 export class CodeDanmakuProvider extends DanmakuProviderBase {
 
     constructor(coordinator:DanmakuCoordinator) {
@@ -24,17 +28,26 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
     dispose():void {
         this._layoutManager.dispose();
         this._layoutManager = null;
-        throw new NotImplementedError();
+        for (var i = 0; i < this.danmakuList.length; ++i) {
+            this.danmakuList[i].dispose();
+        }
+        while (this.danmakuList.length > 0) {
+            this.danmakuList.pop();
+        }
     }
 
     addDanmaku(content:string):CodeDanmaku {
-        var bulletproof = this.danmakuCoordinator.bulletproof;
-        var danmaku = new CodeDanmaku(bulletproof.stage, bulletproof.stage, this.layoutManager);
-        // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        bulletproof.stage.addChild(danmaku);
-        danmaku.initialize(content, bulletproof.timeElapsed);
-        this.danmakuList.unshift(danmaku);
-        return danmaku;
+        if (this.danmakuCoordinator.shouldCreateDanmaku(this)) {
+            var bulletproof = this.danmakuCoordinator.bulletproof;
+            var danmaku = new CodeDanmaku(bulletproof.stage, bulletproof.stage, this.layoutManager);
+            // Add to the last position of all currently active damakus to ensure being drawn as topmost.
+            bulletproof.stage.addChild(danmaku);
+            danmaku.initialize(content, bulletproof.timeElapsed);
+            this.danmakuList.unshift(danmaku);
+            return danmaku;
+        } else {
+            return null;
+        }
     }
 
     removeDanmaku(danmaku:CodeDanmaku):boolean {
@@ -56,6 +69,10 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
 
     get danmakuList():CodeDanmaku[] {
         return this._danmakuList;
+    }
+
+    get flags():DanmakuProviderFlag {
+        return DanmakuProviderFlag.UnlimitedCreation;
     }
 
     // Writing in this pattern avoids force initialization of type-overridden members.
