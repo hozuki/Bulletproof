@@ -8,7 +8,6 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuLayoutManagerBase_1 = require("../DanmakuLayoutManagerBase");
 var DanmakuKind_1 = require("../DanmakuKind");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var CodeDanmakuLayoutManager = (function (_super) {
     __extends(CodeDanmakuLayoutManager, _super);
     function CodeDanmakuLayoutManager(provider) {
@@ -16,11 +15,13 @@ var CodeDanmakuLayoutManager = (function (_super) {
         this._danmakuProvider = provider;
     }
     CodeDanmakuLayoutManager.prototype.dispose = function () {
-        throw new NotImplementedError_1.NotImplementedError();
     };
     CodeDanmakuLayoutManager.prototype.getAdvisedLocation = function (danmaku) {
         // Code danmakus decide their locations by themselves.
         return null;
+    };
+    CodeDanmakuLayoutManager.prototype.performLayout = function () {
+        // Do nothing.
     };
     Object.defineProperty(CodeDanmakuLayoutManager.prototype, "danmakuProvider", {
         get: function () {

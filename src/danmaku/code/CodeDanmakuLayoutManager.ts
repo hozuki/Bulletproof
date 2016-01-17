@@ -17,12 +17,15 @@ export class CodeDanmakuLayoutManager extends DanmakuLayoutManagerBase {
     }
 
     dispose():void {
-        throw new NotImplementedError();
     }
 
     getAdvisedLocation(danmaku:DanmakuBase):Point {
         // Code danmakus decide their locations by themselves.
         return null;
+    }
+
+    performLayout():void{
+        // Do nothing.
     }
 
     get danmakuProvider():CodeDanmakuProvider {

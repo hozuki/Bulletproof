@@ -5780,7 +5780,7 @@ exports.TextFormat = TextFormat;
 
 
 
-},{"../../_util/_util":5,"../events/EventDispatcher":51,"../events/FlashEvent":52,"./TextFormatAlign":77,"os":163}],77:[function(require,module,exports){
+},{"../../_util/_util":5,"../events/EventDispatcher":51,"../events/FlashEvent":52,"./TextFormatAlign":77,"os":164}],77:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
@@ -8282,7 +8282,7 @@ BMS[BlendMode_1.BlendMode.SUBTRACT] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
 
 
-},{"../_util/_util":5,"../flash/display/BlendMode":27,"./FilterManager":89,"./RenderHelper":92,"./RenderTarget2D":93,"./ShaderManager":96,"./WebGLUtils":101,"libtess":162}],101:[function(require,module,exports){
+},{"../_util/_util":5,"../flash/display/BlendMode":27,"./FilterManager":89,"./RenderHelper":92,"./RenderTarget2D":93,"./ShaderManager":96,"./WebGLUtils":101,"libtess":163}],101:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/13.
  */
@@ -9354,7 +9354,7 @@ exports.SolidFillRenderer = SolidFillRenderer;
 
 
 
-},{"../../_util/NotImplementedError":4,"../../_util/_util":5,"../RenderHelper":92,"./FillRendererBase":110,"./GRAPHICS_CONST":111,"libtess":162}],114:[function(require,module,exports){
+},{"../../_util/NotImplementedError":4,"../../_util/_util":5,"../RenderHelper":92,"./FillRendererBase":110,"./GRAPHICS_CONST":111,"libtess":163}],114:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -10188,38 +10188,71 @@ var __extends = (this && this.__extends) || function (d, b) {
 var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
+/**
+ * The root controller for Bulletproof.
+ */
 var Bulletproof = (function (_super) {
     __extends(Bulletproof, _super);
+    /**
+     * Creates a new {@link Bulletproof} instance.
+     */
     function Bulletproof() {
         _super.call(this);
         this._lastUpdatedTime = -1;
         this._totalElapsedTime = 0;
+        this._fps = 0;
+        this._fpsCounter = 0;
+        this._lastFpsUpdateElapsedTime = 0;
         this._coordinator = null;
     }
+    /**
+     * Initialize the {@link Bulletproof} instance with default parameters.
+     * @param width {Number} Width of stage requested, in pixels.
+     * @param height {Number} Height of stage requested, in pixels.
+     */
     Bulletproof.prototype.initialize = function (width, height) {
-        _super.prototype.initialize.call(this, width, height);
-        this.attachUpdateFunction(this.__updateComponents.bind(this));
-        var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
-        this._coordinator = coordinator;
-        var provider;
-        provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
-        coordinator.addDanmakuProvider(provider);
+        if (!this._isInitialized) {
+            _super.prototype.initialize.call(this, width, height);
+            this.attachUpdateFunction(this.__updateComponents.bind(this));
+            var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
+            this._coordinator = coordinator;
+            var provider;
+            provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
+            coordinator.addDanmakuProvider(provider);
+        }
     };
+    /**
+     * Starts the animation loop. Updating and rendering are automatically handled in the loop.
+     * By default, {@link startAnimation} uses {@link window.requestAnimationFrame} function and relies
+     * on the frame rate adjuster of the browser window.
+     */
     Bulletproof.prototype.startAnimation = function () {
         if (!this.isAnimationRunning) {
             this._lastUpdatedTime = Date.now();
         }
         _super.prototype.startAnimation.call(this);
     };
+    /**
+     * Stops the animation loop. Internal state is preserved, and the next {@link startAnimation} call resumes
+     * from last state.
+     */
     Bulletproof.prototype.stopAnimation = function () {
+        this.__updateComponents();
         _super.prototype.stopAnimation.call(this);
     };
+    /**
+     * Disposes the {@link Bulletproof} instance and release all resources occupied.
+     */
     Bulletproof.prototype.dispose = function () {
         this._coordinator.dispose();
         this._coordinator = null;
         _super.prototype.dispose.call(this);
     };
     Object.defineProperty(Bulletproof.prototype, "danmakuCoordinator", {
+        /**
+         * Gets the {@link DanmakuCoordinator} instance associated with current {@link Bulletproof} instance.
+         * @returns {DanmakuCoordinator}
+         */
         get: function () {
             return this._coordinator;
         },
@@ -10227,6 +10260,10 @@ var Bulletproof = (function (_super) {
         configurable: true
     });
     Object.defineProperty(Bulletproof.prototype, "isAnimationRunning", {
+        /**
+         * Gets a boolean flag indicating whether the animation loop is running.
+         * @returns {Boolean}
+         */
         get: function () {
             return this._isRunning;
         },
@@ -10234,13 +10271,32 @@ var Bulletproof = (function (_super) {
         configurable: true
     });
     Object.defineProperty(Bulletproof.prototype, "timeElapsed", {
+        /**
+         * Gets total time elapsed in handling the animation loop, in milliseconds.
+         * @returns {Number}
+         */
         get: function () {
             return this._totalElapsedTime;
         },
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Bulletproof.prototype, "fps", {
+        /**
+         * Gets the average FPS (frame per second) of last second.
+         * @returns {Number}
+         */
+        get: function () {
+            return this._fps;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Bulletproof, "SIMPLE_DANMAKU_LIFE_TIME", {
+        /**
+         * Gets the default life time for simple (text-only) danmakus, in seconds.
+         * @returns {Number}
+         */
         get: function () {
             // 10 seconds
             return 10;
@@ -10249,6 +10305,10 @@ var Bulletproof = (function (_super) {
         configurable: true
     });
     Object.defineProperty(Bulletproof, "CODE_DANMAKU_LIFE_TIME", {
+        /**
+         * Gets the default life time for code danmakus, in seconds.
+         * @returns {Number}
+         */
         get: function () {
             return Number.MAX_VALUE;
         },
@@ -10256,10 +10316,16 @@ var Bulletproof = (function (_super) {
         configurable: true
     });
     Bulletproof.prototype.__updateComponents = function () {
-        var now = Date.now();
         if (this._lastUpdatedTime > 0) {
+            var now = Date.now();
             this._totalElapsedTime += now - this._lastUpdatedTime;
             this._lastUpdatedTime = now;
+        }
+        ++this._fpsCounter;
+        if (this.timeElapsed - this._lastFpsUpdateElapsedTime > 1000) {
+            this._fps = this._fpsCounter / (this.timeElapsed - this._lastFpsUpdateElapsedTime) * 1000;
+            this._fpsCounter = 0;
+            this._lastFpsUpdateElapsedTime = this.timeElapsed;
         }
         this._coordinator.update();
     };
@@ -10269,7 +10335,7 @@ exports.Bulletproof = Bulletproof;
 
 
 
-},{"../lib/glantern/src/GLantern":1,"./danmaku/DanmakuCoordinator":148,"./danmaku/code/CodeDanmakuProvider":154}],128:[function(require,module,exports){
+},{"../lib/glantern/src/GLantern":1,"./danmaku/DanmakuCoordinator":148,"./danmaku/code/CodeDanmakuProvider":155}],128:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -10466,7 +10532,7 @@ exports.CommentField = CommentField;
 
 
 
-},{"../../../lib/glantern/src/flash/text/TextField":73,"../../danmaku/code/dco/DCOHelper":155}],133:[function(require,module,exports){
+},{"../../../lib/glantern/src/flash/text/TextField":73,"../../danmaku/code/dco/DCOHelper":156}],133:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -10648,7 +10714,7 @@ exports.Display = Display;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":55,"../../../lib/glantern/src/flash/filters/BlurFilter":56,"../../../lib/glantern/src/flash/filters/GlowFilter":57,"../../../lib/glantern/src/flash/geom/ColorTransform":59,"../../../lib/glantern/src/flash/geom/Matrix":60,"../../../lib/glantern/src/flash/geom/Matrix3D":61,"../../../lib/glantern/src/flash/geom/Point":64,"../../../lib/glantern/src/flash/geom/Vector3D":67,"../../../lib/glantern/src/flash/text/TextFormat":76,"../../danmaku/code/dco/DCShape":156,"./BiliBiliDamakuApiObject":129,"./CommentField":132}],134:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":55,"../../../lib/glantern/src/flash/filters/BlurFilter":56,"../../../lib/glantern/src/flash/filters/GlowFilter":57,"../../../lib/glantern/src/flash/geom/ColorTransform":59,"../../../lib/glantern/src/flash/geom/Matrix":60,"../../../lib/glantern/src/flash/geom/Matrix3D":61,"../../../lib/glantern/src/flash/geom/Point":64,"../../../lib/glantern/src/flash/geom/Vector3D":67,"../../../lib/glantern/src/flash/text/TextFormat":76,"../../danmaku/code/dco/DCShape":157,"./BiliBiliDamakuApiObject":129,"./CommentField":132}],134:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -10839,6 +10905,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
+var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var Player = (function (_super) {
     __extends(Player, _super);
     function Player(apiContainer) {
@@ -10857,7 +10924,13 @@ var Player = (function (_super) {
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }
         if (newWindow === void 0) { newWindow = false; }
-        throw new NotImplementedError_1.NotImplementedError();
+        var url = _util_1._util.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+        if (newWindow) {
+            window.open(url, "_blank");
+        }
+        else {
+            window.location.href = url;
+        }
     };
     Object.defineProperty(Player.prototype, "state", {
         get: function () {
@@ -10868,7 +10941,7 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "time", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.apiContainer.bulletproof.timeElapsed;
         },
         enumerable: true,
         configurable: true
@@ -10898,14 +10971,14 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "width", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.apiContainer.bulletproof.stage.width;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "height", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.apiContainer.bulletproof.stage.height;
         },
         enumerable: true,
         configurable: true
@@ -10930,7 +11003,7 @@ exports.Player = Player;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"./BiliBiliDamakuApiObject":129}],138:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"./BiliBiliDamakuApiObject":129}],138:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -11193,7 +11266,7 @@ exports.Utils = Utils;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../danmaku/code/dco/FiniteTimer":157,"./BiliBiliDamakuApiObject":129}],144:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../danmaku/code/dco/FiniteTimer":158,"./BiliBiliDamakuApiObject":129}],144:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11249,7 +11322,7 @@ exports.danmaku_api = danmaku_api;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./index":161}],147:[function(require,module,exports){
+},{"./index":162}],147:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -11261,16 +11334,32 @@ var __extends = (this && this.__extends) || function (d, b) {
 var DisplayObjectContainer_1 = require("../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplementedError");
 var Bulletproof_1 = require("../Bulletproof");
+/**
+ * Base class exposing common service of a danmaku.
+ * This class must be inherited.
+ */
 var DanmakuBase = (function (_super) {
     __extends(DanmakuBase, _super);
+    /**
+     * Creates a new danmaku.
+     * @param root {Stage}
+     * @param parent {DisplayObjectContainer}
+     * @param layoutManager {DanmakuLayoutManagerBase} The layout manager that will be used for reversed queries.
+     */
     function DanmakuBase(root, parent, layoutManager) {
         _super.call(this, root, parent);
         this._bornTime = 0;
         this._layoutManager = null;
+        this._danmakuProvider = null;
         this._layoutManager = layoutManager;
+        this._danmakuProvider = layoutManager.danmakuProvider;
         this._bornTime = layoutManager.danmakuProvider.danmakuCoordinator.bulletproof.timeElapsed;
     }
     Object.defineProperty(DanmakuBase.prototype, "danmakuKind", {
+        /**
+         * Gets the kind of this instance.
+         * This property must be overridden.
+         */
         get: function () {
             throw new NotImplementedError_1.NotImplementedError();
         },
@@ -11278,6 +11367,10 @@ var DanmakuBase = (function (_super) {
         configurable: true
     });
     Object.defineProperty(DanmakuBase.prototype, "bornTime", {
+        /**
+         * Gets the born time of this instance, in milliseconds.
+         * @returns {Number}
+         */
         get: function () {
             return this._bornTime;
         },
@@ -11285,6 +11378,12 @@ var DanmakuBase = (function (_super) {
         configurable: true
     });
     Object.defineProperty(DanmakuBase.prototype, "lifeTime", {
+        /**
+         * Gets the life time of this instance, in seconds. The default value is
+         * {@link Bulletproof.SIMPLE_DANMAKU_LIFE_TIME}. This property can be overridden to apply different life time
+         * life time management strategies.
+         * @returns {Number}
+         */
         get: function () {
             return Bulletproof_1.Bulletproof.SIMPLE_DANMAKU_LIFE_TIME;
         },
@@ -11292,8 +11391,23 @@ var DanmakuBase = (function (_super) {
         configurable: true
     });
     Object.defineProperty(DanmakuBase.prototype, "layoutManager", {
+        /**
+         * Gets the danmaku layout manager specified at the time of creation.
+         * @returns {DanmakuLayoutManagerBase}
+         */
         get: function () {
             return this._layoutManager;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DanmakuBase.prototype, "danmakuProvider", {
+        /**
+         * Gets the danmaku provider of the danmaku layout manager specified at the time of creation.
+         * @returns {DanmakuProviderBase}
+         */
+        get: function () {
+            return this._danmakuProvider;
         },
         enumerable: true,
         configurable: true
@@ -11308,42 +11422,112 @@ exports.DanmakuBase = DanmakuBase;
 /**
  * Created by MIC on 2015/12/29.
  */
-var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplementedError");
 var _util_1 = require("../../lib/glantern/src/_util/_util");
+var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
+/**
+ * The coordinator of all danmakus.
+ * This class is a factory and manager of danmaku providers.
+ */
 var DanmakuCoordinator = (function () {
+    /**
+     * Creates a new {@Link DanmakuCoordinator} instance.
+     * @param bulletproof {Bulletproof} The {@link Bulletproof} instance that will be attached to.
+     */
     function DanmakuCoordinator(bulletproof) {
         this._danmakuProviders = null;
         this._bulletproof = null;
         this._bulletproof = bulletproof;
         this._danmakuProviders = new Map();
     }
+    /**
+     * Disposes the {@link DanmakuCoordinator} instance and release all resources occupied.
+     */
     DanmakuCoordinator.prototype.dispose = function () {
         this._danmakuProviders.forEach(function (provider) {
             provider.dispose();
         });
         this._danmakuProviders.clear();
     };
-    DanmakuCoordinator.prototype.shouldCreateDanmaku = function () {
-        throw new NotImplementedError_1.NotImplementedError();
+    /**
+     * Determines whether a danmaku should be created.
+     * For example, if the density of danmakus are too high, this function should returns false when a
+     * {@link SimpleDanamkuProvider} is requesting creation of a new danmaku, to avoid performance drop.
+     * Danmaku providers should check via this function before actually creating a danmaku.
+     * @param requestingProvider {DanmakuProviderBase} The danmaku provider requesting the check.
+     */
+    DanmakuCoordinator.prototype.shouldCreateDanmaku = function (requestingProvider) {
+        if ((requestingProvider.flags & DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation) !== 0) {
+            return true;
+        }
+        var canCreate = true;
+        if (false) {
+            // Can create only when 2 conditions are both met:
+            // 1. Total count of danmakus is below global threshold;
+            // 2. Total count of danmakus of the kind of requesting danmaku provider is below the provider's threshold.
+            var totalDanmakuCount = 0;
+            var globalThreshold = 100;
+            var specificThreshold = 10;
+            this._danmakuProviders.forEach(function (provider) {
+                if (canCreate) {
+                    var dl = provider.danmakuList.length;
+                    totalDanmakuCount += dl;
+                    if (totalDanmakuCount > globalThreshold || dl > specificThreshold) {
+                        canCreate = false;
+                    }
+                }
+            });
+            if (!canCreate) {
+                return false;
+            }
+        }
+        return true;
     };
+    /**
+     * Adds a new kind of danmaku provider to provider instance list. If the a provider of that kind
+     * already exists, the new one will not be added.
+     * @param provider {DanmakuProviderBase} The danmaku provider preparing to be added.
+     */
     DanmakuCoordinator.prototype.addDanmakuProvider = function (provider) {
         if (!_util_1._util.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
         }
     };
+    /**
+     * Removes a new kind of danmaku provider from provider instance list.
+     * @param provider {DanmakuProviderBase} The danmaku provider preparing to be removed.
+     */
     DanmakuCoordinator.prototype.removeDanmakuProvider = function (provider) {
         if (!_util_1._util.isUndefinedOrNull(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.delete(provider.danmakuKind);
         }
     };
+    /**
+     * Gets the instance of danmaku provider whose kind is as specified. If the kind is not registered,
+     * a null value will be returned.
+     * @param kind {DanmakuKind} The danmaku kind of requested danmaku provider.
+     * @returns {DanmakuProviderBase}
+     */
     DanmakuCoordinator.prototype.getDanmakuProvider = function (kind) {
-        return this._danmakuProviders.get(kind);
+        var provider = this._danmakuProviders.get(kind);
+        if (_util_1._util.isUndefinedOrNull(provider)) {
+            return null;
+        }
+        else {
+            return provider;
+        }
     };
+    /**
+     * Updates the status of all danmaku providers.
+     */
     DanmakuCoordinator.prototype.update = function () {
         this._danmakuProviders.forEach(function (provider) {
             provider.update();
         });
     };
+    /**
+     * Perform extra rendering if needed.
+     * @param renderer {WebGLRenderer} The renderer used.
+     */
     DanmakuCoordinator.prototype.render = function (renderer) {
         // Do nothing.
     };
@@ -11360,7 +11544,7 @@ exports.DanmakuCoordinator = DanmakuCoordinator;
 
 
 
-},{"../../lib/glantern/src/_util/NotImplementedError":4,"../../lib/glantern/src/_util/_util":5}],149:[function(require,module,exports){
+},{"../../lib/glantern/src/_util/_util":5,"./DanmakuProviderFlag":152}],149:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -11380,12 +11564,53 @@ var DanmakuKind = exports.DanmakuKind;
  * Created by MIC on 2015/12/28.
  */
 var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplementedError");
+var _util_1 = require("../../lib/glantern/src/_util/_util");
+/**
+ * Base class exposing common service of a danmaku layout manager.
+ * A danmaku layout manager does layout calculation and performs optimized layout for danmakus of its kind.
+ * In special situations, it can also do nothing and let the danmakus themselves to determine the best
+ * layout, as in {@link CodeDanmakuLayoutManager}.
+ * This class must be inherited.
+ */
 var DanmakuLayoutManagerBase = (function () {
+    /**
+     * Creates a new danmaku layout manager.
+     * @param provider {DanmakuProviderBase} The danmaku provider that will be attached to.
+     */
     function DanmakuLayoutManagerBase(provider) {
+        this._locationList = null;
         this._danmakuProvider = null;
         this._danmakuProvider = provider;
+        this._locationList = [];
     }
+    /**
+     * Calculates the best layout and sets the danmakus to their new locations.
+     */
+    DanmakuLayoutManagerBase.prototype.performLayout = function () {
+        var danmakuList = this.danmakuProvider.danmakuList;
+        while (this._locationList.length > 0) {
+            this._locationList.pop();
+        }
+        var location;
+        // First pass: calculates the locations based on the snapshot of current situation.
+        // Second pass: applies the layout.
+        for (var i = 0; i < danmakuList.length; ++i) {
+            location = this.getAdvisedLocation(danmakuList[i]);
+            this._locationList.push(location);
+        }
+        for (var i = 0; i < danmakuList.length; ++i) {
+            location = this._locationList[i];
+            if (!_util_1._util.isUndefinedOrNull(location)) {
+                danmakuList[i].x = location.x;
+                danmakuList[i].y = location.y;
+            }
+        }
+    };
     Object.defineProperty(DanmakuLayoutManagerBase.prototype, "danmakuKind", {
+        /**
+         * Gets the kind of danmaku that this danmaku layout manager handles.
+         * @returns {DanmakuKind}
+         */
         get: function () {
             throw new NotImplementedError_1.NotImplementedError();
         },
@@ -11393,6 +11618,10 @@ var DanmakuLayoutManagerBase = (function () {
         configurable: true
     });
     Object.defineProperty(DanmakuLayoutManagerBase.prototype, "danmakuProvider", {
+        /**
+         * Gets the danmaku provider specified at the time of creation.
+         * @returns {DanmakuProviderBase}
+         */
         get: function () {
             return this._danmakuProvider;
         },
@@ -11405,12 +11634,21 @@ exports.DanmakuLayoutManagerBase = DanmakuLayoutManagerBase;
 
 
 
-},{"../../lib/glantern/src/_util/NotImplementedError":4}],151:[function(require,module,exports){
+},{"../../lib/glantern/src/_util/NotImplementedError":4,"../../lib/glantern/src/_util/_util":5}],151:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
 var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplementedError");
+var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
+/**
+ * Base class exposing common service of a danmaku provider.
+ * This class must be inherited.
+ */
 var DanmakuProviderBase = (function () {
+    /**
+     * Creates a new danmaku provider.
+     * @param coordinator {DanmakuCoordinator} The {@link DanmakuCoordinator} that will be used for reversed queries.
+     */
     function DanmakuProviderBase(coordinator) {
         this._danmakuList = null;
         this._coordinator = null;
@@ -11419,15 +11657,28 @@ var DanmakuProviderBase = (function () {
         this._danmakuList = [];
     }
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuKind", {
+        /**
+         * The kind of this danmaku provider. Override this property and return a unique number to identify from other
+         * danmaku providers.
+         * This property must be overridden.
+         */
         get: function () {
             throw new NotImplementedError_1.NotImplementedError();
         },
         enumerable: true,
         configurable: true
     });
+    /**
+     * Updates the state of this instance.
+     */
     DanmakuProviderBase.prototype.update = function () {
         this.removeDeadDanmakus();
+        this.layoutManager.performLayout();
     };
+    /**
+     * Removes "dead" danmakus from the internal danmaku list and release the resources they occupy.
+     * A danmaku being existed longer than its life time is regarded as "dead".
+     */
     DanmakuProviderBase.prototype.removeDeadDanmakus = function () {
         var danmaku;
         var bulletproof = this.danmakuCoordinator.bulletproof;
@@ -11440,6 +11691,10 @@ var DanmakuProviderBase = (function () {
         }
     };
     Object.defineProperty(DanmakuProviderBase.prototype, "layoutManager", {
+        /**
+         * Gets the layout manager associated with this instance.
+         * @returns {DanmakuLayoutManagerBase}
+         */
         get: function () {
             return this._layoutManager;
         },
@@ -11447,6 +11702,10 @@ var DanmakuProviderBase = (function () {
         configurable: true
     });
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuList", {
+        /**
+         * Gets the list including all danmakus created and managed by this danmaku provider.
+         * @returns {DanmakuBase[]}
+         */
         get: function () {
             return this._danmakuList;
         },
@@ -11454,8 +11713,25 @@ var DanmakuProviderBase = (function () {
         configurable: true
     });
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuCoordinator", {
+        /**
+         * Gets the danmaku coordinator specified at the time of creation.
+         * @returns {DanmakuCoordinator}
+         */
         get: function () {
             return this._coordinator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DanmakuProviderBase.prototype, "flags", {
+        /**
+         * Gets the flags of this danmaku provider. The flags may influence how this danmaku provider is treated,
+         * for example, in {@link DanmakuCoordinator.shouldCreateDanmaku}.
+         * The default value is {@link DanmakuProviderFlag.None}, indicating no special flag is set.
+         * @returns {DanmakuProviderFlag}
+         */
+        get: function () {
+            return DanmakuProviderFlag_1.DanmakuProviderFlag.None;
         },
         enumerable: true,
         configurable: true
@@ -11466,7 +11742,19 @@ exports.DanmakuProviderBase = DanmakuProviderBase;
 
 
 
-},{"../../lib/glantern/src/_util/NotImplementedError":4}],152:[function(require,module,exports){
+},{"../../lib/glantern/src/_util/NotImplementedError":4,"./DanmakuProviderFlag":152}],152:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/1/10.
+ */
+(function (DanmakuProviderFlag) {
+    DanmakuProviderFlag[DanmakuProviderFlag["None"] = 0] = "None";
+    DanmakuProviderFlag[DanmakuProviderFlag["UnlimitedCreation"] = 1] = "UnlimitedCreation";
+})(exports.DanmakuProviderFlag || (exports.DanmakuProviderFlag = {}));
+var DanmakuProviderFlag = exports.DanmakuProviderFlag;
+
+
+
+},{}],153:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -11501,6 +11789,13 @@ var CodeDanmaku = (function (_super) {
     Object.defineProperty(CodeDanmaku.prototype, "layoutManager", {
         get: function () {
             return this._layoutManager;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CodeDanmaku.prototype, "danmakuProvider", {
+        get: function () {
+            return this._danmakuProvider;
         },
         enumerable: true,
         configurable: true
@@ -11626,7 +11921,7 @@ exports.CodeDanmaku = CodeDanmaku;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../Bulletproof":127,"../../bilibili/BiliBiliDanmakuApiContainer":128,"../DanmakuBase":147,"../DanmakuKind":149}],153:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../Bulletproof":127,"../../bilibili/BiliBiliDanmakuApiContainer":128,"../DanmakuBase":147,"../DanmakuKind":149}],154:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -11637,7 +11932,6 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuLayoutManagerBase_1 = require("../DanmakuLayoutManagerBase");
 var DanmakuKind_1 = require("../DanmakuKind");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var CodeDanmakuLayoutManager = (function (_super) {
     __extends(CodeDanmakuLayoutManager, _super);
     function CodeDanmakuLayoutManager(provider) {
@@ -11645,11 +11939,13 @@ var CodeDanmakuLayoutManager = (function (_super) {
         this._danmakuProvider = provider;
     }
     CodeDanmakuLayoutManager.prototype.dispose = function () {
-        throw new NotImplementedError_1.NotImplementedError();
     };
     CodeDanmakuLayoutManager.prototype.getAdvisedLocation = function (danmaku) {
         // Code danmakus decide their locations by themselves.
         return null;
+    };
+    CodeDanmakuLayoutManager.prototype.performLayout = function () {
+        // Do nothing.
     };
     Object.defineProperty(CodeDanmakuLayoutManager.prototype, "danmakuProvider", {
         get: function () {
@@ -11671,7 +11967,7 @@ exports.CodeDanmakuLayoutManager = CodeDanmakuLayoutManager;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../DanmakuKind":149,"../DanmakuLayoutManagerBase":150}],154:[function(require,module,exports){
+},{"../DanmakuKind":149,"../DanmakuLayoutManagerBase":150}],155:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -11683,8 +11979,11 @@ var __extends = (this && this.__extends) || function (d, b) {
 var DanmakuProviderBase_1 = require("../DanmakuProviderBase");
 var DanmakuKind_1 = require("../DanmakuKind");
 var CodeDanmakuLayoutManager_1 = require("./CodeDanmakuLayoutManager");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var CodeDanmaku_1 = require("./CodeDanmaku");
+var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
+/**
+ * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
+ */
 var CodeDanmakuProvider = (function (_super) {
     __extends(CodeDanmakuProvider, _super);
     function CodeDanmakuProvider(coordinator) {
@@ -11701,16 +12000,26 @@ var CodeDanmakuProvider = (function (_super) {
     CodeDanmakuProvider.prototype.dispose = function () {
         this._layoutManager.dispose();
         this._layoutManager = null;
-        throw new NotImplementedError_1.NotImplementedError();
+        for (var i = 0; i < this.danmakuList.length; ++i) {
+            this.danmakuList[i].dispose();
+        }
+        while (this.danmakuList.length > 0) {
+            this.danmakuList.pop();
+        }
     };
     CodeDanmakuProvider.prototype.addDanmaku = function (content) {
-        var bulletproof = this.danmakuCoordinator.bulletproof;
-        var danmaku = new CodeDanmaku_1.CodeDanmaku(bulletproof.stage, bulletproof.stage, this.layoutManager);
-        // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        bulletproof.stage.addChild(danmaku);
-        danmaku.initialize(content, bulletproof.timeElapsed);
-        this.danmakuList.unshift(danmaku);
-        return danmaku;
+        if (this.danmakuCoordinator.shouldCreateDanmaku(this)) {
+            var bulletproof = this.danmakuCoordinator.bulletproof;
+            var danmaku = new CodeDanmaku_1.CodeDanmaku(bulletproof.stage, bulletproof.stage, this.layoutManager);
+            // Add to the last position of all currently active damakus to ensure being drawn as topmost.
+            bulletproof.stage.addChild(danmaku);
+            danmaku.initialize(content, bulletproof.timeElapsed);
+            this.danmakuList.unshift(danmaku);
+            return danmaku;
+        }
+        else {
+            return null;
+        }
     };
     CodeDanmakuProvider.prototype.removeDanmaku = function (danmaku) {
         var index = this.danmakuList.indexOf(danmaku);
@@ -11739,13 +12048,20 @@ var CodeDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CodeDanmakuProvider.prototype, "flags", {
+        get: function () {
+            return DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return CodeDanmakuProvider;
 })(DanmakuProviderBase_1.DanmakuProviderBase);
 exports.CodeDanmakuProvider = CodeDanmakuProvider;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../DanmakuKind":149,"../DanmakuProviderBase":151,"./CodeDanmaku":152,"./CodeDanmakuLayoutManager":153}],155:[function(require,module,exports){
+},{"../DanmakuKind":149,"../DanmakuProviderBase":151,"../DanmakuProviderFlag":152,"./CodeDanmaku":153,"./CodeDanmakuLayoutManager":154}],156:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11836,7 +12152,7 @@ exports.DCOHelper = DCOHelper;
 
 
 
-},{"../../../../lib/glantern/src/_util/_util":5,"../../../Bulletproof":127}],156:[function(require,module,exports){
+},{"../../../../lib/glantern/src/_util/_util":5,"../../../Bulletproof":127}],157:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11884,7 +12200,7 @@ exports.DCShape = DCShape;
 
 
 
-},{"../../../../lib/glantern/src/flash/display/Shape":42,"./DCOHelper":155}],157:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/display/Shape":42,"./DCOHelper":156}],158:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -11926,7 +12242,7 @@ exports.FiniteTimer = FiniteTimer;
 
 
 
-},{"../../../../lib/glantern/src/flash/events/TimerEvent":53,"../../../../lib/glantern/src/flash/utils/Timer":81}],158:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/events/TimerEvent":53,"../../../../lib/glantern/src/flash/utils/Timer":81}],159:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11938,7 +12254,7 @@ __export(require("./DCShape"));
 
 
 
-},{"./DCOHelper":155,"./DCShape":156}],159:[function(require,module,exports){
+},{"./DCOHelper":156,"./DCShape":157}],160:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11953,7 +12269,7 @@ exports.dco = dco;
 
 
 
-},{"./CodeDanmaku":152,"./CodeDanmakuLayoutManager":153,"./CodeDanmakuProvider":154,"./dco/index":158}],160:[function(require,module,exports){
+},{"./CodeDanmaku":153,"./CodeDanmakuLayoutManager":154,"./CodeDanmakuProvider":155,"./dco/index":159}],161:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11970,7 +12286,7 @@ exports.code = code;
 
 
 
-},{"./DanmakuBase":147,"./DanmakuCoordinator":148,"./DanmakuKind":149,"./DanmakuLayoutManagerBase":150,"./DanmakuProviderBase":151,"./code/index":159}],161:[function(require,module,exports){
+},{"./DanmakuBase":147,"./DanmakuCoordinator":148,"./DanmakuKind":149,"./DanmakuLayoutManagerBase":150,"./DanmakuProviderBase":151,"./code/index":160}],162:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -11988,7 +12304,7 @@ __export(require("../lib/glantern/src/index"));
 
 
 
-},{"../lib/glantern/src/index":83,"./Bulletproof":127,"./bilibili/index":145,"./danmaku/index":160}],162:[function(require,module,exports){
+},{"../lib/glantern/src/index":83,"./Bulletproof":127,"./bilibili/index":145,"./danmaku/index":161}],163:[function(require,module,exports){
 /*
 
  Copyright 2000, Silicon Graphics, Inc. All Rights Reserved.
@@ -12048,7 +12364,7 @@ function W(a,b){for(var c=a.d,d=a.e,e=a.c,f=b,g=c[f];;){var h=f<<1;h<a.a&&u(d[c[
 gluEnum:{GLU_TESS_MESH:100112,GLU_TESS_TOLERANCE:100142,GLU_TESS_WINDING_RULE:100140,GLU_TESS_BOUNDARY_ONLY:100141,GLU_INVALID_ENUM:100900,GLU_INVALID_VALUE:100901,GLU_TESS_BEGIN:100100,GLU_TESS_VERTEX:100101,GLU_TESS_END:100102,GLU_TESS_ERROR:100103,GLU_TESS_EDGE_FLAG:100104,GLU_TESS_COMBINE:100105,GLU_TESS_BEGIN_DATA:100106,GLU_TESS_VERTEX_DATA:100107,GLU_TESS_END_DATA:100108,GLU_TESS_ERROR_DATA:100109,GLU_TESS_EDGE_FLAG_DATA:100110,GLU_TESS_COMBINE_DATA:100111}};X.prototype.gluDeleteTess=X.prototype.x;
 X.prototype.gluTessProperty=X.prototype.B;X.prototype.gluGetTessProperty=X.prototype.y;X.prototype.gluTessNormal=X.prototype.A;X.prototype.gluTessCallback=X.prototype.z;X.prototype.gluTessVertex=X.prototype.C;X.prototype.gluTessBeginPolygon=X.prototype.u;X.prototype.gluTessBeginContour=X.prototype.t;X.prototype.gluTessEndContour=X.prototype.v;X.prototype.gluTessEndPolygon=X.prototype.w; if (typeof module !== 'undefined') { module.exports = this.libtess; }
 
-},{}],163:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {

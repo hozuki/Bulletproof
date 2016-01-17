@@ -8,6 +8,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
+var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var Player = (function (_super) {
     __extends(Player, _super);
     function Player(apiContainer) {
@@ -26,7 +27,13 @@ var Player = (function (_super) {
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }
         if (newWindow === void 0) { newWindow = false; }
-        throw new NotImplementedError_1.NotImplementedError();
+        var url = _util_1._util.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+        if (newWindow) {
+            window.open(url, "_blank");
+        }
+        else {
+            window.location.href = url;
+        }
     };
     Object.defineProperty(Player.prototype, "state", {
         get: function () {
@@ -37,7 +44,7 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "time", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.apiContainer.bulletproof.timeElapsed;
         },
         enumerable: true,
         configurable: true
@@ -67,14 +74,14 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "width", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.apiContainer.bulletproof.stage.width;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "height", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.apiContainer.bulletproof.stage.height;
         },
         enumerable: true,
         configurable: true

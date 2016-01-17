@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="no-store">
     <link rel="stylesheet" href="default.css"/>
     <title>Bulletproof Showcase</title>
 </head>
@@ -12,12 +13,61 @@
     </ol>
 </div>
 <div class="initially-hidden" id="glantern-container">
-    <div><b>Selected:</b>&nbsp;<span id="test-case-desc"></span></div>
+    <div style="margin-bottom: 10px;">
+        <b>Selected:</b>&nbsp;<span id="test-case-desc"></span>&nbsp;
+        <button type="button" onclick="reloadPage();">Reload</button>
+        <span style="margin-left: 10px;">
+            FPS:&nbsp;
+            <span id="fps-indicator">
+            </span>
+        </span>
+    </div>
 </div>
-<script type="text/javascript" src="../../build/Bulletproof-browser.min.js"></script>
-<!--<script type="text/javascript">
-    var Bulletproof = require("../../build/node/index");
-</script>-->
+<script type="text/javascript" id="bp-source-loader">
+    (function loadBulletproofSource(useNodeVersion, useMinimizedVersion, forceNoCache) {
+        function defaultValue(obj, value) {
+            return typeof obj === "undefined" ? value : obj;
+        }
+
+        useNodeVersion = defaultValue(useNodeVersion, false);
+        useMinimizedVersion = defaultValue(useMinimizedVersion, false);
+        forceNoCache = defaultValue(forceNoCache, true);
+        var src = null;
+        if (useNodeVersion) {
+            src = "../../build/node/index";
+            window.Bulletproof = require(src);
+        } else {
+            src = "../../build/Bulletproof-browser" + (useMinimizedVersion ? ".min" : "") + ".js";
+            if (forceNoCache) {
+                var timeMillis = Date.now();
+                src += "?time=" + timeMillis.toString();
+            }
+            var newScriptTag = document.createElement("script");
+            newScriptTag.type = "text/javascript";
+            newScriptTag.src = src;
+            var thisScriptTag = document.getElementById("bp-source-loader");
+            if (thisScriptTag.nextElementSibling) {
+                document.body.insertBefore(newScriptTag, thisScriptTag.nextElementSibling);
+            } else {
+                document.body.appendChild(newScriptTag);
+            }
+        }
+    })();
+</script>
 <script type="text/javascript" src="bootstrap.js"></script>
+<script type="text/javascript">
+    function reloadPage() {
+        // Note: Reloading problem
+        //   When caching policy is active, Bulletproof fails to redraw in the new session created by
+        // clicking "Reload" button. Detailed relation between cached scripts and rendering logic
+        // is not analyzed yet, however it is sure that caching does prevent rendering right.
+        //   A workaround to the problem is to disable caching. This action is performed by
+        // loadBulletproofSource() function. In order to disable caching, please use the plain JavaScript
+        // version (useNodeVersion=false) even in NW.js, and force disabling caching (forceNoCache=true).
+        // I have tested and discovered that, setting a specific no-caching header in this page
+        // (<meta http-equiv="cache-control" content="no-store">) does not work.
+        window.location.reload(true);
+    }
+</script>
 </body>
 </html>

@@ -16,6 +16,7 @@ import {BiliBiliDanmakuApiContainer} from "../../bilibili/BiliBiliDanmakuApiCont
 import {IMotion} from "../../bilibili/danmaku_api/data_types/IMotion";
 import {IMotionPropertyAnimation} from "../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
 import {_util} from "../../../lib/glantern/src/_util/_util";
+import {CodeDanmakuProvider} from "./CodeDanmakuProvider";
 
 export class CodeDanmaku extends DanmakuBase {
 
@@ -30,6 +31,10 @@ export class CodeDanmaku extends DanmakuBase {
 
     get layoutManager():CodeDanmakuLayoutManager {
         return this._layoutManager;
+    }
+
+    get danmakuProvider():CodeDanmakuProvider {
+        return this._danmakuProvider;
     }
 
     getContent():string {
@@ -163,5 +168,6 @@ export class CodeDanmaku extends DanmakuBase {
 
     // Writing in this pattern avoids force initialization of type-overridden members.
     protected _layoutManager:CodeDanmakuLayoutManager;
+    protected _danmakuProvider:CodeDanmakuProvider;
 
 }
