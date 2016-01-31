@@ -12,8 +12,7 @@ You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
 ## Roadmap
 
-- [ ] Transforms should be done by JavaScript. (It also avoids
-incorrect positioning, and enables built-in anti-alias features.)
+- [x] Transforms should be done without cascaded `RenderTarget2D` rendering.
 - [ ] Support for simple (text-only) danmakus.
 - [ ] Support for Mode 7 danmakus.
 
