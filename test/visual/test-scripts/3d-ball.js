@@ -35,9 +35,6 @@ Vector3D = ($.createVector3D()).constructor;
 var ball = $.createShape({
     lifeTime: 1000
 });
-//ball.transform.matrix3D = null;
-var ballOffsetX = $.width / 2;
-var ballOffsetY = $.height / 2;
 ball.x = $.width / 2;
 ball.y = $.height / 2;
 
@@ -58,7 +55,6 @@ function getColor(value) {
     return ((r.r + r.dr * d) << 16) + ((r.g + r.dg * d) << 8) + (r.b + r.db * d);
 }
 
-var xoff = $.width / 2, yoff = $.height / 2;
 var vertices = $.toNumberVector([]);
 var indices = $.toIntVector([]);
 var uvtData = $.toNumberVector([]);
@@ -97,7 +93,6 @@ function init() {
 var counter = 0;
 var rx = 0;
 var ry = 0;
-var frames = 0;
 var fpsText = $.createComment('', {fontsize: 12, lifeTime: 1000});
 var frameCount = 0;
 var nextUpdate = getTimer() + 1000;
@@ -120,7 +115,6 @@ function render() {
     matrix3D.identity();
     matrix3D.prependRotation(rx += 0.5, Vector3D.X_AXIS);
     matrix3D.prependRotation(ry += 1.25, Vector3D.Y_AXIS);
-    //matrix3D.prependTranslation(radius * 2, radius * 2, 0);
     $.projectVectors(matrix3D, vertices, projectedVertices, uvtData);
     ball.graphics.clear();
     var color = getColor(counter++);
