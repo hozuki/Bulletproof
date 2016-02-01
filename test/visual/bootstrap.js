@@ -18,18 +18,23 @@ window.document.body.onload = function () {
 };
 
 window.addEventListener("beforeunload", function (ev) {
+    if (!bp) {
+        return;
+    }
     uninitFps();
     bp.dispose();
     bp = null;
 });
 
 function initEnv() {
-    bp = new Bulletproof.Bulletproof();
-    bp.initialize(682, 438);
-    (function (selector) {
-        var elem = document.querySelector(selector);
-        elem.appendChild(bp.view);
-    })("#glantern-container");
+    if (Bulletproof.isSupported()) {
+        bp = new Bulletproof.Bulletproof();
+        bp.initialize(682, 438);
+        (function (selector) {
+            var elem = document.querySelector(selector);
+            elem.appendChild(bp.view);
+        })("#glantern-container");
+    }
 }
 
 function initList() {
@@ -40,6 +45,11 @@ function initList() {
     };
 
     var caseListElem = document.querySelector("#test-case-selector");
+    if (Bulletproof.isSupported() && bp) {
+        initListNormal();
+    } else {
+        initListOnFailure();
+    }
 
     function onClick(ev) {
         /**
@@ -54,34 +64,6 @@ function initList() {
         e = document.querySelector("#glantern-container");
         e.style.display = "block";
         injectAndExecute(aElem.name);
-    }
-
-    for (var caseName in testCases) {
-        if (testCases.hasOwnProperty(caseName)) {
-            /**
-             * @type {HTMLLIElement}
-             */
-            var liElem = document.createElement("li");
-            /**
-             * @type {HTMLAnchorElement}
-             */
-            var aElem = document.createElement("a");
-            aElem.innerHTML = caseName;
-            aElem.href = "javascript:;";
-            aElem.name = "test-scripts/" + testCases[caseName];
-            aElem.onclick = onClick.bind(aElem);
-            liElem.appendChild(aElem);
-            caseListElem.appendChild(liElem);
-
-            var blankElem = document.createElement("span");
-            blankElem.textContent = " #";
-            var viewSourceElem = document.createElement("a");
-            viewSourceElem.href = aElem.name;
-            viewSourceElem.textContent = "View source";
-            viewSourceElem.target = "_blank";
-            liElem.appendChild(blankElem);
-            liElem.appendChild(viewSourceElem);
-        }
     }
 
     /**
@@ -118,15 +100,60 @@ function initList() {
         xhr.send();
         return xhr.responseText;
     }
+
+    function initListNormal() {
+        for (var caseName in testCases) {
+            if (testCases.hasOwnProperty(caseName)) {
+                /**
+                 * @type {HTMLLIElement}
+                 */
+                var liElem = document.createElement("li");
+                /**
+                 * @type {HTMLAnchorElement}
+                 */
+                var aElem = document.createElement("a");
+                aElem.innerHTML = caseName;
+                aElem.href = "javascript:;";
+                aElem.name = "test-scripts/" + testCases[caseName];
+                aElem.onclick = onClick.bind(aElem);
+                liElem.appendChild(aElem);
+                caseListElem.appendChild(liElem);
+
+                var blankElem = document.createElement("span");
+                blankElem.textContent = " #";
+                var viewSourceElem = document.createElement("a");
+                viewSourceElem.href = aElem.name;
+                viewSourceElem.textContent = "View source";
+                viewSourceElem.target = "_blank";
+                liElem.appendChild(blankElem);
+                liElem.appendChild(viewSourceElem);
+            }
+        }
+    }
+
+    function initListOnFailure() {
+        /**
+         * @type {HTMLLIElement}
+         */
+        var liElem = document.createElement("li");
+        li.textContent = "Oops, it seems that Bulletproof is not supported by your browser.";
+        caseListElem.appendChild(li);
+    }
 }
 
 function initFps() {
+    if (!bp) {
+        return;
+    }
     __timerHandle = setInterval(function () {
         document.getElementById("fps-indicator").textContent = (Math.round(bp.fps * 100) / 100).toString();
     }, 1000);
 }
 
 function uninitFps() {
+    if (!bp) {
+        return;
+    }
     if (__timerHandle !== 0) {
         clearInterval(__timerHandle);
     }
