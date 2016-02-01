@@ -136,8 +136,8 @@ function initList() {
          * @type {HTMLLIElement}
          */
         var liElem = document.createElement("li");
-        li.textContent = "Oops, it seems that Bulletproof is not supported by your browser.";
-        caseListElem.appendChild(li);
+        liElem.textContent = "Oops, it seems that Bulletproof is not supported by your browser.";
+        caseListElem.appendChild(liElem);
     }
 }
 
