@@ -226,10 +226,30 @@ var _util = (function () {
     /**
      * Check whether a value is a function.
      * @param value {*} The value to check.
-     * @returns {Boolean} True if the value is function, and false otherwise.
+     * @returns {Boolean} True if the value is a function, and false otherwise.
      */
     _util.isFunction = function (value) {
         return typeof value === "function";
+    };
+    /**
+     * Check whether a value is a class prototype.
+     * @param value {*} The value to check.
+     * @returns {Boolean} True if the value is a class definition, and false otherwise.
+     * @remarks IE11 has a non-standard behavior to declare experimental features (e.g. Map) as functions,
+     *          and tested features (e.g. WebGLRenderingContext) as objects.
+     */
+    _util.isClassDefinition = function (value) {
+        var t = typeof value;
+        var typeCheck;
+        if (typeof value === "function") {
+            typeCheck = true;
+        }
+        else {
+            var isIE11 = navigator.appVersion.indexOf("Trident/7.0") >= 0 && navigator.appVersion.indexOf("rv:11.0") >= 0;
+            typeCheck = isIE11 && typeof value === "object";
+        }
+        var constructorCheck = (value && value.prototype ? value.prototype.constructor === value : false);
+        return typeCheck && constructorCheck;
     };
     /**
      * Limit a number inside a range specified by min and max (both are reachable).
@@ -6104,17 +6124,25 @@ function isSupported() {
         return false;
     }
     // GLantern is based on <canvas>, so it should exist.
-    if (!util.isFunction(globalObject["HTMLCanvasElement"])) {
+    if (!util.isClassDefinition(globalObject["HTMLCanvasElement"])) {
         return false;
     }
     // GLantern uses WebGL, so there should be a corresponding rendering context.
-    if (!util.isFunction(globalObject["WebGLRenderingContext"])) {
+    if (!util.isClassDefinition(globalObject["WebGLRenderingContext"])) {
         return false;
     }
     // GLantern uses Map class, so it should exist.
     // Note: Map is a ES6 feature, but it is a de facto standard on modern browsers.
-    if (!util.isFunction(globalObject["Map"])) {
+    if (!util.isClassDefinition(globalObject["Map"])) {
         return false;
+    }
+    // No plans for support of Chrome whose version is under 42, due to a WebGL memory leak problem.
+    if (typeof globalObject["chrome"] === "object") {
+        var chromeVersionRegExp = /Chrome\/(\d+)(?:\.\d+)*/;
+        var chromeVersionInfo = chromeVersionRegExp.exec(navigator.appVersion);
+        if (chromeVersionInfo.length < 2 || parseInt(chromeVersionInfo[1]) < 42) {
+            return false;
+        }
     }
     return true;
 }
