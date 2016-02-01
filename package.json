@@ -1,6 +1,6 @@
 {
   "name": "bulletproof",
-  "version": "0.5.0-alpha",
+  "version": "0.6.0-alpha",
   "description": "Bulletproof is a HTML5 advanced danmaku (live comment) rendering engine.",
   "main": "build/node/index",
   "keywords": [
