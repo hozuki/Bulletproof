@@ -224,6 +224,14 @@ var _util = (function () {
         return value === undefined;
     };
     /**
+     * Check whether a value is a function.
+     * @param value {*} The value to check.
+     * @returns {Boolean} True if the value is function, and false otherwise.
+     */
+    _util.isFunction = function (value) {
+        return typeof value === "function";
+    };
+    /**
      * Limit a number inside a range specified by min and max (both are reachable).
      * @param v {Number} The number to limit.
      * @param min {Number} The lower bound. Numbers strictly less than this bound will be set to the value.
@@ -6089,6 +6097,28 @@ function injectToGlobal($this) {
     $this["mx"] = mx;
 }
 exports.injectToGlobal = injectToGlobal;
+function isSupported() {
+    var globalObject = window;
+    var util = _util._util;
+    if (!globalObject) {
+        return false;
+    }
+    // GLantern is based on <canvas>, so it should exist.
+    if (!util.isFunction(globalObject["HTMLCanvasElement"])) {
+        return false;
+    }
+    // GLantern uses WebGL, so there should be a corresponding rendering context.
+    if (!util.isFunction(globalObject["WebGLRenderingContext"])) {
+        return false;
+    }
+    // GLantern uses Map class, so it should exist.
+    // Note: Map is a ES6 feature, but it is a de facto standard on modern browsers.
+    if (!util.isFunction(globalObject["Map"])) {
+        return false;
+    }
+    return true;
+}
+exports.isSupported = isSupported;
 
 
 
@@ -12478,7 +12508,7 @@ exports.code = code;
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-var VERSION = "Bulletproof/0.5.0-alpha (BiliBili, like BSE, like CCL, like Flash) HTML5/*";
+var VERSION = "Bulletproof/0.6.0-alpha (BiliBili, like BSE, like CCL, like Flash) HTML5/*";
 exports.version = VERSION;
 __export(require("./Bulletproof"));
 var bilibili = require("./bilibili/index");

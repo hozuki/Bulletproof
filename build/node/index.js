@@ -4,7 +4,7 @@
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-var VERSION = "Bulletproof/0.5.0-alpha (BiliBili, like BSE, like CCL, like Flash) HTML5/*";
+var VERSION = "Bulletproof/0.6.0-alpha (BiliBili, like BSE, like CCL, like Flash) HTML5/*";
 exports.version = VERSION;
 __export(require("./Bulletproof"));
 var bilibili = require("./bilibili/index");
