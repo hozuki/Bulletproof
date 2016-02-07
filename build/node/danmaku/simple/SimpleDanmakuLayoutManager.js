@@ -80,29 +80,34 @@ var SimpleDanmakuLayoutManager = (function (_super) {
             var isStageSizeUsable = false;
             var width = isStageSizeUsable ? stage.width : currentStates.bulletproof.view.width;
             var height = isStageSizeUsable ? stage.height : currentStates.bulletproof.view.height;
-            if (danmaku.isYPositionSet) {
-                if (danmaku.x < width - danmaku.textWidth) {
-                    if (danmaku.y < state.nextYPosition) {
-                        state.nextYPosition = danmaku.y;
-                    }
-                }
-                else {
-                    state.nextYPosition += danmaku.textHeight;
-                }
-            }
-            else {
-                danmaku.y = state.nextYPosition;
-                state.nextYPosition += danmaku.textHeight;
-                if (state.nextYPosition > height) {
-                    state.nextYPosition = 0;
-                }
-                danmaku.isYPositionSet = true;
-            }
             // T-0: At position (STAGE_WIDTH, Y)
             // T-final: At position (-DANMAKU_WIDTH, Y)
             // Add 5 extra pixels to ensure the danmaku is entirely out of the stage when its life should end.
             var elapsedLifeRatio = (currentTime - danmaku.bornTime) / (danmaku.lifeTime * 1000);
             danmaku.x = width - elapsedLifeRatio * (width + danmaku.textWidth + 5);
+            if (danmaku.isYPositionSet) {
+                if (danmaku.x < width - danmaku.textWidth) {
+                    if (danmaku.y <= state.nextYPosition) {
+                        state.nextYPosition = danmaku.y;
+                    }
+                }
+                else {
+                    if (danmaku.y <= state.nextYPosition) {
+                        state.nextYPosition += danmaku.textHeight;
+                        if (state.nextYPosition > height - danmaku.textHeight) {
+                            state.nextYPosition = 0;
+                        }
+                    }
+                }
+            }
+            else {
+                danmaku.y = state.nextYPosition;
+                state.nextYPosition += danmaku.textHeight;
+                if (state.nextYPosition > height - danmaku.textHeight) {
+                    state.nextYPosition = 0;
+                }
+                danmaku.isYPositionSet = true;
+            }
         }
         function handleTop(danmaku) {
         }
