@@ -88,8 +88,12 @@ export class SimpleDanmakuLayoutManager extends DanmakuLayoutManagerBase {
             var width = isStageSizeUsable ? stage.width : currentStates.bulletproof.view.width;
             var height = isStageSizeUsable ? stage.height : currentStates.bulletproof.view.height;
             if (danmaku.isYPositionSet) {
-                if (danmaku.x < width - danmaku.textWidth && danmaku.y < state.nextYPosition) {
-                    state.nextYPosition = danmaku.y;
+                if (danmaku.x < width - danmaku.textWidth) {
+                    if (danmaku.y < state.nextYPosition) {
+                        state.nextYPosition = danmaku.y;
+                    }
+                } else {
+                    state.nextYPosition += danmaku.textHeight;
                 }
             } else {
                 danmaku.y = state.nextYPosition;

@@ -145,7 +145,6 @@ var SimpleDanmakuProvider = (function (_super) {
             }
         }
         else {
-            console.log("No displaying danmaku...");
             // If there is no displaying danmakus, we have to search a little more...
             for (var i = 0; i < summaryList.length; ++i) {
                 danmaku = summaryList[i];
