@@ -39,6 +39,7 @@ function initEnv() {
 
 function initList() {
     var testCases = {
+        "Blank": "",
         "3D ball": "3d-ball.js",
         "Green Dam Musume": "kanpai-green-dam.js",
         "Madoka and her happy <del>tree</del> friends": "kanpai-madoka.js"
@@ -60,17 +61,21 @@ function initList() {
         e = document.querySelector("#test-case-selector-container");
         e.style.display = "none";
         e = document.querySelector("#test-case-desc");
-        e.textContent = aElem.name;
+        e.textContent = aElem.name || "(blank)";
         e = document.querySelector("#glantern-container");
         e.style.display = "block";
-        injectAndExecute(aElem.name);
+        if (aElem.name) {
+            executeCodeDanmakuContent(aElem.name);
+        }
+        initFps();
+        bp.startAnimation();
     }
 
     /**
      * Execute a single script by injecting the script into the window.
      * @param fileName {String} Full JavaScript file name.
      */
-    function injectAndExecute(fileName) {
+    function executeCodeDanmakuContent(fileName) {
         var content;
         if (typeof global !== typeof undefined) {
             // In Node.js environments
@@ -83,8 +88,6 @@ function initList() {
         }
         var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
         codeProvider.addDanmaku(content);
-        bp.startAnimation();
-        initFps();
     }
 
     /**
@@ -114,19 +117,23 @@ function initList() {
                 var aElem = document.createElement("a");
                 aElem.innerHTML = caseName;
                 aElem.href = "javascript:;";
-                aElem.name = "test-scripts/" + testCases[caseName];
+                if (testCases[caseName]) {
+                    aElem.name = "test-scripts/" + testCases[caseName];
+                }
                 aElem.onclick = onClick.bind(aElem);
                 liElem.appendChild(aElem);
                 caseListElem.appendChild(liElem);
 
-                var blankElem = document.createElement("span");
-                blankElem.textContent = " #";
-                var viewSourceElem = document.createElement("a");
-                viewSourceElem.href = aElem.name;
-                viewSourceElem.textContent = "View source";
-                viewSourceElem.target = "_blank";
-                liElem.appendChild(blankElem);
-                liElem.appendChild(viewSourceElem);
+                if (aElem.name) {
+                    var blankElem = document.createElement("span");
+                    blankElem.textContent = " #";
+                    var viewSourceElem = document.createElement("a");
+                    viewSourceElem.href = aElem.name;
+                    viewSourceElem.textContent = "View source";
+                    viewSourceElem.target = "_blank";
+                    liElem.appendChild(blankElem);
+                    liElem.appendChild(viewSourceElem);
+                }
             }
         }
     }
@@ -157,4 +164,19 @@ function uninitFps() {
     if (__timerHandle !== 0) {
         clearInterval(__timerHandle);
     }
+}
+
+function addFlyingDanmaku() {
+    if (!bp){
+        return;
+    }
+    /**
+     * @type {SimpleDanmakuProvider}
+     */
+    var provider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Simple);
+    /**
+     * @type {HTMLInputElement}
+     */
+    var textBox = document.querySelector("#input-danmaku");
+    provider.addDanmaku(textBox.value);
 }

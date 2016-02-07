@@ -4,9 +4,10 @@
 
 export enum DanmakuKind {
 
-    SimpleFly = 0,
-    SimpleTop = 1,
-    SimpleBottom = 2,
+    /**
+     * Note: This type handles all types (0: flying, 1: fixed on top, 2: fixed on bottom) of danmaku
+     */
+    Simple = 0,
     Mode7 = 7,
     Code = 8
 

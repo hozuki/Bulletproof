@@ -8,7 +8,8 @@ export * from "./Bulletproof";
 
 import * as bilibili from "./bilibili/index";
 import * as danmaku from "./danmaku/index";
+import {BulletproofConfig} from "./BulletproofConfig";
 
-export {VERSION as version, bilibili, danmaku};
+export {VERSION as version, bilibili, danmaku, BulletproofConfig as config};
 
 export * from "../lib/glantern/src/index";

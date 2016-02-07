@@ -9,6 +9,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
+var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
 /**
  * The root controller for Bulletproof.
  */
@@ -37,7 +38,10 @@ var Bulletproof = (function (_super) {
             this.attachUpdateFunction(this.__updateComponents.bind(this));
             var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
             this._coordinator = coordinator;
+            // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
+            provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
+            coordinator.addDanmakuProvider(provider);
             provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
             coordinator.addDanmakuProvider(provider);
         }
@@ -109,29 +113,6 @@ var Bulletproof = (function (_super) {
          */
         get: function () {
             return this._fps;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof, "SIMPLE_DANMAKU_LIFE_TIME", {
-        /**
-         * Gets the default life time for simple (text-only) danmakus, in seconds.
-         * @returns {Number}
-         */
-        get: function () {
-            // 10 seconds
-            return 10;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof, "CODE_DANMAKU_LIFE_TIME", {
-        /**
-         * Gets the default life time for code danmakus, in seconds.
-         * @returns {Number}
-         */
-        get: function () {
-            return Number.MAX_VALUE;
         },
         enumerable: true,
         configurable: true

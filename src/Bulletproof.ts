@@ -7,6 +7,7 @@ import {DanmakuCoordinator} from "./danmaku/DanmakuCoordinator";
 import {CodeDanmakuProvider} from "./danmaku/code/CodeDanmakuProvider";
 import {DanmakuProviderBase} from "./danmaku/DanmakuProviderBase";
 import {NotImplementedError} from "../lib/glantern/src/_util/NotImplementedError";
+import {SimpleDanmakuProvider} from "./danmaku/simple/SimpleDanmakuProvider";
 
 /**
  * The root controller for Bulletproof.
@@ -32,7 +33,10 @@ export class Bulletproof extends GLantern {
             var coordinator = new DanmakuCoordinator(this);
             this._coordinator = coordinator;
 
+            // The earlier a provider is added in, the deeper it is in Z axis.
             var provider:DanmakuProviderBase;
+            provider = new SimpleDanmakuProvider(coordinator);
+            coordinator.addDanmakuProvider(provider);
             provider = new CodeDanmakuProvider(coordinator);
             coordinator.addDanmakuProvider(provider);
         }
@@ -98,23 +102,6 @@ export class Bulletproof extends GLantern {
      */
     get fps():number {
         return this._fps;
-    }
-
-    /**
-     * Gets the default life time for simple (text-only) danmakus, in seconds.
-     * @returns {Number}
-     */
-    static get SIMPLE_DANMAKU_LIFE_TIME():number {
-        // 10 seconds
-        return 10;
-    }
-
-    /**
-     * Gets the default life time for code danmakus, in seconds.
-     * @returns {Number}
-     */
-    static get CODE_DANMAKU_LIFE_TIME():number {
-        return Number.MAX_VALUE;
     }
 
     protected __updateComponents():void {

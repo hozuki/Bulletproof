@@ -11,6 +11,8 @@ var bilibili = require("./bilibili/index");
 exports.bilibili = bilibili;
 var danmaku = require("./danmaku/index");
 exports.danmaku = danmaku;
+var BulletproofConfig_1 = require("./BulletproofConfig");
+exports.config = BulletproofConfig_1.BulletproofConfig;
 __export(require("../lib/glantern/src/index"));
 
 //# sourceMappingURL=index.js.map

@@ -3,6 +3,7 @@
  */
 var _util_1 = require("../../lib/glantern/src/_util/_util");
 var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
+var BulletproofConfig_1 = require("../BulletproofConfig");
 /**
  * The coordinator of all danmakus.
  * This class is a factory and manager of danmaku providers.
@@ -26,40 +27,30 @@ var DanmakuCoordinator = (function () {
             provider.dispose();
         });
         this._danmakuProviders.clear();
+        this._danmakuProviders = null;
     };
     /**
-     * Determines whether a danmaku should be created.
+     * Determines whether a danmaku should be created, in a global view.
      * For example, if the density of danmakus are too high, this function should returns false when a
-     * {@link SimpleDanamkuProvider} is requesting creation of a new danmaku, to avoid performance drop.
+     * {@link SimpleDanmakuProvider} is requesting creation of a new danmaku, to avoid performance drop.
      * Danmaku providers should check via this function before actually creating a danmaku.
      * @param requestingProvider {DanmakuProviderBase} The danmaku provider requesting the check.
      */
     DanmakuCoordinator.prototype.shouldCreateDanmaku = function (requestingProvider) {
-        if ((requestingProvider.flags & DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation) !== 0) {
-            return true;
-        }
         var canCreate = true;
-        if (false) {
-            // Can create only when 2 conditions are both met:
-            // 1. Total count of danmakus is below global threshold;
-            // 2. Total count of danmakus of the kind of requesting danmaku provider is below the provider's threshold.
-            var totalDanmakuCount = 0;
-            var globalThreshold = 100;
-            var specificThreshold = 10;
-            this._danmakuProviders.forEach(function (provider) {
-                if (canCreate) {
-                    var dl = provider.danmakuList.length;
-                    totalDanmakuCount += dl;
-                    if (totalDanmakuCount > globalThreshold || dl > specificThreshold) {
-                        canCreate = false;
-                    }
-                }
-            });
-            if (!canCreate) {
-                return false;
+        var totalDanmakuCount = 0;
+        var globalThreshold = BulletproofConfig_1.BulletproofConfig.globalDanmakuCountThreshold;
+        this._danmakuProviders.forEach(function (provider) {
+            // If a danmaku provider has no number limit, it contributes 0 to the total count.
+            if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation) !== 0) {
+                return;
             }
-        }
-        return true;
+            totalDanmakuCount += provider.displayingDanmakuList.length;
+            if (totalDanmakuCount > globalThreshold) {
+                canCreate = false;
+            }
+        });
+        return canCreate;
     };
     /**
      * Adds a new kind of danmaku provider to provider instance list. If the a provider of that kind
@@ -69,6 +60,7 @@ var DanmakuCoordinator = (function () {
     DanmakuCoordinator.prototype.addDanmakuProvider = function (provider) {
         if (!_util_1._util.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
+            provider.initialize();
         }
     };
     /**
@@ -111,6 +103,10 @@ var DanmakuCoordinator = (function () {
         // Do nothing.
     };
     Object.defineProperty(DanmakuCoordinator.prototype, "bulletproof", {
+        /**
+         * Gets the {@link Bulletproof} instance that controls this {@link DanmakuCoordinator}.
+         * @returns {Bulletproof}
+         */
         get: function () {
             return this._bulletproof;
         },

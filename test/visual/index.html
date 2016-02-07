@@ -15,12 +15,17 @@
 <div class="initially-hidden" id="glantern-container">
     <div style="margin-bottom: 10px;">
         <b>Selected:</b>&nbsp;<span id="test-case-desc"></span>&nbsp;
-        <button type="button" onclick="reloadPage();">Reload</button>
+        <button type="button" onclick="reloadPage();">Reload Page</button>
         <span style="margin-left: 10px;">
             FPS:&nbsp;
             <span id="fps-indicator">
             </span>
         </span>
+        <div style="margin-top: 5px;">
+            <label for="input-danmaku">Add flying danmaku:</label>
+            <input id="input-danmaku" name="input-danmaku" type="text" style="width: 120px;"/>
+            <button type="button" onclick="addFlyingDanmaku();">Add</button>
+        </div>
     </div>
 </div>
 <script type="text/javascript" id="bp-source-loader">

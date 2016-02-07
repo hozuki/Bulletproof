@@ -2,7 +2,6 @@
  * Created by MIC on 2015/12/29.
  */
 var _util_1 = require("../../../../lib/glantern/src/_util/_util");
-var Bulletproof_1 = require("../../../Bulletproof");
 var DCOHelper = (function () {
     function DCOHelper() {
     }
@@ -24,7 +23,7 @@ var DCOHelper = (function () {
                 motionAnimation = motion[propertyNames[j]];
                 if (!_util_1._util.isUndefinedOrNull(motionAnimation)) {
                     if (_util_1._util.isUndefinedOrNull(motionAnimation.lifeTime)) {
-                        motionAnimation.lifeTime = Bulletproof_1.Bulletproof.CODE_DANMAKU_LIFE_TIME;
+                        motionAnimation.lifeTime = requestingObject.extraCreateParams.creator.lifeTime;
                     }
                     if (!_util_1._util.isUndefinedOrNull(motionAnimation.startDelay)) {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);

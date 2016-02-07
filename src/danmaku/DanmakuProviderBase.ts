@@ -7,8 +7,9 @@ import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
 import {NotImplementedError} from "../../lib/glantern/src/_util/NotImplementedError";
 import {DanmakuCoordinator} from "./DanmakuCoordinator";
-import {DanmakuBase} from "./DanmakuBase";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
+import {IDanmaku} from "./IDanmaku";
+import {Bulletproof} from "../Bulletproof";
 
 /**
  * Base class exposing common service of a danmaku provider.
@@ -22,7 +23,8 @@ export abstract class DanmakuProviderBase implements IDisposable {
      */
     constructor(coordinator:DanmakuCoordinator) {
         this._coordinator = coordinator;
-        this._danmakuList = [];
+        this._displayingDanmakuList = [];
+        this._bulletproof = coordinator.bulletproof;
     }
 
     /**
@@ -41,43 +43,67 @@ export abstract class DanmakuProviderBase implements IDisposable {
     abstract dispose():void;
 
     /**
+     * Perform extra initialization after created.
+     * This method must be overridden.
+     */
+    abstract initialize():void;
+
+    /**
      * Updates the state of this instance.
      */
     update():void {
-        this.removeDeadDanmakus();
+        this.updateDisplayDanmakuList();
         this.layoutManager.performLayout();
     }
 
     /**
      * Adds a danmaku with the given content and adds it into internal danmaku list.
-     * A solid {@link DanmakuBase} implementations determines how to interpret the given content.
+     * A solid {@link IDanmaku} implementations determines how to interpret the given content.
      * This method must be overridden.
      * @param content {String} The content used to create a new danmaku.
+     * @param [args] {*} Extra arguments used to create the danmaku. For example, the exact type must
+     *                   be specified when creating a {@link SimpleDanmaku}.
+     * @returns {IDanmaku} The created danmaku.
      */
-    abstract addDanmaku(content:string):DanmakuBase;
+    addDanmaku(content:string, args?:any):IDanmaku {
+        if ((true || this.canCreateDanmaku(args)) && this.danmakuCoordinator.shouldCreateDanmaku(this)) {
+            return this.__addDanmaku(content, args);
+        } else {
+            return null;
+        }
+    }
 
     /**
      * Removes a danmaku from internal danmaku list. If the provided danmaku is not in the list, nothing will be done.
      * This method must be overridden.
-     * @param danmaku {DanmakuBase} The danmaku that will be removed.
+     * @param danmaku {IDanmaku} The danmaku that will be removed.
+     * @returns {Boolean} Whether the removal was all-OK.
      */
-    abstract removeDanmaku(danmaku:DanmakuBase):boolean;
+    abstract removeDanmaku(danmaku:IDanmaku):boolean;
+
+    /**
+     * Determines whether a new danmaku can be created with specified arguments, in current
+     * {@link DanmakuProviderBase}'s view.
+     * @param args {*} Arguments used to create a new danmaku.
+     * @returns {Boolean} Whether a danmaku can be created with specified arguments.
+     */
+    abstract canCreateDanmaku(args?:any):boolean;
 
     /**
      * Removes "dead" danmakus from the internal danmaku list and release the resources they occupy.
      * A danmaku being existed longer than its life time is regarded as "dead".
+     * This method must be overridden.
      */
-    removeDeadDanmakus():void {
-        var danmaku:DanmakuBase;
-        var bulletproof = this.danmakuCoordinator.bulletproof;
-        for (var i = 0; i < this.danmakuList.length; ++i) {
-            danmaku = this.danmakuList[i];
-            if (danmaku.bornTime + danmaku.lifeTime * 1000 < bulletproof.timeElapsed) {
-                this.removeDanmaku(danmaku);
-                --i;
-            }
-        }
-    }
+    abstract updateDisplayDanmakuList():void;
+
+    /**
+     * Determines if a danmaku is "dead". A "dead" danmaku will be removed from the danmaku list to grant space
+     * for new danmakus.
+     * This method must be overridden.
+     * @param danmaku {IDanmaku} The danmaku to test.
+     * @returns {Boolean} True if the danmaku is "dead", and false otherwise.
+     */
+    abstract isDanmakuDead(danmaku:IDanmaku):boolean;
 
     /**
      * Gets the layout manager associated with this instance.
@@ -88,11 +114,11 @@ export abstract class DanmakuProviderBase implements IDisposable {
     }
 
     /**
-     * Gets the list including all danmakus created and managed by this danmaku provider.
-     * @returns {DanmakuBase[]}
+     * Gets the list including all displaying danmakus created and managed by this danmaku provider.
+     * @returns {IDanmaku[]}
      */
-    get danmakuList():DanmakuBase[] {
-        return this._danmakuList;
+    get displayingDanmakuList():IDanmaku[] {
+        return this._displayingDanmakuList;
     }
 
     /**
@@ -101,6 +127,14 @@ export abstract class DanmakuProviderBase implements IDisposable {
      */
     get danmakuCoordinator():DanmakuCoordinator {
         return this._coordinator;
+    }
+
+    /**
+     * Gets the {@link Bulletproof} instance that controls this {@link DanmakuProviderBase}.
+     * @returns {Bulletproof}
+     */
+    get bulletproof():Bulletproof {
+        return this._bulletproof;
     }
 
     /**
@@ -113,8 +147,20 @@ export abstract class DanmakuProviderBase implements IDisposable {
         return DanmakuProviderFlag.None;
     }
 
-    protected _danmakuList:DanmakuBase[] = null;
+    /**
+     * Adds a danmaku with the given content and adds it into internal danmaku list.
+     * A solid {@link IDanmaku} implementations determines how to interpret the given content.
+     * This method must be overridden.
+     * @param content {String} The content used to create a new danmaku.
+     * @param [args] {*} Extra arguments used to create the danmaku. For example, the exact type must
+     *                   be specified when creating a {@link SimpleDanmaku}.
+     * @returns {IDanmaku} The created danmaku.
+     */
+    protected abstract __addDanmaku(content:string, args?:any):IDanmaku;
+
+    protected _displayingDanmakuList:IDanmaku[] = null;
     protected _coordinator:DanmakuCoordinator = null;
     protected _layoutManager:DanmakuLayoutManagerBase = null;
+    private _bulletproof:Bulletproof = null;
 
 }
