@@ -1,6 +1,20 @@
 
-.glantern-view {
+#glantern-container {
+    display: inline-block;
+    position: relative;
+}
+
+.black-background {
     background-color: black;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.glantern-view {
+    position: absolute;
+    z-index: 9999;
 }
 
 .initially-hidden {

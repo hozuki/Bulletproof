@@ -62,7 +62,7 @@ function initList() {
         e.style.display = "none";
         e = document.querySelector("#test-case-desc");
         e.textContent = aElem.name || "(blank)";
-        e = document.querySelector("#glantern-container");
+        e = document.querySelector("#playground");
         e.style.display = "block";
         if (aElem.name) {
             executeCodeDanmakuContent(aElem.name);

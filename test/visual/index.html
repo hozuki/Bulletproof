@@ -12,7 +12,9 @@
     <ol id="test-case-selector">
     </ol>
 </div>
-<div class="initially-hidden" id="glantern-container">
+<button id="get-vid-btn">Get Vid</button>
+<input type="file" id="get-vid" hidden="hidden" multiple="multiple" accept=".mp4,.ogv,.flv,video/mp4,video/H264"/>
+<div class="initially-hidden" id="playground">
     <div style="margin-bottom: 10px;">
         <b>Selected:</b>&nbsp;<span id="test-case-desc"></span>&nbsp;
         <button type="button" onclick="reloadPage();">Reload Page</button>
@@ -27,7 +29,36 @@
             <button type="button" onclick="addFlyingDanmaku();">Add</button>
         </div>
     </div>
+    <div id="glantern-container">
+        <video class="absolute" id="vid" width="682" height="438" loop="loop" style="z-index: 1;"></video>
+        <div class="absolute black-background" style="width: 682px; height: 438px; z-index: 0;"></div>
+    </div>
 </div>
+<script type="text/javascript">
+    (function () {
+        var elem = document.getElementById("get-vid-btn");
+        /**
+         * @type {HTMLInputElement}
+         */
+        var selVid = document.getElementById("get-vid");
+        /**
+         * @type {HTMLVideoElement}
+         */
+        var vid = document.getElementById("vid");
+        elem.addEventListener("click", function (ev) {
+            selVid.click();
+        });
+        selVid.addEventListener("change", function (ev) {
+            if (selVid.value) {
+                var val = selVid.value;
+                val = "file:///" + encodeURI(val.split("\\").join("/"));
+                console.info(val);
+                vid.src = val;
+                vid.play();
+            }
+        });
+    })();
+</script>
 <script type="text/javascript" id="bp-source-loader">
     (function loadBulletproofSource(useNodeVersion, useMinimizedVersion, forceNoCache) {
         function defaultValue(obj, value) {
