@@ -19,7 +19,6 @@ var CodeDanmakuProvider = (function (_super) {
     __extends(CodeDanmakuProvider, _super);
     function CodeDanmakuProvider(coordinator) {
         _super.call(this, coordinator);
-        this._danmakuLayer = null;
         this._layoutManager = new CodeDanmakuLayoutManager_1.CodeDanmakuLayoutManager(this);
     }
     Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuKind", {

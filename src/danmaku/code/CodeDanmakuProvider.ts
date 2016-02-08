@@ -107,6 +107,6 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
 
     protected _displayingDanmakuList:CodeDanmaku[];
     protected _layoutManager:CodeDanmakuLayoutManager;
-    private _danmakuLayer:CodeDanmakuLayer = null;
+    protected _danmakuLayer:CodeDanmakuLayer;
 
 }

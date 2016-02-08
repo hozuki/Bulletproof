@@ -23,7 +23,6 @@ var SimpleDanmakuProvider = (function (_super) {
     __extends(SimpleDanmakuProvider, _super);
     function SimpleDanmakuProvider(coordinator) {
         _super.call(this, coordinator);
-        this._danmakuLayer = null;
         this._shouldSortDanmakuList = false;
         this._summaryDanmakuList = null;
         this._partialDanmakuCounts = null;

@@ -224,7 +224,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         return danmaku;
     }
 
-    protected _danmakuLayer:SimpleDanmakuLayer = null;
+    protected _danmakuLayer:SimpleDanmakuLayer;
     protected _displayingDanmakuList:SimpleDanmaku[];
     protected _layoutManager:SimpleDanmakuLayoutManager;
     private _shouldSortDanmakuList:boolean = false;

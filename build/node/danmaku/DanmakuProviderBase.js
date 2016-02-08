@@ -16,6 +16,7 @@ var DanmakuProviderBase = (function () {
         this._displayingDanmakuList = null;
         this._coordinator = null;
         this._layoutManager = null;
+        this._danmakuLayer = null;
         this._bulletproof = null;
         this._coordinator = coordinator;
         this._displayingDanmakuList = [];
@@ -75,6 +76,13 @@ var DanmakuProviderBase = (function () {
          */
         get: function () {
             return this._displayingDanmakuList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DanmakuProviderBase.prototype, "danmakuLayer", {
+        get: function () {
+            return this._danmakuLayer;
         },
         enumerable: true,
         configurable: true

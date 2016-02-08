@@ -10,6 +10,7 @@ import {DanmakuCoordinator} from "./DanmakuCoordinator";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
 import {IDanmaku} from "./IDanmaku";
 import {Bulletproof} from "../Bulletproof";
+import {DisplayObject} from "../../lib/glantern/src/flash/display/DisplayObject";
 
 /**
  * Base class exposing common service of a danmaku provider.
@@ -121,6 +122,10 @@ export abstract class DanmakuProviderBase implements IDisposable {
         return this._displayingDanmakuList;
     }
 
+    get danmakuLayer():DisplayObject {
+        return this._danmakuLayer;
+    }
+
     /**
      * Gets the danmaku coordinator specified at the time of creation.
      * @returns {DanmakuCoordinator}
@@ -161,6 +166,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
     protected _displayingDanmakuList:IDanmaku[] = null;
     protected _coordinator:DanmakuCoordinator = null;
     protected _layoutManager:DanmakuLayoutManagerBase = null;
+    protected _danmakuLayer:DisplayObject = null;
     private _bulletproof:Bulletproof = null;
 
 }
