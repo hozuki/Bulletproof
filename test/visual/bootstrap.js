@@ -34,6 +34,7 @@ function initEnv() {
             var elem = document.querySelector(selector);
             elem.appendChild(bp.videoView);
             bp.videoView.style.position = "absolute";
+            bp.videoView.style.zIndex = "1";
             elem.appendChild(bp.view);
             bp.view.style.position = "absolute";
             bp.view.style.zIndex = "9999";
