@@ -50,6 +50,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
     }
 
     dispose():void {
+        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
         this._danmakuLayer.dispose();
         this._danmakuLayer = null;
         this._layoutManager.dispose();

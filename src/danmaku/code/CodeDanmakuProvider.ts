@@ -10,6 +10,7 @@ import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplemente
 import {DanmakuCoordinator} from "../DanmakuCoordinator";
 import {CodeDanmaku} from "./CodeDanmaku";
 import {DanmakuProviderFlag} from "../DanmakuProviderFlag";
+import {CodeDanmakuLayer} from "./CodeDanmakuLayer";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
@@ -26,6 +27,8 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
     }
 
     dispose():void {
+        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
+        this._danmakuLayer.dispose();
         this._layoutManager.dispose();
         this._layoutManager = null;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
@@ -34,10 +37,14 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
         while (this.displayingDanmakuList.length > 0) {
             this.displayingDanmakuList.pop();
         }
+        this._danmakuLayer = null;
         this._displayingDanmakuList = null;
     }
 
     initialize():void {
+        var stage = this.bulletproof.stage;
+        this._danmakuLayer = new CodeDanmakuLayer(stage, stage);
+        stage.addChild(this._danmakuLayer);
     }
 
     canCreateDanmaku(args?:any):boolean {
@@ -80,20 +87,26 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
         return this._displayingDanmakuList;
     }
 
+    get danmakuLayer():CodeDanmakuLayer {
+        return this._danmakuLayer;
+    }
+
     get flags():DanmakuProviderFlag {
         return DanmakuProviderFlag.UnlimitedCreation;
     }
 
     protected __addDanmaku(content:string, args?:any):CodeDanmaku {
-        var danmaku = new CodeDanmaku(this.bulletproof.stage, this.bulletproof.stage, this.layoutManager);
+        var danmaku = new CodeDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        this.bulletproof.stage.addChild(danmaku);
+        this.danmakuLayer.addChild(danmaku);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
+        danmaku.execute();
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     }
 
     protected _displayingDanmakuList:CodeDanmaku[];
     protected _layoutManager:CodeDanmakuLayoutManager;
+    private _danmakuLayer:CodeDanmakuLayer = null;
 
 }

@@ -25,6 +25,10 @@ var CodeDanmaku = (function (_super) {
         this._danmakuProvider = layoutManager.danmakuProvider;
         this._bulletproof = layoutManager.bulletproof;
     }
+    CodeDanmaku.prototype.dispose = function () {
+        this.parent.removeChild(this);
+        _super.prototype.dispose.call(this);
+    };
     Object.defineProperty(CodeDanmaku.prototype, "danmakuKind", {
         get: function () {
             return DanmakuKind_1.DanmakuKind.Code;
@@ -57,6 +61,8 @@ var CodeDanmaku = (function (_super) {
         this._content = content;
         this._bornTime = time;
         this._apiContainer = new BiliBiliDanmakuApiContainer_1.BiliBiliDanmakuApiContainer(this);
+    };
+    CodeDanmaku.prototype.execute = function () {
         if (this.__censor()) {
             this._lambda = this.__buildFunction();
             this.__applyFunction();

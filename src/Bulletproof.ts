@@ -42,12 +42,12 @@ export class Bulletproof extends GLantern {
 
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider:DanmakuProviderBase;
-            if (config.simpleDanmakuEnabled) {
-                provider = new SimpleDanmakuProvider(coordinator);
-                coordinator.addDanmakuProvider(provider);
-            }
             if (config.codeDanmakuEnabled) {
                 provider = new CodeDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+            if (config.simpleDanmakuEnabled) {
+                provider = new SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
 

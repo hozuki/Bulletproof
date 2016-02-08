@@ -11,6 +11,7 @@ var DanmakuKind_1 = require("../DanmakuKind");
 var CodeDanmakuLayoutManager_1 = require("./CodeDanmakuLayoutManager");
 var CodeDanmaku_1 = require("./CodeDanmaku");
 var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
+var CodeDanmakuLayer_1 = require("./CodeDanmakuLayer");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
@@ -18,6 +19,7 @@ var CodeDanmakuProvider = (function (_super) {
     __extends(CodeDanmakuProvider, _super);
     function CodeDanmakuProvider(coordinator) {
         _super.call(this, coordinator);
+        this._danmakuLayer = null;
         this._layoutManager = new CodeDanmakuLayoutManager_1.CodeDanmakuLayoutManager(this);
     }
     Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuKind", {
@@ -28,6 +30,8 @@ var CodeDanmakuProvider = (function (_super) {
         configurable: true
     });
     CodeDanmakuProvider.prototype.dispose = function () {
+        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
+        this._danmakuLayer.dispose();
         this._layoutManager.dispose();
         this._layoutManager = null;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
@@ -36,9 +40,13 @@ var CodeDanmakuProvider = (function (_super) {
         while (this.displayingDanmakuList.length > 0) {
             this.displayingDanmakuList.pop();
         }
+        this._danmakuLayer = null;
         this._displayingDanmakuList = null;
     };
     CodeDanmakuProvider.prototype.initialize = function () {
+        var stage = this.bulletproof.stage;
+        this._danmakuLayer = new CodeDanmakuLayer_1.CodeDanmakuLayer(stage, stage);
+        stage.addChild(this._danmakuLayer);
     };
     CodeDanmakuProvider.prototype.canCreateDanmaku = function (args) {
         return true;
@@ -83,6 +91,13 @@ var CodeDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuLayer", {
+        get: function () {
+            return this._danmakuLayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CodeDanmakuProvider.prototype, "flags", {
         get: function () {
             return DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation;
@@ -91,10 +106,11 @@ var CodeDanmakuProvider = (function (_super) {
         configurable: true
     });
     CodeDanmakuProvider.prototype.__addDanmaku = function (content, args) {
-        var danmaku = new CodeDanmaku_1.CodeDanmaku(this.bulletproof.stage, this.bulletproof.stage, this.layoutManager);
+        var danmaku = new CodeDanmaku_1.CodeDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        this.bulletproof.stage.addChild(danmaku);
+        this.danmakuLayer.addChild(danmaku);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
+        danmaku.execute();
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     };

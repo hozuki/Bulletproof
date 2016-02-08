@@ -5840,7 +5840,7 @@ exports.TextFormat = TextFormat;
 
 
 
-},{"../../_util/_util":5,"../events/EventDispatcher":51,"../events/FlashEvent":52,"./TextFormatAlign":77,"os":179}],77:[function(require,module,exports){
+},{"../../_util/_util":5,"../events/EventDispatcher":51,"../events/FlashEvent":52,"./TextFormatAlign":77,"os":180}],77:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
@@ -8421,7 +8421,7 @@ BMS[BlendMode_1.BlendMode.SUBTRACT] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
 
 
-},{"../_util/_util":5,"../flash/display/BlendMode":27,"./FilterManager":89,"./RenderTarget2D":93,"./ShaderManager":96,"./WebGLUtils":101,"libtess":178}],101:[function(require,module,exports){
+},{"../_util/_util":5,"../flash/display/BlendMode":27,"./FilterManager":89,"./RenderTarget2D":93,"./ShaderManager":96,"./WebGLUtils":101,"libtess":179}],101:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/13.
  */
@@ -9506,7 +9506,7 @@ exports.SolidFillRenderer = SolidFillRenderer;
 
 
 
-},{"../../_util/NotImplementedError":4,"../../_util/_util":5,"../RenderHelper":92,"./FillRendererBase":110,"./GRAPHICS_CONST":111,"libtess":178}],114:[function(require,module,exports){
+},{"../../_util/NotImplementedError":4,"../../_util/_util":5,"../RenderHelper":92,"./FillRendererBase":110,"./GRAPHICS_CONST":111,"libtess":179}],114:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -10467,12 +10467,12 @@ var Bulletproof = (function (_super) {
             this._coordinator = coordinator;
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
-            if (config.simpleDanmakuEnabled) {
-                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
-                coordinator.addDanmakuProvider(provider);
-            }
             if (config.codeDanmakuEnabled) {
                 provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+            if (config.simpleDanmakuEnabled) {
+                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
             if (config.useWebChimeraForVideoPlayback) {
@@ -10595,7 +10595,7 @@ exports.Bulletproof = Bulletproof;
 
 
 
-},{"../lib/glantern/src/GLantern":1,"../lib/glantern/src/_util/_util":5,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":157,"./danmaku/simple/SimpleDanmakuProvider":169,"./interactive/video/html5/Html5VideoPlayer":175}],129:[function(require,module,exports){
+},{"../lib/glantern/src/GLantern":1,"../lib/glantern/src/_util/_util":5,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":158,"./danmaku/simple/SimpleDanmakuProvider":170,"./interactive/video/html5/Html5VideoPlayer":176}],129:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
@@ -10659,7 +10659,7 @@ exports.BulletproofConfig.useWebChimeraForVideoPlayback = false;
 
 
 
-},{"./danmaku/simple/SimpleDanamkuType":164}],130:[function(require,module,exports){
+},{"./danmaku/simple/SimpleDanamkuType":165}],130:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -10857,7 +10857,7 @@ exports.CommentField = CommentField;
 
 
 
-},{"../../../lib/glantern/src/flash/text/TextField":73,"../../danmaku/code/dco/DCOHelper":158}],135:[function(require,module,exports){
+},{"../../../lib/glantern/src/flash/text/TextField":73,"../../danmaku/code/dco/DCOHelper":159}],135:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11039,7 +11039,7 @@ exports.Display = Display;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":55,"../../../lib/glantern/src/flash/filters/BlurFilter":56,"../../../lib/glantern/src/flash/filters/GlowFilter":57,"../../../lib/glantern/src/flash/geom/ColorTransform":59,"../../../lib/glantern/src/flash/geom/Matrix":60,"../../../lib/glantern/src/flash/geom/Matrix3D":61,"../../../lib/glantern/src/flash/geom/Point":64,"../../../lib/glantern/src/flash/geom/Vector3D":67,"../../../lib/glantern/src/flash/text/TextFormat":76,"../../danmaku/code/dco/DCShape":159,"./BiliBiliDamakuApiObject":131,"./CommentField":134}],136:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":55,"../../../lib/glantern/src/flash/filters/BlurFilter":56,"../../../lib/glantern/src/flash/filters/GlowFilter":57,"../../../lib/glantern/src/flash/geom/ColorTransform":59,"../../../lib/glantern/src/flash/geom/Matrix":60,"../../../lib/glantern/src/flash/geom/Matrix3D":61,"../../../lib/glantern/src/flash/geom/Point":64,"../../../lib/glantern/src/flash/geom/Vector3D":67,"../../../lib/glantern/src/flash/text/TextFormat":76,"../../danmaku/code/dco/DCShape":160,"./BiliBiliDamakuApiObject":131,"./CommentField":134}],136:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -11591,7 +11591,7 @@ exports.Utils = Utils;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../danmaku/code/dco/FiniteTimer":160,"./BiliBiliDamakuApiObject":131}],146:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../danmaku/code/dco/FiniteTimer":161,"./BiliBiliDamakuApiObject":131}],146:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11647,7 +11647,7 @@ exports.danmaku_api = danmaku_api;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
-},{"./index":171}],149:[function(require,module,exports){
+},{"./index":172}],149:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12041,6 +12041,10 @@ var CodeDanmaku = (function (_super) {
         this._danmakuProvider = layoutManager.danmakuProvider;
         this._bulletproof = layoutManager.bulletproof;
     }
+    CodeDanmaku.prototype.dispose = function () {
+        this.parent.removeChild(this);
+        _super.prototype.dispose.call(this);
+    };
     Object.defineProperty(CodeDanmaku.prototype, "danmakuKind", {
         get: function () {
             return DanmakuKind_1.DanmakuKind.Code;
@@ -12073,6 +12077,8 @@ var CodeDanmaku = (function (_super) {
         this._content = content;
         this._bornTime = time;
         this._apiContainer = new BiliBiliDanmakuApiContainer_1.BiliBiliDanmakuApiContainer(this);
+    };
+    CodeDanmaku.prototype.execute = function () {
         if (this.__censor()) {
             this._lambda = this.__buildFunction();
             this.__applyFunction();
@@ -12199,6 +12205,31 @@ exports.CodeDanmaku = CodeDanmaku;
 
 },{"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/display/DisplayObjectContainer":32,"../../BulletproofConfig":129,"../../bilibili/BiliBiliDanmakuApiContainer":130,"../DanmakuKind":150}],156:[function(require,module,exports){
 /**
+ * Created by MIC on 2016/2/8.
+ */
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
+var CodeDanmakuLayer = (function (_super) {
+    __extends(CodeDanmakuLayer, _super);
+    function CodeDanmakuLayer(root, parent) {
+        _super.call(this, root, parent);
+    }
+    CodeDanmakuLayer.prototype.__update = function () {
+    };
+    CodeDanmakuLayer.prototype.__render = function (renderer) {
+    };
+    return CodeDanmakuLayer;
+})(DisplayObjectContainer_1.DisplayObjectContainer);
+exports.CodeDanmakuLayer = CodeDanmakuLayer;
+
+
+
+},{"../../../lib/glantern/src/flash/display/DisplayObjectContainer":32}],157:[function(require,module,exports){
+/**
  * Created by MIC on 2015/12/28.
  */
 var __extends = (this && this.__extends) || function (d, b) {
@@ -12241,7 +12272,7 @@ exports.CodeDanmakuLayoutManager = CodeDanmakuLayoutManager;
 
 
 
-},{"../DanmakuKind":150,"../DanmakuLayoutManagerBase":151}],157:[function(require,module,exports){
+},{"../DanmakuKind":150,"../DanmakuLayoutManagerBase":151}],158:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -12255,6 +12286,7 @@ var DanmakuKind_1 = require("../DanmakuKind");
 var CodeDanmakuLayoutManager_1 = require("./CodeDanmakuLayoutManager");
 var CodeDanmaku_1 = require("./CodeDanmaku");
 var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
+var CodeDanmakuLayer_1 = require("./CodeDanmakuLayer");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
@@ -12262,6 +12294,7 @@ var CodeDanmakuProvider = (function (_super) {
     __extends(CodeDanmakuProvider, _super);
     function CodeDanmakuProvider(coordinator) {
         _super.call(this, coordinator);
+        this._danmakuLayer = null;
         this._layoutManager = new CodeDanmakuLayoutManager_1.CodeDanmakuLayoutManager(this);
     }
     Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuKind", {
@@ -12272,6 +12305,8 @@ var CodeDanmakuProvider = (function (_super) {
         configurable: true
     });
     CodeDanmakuProvider.prototype.dispose = function () {
+        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
+        this._danmakuLayer.dispose();
         this._layoutManager.dispose();
         this._layoutManager = null;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
@@ -12280,9 +12315,13 @@ var CodeDanmakuProvider = (function (_super) {
         while (this.displayingDanmakuList.length > 0) {
             this.displayingDanmakuList.pop();
         }
+        this._danmakuLayer = null;
         this._displayingDanmakuList = null;
     };
     CodeDanmakuProvider.prototype.initialize = function () {
+        var stage = this.bulletproof.stage;
+        this._danmakuLayer = new CodeDanmakuLayer_1.CodeDanmakuLayer(stage, stage);
+        stage.addChild(this._danmakuLayer);
     };
     CodeDanmakuProvider.prototype.canCreateDanmaku = function (args) {
         return true;
@@ -12327,6 +12366,13 @@ var CodeDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuLayer", {
+        get: function () {
+            return this._danmakuLayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CodeDanmakuProvider.prototype, "flags", {
         get: function () {
             return DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation;
@@ -12335,10 +12381,11 @@ var CodeDanmakuProvider = (function (_super) {
         configurable: true
     });
     CodeDanmakuProvider.prototype.__addDanmaku = function (content, args) {
-        var danmaku = new CodeDanmaku_1.CodeDanmaku(this.bulletproof.stage, this.bulletproof.stage, this.layoutManager);
+        var danmaku = new CodeDanmaku_1.CodeDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        this.bulletproof.stage.addChild(danmaku);
+        this.danmakuLayer.addChild(danmaku);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
+        danmaku.execute();
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     };
@@ -12348,7 +12395,7 @@ exports.CodeDanmakuProvider = CodeDanmakuProvider;
 
 
 
-},{"../DanmakuKind":150,"../DanmakuProviderBase":152,"../DanmakuProviderFlag":153,"./CodeDanmaku":155,"./CodeDanmakuLayoutManager":156}],158:[function(require,module,exports){
+},{"../DanmakuKind":150,"../DanmakuProviderBase":152,"../DanmakuProviderFlag":153,"./CodeDanmaku":155,"./CodeDanmakuLayer":156,"./CodeDanmakuLayoutManager":157}],159:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12438,7 +12485,7 @@ exports.DCOHelper = DCOHelper;
 
 
 
-},{"../../../../lib/glantern/src/_util/_util":5}],159:[function(require,module,exports){
+},{"../../../../lib/glantern/src/_util/_util":5}],160:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12486,7 +12533,7 @@ exports.DCShape = DCShape;
 
 
 
-},{"../../../../lib/glantern/src/flash/display/Shape":42,"./DCOHelper":158}],160:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/display/Shape":42,"./DCOHelper":159}],161:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -12528,7 +12575,7 @@ exports.FiniteTimer = FiniteTimer;
 
 
 
-},{"../../../../lib/glantern/src/flash/events/TimerEvent":53,"../../../../lib/glantern/src/flash/utils/Timer":81}],161:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/events/TimerEvent":53,"../../../../lib/glantern/src/flash/utils/Timer":81}],162:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12540,7 +12587,7 @@ __export(require("./DCShape"));
 
 
 
-},{"./DCOHelper":158,"./DCShape":159}],162:[function(require,module,exports){
+},{"./DCOHelper":159,"./DCShape":160}],163:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12550,12 +12597,13 @@ function __export(m) {
 __export(require("./CodeDanmaku"));
 __export(require("./CodeDanmakuLayoutManager"));
 __export(require("./CodeDanmakuProvider"));
+__export(require("./CodeDanmakuLayer"));
 var dco = require("./dco/index");
 exports.dco = dco;
 
 
 
-},{"./CodeDanmaku":155,"./CodeDanmakuLayoutManager":156,"./CodeDanmakuProvider":157,"./dco/index":161}],163:[function(require,module,exports){
+},{"./CodeDanmaku":155,"./CodeDanmakuLayer":156,"./CodeDanmakuLayoutManager":157,"./CodeDanmakuProvider":158,"./dco/index":162}],164:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12574,7 +12622,7 @@ exports.simple = simple;
 
 
 
-},{"./DanmakuCoordinator":149,"./DanmakuKind":150,"./DanmakuLayoutManagerBase":151,"./DanmakuProviderBase":152,"./StageResizedEventArgs":154,"./code/index":162,"./simple/index":170}],164:[function(require,module,exports){
+},{"./DanmakuCoordinator":149,"./DanmakuKind":150,"./DanmakuLayoutManagerBase":151,"./DanmakuProviderBase":152,"./StageResizedEventArgs":154,"./code/index":163,"./simple/index":171}],165:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/2.
  */
@@ -12591,7 +12639,7 @@ var SimpleDanmakuType = exports.SimpleDanmakuType;
 
 
 
-},{}],165:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -12719,7 +12767,7 @@ exports.SimpleDanmaku = SimpleDanmaku;
 
 
 
-},{"../../BulletproofConfig":129,"../DanmakuKind":150}],166:[function(require,module,exports){
+},{"../../BulletproofConfig":129,"../DanmakuKind":150}],167:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
@@ -12779,7 +12827,7 @@ exports.SimpleDanmakuHelper = SimpleDanmakuHelper;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../BulletproofConfig":129,"./SimpleDanamkuType":164}],167:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../BulletproofConfig":129,"./SimpleDanamkuType":165}],168:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/2.
  */
@@ -12873,7 +12921,7 @@ exports.SimpleDanmakuLayer = SimpleDanmakuLayer;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/text/TextField":73,"../../../lib/glantern/src/webgl/RenderHelper":92}],168:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/text/TextField":73,"../../../lib/glantern/src/webgl/RenderHelper":92}],169:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -13029,7 +13077,7 @@ exports.SimpleDanmakuLayoutManager = SimpleDanmakuLayoutManager;
 
 
 
-},{"../DanmakuKind":150,"../DanmakuLayoutManagerBase":151,"./SimpleDanamkuType":164}],169:[function(require,module,exports){
+},{"../DanmakuKind":150,"../DanmakuLayoutManagerBase":151,"./SimpleDanamkuType":165}],170:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -13086,6 +13134,7 @@ var SimpleDanmakuProvider = (function (_super) {
         }
     };
     SimpleDanmakuProvider.prototype.dispose = function () {
+        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
         this._danmakuLayer.dispose();
         this._danmakuLayer = null;
         this._layoutManager.dispose();
@@ -13279,7 +13328,7 @@ exports.SimpleDanmakuProvider = SimpleDanmakuProvider;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../BulletproofConfig":129,"../DanmakuKind":150,"../DanmakuProviderBase":152,"../DanmakuProviderFlag":153,"../StageResizedEventArgs":154,"./SimpleDanmaku":165,"./SimpleDanmakuHelper":166,"./SimpleDanmakuLayer":167,"./SimpleDanmakuLayoutManager":168}],170:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../BulletproofConfig":129,"../DanmakuKind":150,"../DanmakuProviderBase":152,"../DanmakuProviderFlag":153,"../StageResizedEventArgs":154,"./SimpleDanmaku":166,"./SimpleDanmakuHelper":167,"./SimpleDanmakuLayer":168,"./SimpleDanmakuLayoutManager":169}],171:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -13295,7 +13344,7 @@ __export(require("./SimpleDanmakuLayer"));
 
 
 
-},{"./SimpleDanamkuType":164,"./SimpleDanmaku":165,"./SimpleDanmakuHelper":166,"./SimpleDanmakuLayer":167,"./SimpleDanmakuLayoutManager":168,"./SimpleDanmakuProvider":169}],171:[function(require,module,exports){
+},{"./SimpleDanamkuType":165,"./SimpleDanmaku":166,"./SimpleDanmakuHelper":167,"./SimpleDanmakuLayer":168,"./SimpleDanmakuLayoutManager":169,"./SimpleDanmakuProvider":170}],172:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -13317,7 +13366,7 @@ __export(require("../lib/glantern/src/index"));
 
 
 
-},{"../lib/glantern/src/index":83,"./Bulletproof":128,"./BulletproofConfig":129,"./bilibili/index":147,"./danmaku/index":163,"./interactive/index":172}],172:[function(require,module,exports){
+},{"../lib/glantern/src/index":83,"./Bulletproof":128,"./BulletproofConfig":129,"./bilibili/index":147,"./danmaku/index":164,"./interactive/index":173}],173:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -13326,7 +13375,7 @@ exports.video = video;
 
 
 
-},{"./video/index":177}],173:[function(require,module,exports){
+},{"./video/index":178}],174:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -13541,7 +13590,7 @@ exports.VideoPlayerBase = VideoPlayerBase;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"./VideoPlayerState":174}],174:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"./VideoPlayerState":175}],175:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -13559,7 +13608,7 @@ var VideoPlayerState = exports.VideoPlayerState;
 
 
 
-},{}],175:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -13874,7 +13923,7 @@ exports.Html5VideoPlayer = Html5VideoPlayer;
 
 
 
-},{"../../../../lib/glantern/src/_util/_util":5,"../VideoPlayerBase":173,"../VideoPlayerState":174}],176:[function(require,module,exports){
+},{"../../../../lib/glantern/src/_util/_util":5,"../VideoPlayerBase":174,"../VideoPlayerState":175}],177:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -13885,7 +13934,7 @@ __export(require("./Html5VideoPlayer"));
 
 
 
-},{"./Html5VideoPlayer":175}],177:[function(require,module,exports){
+},{"./Html5VideoPlayer":176}],178:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -13899,7 +13948,7 @@ exports.html5 = html5;
 
 
 
-},{"./VideoPlayerBase":173,"./VideoPlayerState":174,"./html5/index":176}],178:[function(require,module,exports){
+},{"./VideoPlayerBase":174,"./VideoPlayerState":175,"./html5/index":177}],179:[function(require,module,exports){
 /*
 
  Copyright 2000, Silicon Graphics, Inc. All Rights Reserved.
@@ -13959,7 +14008,7 @@ function W(a,b){for(var c=a.d,d=a.e,e=a.c,f=b,g=c[f];;){var h=f<<1;h<a.a&&u(d[c[
 gluEnum:{GLU_TESS_MESH:100112,GLU_TESS_TOLERANCE:100142,GLU_TESS_WINDING_RULE:100140,GLU_TESS_BOUNDARY_ONLY:100141,GLU_INVALID_ENUM:100900,GLU_INVALID_VALUE:100901,GLU_TESS_BEGIN:100100,GLU_TESS_VERTEX:100101,GLU_TESS_END:100102,GLU_TESS_ERROR:100103,GLU_TESS_EDGE_FLAG:100104,GLU_TESS_COMBINE:100105,GLU_TESS_BEGIN_DATA:100106,GLU_TESS_VERTEX_DATA:100107,GLU_TESS_END_DATA:100108,GLU_TESS_ERROR_DATA:100109,GLU_TESS_EDGE_FLAG_DATA:100110,GLU_TESS_COMBINE_DATA:100111}};X.prototype.gluDeleteTess=X.prototype.x;
 X.prototype.gluTessProperty=X.prototype.B;X.prototype.gluGetTessProperty=X.prototype.y;X.prototype.gluTessNormal=X.prototype.A;X.prototype.gluTessCallback=X.prototype.z;X.prototype.gluTessVertex=X.prototype.C;X.prototype.gluTessBeginPolygon=X.prototype.u;X.prototype.gluTessBeginContour=X.prototype.t;X.prototype.gluTessEndContour=X.prototype.v;X.prototype.gluTessEndPolygon=X.prototype.w; if (typeof module !== 'undefined') { module.exports = this.libtess; }
 
-},{}],179:[function(require,module,exports){
+},{}],180:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {

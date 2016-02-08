@@ -7,6 +7,7 @@ function __export(m) {
 __export(require("./CodeDanmaku"));
 __export(require("./CodeDanmakuLayoutManager"));
 __export(require("./CodeDanmakuProvider"));
+__export(require("./CodeDanmakuLayer"));
 var dco = require("./dco/index");
 exports.dco = dco;
 

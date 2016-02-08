@@ -45,12 +45,12 @@ var Bulletproof = (function (_super) {
             this._coordinator = coordinator;
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
-            if (config.simpleDanmakuEnabled) {
-                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
-                coordinator.addDanmakuProvider(provider);
-            }
             if (config.codeDanmakuEnabled) {
                 provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+            if (config.simpleDanmakuEnabled) {
+                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
             if (config.useWebChimeraForVideoPlayback) {

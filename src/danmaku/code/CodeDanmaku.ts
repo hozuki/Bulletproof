@@ -29,6 +29,11 @@ export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
         this._bulletproof = layoutManager.bulletproof;
     }
 
+    dispose():void {
+        this.parent.removeChild(this);
+        super.dispose();
+    }
+
     get danmakuKind():DanmakuKind {
         return DanmakuKind.Code;
     }
@@ -54,6 +59,9 @@ export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
         this._content = content;
         this._bornTime = time;
         this._apiContainer = new BiliBiliDanmakuApiContainer(this);
+    }
+
+    execute():void {
         if (this.__censor()) {
             this._lambda = this.__buildFunction();
             this.__applyFunction();
