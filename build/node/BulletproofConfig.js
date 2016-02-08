@@ -53,5 +53,10 @@ exports.BulletproofConfig.codeDanmakuEnabled = true;
  * @type {Boolean}
  */
 exports.BulletproofConfig.simpleDanmakuEnabled = true;
+/**
+ * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.useWebChimeraForVideoPlayback = false;
 
 //# sourceMappingURL=BulletproofConfig.js.map

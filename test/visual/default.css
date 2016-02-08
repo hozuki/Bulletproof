@@ -12,11 +12,6 @@
     position: absolute;
 }
 
-.glantern-view {
-    position: absolute;
-    z-index: 9999;
-}
-
 .initially-hidden {
     display: none;
 }

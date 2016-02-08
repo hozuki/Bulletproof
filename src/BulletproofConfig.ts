@@ -9,12 +9,16 @@ interface IBulletproofConfig {
 
     simpleDanmakuLifeTimeSecs:number;
     codeDanmakuLifeTimeSecs:number;
-    defaultSimpleDanmakuCreateParams:ISimpleDanmakuCreateParams;
+
     globalDanmakuCountThreshold:number;
     simpleDanmakuPartCountThreshold:number;
 
+    defaultSimpleDanmakuCreateParams:ISimpleDanmakuCreateParams;
+
     codeDanmakuEnabled:boolean;
     simpleDanmakuEnabled:boolean;
+
+    useWebChimeraForVideoPlayback:boolean;
 
 }
 
@@ -76,3 +80,9 @@ BulletproofConfig.codeDanmakuEnabled = true;
  * @type {Boolean}
  */
 BulletproofConfig.simpleDanmakuEnabled = true;
+
+/**
+ * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * @type {Boolean}
+ */
+BulletproofConfig.useWebChimeraForVideoPlayback = false;

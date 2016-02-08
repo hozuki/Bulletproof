@@ -32,7 +32,11 @@ function initEnv() {
         bp.initialize(682, 438);
         (function (selector) {
             var elem = document.querySelector(selector);
+            elem.appendChild(bp.videoView);
+            bp.videoView.style.position = "absolute";
             elem.appendChild(bp.view);
+            bp.view.style.position = "absolute";
+            bp.view.style.zIndex = "9999";
         })("#glantern-container");
     }
 }

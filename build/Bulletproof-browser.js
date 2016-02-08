@@ -5840,7 +5840,7 @@ exports.TextFormat = TextFormat;
 
 
 
-},{"../../_util/_util":5,"../events/EventDispatcher":51,"../events/FlashEvent":52,"./TextFormatAlign":77,"os":173}],77:[function(require,module,exports){
+},{"../../_util/_util":5,"../events/EventDispatcher":51,"../events/FlashEvent":52,"./TextFormatAlign":77,"os":179}],77:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
@@ -8421,7 +8421,7 @@ BMS[BlendMode_1.BlendMode.SUBTRACT] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
 
 
-},{"../_util/_util":5,"../flash/display/BlendMode":27,"./FilterManager":89,"./RenderTarget2D":93,"./ShaderManager":96,"./WebGLUtils":101,"libtess":172}],101:[function(require,module,exports){
+},{"../_util/_util":5,"../flash/display/BlendMode":27,"./FilterManager":89,"./RenderTarget2D":93,"./ShaderManager":96,"./WebGLUtils":101,"libtess":178}],101:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/13.
  */
@@ -9506,7 +9506,7 @@ exports.SolidFillRenderer = SolidFillRenderer;
 
 
 
-},{"../../_util/NotImplementedError":4,"../../_util/_util":5,"../RenderHelper":92,"./FillRendererBase":110,"./GRAPHICS_CONST":111,"libtess":172}],114:[function(require,module,exports){
+},{"../../_util/NotImplementedError":4,"../../_util/_util":5,"../RenderHelper":92,"./FillRendererBase":110,"./GRAPHICS_CONST":111,"libtess":178}],114:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -10433,6 +10433,8 @@ var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
 var BulletproofConfig_1 = require("./BulletproofConfig");
+var _util_1 = require("../lib/glantern/src/_util/_util");
+var Html5VideoPlayer_1 = require("./interactive/video/html5/Html5VideoPlayer");
 /**
  * The root controller for Bulletproof.
  */
@@ -10449,6 +10451,7 @@ var Bulletproof = (function (_super) {
         this._fpsCounter = 0;
         this._lastFpsUpdateElapsedTime = 0;
         this._coordinator = null;
+        this._videoPlayer = null;
     }
     /**
      * Initialize the {@link Bulletproof} instance with default parameters.
@@ -10458,12 +10461,12 @@ var Bulletproof = (function (_super) {
     Bulletproof.prototype.initialize = function (width, height) {
         if (!this._isInitialized) {
             _super.prototype.initialize.call(this, width, height);
+            var config = BulletproofConfig_1.BulletproofConfig;
             this.attachUpdateFunction(this.__updateComponents.bind(this));
             var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
             this._coordinator = coordinator;
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
-            var config = BulletproofConfig_1.BulletproofConfig;
             if (config.simpleDanmakuEnabled) {
                 provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
@@ -10471,6 +10474,14 @@ var Bulletproof = (function (_super) {
             if (config.codeDanmakuEnabled) {
                 provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
+            }
+            if (config.useWebChimeraForVideoPlayback) {
+            }
+            else {
+                this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
+            }
+            if (this._videoPlayer !== null) {
+                this._videoPlayer.initialize(width, height);
             }
         }
     };
@@ -10545,6 +10556,25 @@ var Bulletproof = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Bulletproof.prototype, "videoPlayer", {
+        get: function () {
+            return this._videoPlayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bulletproof.prototype, "videoView", {
+        get: function () {
+            if (_util_1._util.isUndefinedOrNull(this._videoPlayer)) {
+                return null;
+            }
+            else {
+                return this._videoPlayer.view;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Bulletproof.prototype.__updateComponents = function () {
         if (this._lastUpdatedTime > 0) {
             var now = Date.now();
@@ -10565,7 +10595,7 @@ exports.Bulletproof = Bulletproof;
 
 
 
-},{"../lib/glantern/src/GLantern":1,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":157,"./danmaku/simple/SimpleDanmakuProvider":169}],129:[function(require,module,exports){
+},{"../lib/glantern/src/GLantern":1,"../lib/glantern/src/_util/_util":5,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":157,"./danmaku/simple/SimpleDanmakuProvider":169,"./interactive/video/html5/Html5VideoPlayer":175}],129:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
@@ -10621,6 +10651,11 @@ exports.BulletproofConfig.codeDanmakuEnabled = true;
  * @type {Boolean}
  */
 exports.BulletproofConfig.simpleDanmakuEnabled = true;
+/**
+ * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.useWebChimeraForVideoPlayback = false;
 
 
 
@@ -13274,13 +13309,597 @@ var bilibili = require("./bilibili/index");
 exports.bilibili = bilibili;
 var danmaku = require("./danmaku/index");
 exports.danmaku = danmaku;
+var interactive = require("./interactive/index");
+exports.interactive = interactive;
 var BulletproofConfig_1 = require("./BulletproofConfig");
 exports.config = BulletproofConfig_1.BulletproofConfig;
 __export(require("../lib/glantern/src/index"));
 
 
 
-},{"../lib/glantern/src/index":83,"./Bulletproof":128,"./BulletproofConfig":129,"./bilibili/index":147,"./danmaku/index":163}],172:[function(require,module,exports){
+},{"../lib/glantern/src/index":83,"./Bulletproof":128,"./BulletproofConfig":129,"./bilibili/index":147,"./danmaku/index":163,"./interactive/index":172}],172:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/8.
+ */
+var video = require("./video/index");
+exports.video = video;
+
+
+
+},{"./video/index":177}],173:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/8.
+ */
+var VideoPlayerState_1 = require("./VideoPlayerState");
+var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
+var VideoPlayerBase = (function () {
+    function VideoPlayerBase() {
+    }
+    Object.defineProperty(VideoPlayerBase.prototype, "currentTime", {
+        /**
+         * Gets current playing timestamp, in seconds.
+         * @returns {Number}
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ;
+    Object.defineProperty(VideoPlayerBase.prototype, "currentRatio", {
+        /**
+         * Gets current playing ratio. The ratio is a value between 0 and 1 from start to end.
+         * @returns {Number}
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "duration", {
+        /**
+         * Gets the duration of current video, in seconds.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "autoPlay", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "loop", {
+        /**
+         * Gets whether the video should be looped.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "muted", {
+        /**
+         * Gets whether the video should be muted.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "defaultMuted", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "playbackRate", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "defaultPlaybackRate", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "volume", {
+        /**
+         * Gets current volume. The value is between 0 and 1 from silence to maximum volume.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "state", {
+        /**
+         * Gets the state enum of the player.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "stateText", {
+        get: function () {
+            return VideoPlayerState_1.VideoPlayerState[this.state];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "playing", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "paused", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "seeking", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "videoWidth", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "videoHeight", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "fileURL", {
+        /**
+         * Gets the URL of current video.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "hasVideo", {
+        /**
+         * Gets whether there is a video prepared.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerBase.prototype, "view", {
+        /**
+         * Gets the element created by the player.
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return VideoPlayerBase;
+})();
+exports.VideoPlayerBase = VideoPlayerBase;
+
+
+
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"./VideoPlayerState":174}],174:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/8.
+ */
+(function (VideoPlayerState) {
+    VideoPlayerState[VideoPlayerState["Invalid"] = -1] = "Invalid";
+    VideoPlayerState[VideoPlayerState["Created"] = 0] = "Created";
+    VideoPlayerState[VideoPlayerState["Initialized"] = 1] = "Initialized";
+    VideoPlayerState[VideoPlayerState["Loaded"] = 2] = "Loaded";
+    VideoPlayerState[VideoPlayerState["Playing"] = 3] = "Playing";
+    VideoPlayerState[VideoPlayerState["Paused"] = 4] = "Paused";
+    VideoPlayerState[VideoPlayerState["Stopped"] = 5] = "Stopped";
+    VideoPlayerState[VideoPlayerState["Seeking"] = 6] = "Seeking";
+})(exports.VideoPlayerState || (exports.VideoPlayerState = {}));
+var VideoPlayerState = exports.VideoPlayerState;
+
+
+
+},{}],175:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/8.
+ */
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var VideoPlayerBase_1 = require("../VideoPlayerBase");
+var VideoPlayerState_1 = require("../VideoPlayerState");
+var _util_1 = require("../../../../lib/glantern/src/_util/_util");
+var Html5VideoPlayer = (function (_super) {
+    __extends(Html5VideoPlayer, _super);
+    function Html5VideoPlayer() {
+        _super.call(this);
+        this._videoElement = null;
+        this._state = VideoPlayerState_1.VideoPlayerState.Invalid;
+        this._originalStateBeforeSeeking = VideoPlayerState_1.VideoPlayerState.Invalid;
+        this._eventHandlers = null;
+        this._videoElement = window.document.createElement("video");
+        this._eventHandlers = [];
+        this._state = VideoPlayerState_1.VideoPlayerState.Created;
+    }
+    Html5VideoPlayer.prototype.initialize = function (width, height) {
+        var vid = this._videoElement;
+        var handlers = this._eventHandlers;
+        vid.width = width;
+        vid.height = height;
+        function addListener(name, listener) {
+            var f = listener.bind(this);
+            handlers.push({ name: name, handler: f });
+            vid.addEventListener(name, f);
+        }
+        addListener("ended", this.__onEnded);
+        addListener("play", this.__onPlay);
+        addListener("playing", this.__onPlaying);
+        addListener("pause", this.__onPause);
+        addListener("loadeddata", this.__onLoadedData);
+        addListener("seeked", this.__onSeeked);
+        addListener("seeking", this.__onSeeking);
+    };
+    Html5VideoPlayer.prototype.dispose = function () {
+        var video = this._videoElement;
+        var videoParent = video.parentElement;
+        var handlers = this._eventHandlers;
+        for (var i = 0; i < handlers.length; ++i) {
+            video.removeEventListener(handlers[i].name, handlers[i].handler);
+        }
+        if (!_util_1._util.isUndefinedOrNull(videoParent)) {
+            videoParent.removeChild(video);
+        }
+        while (handlers.length > 0) {
+            handlers.pop();
+        }
+        this._state = VideoPlayerState_1.VideoPlayerState.Invalid;
+        this._videoElement = null;
+        this._eventHandlers = null;
+    };
+    Html5VideoPlayer.prototype.load = function (url) {
+        if (this._state !== VideoPlayerState_1.VideoPlayerState.Invalid) {
+            this.unload();
+            try {
+                this._videoElement.src = url;
+                this._state = VideoPlayerState_1.VideoPlayerState.Loaded;
+                return true;
+            }
+            catch (ex) {
+                return false;
+            }
+        }
+    };
+    Html5VideoPlayer.prototype.unload = function () {
+        if (this.hasVideo) {
+            this.stop();
+            this._videoElement.src = null;
+            this._state = VideoPlayerState_1.VideoPlayerState.Initialized;
+        }
+    };
+    Html5VideoPlayer.prototype.play = function () {
+        if (this.hasVideo) {
+            this._videoElement.play();
+            this._state = VideoPlayerState_1.VideoPlayerState.Playing;
+        }
+    };
+    Html5VideoPlayer.prototype.pause = function () {
+        if (this.hasVideo) {
+            this._videoElement.pause();
+            this._state = VideoPlayerState_1.VideoPlayerState.Paused;
+        }
+    };
+    Html5VideoPlayer.prototype.resume = function () {
+        if (this.hasVideo) {
+            if (this._state === VideoPlayerState_1.VideoPlayerState.Paused) {
+                this.play();
+            }
+        }
+    };
+    Html5VideoPlayer.prototype.stop = function () {
+        if (this.hasVideo) {
+            this._videoElement.pause();
+            this._videoElement.currentTime = 0;
+            this._state = VideoPlayerState_1.VideoPlayerState.Stopped;
+        }
+    };
+    Object.defineProperty(Html5VideoPlayer.prototype, "currentTime", {
+        get: function () {
+            return this.hasVideo ? this._videoElement.currentTime : 0;
+        },
+        set: function (v) {
+            if (this.hasVideo) {
+                this._videoElement.currentTime = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "currentRatio", {
+        get: function () {
+            return this.hasVideo ? this.currentTime / this.duration : 0;
+        },
+        set: function (v) {
+            if (this.hasVideo) {
+                v = _util_1._util.limitInto(v, 0, 1);
+                this.currentTime = v * this.duration;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "duration", {
+        get: function () {
+            return this.hasVideo ? this._videoElement.duration : 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "autoPlay", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.autoplay : false;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                this._videoElement.autoplay = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "loop", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.loop : false;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                this._videoElement.loop = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "muted", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.muted : false;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                this._videoElement.muted = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "defaultMuted", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.defaultMuted : false;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                this._videoElement.defaultMuted = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "playbackRate", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.playbackRate : 0;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                this._videoElement.playbackRate = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "defaultPlaybackRate", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.defaultPlaybackRate : 0;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                this._videoElement.defaultPlaybackRate = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "volume", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.volume / 200 : 0;
+        },
+        set: function (v) {
+            if (this._videoElement !== null) {
+                v = _util_1._util.limitInto(v, 0, 1);
+                this._videoElement.volume = v * 200;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "state", {
+        get: function () {
+            return this._state;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "playing", {
+        get: function () {
+            return this.state === VideoPlayerState_1.VideoPlayerState.Playing;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "paused", {
+        get: function () {
+            return this.state === VideoPlayerState_1.VideoPlayerState.Paused;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "seeking", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.seeking : false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "videoWidth", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.videoWidth : 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "videoHeight", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.videoHeight : 0;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "fileURL", {
+        get: function () {
+            return this._videoElement !== null ? this._videoElement.currentSrc : null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "hasVideo", {
+        get: function () {
+            return this.state > VideoPlayerState_1.VideoPlayerState.Initialized;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Html5VideoPlayer.prototype, "view", {
+        get: function () {
+            return this._videoElement;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Html5VideoPlayer.prototype.__onEnded = function (ev) {
+        this._state = VideoPlayerState_1.VideoPlayerState.Stopped;
+    };
+    Html5VideoPlayer.prototype.__onPlay = function (ev) {
+        this._state = VideoPlayerState_1.VideoPlayerState.Playing;
+    };
+    Html5VideoPlayer.prototype.__onPause = function (ev) {
+        this._state = VideoPlayerState_1.VideoPlayerState.Paused;
+    };
+    Html5VideoPlayer.prototype.__onPlaying = function (ev) {
+        this._state = VideoPlayerState_1.VideoPlayerState.Playing;
+    };
+    Html5VideoPlayer.prototype.__onSeeked = function (ev) {
+        this._state = this._originalStateBeforeSeeking;
+    };
+    Html5VideoPlayer.prototype.__onSeeking = function (ev) {
+        this._originalStateBeforeSeeking = this._state;
+        this._state = VideoPlayerState_1.VideoPlayerState.Seeking;
+    };
+    Html5VideoPlayer.prototype.__onLoadedData = function (ev) {
+        if (this._state === VideoPlayerState_1.VideoPlayerState.Initialized) {
+            this._state = VideoPlayerState_1.VideoPlayerState.Loaded;
+        }
+    };
+    return Html5VideoPlayer;
+})(VideoPlayerBase_1.VideoPlayerBase);
+exports.Html5VideoPlayer = Html5VideoPlayer;
+
+
+
+},{"../../../../lib/glantern/src/_util/_util":5,"../VideoPlayerBase":173,"../VideoPlayerState":174}],176:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/8.
+ */
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./Html5VideoPlayer"));
+
+
+
+},{"./Html5VideoPlayer":175}],177:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/8.
+ */
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./VideoPlayerBase"));
+__export(require("./VideoPlayerState"));
+var html5 = require("./html5/index");
+exports.html5 = html5;
+
+
+
+},{"./VideoPlayerBase":173,"./VideoPlayerState":174,"./html5/index":176}],178:[function(require,module,exports){
 /*
 
  Copyright 2000, Silicon Graphics, Inc. All Rights Reserved.
@@ -13340,7 +13959,7 @@ function W(a,b){for(var c=a.d,d=a.e,e=a.c,f=b,g=c[f];;){var h=f<<1;h<a.a&&u(d[c[
 gluEnum:{GLU_TESS_MESH:100112,GLU_TESS_TOLERANCE:100142,GLU_TESS_WINDING_RULE:100140,GLU_TESS_BOUNDARY_ONLY:100141,GLU_INVALID_ENUM:100900,GLU_INVALID_VALUE:100901,GLU_TESS_BEGIN:100100,GLU_TESS_VERTEX:100101,GLU_TESS_END:100102,GLU_TESS_ERROR:100103,GLU_TESS_EDGE_FLAG:100104,GLU_TESS_COMBINE:100105,GLU_TESS_BEGIN_DATA:100106,GLU_TESS_VERTEX_DATA:100107,GLU_TESS_END_DATA:100108,GLU_TESS_ERROR_DATA:100109,GLU_TESS_EDGE_FLAG_DATA:100110,GLU_TESS_COMBINE_DATA:100111}};X.prototype.gluDeleteTess=X.prototype.x;
 X.prototype.gluTessProperty=X.prototype.B;X.prototype.gluGetTessProperty=X.prototype.y;X.prototype.gluTessNormal=X.prototype.A;X.prototype.gluTessCallback=X.prototype.z;X.prototype.gluTessVertex=X.prototype.C;X.prototype.gluTessBeginPolygon=X.prototype.u;X.prototype.gluTessBeginContour=X.prototype.t;X.prototype.gluTessEndContour=X.prototype.v;X.prototype.gluTessEndPolygon=X.prototype.w; if (typeof module !== 'undefined') { module.exports = this.libtess; }
 
-},{}],173:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {

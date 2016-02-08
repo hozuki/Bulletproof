@@ -11,6 +11,8 @@ var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
 var BulletproofConfig_1 = require("./BulletproofConfig");
+var _util_1 = require("../lib/glantern/src/_util/_util");
+var Html5VideoPlayer_1 = require("./interactive/video/html5/Html5VideoPlayer");
 /**
  * The root controller for Bulletproof.
  */
@@ -27,6 +29,7 @@ var Bulletproof = (function (_super) {
         this._fpsCounter = 0;
         this._lastFpsUpdateElapsedTime = 0;
         this._coordinator = null;
+        this._videoPlayer = null;
     }
     /**
      * Initialize the {@link Bulletproof} instance with default parameters.
@@ -36,12 +39,12 @@ var Bulletproof = (function (_super) {
     Bulletproof.prototype.initialize = function (width, height) {
         if (!this._isInitialized) {
             _super.prototype.initialize.call(this, width, height);
+            var config = BulletproofConfig_1.BulletproofConfig;
             this.attachUpdateFunction(this.__updateComponents.bind(this));
             var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
             this._coordinator = coordinator;
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
-            var config = BulletproofConfig_1.BulletproofConfig;
             if (config.simpleDanmakuEnabled) {
                 provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
@@ -49,6 +52,14 @@ var Bulletproof = (function (_super) {
             if (config.codeDanmakuEnabled) {
                 provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
+            }
+            if (config.useWebChimeraForVideoPlayback) {
+            }
+            else {
+                this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
+            }
+            if (this._videoPlayer !== null) {
+                this._videoPlayer.initialize(width, height);
             }
         }
     };
@@ -119,6 +130,25 @@ var Bulletproof = (function (_super) {
          */
         get: function () {
             return this._fps;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bulletproof.prototype, "videoPlayer", {
+        get: function () {
+            return this._videoPlayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bulletproof.prototype, "videoView", {
+        get: function () {
+            if (_util_1._util.isUndefinedOrNull(this._videoPlayer)) {
+                return null;
+            }
+            else {
+                return this._videoPlayer.view;
+            }
         },
         enumerable: true,
         configurable: true

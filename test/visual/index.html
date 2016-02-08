@@ -30,7 +30,6 @@
         </div>
     </div>
     <div id="glantern-container">
-        <video class="absolute" id="vid" width="682" height="438" loop="loop" style="z-index: 1;"></video>
         <div class="absolute black-background" style="width: 682px; height: 438px; z-index: 0;"></div>
     </div>
 </div>
@@ -41,20 +40,17 @@
          * @type {HTMLInputElement}
          */
         var selVid = document.getElementById("get-vid");
-        /**
-         * @type {HTMLVideoElement}
-         */
-        var vid = document.getElementById("vid");
         elem.addEventListener("click", function (ev) {
             selVid.click();
         });
         selVid.addEventListener("change", function (ev) {
-            if (selVid.value) {
+            if (selVid.value && bp) {
+                var player = bp.videoPlayer;
                 var val = selVid.value;
                 val = "file:///" + encodeURI(val.split("\\").join("/"));
-                console.info(val);
-                vid.src = val;
-                vid.play();
+                player.load(val);
+                player.loop = true;
+                player.play();
             }
         });
     })();
