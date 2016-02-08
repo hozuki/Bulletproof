@@ -10432,6 +10432,7 @@ var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
+var BulletproofConfig_1 = require("./BulletproofConfig");
 /**
  * The root controller for Bulletproof.
  */
@@ -10462,10 +10463,15 @@ var Bulletproof = (function (_super) {
             this._coordinator = coordinator;
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
-            provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
-            coordinator.addDanmakuProvider(provider);
-            provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
-            coordinator.addDanmakuProvider(provider);
+            var config = BulletproofConfig_1.BulletproofConfig;
+            if (config.simpleDanmakuEnabled) {
+                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+            if (config.codeDanmakuEnabled) {
+                provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
         }
     };
     /**
@@ -10559,7 +10565,7 @@ exports.Bulletproof = Bulletproof;
 
 
 
-},{"../lib/glantern/src/GLantern":1,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":157,"./danmaku/simple/SimpleDanmakuProvider":169}],129:[function(require,module,exports){
+},{"../lib/glantern/src/GLantern":1,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":157,"./danmaku/simple/SimpleDanmakuProvider":169}],129:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
@@ -10605,6 +10611,16 @@ exports.BulletproofConfig.globalDanmakuCountThreshold = 3000;
  * @type {Number}
  */
 exports.BulletproofConfig.simpleDanmakuPartCountThreshold = 1500;
+/**
+ * Whether should enable code danmaku support.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.codeDanmakuEnabled = true;
+/**
+ * Whether should enable simple danmaku support.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.simpleDanmakuEnabled = true;
 
 
 
@@ -12928,7 +12944,9 @@ var SimpleDanmakuLayoutManager = (function (_super) {
             }
             else {
                 if (state.lowestYPosition + danmaku.textHeight < stageHeight) {
-                    // Fully use the Y space.
+                    // Fully use the Y space. For example, a 14-pt and a 10-pt danmakus are added to the screen at
+                    // the same time, when there is a 12-pt available space, and the 10-pt danmaku should be placed
+                    // at bottom and the 14-pt danmaku should be placed at top.
                     state.nextYPosition = state.lowestYPosition;
                 }
                 danmaku.y = state.nextYPosition;

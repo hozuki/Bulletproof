@@ -13,6 +13,9 @@ interface IBulletproofConfig {
     globalDanmakuCountThreshold:number;
     simpleDanmakuPartCountThreshold:number;
 
+    codeDanmakuEnabled:boolean;
+    simpleDanmakuEnabled:boolean;
+
 }
 
 export var BulletproofConfig:IBulletproofConfig = Object.create(null);
@@ -61,3 +64,15 @@ BulletproofConfig.globalDanmakuCountThreshold = 3000;
  * @type {Number}
  */
 BulletproofConfig.simpleDanmakuPartCountThreshold = 1500;
+
+/**
+ * Whether should enable code danmaku support.
+ * @type {Boolean}
+ */
+BulletproofConfig.codeDanmakuEnabled = true;
+
+/**
+ * Whether should enable simple danmaku support.
+ * @type {Boolean}
+ */
+BulletproofConfig.simpleDanmakuEnabled = true;

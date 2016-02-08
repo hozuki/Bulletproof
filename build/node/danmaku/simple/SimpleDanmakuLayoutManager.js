@@ -103,7 +103,9 @@ var SimpleDanmakuLayoutManager = (function (_super) {
             }
             else {
                 if (state.lowestYPosition + danmaku.textHeight < stageHeight) {
-                    // Fully use the Y space.
+                    // Fully use the Y space. For example, a 14-pt and a 10-pt danmakus are added to the screen at
+                    // the same time, when there is a 12-pt available space, and the 10-pt danmaku should be placed
+                    // at bottom and the 14-pt danmaku should be placed at top.
                     state.nextYPosition = state.lowestYPosition;
                 }
                 danmaku.y = state.nextYPosition;

@@ -10,6 +10,7 @@ var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
+var BulletproofConfig_1 = require("./BulletproofConfig");
 /**
  * The root controller for Bulletproof.
  */
@@ -40,10 +41,15 @@ var Bulletproof = (function (_super) {
             this._coordinator = coordinator;
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
-            provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
-            coordinator.addDanmakuProvider(provider);
-            provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
-            coordinator.addDanmakuProvider(provider);
+            var config = BulletproofConfig_1.BulletproofConfig;
+            if (config.simpleDanmakuEnabled) {
+                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+            if (config.codeDanmakuEnabled) {
+                provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
         }
     };
     /**

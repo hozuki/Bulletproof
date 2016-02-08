@@ -43,5 +43,15 @@ exports.BulletproofConfig.globalDanmakuCountThreshold = 3000;
  * @type {Number}
  */
 exports.BulletproofConfig.simpleDanmakuPartCountThreshold = 1500;
+/**
+ * Whether should enable code danmaku support.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.codeDanmakuEnabled = true;
+/**
+ * Whether should enable simple danmaku support.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.simpleDanmakuEnabled = true;
 
 //# sourceMappingURL=BulletproofConfig.js.map
