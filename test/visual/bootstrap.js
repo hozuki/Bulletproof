@@ -14,6 +14,7 @@ var __timerHandle = 0;
 
 window.document.body.onload = function () {
     initEnv();
+    initVideoElements();
     initList();
 };
 
@@ -172,7 +173,7 @@ function uninitFps() {
 }
 
 function addFlyingDanmaku() {
-    if (!bp){
+    if (!bp) {
         return;
     }
     /**
@@ -184,4 +185,66 @@ function addFlyingDanmaku() {
      */
     var textBox = document.querySelector("#input-danmaku");
     provider.addDanmaku(textBox.value);
+}
+
+function initVideoElements() {
+
+    var videoSelector = document.getElementById("video-selector");
+    decideLocalVideoSelectorVisibility();
+    registerVideoElemEvents();
+
+    /**
+     * @param element {HTMLElement}
+     */
+    function hide(element) {
+        element.style.display = "none";
+    }
+
+    function decideLocalVideoSelectorVisibility() {
+        var invisible = (typeof window.global === "undefined");
+        var container = document.getElementById("local-video-selector-container");
+        if (invisible) {
+            hide(container);
+        }
+    }
+
+    function registerVideoElemEvents() {
+        var selLocalVideoBtn = document.getElementById("select-local-video-btn");
+        /**
+         * @type {HTMLInputElement}
+         */
+        var selLocalVideoElem = document.getElementById("select-local-video");
+        selLocalVideoBtn.addEventListener("click", function (ev) {
+            selLocalVideoElem.click();
+        });
+        selLocalVideoElem.addEventListener("change", function (ev) {
+            if (selLocalVideoElem.value && bp) {
+                var player = bp.videoPlayer;
+                var val = selLocalVideoElem.value;
+                val = "file:///" + encodeURI(val.split("\\").join("/"));
+                player.load(val);
+                player.loop = true;
+                player.play();
+                hide(videoSelector);
+            }
+        });
+        var enterVideoUrlBtn = document.getElementById("enter-video-url-btn");
+        enterVideoUrlBtn.addEventListener("click", function (ev) {
+            /**
+             * @type {String}
+             */
+            var url = prompt("Enter online video URL:");
+            if (url !== null && url.length > 0 && bp) {
+                var player = bp.videoPlayer;
+                try {
+                    player.load(url);
+                    player.loop = true;
+                    player.play();
+                    hide(videoSelector);
+                } catch (ex) {
+                    console.warn(ex);
+                }
+            }
+        });
+    }
 }

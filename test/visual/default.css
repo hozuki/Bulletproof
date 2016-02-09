@@ -15,3 +15,7 @@
 .initially-hidden {
     display: none;
 }
+
+.video-selector {
+    margin-bottom: 15px;
+}

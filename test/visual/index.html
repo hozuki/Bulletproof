@@ -7,13 +7,21 @@
     <title>Bulletproof Showcase</title>
 </head>
 <body>
+<div class="video-selector" id="video-selector">
+    <p><b>Select video</b> (optional)</p>
+    <button id="enter-video-url-btn" type="button">Enter online video URL</button>
+    <span id="local-video-selector-container">
+        &nbsp;or&nbsp;
+        <button id="select-local-video-btn" type="button">Select local video (NW.js/Electron)</button>
+        <input type="file" id="select-local-video" hidden="hidden" multiple="multiple"
+               accept=".mp4,.ogv,.flv,video/mp4,video/H264"/>
+    </span>
+</div>
 <div id="test-case-selector-container">
-    <div><b>Test Cases</b></div>
+    <p><b>Test Cases</b></p>
     <ol id="test-case-selector">
     </ol>
 </div>
-<button id="get-vid-btn">Get Vid</button>
-<input type="file" id="get-vid" hidden="hidden" multiple="multiple" accept=".mp4,.ogv,.flv,video/mp4,video/H264"/>
 <div class="initially-hidden" id="playground">
     <div style="margin-bottom: 10px;">
         <b>Selected:</b>&nbsp;<span id="test-case-desc"></span>&nbsp;
@@ -33,28 +41,6 @@
         <div class="absolute black-background" style="width: 682px; height: 438px; z-index: 0;"></div>
     </div>
 </div>
-<script type="text/javascript">
-    (function () {
-        var elem = document.getElementById("get-vid-btn");
-        /**
-         * @type {HTMLInputElement}
-         */
-        var selVid = document.getElementById("get-vid");
-        elem.addEventListener("click", function (ev) {
-            selVid.click();
-        });
-        selVid.addEventListener("change", function (ev) {
-            if (selVid.value && bp) {
-                var player = bp.videoPlayer;
-                var val = selVid.value;
-                val = "file:///" + encodeURI(val.split("\\").join("/"));
-                player.load(val);
-                player.loop = true;
-                player.play();
-            }
-        });
-    })();
-</script>
 <script type="text/javascript" id="bp-source-loader">
     (function loadBulletproofSource(useNodeVersion, useMinimizedVersion, forceNoCache) {
         function defaultValue(obj, value) {
