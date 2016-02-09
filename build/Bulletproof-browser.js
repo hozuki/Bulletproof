@@ -10901,14 +10901,14 @@ var Display = (function (_super) {
     });
     Object.defineProperty(Display.prototype, "width", {
         get: function () {
-            return this._apiContainer.bulletproof.view.width;
+            return this.apiContainer.bulletproof.view.width;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Display.prototype, "height", {
         get: function () {
-            return this._apiContainer.bulletproof.view.height;
+            return this.apiContainer.bulletproof.view.height;
         },
         enumerable: true,
         configurable: true
@@ -11063,14 +11063,14 @@ var Functions = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     Functions.prototype.getTimer = function () {
-        return this._apiContainer.bulletproof.timeElapsed;
+        return this.apiContainer.bulletproof.timeElapsed;
     };
     Functions.prototype.timer = function (obj, delay) {
-        return this._apiContainer.api.Utils.delay(obj, delay);
+        return this.apiContainer.api.Utils.delay(obj, delay);
     };
     Functions.prototype.interval = function (obj, delay, times) {
         if (times === void 0) { times = 1; }
-        return this._apiContainer.api.Utils.interval(obj, delay, times);
+        return this.apiContainer.api.Utils.interval(obj, delay, times);
     };
     Functions.prototype.foreach = function (loop, f) {
         if (!_util_1._util.isUndefinedOrNull(loop)) {
@@ -11231,20 +11231,23 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var VideoPlayerState_1 = require("../../interactive/video/VideoPlayerState");
+var PlayerState_1 = require("./PlayerState");
 var Player = (function (_super) {
     __extends(Player, _super);
     function Player(apiContainer) {
         _super.call(this, apiContainer);
-        this.refreshRate = 0;
+        this._videoPlayer = null;
+        this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
     }
     Player.prototype.play = function () {
-        throw new NotImplementedError_1.NotImplementedError();
+        this._videoPlayer.play();
     };
     Player.prototype.pause = function () {
-        throw new NotImplementedError_1.NotImplementedError();
+        this._videoPlayer.pause();
     };
     Player.prototype.seek = function (offset) {
-        throw new NotImplementedError_1.NotImplementedError();
+        this._videoPlayer.currentTime = offset;
     };
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }
@@ -11254,12 +11257,26 @@ var Player = (function (_super) {
             window.open(url, "_blank");
         }
         else {
-            window.location.href = url;
+            window.location.assign(url);
         }
     };
     Object.defineProperty(Player.prototype, "state", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            var state = this._videoPlayer.state;
+            switch (state) {
+                case VideoPlayerState_1.VideoPlayerState.Playing:
+                case VideoPlayerState_1.VideoPlayerState.Seeking:
+                    return PlayerState_1.PlayerState.PLAYING;
+                case VideoPlayerState_1.VideoPlayerState.Paused:
+                    return PlayerState_1.PlayerState.PAUSE;
+                case VideoPlayerState_1.VideoPlayerState.Created:
+                case VideoPlayerState_1.VideoPlayerState.Initialized:
+                case VideoPlayerState_1.VideoPlayerState.Loaded:
+                case VideoPlayerState_1.VideoPlayerState.Stopped:
+                    return PlayerState_1.PlayerState.STOP;
+                default:
+                    return PlayerState_1.PlayerState.INVALID;
+            }
         },
         enumerable: true,
         configurable: true
@@ -11294,16 +11311,26 @@ var Player = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Player.prototype, "refreshRate", {
+        get: function () {
+            return 1 / this.apiContainer.bulletproof.fps;
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Player.prototype, "width", {
         get: function () {
-            return this.apiContainer.bulletproof.stage.width;
+            return this.apiContainer.bulletproof.stage.stageWidth;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "height", {
         get: function () {
-            return this.apiContainer.bulletproof.stage.height;
+            return this.apiContainer.bulletproof.stage.stageHeight;
         },
         enumerable: true,
         configurable: true
@@ -11328,7 +11355,7 @@ exports.Player = Player;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"./BiliBiliDamakuApiObject":131}],140:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../interactive/video/VideoPlayerState":175,"./BiliBiliDamakuApiObject":131,"./PlayerState":140}],140:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -11337,21 +11364,28 @@ var PlayerState = (function () {
     }
     Object.defineProperty(PlayerState, "PLAYING", {
         get: function () {
-            return 'playing';
+            return "playing";
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(PlayerState, "STOP", {
         get: function () {
-            return 'stop';
+            return "stop";
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(PlayerState, "PAUSE", {
         get: function () {
-            return 'pause';
+            return "pause";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PlayerState, "INVALID", {
+        get: function () {
+            return "invalid";
         },
         enumerable: true,
         configurable: true
@@ -13010,8 +13044,8 @@ var SimpleDanmakuLayoutManager = (function (_super) {
             var state = currentStates.flying;
             // FIXME: HACK!
             var isStageSizeUsable = false;
-            var stageWidth = isStageSizeUsable ? stage.width : currentStates.bulletproof.view.width;
-            var stageHeight = isStageSizeUsable ? stage.height : currentStates.bulletproof.view.height;
+            var stageWidth = isStageSizeUsable ? stage.stageWidth : currentStates.bulletproof.view.width;
+            var stageHeight = isStageSizeUsable ? stage.stageHeight : currentStates.bulletproof.view.height;
             // T-0: At position (STAGE_WIDTH, Y)
             // T-final: At position (-DANMAKU_WIDTH, Y)
             // Add 5 extra pixels to ensure the danmaku is entirely out of the stage when its life should end.
@@ -13132,7 +13166,7 @@ var SimpleDanmakuProvider = (function (_super) {
         this._danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
         stage.addChild(this.danmakuLayer);
         try {
-            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.width, stage.height));
+            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
         }
         catch (e) {
             var view = this.bulletproof.view;

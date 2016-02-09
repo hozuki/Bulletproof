@@ -9,20 +9,23 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var VideoPlayerState_1 = require("../../interactive/video/VideoPlayerState");
+var PlayerState_1 = require("./PlayerState");
 var Player = (function (_super) {
     __extends(Player, _super);
     function Player(apiContainer) {
         _super.call(this, apiContainer);
-        this.refreshRate = 0;
+        this._videoPlayer = null;
+        this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
     }
     Player.prototype.play = function () {
-        throw new NotImplementedError_1.NotImplementedError();
+        this._videoPlayer.play();
     };
     Player.prototype.pause = function () {
-        throw new NotImplementedError_1.NotImplementedError();
+        this._videoPlayer.pause();
     };
     Player.prototype.seek = function (offset) {
-        throw new NotImplementedError_1.NotImplementedError();
+        this._videoPlayer.currentTime = offset;
     };
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }
@@ -32,12 +35,26 @@ var Player = (function (_super) {
             window.open(url, "_blank");
         }
         else {
-            window.location.href = url;
+            window.location.assign(url);
         }
     };
     Object.defineProperty(Player.prototype, "state", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            var state = this._videoPlayer.state;
+            switch (state) {
+                case VideoPlayerState_1.VideoPlayerState.Playing:
+                case VideoPlayerState_1.VideoPlayerState.Seeking:
+                    return PlayerState_1.PlayerState.PLAYING;
+                case VideoPlayerState_1.VideoPlayerState.Paused:
+                    return PlayerState_1.PlayerState.PAUSE;
+                case VideoPlayerState_1.VideoPlayerState.Created:
+                case VideoPlayerState_1.VideoPlayerState.Initialized:
+                case VideoPlayerState_1.VideoPlayerState.Loaded:
+                case VideoPlayerState_1.VideoPlayerState.Stopped:
+                    return PlayerState_1.PlayerState.STOP;
+                default:
+                    return PlayerState_1.PlayerState.INVALID;
+            }
         },
         enumerable: true,
         configurable: true
@@ -72,16 +89,26 @@ var Player = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Player.prototype, "refreshRate", {
+        get: function () {
+            return 1 / this.apiContainer.bulletproof.fps;
+        },
+        set: function (v) {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Player.prototype, "width", {
         get: function () {
-            return this.apiContainer.bulletproof.stage.width;
+            return this.apiContainer.bulletproof.stage.stageWidth;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "height", {
         get: function () {
-            return this.apiContainer.bulletproof.stage.height;
+            return this.apiContainer.bulletproof.stage.stageHeight;
         },
         enumerable: true,
         configurable: true

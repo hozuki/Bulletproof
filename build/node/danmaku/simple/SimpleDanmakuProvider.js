@@ -45,7 +45,7 @@ var SimpleDanmakuProvider = (function (_super) {
         this._danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
         stage.addChild(this.danmakuLayer);
         try {
-            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.width, stage.height));
+            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
         }
         catch (e) {
             var view = this.bulletproof.view;

@@ -21,14 +21,14 @@ var Functions = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     Functions.prototype.getTimer = function () {
-        return this._apiContainer.bulletproof.timeElapsed;
+        return this.apiContainer.bulletproof.timeElapsed;
     };
     Functions.prototype.timer = function (obj, delay) {
-        return this._apiContainer.api.Utils.delay(obj, delay);
+        return this.apiContainer.api.Utils.delay(obj, delay);
     };
     Functions.prototype.interval = function (obj, delay, times) {
         if (times === void 0) { times = 1; }
-        return this._apiContainer.api.Utils.interval(obj, delay, times);
+        return this.apiContainer.api.Utils.interval(obj, delay, times);
     };
     Functions.prototype.foreach = function (loop, f) {
         if (!_util_1._util.isUndefinedOrNull(loop)) {

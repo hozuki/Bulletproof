@@ -9,23 +9,27 @@ import {DisplayObject} from "../../../lib/glantern/src/flash/display/DisplayObje
 import {CommentData} from "./CommentData";
 import {Sound} from "../../../lib/glantern/src/flash/media/Sound";
 import {_util} from "../../../lib/glantern/src/_util/_util";
+import {VideoPlayerBase} from "../../interactive/video/VideoPlayerBase";
+import {VideoPlayerState} from "../../interactive/video/VideoPlayerState";
+import {PlayerState} from "./PlayerState";
 
 export class Player extends BiliBiliDamakuApiObject {
 
     constructor(apiContainer:BiliBiliDanmakuApiContainer) {
         super(apiContainer);
+        this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
     }
 
     play():void {
-        throw new NotImplementedError();
+        this._videoPlayer.play();
     }
 
     pause():void {
-        throw new NotImplementedError();
+        this._videoPlayer.pause();
     }
 
     seek(offset:number):void {
-        throw new NotImplementedError();
+        this._videoPlayer.currentTime = offset;
     }
 
     jump(av:string, page:number = 1, newWindow:boolean = false):void {
@@ -33,12 +37,26 @@ export class Player extends BiliBiliDamakuApiObject {
         if (newWindow) {
             window.open(url, "_blank");
         } else {
-            window.location.href = url;
+            window.location.assign(url);
         }
     }
 
     get state():string {
-        throw new NotImplementedError();
+        var state = this._videoPlayer.state;
+        switch (state) {
+            case VideoPlayerState.Playing:
+            case VideoPlayerState.Seeking:
+                return PlayerState.PLAYING;
+            case VideoPlayerState.Paused:
+                return PlayerState.PAUSE;
+            case VideoPlayerState.Created:
+            case VideoPlayerState.Initialized:
+            case VideoPlayerState.Loaded:
+            case VideoPlayerState.Stopped:
+                return PlayerState.STOP;
+            default:
+                return PlayerState.INVALID;
+        }
     }
 
     get time():number {
@@ -61,18 +79,24 @@ export class Player extends BiliBiliDamakuApiObject {
         throw new NotImplementedError();
     }
 
-    get commentList():Array<CommentData> {
+    get commentList():CommentData[] {
         throw new NotImplementedError();
     }
 
-    refreshRate:number = 0;
+    get refreshRate():number {
+        return 1 / this.apiContainer.bulletproof.fps;
+    }
+
+    set refreshRate(v:number) {
+        throw new NotImplementedError();
+    }
 
     get width():number {
-        return this.apiContainer.bulletproof.stage.width;
+        return this.apiContainer.bulletproof.stage.stageWidth;
     }
 
     get height():number {
-        return this.apiContainer.bulletproof.stage.height;
+        return this.apiContainer.bulletproof.stage.stageHeight;
     }
 
     get videoWidth():number {
@@ -82,5 +106,7 @@ export class Player extends BiliBiliDamakuApiObject {
     get videoHeight():number {
         throw new NotImplementedError();
     }
+
+    private _videoPlayer:VideoPlayerBase = null;
 
 }
