@@ -2,7 +2,6 @@
  * Created by MIC on 2015/12/28.
  */
 var DanmakuKind_1 = require("../DanmakuKind");
-var BulletproofConfig_1 = require("../../BulletproofConfig");
 var SimpleDanmaku = (function () {
     function SimpleDanmaku(layoutManager, createParams) {
         /**
@@ -85,7 +84,7 @@ var SimpleDanmaku = (function () {
     });
     Object.defineProperty(SimpleDanmaku.prototype, "lifeTime", {
         get: function () {
-            return BulletproofConfig_1.BulletproofConfig.simpleDanmakuLifeTimeSecs;
+            return this.bulletproof.config.simpleDanmakuLifeTimeSecs;
         },
         enumerable: true,
         configurable: true

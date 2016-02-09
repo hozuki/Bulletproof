@@ -18,7 +18,6 @@ import {_util} from "../../../lib/glantern/src/_util/_util";
 import {CodeDanmakuProvider} from "./CodeDanmakuProvider";
 import {IDanmaku} from "../IDanmaku";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
-import {BulletproofConfig} from "../../BulletproofConfig";
 
 export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
 
@@ -77,7 +76,7 @@ export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
     }
 
     get lifeTime():number {
-        return BulletproofConfig.codeDanmakuLifeTimeSecs;
+        return this.bulletproof.config.codeDanmakuLifeTimeSecs;
     }
 
     private __censor():boolean {

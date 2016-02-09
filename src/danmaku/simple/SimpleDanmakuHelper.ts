@@ -5,33 +5,18 @@
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
 import {SimpleDanmakuType} from "./SimpleDanamkuType";
 import {_util} from "../../../lib/glantern/src/_util/_util";
-import {BulletproofConfig} from "../../BulletproofConfig";
+import {IBulletproofConfig} from "../../IBulletproofConfig";
 
 export abstract class SimpleDanmakuHelper {
 
-    static getDefaultParams():ISimpleDanmakuCreateParams {
-        return {
-            bornTime: undefined,
-            fontName: "SimHei",
-            fontStyle: "bold",
-            fontSize: 18,
-            type: SimpleDanmakuType.Flying,
-            border: false,
-            borderColor: 0x000000,
-            borderThickness: 1,
-            background: false,
-            backgroundColor: 0x000000,
-            textColor: 0xffffff,
-            outline: true,
-            outlineColor: 0x000000,
-            outlineThickness: 1
-        };
+    static getDefaultParams(config:IBulletproofConfig):ISimpleDanmakuCreateParams {
+        return _util.deepClone(config.defaultSimpleDanmakuCreateParams);
     }
 
-    static fillInCreateParams(params:ISimpleDanmakuCreateParams):void {
+    static fillInCreateParams(config:IBulletproofConfig, params:ISimpleDanmakuCreateParams):void {
         function applyValue(name:string):void {
             if (_util.isUndefinedOrNull((<any>params)[name])) {
-                (<any>params)[name] = (<any>BulletproofConfig.defaultSimpleDanmakuCreateParams)[name];
+                (<any>params)[name] = (<any>config.defaultSimpleDanmakuCreateParams)[name];
             }
         }
 

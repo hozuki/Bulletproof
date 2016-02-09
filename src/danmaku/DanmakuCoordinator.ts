@@ -11,7 +11,6 @@ import {Bulletproof} from "../Bulletproof";
 import {IWebGLElement} from "../../lib/glantern/src/webgl/IWebGLElement";
 import {WebGLRenderer} from "../../lib/glantern/src/webgl/WebGLRenderer";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
-import {BulletproofConfig} from "../BulletproofConfig";
 
 /**
  * The coordinator of all danmakus.
@@ -49,7 +48,7 @@ export class DanmakuCoordinator implements IWebGLElement {
     shouldCreateDanmaku(requestingProvider:DanmakuProviderBase):boolean {
         var canCreate = true;
         var totalDanmakuCount = 0;
-        var globalThreshold = BulletproofConfig.globalDanmakuCountThreshold;
+        var globalThreshold = this.bulletproof.config.globalDanmakuCountThreshold;
         this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
             // If a danmaku provider has no number limit, it contributes 0 to the total count.
             if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag.UnlimitedCreation) !== 0) {

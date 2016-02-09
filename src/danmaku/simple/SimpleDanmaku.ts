@@ -13,7 +13,6 @@ import {SimpleDanmakuType} from "./SimpleDanamkuType";
 import {IDanmaku} from "../IDanmaku";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
-import {BulletproofConfig} from "../../BulletproofConfig";
 
 export class SimpleDanmaku implements IDanmaku {
 
@@ -61,7 +60,7 @@ export class SimpleDanmaku implements IDanmaku {
     }
 
     get lifeTime():number {
-        return BulletproofConfig.simpleDanmakuLifeTimeSecs;
+        return this.bulletproof.config.simpleDanmakuLifeTimeSecs;
     }
 
     get createParams():ISimpleDanmakuCreateParams {

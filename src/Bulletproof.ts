@@ -12,6 +12,7 @@ import {BulletproofConfig} from "./BulletproofConfig";
 import {VideoPlayerBase} from "./interactive/video/VideoPlayerBase";
 import {_util} from "../lib/glantern/src/_util/_util";
 import {Html5VideoPlayer} from "./interactive/video/html5/Html5VideoPlayer";
+import {IBulletproofConfig} from "./IBulletproofConfig";
 
 /**
  * The root controller for Bulletproof.
@@ -23,6 +24,7 @@ export class Bulletproof extends GLantern {
      */
     constructor() {
         super();
+        this._config = _util.deepClone(BulletproofConfig);
     }
 
     /**
@@ -34,7 +36,7 @@ export class Bulletproof extends GLantern {
         if (!this._isInitialized) {
             super.initialize(width, height);
 
-            var config = BulletproofConfig;
+            var config = this.config;
 
             this.attachUpdateFunction(this.__updateComponents.bind(this));
             var coordinator = new DanmakuCoordinator(this);
@@ -137,6 +139,10 @@ export class Bulletproof extends GLantern {
         }
     }
 
+    get config():IBulletproofConfig {
+        return this._config;
+    }
+
     protected __updateComponents():void {
         if (this._lastUpdatedTime > 0) {
             var now = Date.now();
@@ -159,5 +165,6 @@ export class Bulletproof extends GLantern {
     protected _lastFpsUpdateElapsedTime:number = 0;
     protected _coordinator:DanmakuCoordinator = null;
     protected _videoPlayer:VideoPlayerBase = null;
+    protected _config:IBulletproofConfig = null;
 
 }

@@ -30,6 +30,8 @@ var Bulletproof = (function (_super) {
         this._lastFpsUpdateElapsedTime = 0;
         this._coordinator = null;
         this._videoPlayer = null;
+        this._config = null;
+        this._config = _util_1._util.deepClone(BulletproofConfig_1.BulletproofConfig);
     }
     /**
      * Initialize the {@link Bulletproof} instance with default parameters.
@@ -39,7 +41,7 @@ var Bulletproof = (function (_super) {
     Bulletproof.prototype.initialize = function (width, height) {
         if (!this._isInitialized) {
             _super.prototype.initialize.call(this, width, height);
-            var config = BulletproofConfig_1.BulletproofConfig;
+            var config = this.config;
             this.attachUpdateFunction(this.__updateComponents.bind(this));
             var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
             this._coordinator = coordinator;
@@ -151,6 +153,13 @@ var Bulletproof = (function (_super) {
             else {
                 return this._videoPlayer.view;
             }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bulletproof.prototype, "config", {
+        get: function () {
+            return this._config;
         },
         enumerable: true,
         configurable: true

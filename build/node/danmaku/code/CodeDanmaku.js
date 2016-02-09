@@ -10,7 +10,6 @@ var DanmakuKind_1 = require("../DanmakuKind");
 var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
-var BulletproofConfig_1 = require("../../BulletproofConfig");
 var CodeDanmaku = (function (_super) {
     __extends(CodeDanmaku, _super);
     function CodeDanmaku(root, parent, layoutManager) {
@@ -84,7 +83,7 @@ var CodeDanmaku = (function (_super) {
     });
     Object.defineProperty(CodeDanmaku.prototype, "lifeTime", {
         get: function () {
-            return BulletproofConfig_1.BulletproofConfig.codeDanmakuLifeTimeSecs;
+            return this.bulletproof.config.codeDanmakuLifeTimeSecs;
         },
         enumerable: true,
         configurable: true

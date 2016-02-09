@@ -1,34 +1,17 @@
 /**
  * Created by MIC on 2016/2/7.
  */
-var SimpleDanamkuType_1 = require("./SimpleDanamkuType");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
-var BulletproofConfig_1 = require("../../BulletproofConfig");
 var SimpleDanmakuHelper = (function () {
     function SimpleDanmakuHelper() {
     }
-    SimpleDanmakuHelper.getDefaultParams = function () {
-        return {
-            bornTime: undefined,
-            fontName: "SimHei",
-            fontStyle: "bold",
-            fontSize: 18,
-            type: SimpleDanamkuType_1.SimpleDanmakuType.Flying,
-            border: false,
-            borderColor: 0x000000,
-            borderThickness: 1,
-            background: false,
-            backgroundColor: 0x000000,
-            textColor: 0xffffff,
-            outline: true,
-            outlineColor: 0x000000,
-            outlineThickness: 1
-        };
+    SimpleDanmakuHelper.getDefaultParams = function (config) {
+        return _util_1._util.deepClone(config.defaultSimpleDanmakuCreateParams);
     };
-    SimpleDanmakuHelper.fillInCreateParams = function (params) {
+    SimpleDanmakuHelper.fillInCreateParams = function (config, params) {
         function applyValue(name) {
             if (_util_1._util.isUndefinedOrNull(params[name])) {
-                params[name] = BulletproofConfig_1.BulletproofConfig.defaultSimpleDanmakuCreateParams[name];
+                params[name] = config.defaultSimpleDanmakuCreateParams[name];
             }
         }
         function setDefaultValue(name, def) {

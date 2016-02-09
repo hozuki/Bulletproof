@@ -2,26 +2,9 @@
  * Created by MIC on 2016/2/7.
  */
 
+import {IBulletproofConfig} from "./IBulletproofConfig";
 import {SimpleDanmakuType} from "./danmaku/simple/SimpleDanamkuType";
 import {ISimpleDanmakuCreateParams} from "./danmaku/simple/ISimpleDanmakuCreateParams";
-
-interface IBulletproofConfig {
-
-    simpleDanmakuLifeTimeSecs:number;
-    codeDanmakuLifeTimeSecs:number;
-
-    globalDanmakuCountThreshold:number;
-    simpleDanmakuPartCountThreshold:number;
-
-    defaultSimpleDanmakuCreateParams:ISimpleDanmakuCreateParams;
-
-    codeDanmakuEnabled:boolean;
-    simpleDanmakuEnabled:boolean;
-
-    videoPlayerEnabled:boolean;
-    useWebChimeraForVideoPlayback:boolean;
-
-}
 
 export var BulletproofConfig:IBulletproofConfig = Object.create(null);
 

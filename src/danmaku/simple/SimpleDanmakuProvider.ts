@@ -16,7 +16,6 @@ import {SimpleDanmakuLayer} from "./SimpleDanmakuLayer";
 import {SimpleDanmakuHelper} from "./SimpleDanmakuHelper";
 import {StageResizedEventArgs} from "../StageResizedEventArgs";
 import {_util} from "../../../lib/glantern/src/_util/_util";
-import {BulletproofConfig} from "../../BulletproofConfig";
 import {IDanmaku} from "../IDanmaku";
 
 /**
@@ -71,9 +70,10 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
     }
 
     canCreateDanmaku(args?:ISimpleDanmakuCreateParams):boolean {
-        var type:SimpleDanmakuType = _util.isUndefinedOrNull(args) ? BulletproofConfig.defaultSimpleDanmakuCreateParams.type : args.type;
+        var config = this.bulletproof.config;
+        var type:SimpleDanmakuType = _util.isUndefinedOrNull(args) ? config.defaultSimpleDanmakuCreateParams.type : args.type;
         var count = this.partialDanmakuCounts[type];
-        return _util.isUndefined(count) ? false : count < BulletproofConfig.simpleDanmakuPartCountThreshold;
+        return _util.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
     }
 
     addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):IDanmaku {
@@ -104,6 +104,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
         // TODO: The algorithm can be optimized!
         var timeElapsed = this.bulletproof.timeElapsed;
+        var config = this.bulletproof.config;
         var danmaku:SimpleDanmaku;
 
         // We don't handle the situation where cursor is at 00:20, and a danmaku born at 00:15 with life 10s is added.
@@ -138,7 +139,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
                         break;
                     } else {
                         var type = danmaku.createParams.type;
-                        if (partialDisplayingCounts[type] < BulletproofConfig.simpleDanmakuPartCountThreshold) {
+                        if (partialDisplayingCounts[type] < config.simpleDanmakuPartCountThreshold) {
                             displayingList.push(danmaku);
                             ++partialDisplayingCounts[type];
                         }
@@ -154,7 +155,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
                 }
                 if (!this.isDanmakuDead(danmaku)) {
                     var type = danmaku.createParams.type;
-                    if (partialDisplayingCounts[type] < BulletproofConfig.simpleDanmakuPartCountThreshold) {
+                    if (partialDisplayingCounts[type] < config.simpleDanmakuPartCountThreshold) {
                         displayingList.push(summaryList[i]);
                         ++partialDisplayingCounts[type];
                     }
@@ -211,10 +212,11 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
     }
 
     protected __addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):SimpleDanmaku {
+        var config = this.bulletproof.config;
         if (_util.isUndefined(args)) {
-            args = SimpleDanmakuHelper.getDefaultParams();
+            args = SimpleDanmakuHelper.getDefaultParams(config);
         } else {
-            SimpleDanmakuHelper.fillInCreateParams(args);
+            SimpleDanmakuHelper.fillInCreateParams(config, args);
         }
         var danmaku = new SimpleDanmaku(this.layoutManager, args);
         danmaku.initialize(content, this.bulletproof.timeElapsed);

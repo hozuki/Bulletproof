@@ -3,7 +3,6 @@
  */
 var _util_1 = require("../../lib/glantern/src/_util/_util");
 var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
-var BulletproofConfig_1 = require("../BulletproofConfig");
 /**
  * The coordinator of all danmakus.
  * This class is a factory and manager of danmaku providers.
@@ -39,7 +38,7 @@ var DanmakuCoordinator = (function () {
     DanmakuCoordinator.prototype.shouldCreateDanmaku = function (requestingProvider) {
         var canCreate = true;
         var totalDanmakuCount = 0;
-        var globalThreshold = BulletproofConfig_1.BulletproofConfig.globalDanmakuCountThreshold;
+        var globalThreshold = this.bulletproof.config.globalDanmakuCountThreshold;
         this._danmakuProviders.forEach(function (provider) {
             // If a danmaku provider has no number limit, it contributes 0 to the total count.
             if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation) !== 0) {
