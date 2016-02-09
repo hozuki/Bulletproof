@@ -13407,7 +13407,7 @@ exports.danmaku = danmaku;
 var interactive = require("./interactive/index");
 exports.interactive = interactive;
 var BulletproofConfig_1 = require("./BulletproofConfig");
-exports.config = BulletproofConfig_1.BulletproofConfig;
+exports.configuration = BulletproofConfig_1.BulletproofConfig;
 __export(require("../lib/glantern/src/index"));
 
 

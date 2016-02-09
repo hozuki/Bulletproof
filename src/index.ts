@@ -11,6 +11,6 @@ import * as danmaku from "./danmaku/index";
 import * as interactive from "./interactive/index";
 import {BulletproofConfig} from "./BulletproofConfig";
 
-export {VERSION as version, bilibili, danmaku, interactive, BulletproofConfig as config};
+export {VERSION as version, bilibili, danmaku, interactive, BulletproofConfig as configuration};
 
 export * from "../lib/glantern/src/index";
