@@ -21,15 +21,21 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     play():void {
-        this._videoPlayer.play();
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.play();
+        }
     }
 
     pause():void {
-        this._videoPlayer.pause();
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.pause();
+        }
     }
 
     seek(offset:number):void {
-        this._videoPlayer.currentTime = offset;
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.currentTime = offset;
+        }
     }
 
     jump(av:string, page:number = 1, newWindow:boolean = false):void {

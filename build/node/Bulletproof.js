@@ -53,13 +53,15 @@ var Bulletproof = (function (_super) {
                 provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
-            if (config.useWebChimeraForVideoPlayback) {
-            }
-            else {
-                this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
-            }
-            if (this._videoPlayer !== null) {
-                this._videoPlayer.initialize(width, height);
+            if (config.videoPlayerEnabled) {
+                if (config.useWebChimeraForVideoPlayback) {
+                }
+                else {
+                    this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
+                }
+                if (this._videoPlayer !== null) {
+                    this._videoPlayer.initialize(width, height);
+                }
             }
         }
     };

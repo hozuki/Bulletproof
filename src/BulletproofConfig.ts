@@ -18,6 +18,7 @@ interface IBulletproofConfig {
     codeDanmakuEnabled:boolean;
     simpleDanmakuEnabled:boolean;
 
+    videoPlayerEnabled:boolean;
     useWebChimeraForVideoPlayback:boolean;
 
 }
@@ -82,7 +83,15 @@ BulletproofConfig.codeDanmakuEnabled = true;
 BulletproofConfig.simpleDanmakuEnabled = true;
 
 /**
+ * Whether should enable the default video player.
+ * @type {Boolean}
+ */
+BulletproofConfig.videoPlayerEnabled = true;
+
+/**
  * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * It is used for WebChimera for NW.js or Electron, where the original integrated browser does not support H.264 etc.
+ * due to copyright reasons.
  * @type {Boolean}
  */
 BulletproofConfig.useWebChimeraForVideoPlayback = false;

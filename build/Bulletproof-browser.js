@@ -10475,13 +10475,15 @@ var Bulletproof = (function (_super) {
                 provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
-            if (config.useWebChimeraForVideoPlayback) {
-            }
-            else {
-                this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
-            }
-            if (this._videoPlayer !== null) {
-                this._videoPlayer.initialize(width, height);
+            if (config.videoPlayerEnabled) {
+                if (config.useWebChimeraForVideoPlayback) {
+                }
+                else {
+                    this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
+                }
+                if (this._videoPlayer !== null) {
+                    this._videoPlayer.initialize(width, height);
+                }
             }
         }
     };
@@ -10652,7 +10654,14 @@ exports.BulletproofConfig.codeDanmakuEnabled = true;
  */
 exports.BulletproofConfig.simpleDanmakuEnabled = true;
 /**
+ * Whether should enable the default video player.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.videoPlayerEnabled = true;
+/**
  * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * It is used for WebChimera for NW.js or Electron, where the original integrated browser does not support H.264 etc.
+ * due to copyright reasons.
  * @type {Boolean}
  */
 exports.BulletproofConfig.useWebChimeraForVideoPlayback = false;
@@ -11241,13 +11250,19 @@ var Player = (function (_super) {
         this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
     }
     Player.prototype.play = function () {
-        this._videoPlayer.play();
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.play();
+        }
     };
     Player.prototype.pause = function () {
-        this._videoPlayer.pause();
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.pause();
+        }
     };
     Player.prototype.seek = function (offset) {
-        this._videoPlayer.currentTime = offset;
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.currentTime = offset;
+        }
     };
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }

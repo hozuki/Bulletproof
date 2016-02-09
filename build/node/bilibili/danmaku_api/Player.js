@@ -19,13 +19,19 @@ var Player = (function (_super) {
         this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
     }
     Player.prototype.play = function () {
-        this._videoPlayer.play();
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.play();
+        }
     };
     Player.prototype.pause = function () {
-        this._videoPlayer.pause();
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.pause();
+        }
     };
     Player.prototype.seek = function (offset) {
-        this._videoPlayer.currentTime = offset;
+        if (this._videoPlayer !== null) {
+            this._videoPlayer.currentTime = offset;
+        }
     };
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }

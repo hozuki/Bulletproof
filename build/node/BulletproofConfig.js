@@ -54,7 +54,14 @@ exports.BulletproofConfig.codeDanmakuEnabled = true;
  */
 exports.BulletproofConfig.simpleDanmakuEnabled = true;
 /**
+ * Whether should enable the default video player.
+ * @type {Boolean}
+ */
+exports.BulletproofConfig.videoPlayerEnabled = true;
+/**
  * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * It is used for WebChimera for NW.js or Electron, where the original integrated browser does not support H.264 etc.
+ * due to copyright reasons.
  * @type {Boolean}
  */
 exports.BulletproofConfig.useWebChimeraForVideoPlayback = false;

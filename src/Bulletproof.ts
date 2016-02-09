@@ -51,12 +51,14 @@ export class Bulletproof extends GLantern {
                 coordinator.addDanmakuProvider(provider);
             }
 
-            if (config.useWebChimeraForVideoPlayback) {
-            } else {
-                this._videoPlayer = new Html5VideoPlayer();
-            }
-            if (this._videoPlayer !== null) {
-                this._videoPlayer.initialize(width, height);
+            if (config.videoPlayerEnabled) {
+                if (config.useWebChimeraForVideoPlayback) {
+                } else {
+                    this._videoPlayer = new Html5VideoPlayer();
+                }
+                if (this._videoPlayer !== null) {
+                    this._videoPlayer.initialize(width, height);
+                }
             }
         }
     }
