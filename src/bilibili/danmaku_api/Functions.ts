@@ -23,21 +23,21 @@ export class Functions extends BiliBiliDamakuApiObject {
     }
 
     getTimer():number {
-        return this._apiContainer.bulletproof.timeElapsed;
+        return this.apiContainer.bulletproof.timeElapsed;
     }
 
     timer(source:string, delay:number):number;
     timer(closure:Function, delay:number):number;
 
     timer(obj:any, delay:number):number {
-        return this._apiContainer.api.Utils.delay(obj, delay);
+        return this.apiContainer.api.Utils.delay(obj, delay);
     }
 
     interval(source:string, delay:number, times?:number):FiniteTimer;
     interval(closure:Function, delay:number, times?:number):FiniteTimer;
 
     interval(obj:any, delay:number, times:number = 1):FiniteTimer {
-        return this._apiContainer.api.Utils.interval(obj, delay, times);
+        return this.apiContainer.api.Utils.interval(obj, delay, times);
     }
 
     foreach(loop:any, f:(key:string, value:any) => void):void {

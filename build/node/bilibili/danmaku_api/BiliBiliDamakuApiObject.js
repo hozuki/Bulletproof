@@ -17,6 +17,7 @@ var BiliBiliDamakuApiObject = (function () {
         var r = Object.create(null);
         r.bulletproof = this.apiContainer.bulletproof;
         r.bornTime = this.apiContainer.bulletproof.timeElapsed;
+        r.creator = this.apiContainer.danmaku;
         return r;
     };
     return BiliBiliDamakuApiObject;

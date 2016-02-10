@@ -5,9 +5,10 @@
 import {DanmakuLayoutManagerBase} from "../DanmakuLayoutManagerBase";
 import {CodeDanmakuProvider} from "./CodeDanmakuProvider";
 import {DanmakuKind} from "../DanmakuKind";
-import {DanmakuBase} from "../DanmakuBase";
 import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
+import {IDanmaku} from "../IDanmaku";
+import {StageResizedEventArgs} from "../StageResizedEventArgs";
 
 export class CodeDanmakuLayoutManager extends DanmakuLayoutManagerBase {
 
@@ -19,13 +20,11 @@ export class CodeDanmakuLayoutManager extends DanmakuLayoutManagerBase {
     dispose():void {
     }
 
-    getAdvisedLocation(danmaku:DanmakuBase):Point {
-        // Code danmakus decide their locations by themselves.
-        return null;
+    performLayout():void {
+        // Do nothing.
     }
 
-    performLayout():void{
-        // Do nothing.
+    onStageResize(sender:any, e:StageResizedEventArgs):void {
     }
 
     get danmakuProvider():CodeDanmakuProvider {

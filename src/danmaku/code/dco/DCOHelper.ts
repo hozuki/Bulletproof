@@ -34,7 +34,7 @@ export abstract class DCOHelper {
                 motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
                 if (!_util.isUndefinedOrNull(motionAnimation)) {
                     if (_util.isUndefinedOrNull(motionAnimation.lifeTime)) {
-                        motionAnimation.lifeTime = Bulletproof.CODE_DANMAKU_LIFE_TIME;
+                        motionAnimation.lifeTime = requestingObject.extraCreateParams.creator.lifeTime;
                     }
                     if (!_util.isUndefinedOrNull(motionAnimation.startDelay)) {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);

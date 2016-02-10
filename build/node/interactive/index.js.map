@@ -1,0 +1,1 @@
+{"version":3,"sources":["interactive/index.ts"],"names":[],"mappings":"AAAA;;GAEG;AAEH,IAAY,KAAK,WAAM,eAAe,CAAC,CAAA;AAE/B,aAAK;AAAE","file":"interactive/index.js","sourcesContent":["/**\r\n * Created by MIC on 2016/2/8.\r\n */\r\n\r\nimport * as video from \"./video/index\";\r\n\r\nexport {video};\r\n"],"sourceRoot":"/source/"}

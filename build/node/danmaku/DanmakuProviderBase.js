@@ -13,11 +13,14 @@ var DanmakuProviderBase = (function () {
      * @param coordinator {DanmakuCoordinator} The {@link DanmakuCoordinator} that will be used for reversed queries.
      */
     function DanmakuProviderBase(coordinator) {
-        this._danmakuList = null;
+        this._displayingDanmakuList = null;
         this._coordinator = null;
         this._layoutManager = null;
+        this._danmakuLayer = null;
+        this._bulletproof = null;
         this._coordinator = coordinator;
-        this._danmakuList = [];
+        this._displayingDanmakuList = [];
+        this._bulletproof = coordinator.bulletproof;
     }
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuKind", {
         /**
@@ -35,22 +38,24 @@ var DanmakuProviderBase = (function () {
      * Updates the state of this instance.
      */
     DanmakuProviderBase.prototype.update = function () {
-        this.removeDeadDanmakus();
+        this.updateDisplayDanmakuList();
         this.layoutManager.performLayout();
     };
     /**
-     * Removes "dead" danmakus from the internal danmaku list and release the resources they occupy.
-     * A danmaku being existed longer than its life time is regarded as "dead".
+     * Adds a danmaku with the given content and adds it into internal danmaku list.
+     * A solid {@link IDanmaku} implementations determines how to interpret the given content.
+     * This method must be overridden.
+     * @param content {String} The content used to create a new danmaku.
+     * @param [args] {*} Extra arguments used to create the danmaku. For example, the exact type must
+     *                   be specified when creating a {@link SimpleDanmaku}.
+     * @returns {IDanmaku} The created danmaku.
      */
-    DanmakuProviderBase.prototype.removeDeadDanmakus = function () {
-        var danmaku;
-        var bulletproof = this.danmakuCoordinator.bulletproof;
-        for (var i = 0; i < this.danmakuList.length; ++i) {
-            danmaku = this.danmakuList[i];
-            if (danmaku.bornTime + danmaku.lifeTime * 1000 < bulletproof.timeElapsed) {
-                this.removeDanmaku(danmaku);
-                --i;
-            }
+    DanmakuProviderBase.prototype.addDanmaku = function (content, args) {
+        if ((true || this.canCreateDanmaku(args)) && this.danmakuCoordinator.shouldCreateDanmaku(this)) {
+            return this.__addDanmaku(content, args);
+        }
+        else {
+            return null;
         }
     };
     Object.defineProperty(DanmakuProviderBase.prototype, "layoutManager", {
@@ -64,13 +69,20 @@ var DanmakuProviderBase = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DanmakuProviderBase.prototype, "danmakuList", {
+    Object.defineProperty(DanmakuProviderBase.prototype, "displayingDanmakuList", {
         /**
-         * Gets the list including all danmakus created and managed by this danmaku provider.
-         * @returns {DanmakuBase[]}
+         * Gets the list including all displaying danmakus created and managed by this danmaku provider.
+         * @returns {IDanmaku[]}
          */
         get: function () {
-            return this._danmakuList;
+            return this._displayingDanmakuList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DanmakuProviderBase.prototype, "danmakuLayer", {
+        get: function () {
+            return this._danmakuLayer;
         },
         enumerable: true,
         configurable: true
@@ -82,6 +94,17 @@ var DanmakuProviderBase = (function () {
          */
         get: function () {
             return this._coordinator;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(DanmakuProviderBase.prototype, "bulletproof", {
+        /**
+         * Gets the {@link Bulletproof} instance that controls this {@link DanmakuProviderBase}.
+         * @returns {Bulletproof}
+         */
+        get: function () {
+            return this._bulletproof;
         },
         enumerable: true,
         configurable: true

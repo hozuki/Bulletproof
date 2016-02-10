@@ -14,6 +14,7 @@ var __timerHandle = 0;
 
 window.document.body.onload = function () {
     initEnv();
+    initVideoElements();
     initList();
 };
 
@@ -32,13 +33,19 @@ function initEnv() {
         bp.initialize(682, 438);
         (function (selector) {
             var elem = document.querySelector(selector);
+            elem.appendChild(bp.videoView);
+            bp.videoView.style.position = "absolute";
+            bp.videoView.style.zIndex = "1";
             elem.appendChild(bp.view);
+            bp.view.style.position = "absolute";
+            bp.view.style.zIndex = "9999";
         })("#glantern-container");
     }
 }
 
 function initList() {
     var testCases = {
+        "Blank": "",
         "3D ball": "3d-ball.js",
         "Green Dam Musume": "kanpai-green-dam.js",
         "Madoka and her happy <del>tree</del> friends": "kanpai-madoka.js"
@@ -60,17 +67,21 @@ function initList() {
         e = document.querySelector("#test-case-selector-container");
         e.style.display = "none";
         e = document.querySelector("#test-case-desc");
-        e.textContent = aElem.name;
-        e = document.querySelector("#glantern-container");
+        e.textContent = aElem.name || "(blank)";
+        e = document.querySelector("#playground");
         e.style.display = "block";
-        injectAndExecute(aElem.name);
+        if (aElem.name) {
+            executeCodeDanmakuContent(aElem.name);
+        }
+        initFps();
+        bp.startAnimation();
     }
 
     /**
      * Execute a single script by injecting the script into the window.
      * @param fileName {String} Full JavaScript file name.
      */
-    function injectAndExecute(fileName) {
+    function executeCodeDanmakuContent(fileName) {
         var content;
         if (typeof global !== typeof undefined) {
             // In Node.js environments
@@ -83,8 +94,6 @@ function initList() {
         }
         var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
         codeProvider.addDanmaku(content);
-        bp.startAnimation();
-        initFps();
     }
 
     /**
@@ -114,19 +123,23 @@ function initList() {
                 var aElem = document.createElement("a");
                 aElem.innerHTML = caseName;
                 aElem.href = "javascript:;";
-                aElem.name = "test-scripts/" + testCases[caseName];
+                if (testCases[caseName]) {
+                    aElem.name = "test-scripts/" + testCases[caseName];
+                }
                 aElem.onclick = onClick.bind(aElem);
                 liElem.appendChild(aElem);
                 caseListElem.appendChild(liElem);
 
-                var blankElem = document.createElement("span");
-                blankElem.textContent = " #";
-                var viewSourceElem = document.createElement("a");
-                viewSourceElem.href = aElem.name;
-                viewSourceElem.textContent = "View source";
-                viewSourceElem.target = "_blank";
-                liElem.appendChild(blankElem);
-                liElem.appendChild(viewSourceElem);
+                if (aElem.name) {
+                    var blankElem = document.createElement("span");
+                    blankElem.textContent = " #";
+                    var viewSourceElem = document.createElement("a");
+                    viewSourceElem.href = aElem.name;
+                    viewSourceElem.textContent = "View source";
+                    viewSourceElem.target = "_blank";
+                    liElem.appendChild(blankElem);
+                    liElem.appendChild(viewSourceElem);
+                }
             }
         }
     }
@@ -156,5 +169,82 @@ function uninitFps() {
     }
     if (__timerHandle !== 0) {
         clearInterval(__timerHandle);
+    }
+}
+
+function addFlyingDanmaku() {
+    if (!bp) {
+        return;
+    }
+    /**
+     * @type {SimpleDanmakuProvider}
+     */
+    var provider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Simple);
+    /**
+     * @type {HTMLInputElement}
+     */
+    var textBox = document.querySelector("#input-danmaku");
+    provider.addDanmaku(textBox.value);
+}
+
+function initVideoElements() {
+
+    var videoSelector = document.getElementById("video-selector");
+    decideLocalVideoSelectorVisibility();
+    registerVideoElemEvents();
+
+    /**
+     * @param element {HTMLElement}
+     */
+    function hide(element) {
+        element.style.display = "none";
+    }
+
+    function decideLocalVideoSelectorVisibility() {
+        var invisible = (typeof window.global === "undefined");
+        var container = document.getElementById("local-video-selector-container");
+        if (invisible) {
+            hide(container);
+        }
+    }
+
+    function registerVideoElemEvents() {
+        var selLocalVideoBtn = document.getElementById("select-local-video-btn");
+        /**
+         * @type {HTMLInputElement}
+         */
+        var selLocalVideoElem = document.getElementById("select-local-video");
+        selLocalVideoBtn.addEventListener("click", function (ev) {
+            selLocalVideoElem.click();
+        });
+        selLocalVideoElem.addEventListener("change", function (ev) {
+            if (selLocalVideoElem.value && bp) {
+                var player = bp.videoPlayer;
+                var val = selLocalVideoElem.value;
+                val = "file:///" + encodeURI(val.split("\\").join("/"));
+                player.load(val);
+                player.loop = true;
+                player.play();
+                hide(videoSelector);
+            }
+        });
+        var enterVideoUrlBtn = document.getElementById("enter-video-url-btn");
+        enterVideoUrlBtn.addEventListener("click", function (ev) {
+            /**
+             * @type {String}
+             */
+            var url = prompt("Enter online video URL:");
+            if (url !== null && url.length > 0 && bp) {
+                var player = bp.videoPlayer;
+                try {
+                    player.load(url);
+                    player.loop = true;
+                    player.play();
+                    hide(videoSelector);
+                } catch (ex) {
+                    console.warn(ex);
+                }
+            }
+        });
     }
 }

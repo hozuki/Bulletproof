@@ -5,10 +5,12 @@
 import {DanmakuKind} from "./DanmakuKind";
 import {IDisposable} from "../../lib/glantern/src/IDisposable";
 import {Point} from "../../lib/glantern/src/flash/geom/Point";
-import {DanmakuBase} from "./DanmakuBase";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {NotImplementedError} from "../../lib/glantern/src/_util/NotImplementedError";
 import {_util} from "../../lib/glantern/src/_util/_util";
+import {IDanmaku} from "./IDanmaku";
+import {Bulletproof} from "../Bulletproof";
+import {StageResizedEventArgs} from "./StageResizedEventArgs";
 
 /**
  * Base class exposing common service of a danmaku layout manager.
@@ -25,41 +27,14 @@ export abstract class DanmakuLayoutManagerBase implements IDisposable {
      */
     constructor(provider:DanmakuProviderBase) {
         this._danmakuProvider = provider;
-        this._locationList = [];
+        this._bulletproof = provider.bulletproof;
     }
-
-    /**
-     * Calculates and returns the advised location of a danmaku, considering current situation. Return null if
-     * the danmakus should decide their locations by themselves.
-     * This method must be overridden.
-     * @param danmaku
-     */
-    abstract getAdvisedLocation(danmaku:DanmakuBase):Point;
 
     /**
      * Calculates the best layout and sets the danmakus to their new locations.
+     * This method must be overridden.
      */
-    performLayout():void {
-        var danmakuList = this.danmakuProvider.danmakuList;
-        while (this._locationList.length > 0) {
-            this._locationList.pop();
-        }
-        var location:Point;
-
-        // First pass: calculates the locations based on the snapshot of current situation.
-        // Second pass: applies the layout.
-        for (var i = 0; i < danmakuList.length; ++i) {
-            location = this.getAdvisedLocation(danmakuList[i]);
-            this._locationList.push(location);
-        }
-        for (var i = 0; i < danmakuList.length; ++i) {
-            location = this._locationList[i];
-            if (!_util.isUndefinedOrNull(location)) {
-                danmakuList[i].x = location.x;
-                danmakuList[i].y = location.y;
-            }
-        }
-    }
+    abstract performLayout():void;
 
     /**
      * Gets the kind of danmaku that this danmaku layout manager handles.
@@ -76,6 +51,14 @@ export abstract class DanmakuLayoutManagerBase implements IDisposable {
     abstract dispose():void;
 
     /**
+     * Handles stage resize event.
+     * This method must be overridden.
+     * @param sender {*} The event firer.
+     * @param e {StageResizedEventArgs} Event arguments.
+     */
+    abstract onStageResize(sender:any, e:StageResizedEventArgs):void;
+
+    /**
      * Gets the danmaku provider specified at the time of creation.
      * @returns {DanmakuProviderBase}
      */
@@ -83,7 +66,15 @@ export abstract class DanmakuLayoutManagerBase implements IDisposable {
         return this._danmakuProvider;
     }
 
-    protected _locationList:Point[] = null;
+    /**
+     * Gets the {@link Bulletproof} instance that controls this {@link DanmakuLayoutManagerBase}.
+     * @returns {Bulletproof}
+     */
+    get bulletproof():Bulletproof {
+        return this._bulletproof;
+    }
+
     protected _danmakuProvider:DanmakuProviderBase = null;
+    private _bulletproof:Bulletproof = null;
 
 }

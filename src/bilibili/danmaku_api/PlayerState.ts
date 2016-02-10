@@ -5,15 +5,19 @@
 export abstract class PlayerState {
 
     static get PLAYING():string {
-        return 'playing';
+        return "playing";
     }
 
     static get STOP():string {
-        return 'stop';
+        return "stop";
     }
 
     static get PAUSE():string {
-        return 'pause';
+        return "pause";
+    }
+
+    static get INVALID():string {
+        return "invalid";
     }
 
 }

@@ -7,6 +7,12 @@ import {DanmakuCoordinator} from "./danmaku/DanmakuCoordinator";
 import {CodeDanmakuProvider} from "./danmaku/code/CodeDanmakuProvider";
 import {DanmakuProviderBase} from "./danmaku/DanmakuProviderBase";
 import {NotImplementedError} from "../lib/glantern/src/_util/NotImplementedError";
+import {SimpleDanmakuProvider} from "./danmaku/simple/SimpleDanmakuProvider";
+import {BulletproofConfig} from "./BulletproofConfig";
+import {VideoPlayerBase} from "./interactive/video/VideoPlayerBase";
+import {_util} from "../lib/glantern/src/_util/_util";
+import {Html5VideoPlayer} from "./interactive/video/html5/Html5VideoPlayer";
+import {IBulletproofConfig} from "./IBulletproofConfig";
 
 /**
  * The root controller for Bulletproof.
@@ -18,6 +24,7 @@ export class Bulletproof extends GLantern {
      */
     constructor() {
         super();
+        this._config = _util.deepClone(BulletproofConfig);
     }
 
     /**
@@ -28,13 +35,33 @@ export class Bulletproof extends GLantern {
     initialize(width:number, height:number):void {
         if (!this._isInitialized) {
             super.initialize(width, height);
+
+            var config = this.config;
+
             this.attachUpdateFunction(this.__updateComponents.bind(this));
             var coordinator = new DanmakuCoordinator(this);
             this._coordinator = coordinator;
 
+            // The earlier a provider is added in, the deeper it is in Z axis.
             var provider:DanmakuProviderBase;
-            provider = new CodeDanmakuProvider(coordinator);
-            coordinator.addDanmakuProvider(provider);
+            if (config.codeDanmakuEnabled) {
+                provider = new CodeDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+            if (config.simpleDanmakuEnabled) {
+                provider = new SimpleDanmakuProvider(coordinator);
+                coordinator.addDanmakuProvider(provider);
+            }
+
+            if (config.videoPlayerEnabled) {
+                if (config.useWebChimeraForVideoPlayback) {
+                } else {
+                    this._videoPlayer = new Html5VideoPlayer();
+                }
+                if (this._videoPlayer !== null) {
+                    this._videoPlayer.initialize(width, height);
+                }
+            }
         }
     }
 
@@ -100,21 +127,20 @@ export class Bulletproof extends GLantern {
         return this._fps;
     }
 
-    /**
-     * Gets the default life time for simple (text-only) danmakus, in seconds.
-     * @returns {Number}
-     */
-    static get SIMPLE_DANMAKU_LIFE_TIME():number {
-        // 10 seconds
-        return 10;
+    get videoPlayer():VideoPlayerBase {
+        return this._videoPlayer;
     }
 
-    /**
-     * Gets the default life time for code danmakus, in seconds.
-     * @returns {Number}
-     */
-    static get CODE_DANMAKU_LIFE_TIME():number {
-        return Number.MAX_VALUE;
+    get videoView():HTMLElement {
+        if (_util.isUndefinedOrNull(this._videoPlayer)) {
+            return null;
+        } else {
+            return this._videoPlayer.view;
+        }
+    }
+
+    get config():IBulletproofConfig {
+        return this._config;
     }
 
     protected __updateComponents():void {
@@ -138,5 +164,7 @@ export class Bulletproof extends GLantern {
     protected _fpsCounter:number = 0;
     protected _lastFpsUpdateElapsedTime:number = 0;
     protected _coordinator:DanmakuCoordinator = null;
+    protected _videoPlayer:VideoPlayerBase = null;
+    protected _config:IBulletproofConfig = null;
 
 }

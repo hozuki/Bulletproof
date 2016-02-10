@@ -10,7 +10,6 @@ import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {Bulletproof} from "../Bulletproof";
 import {IWebGLElement} from "../../lib/glantern/src/webgl/IWebGLElement";
 import {WebGLRenderer} from "../../lib/glantern/src/webgl/WebGLRenderer";
-import {DanmakuBase} from "./DanmakuBase";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
 
 /**
@@ -36,41 +35,31 @@ export class DanmakuCoordinator implements IWebGLElement {
             provider.dispose();
         });
         this._danmakuProviders.clear();
+        this._danmakuProviders = null;
     }
 
     /**
-     * Determines whether a danmaku should be created.
+     * Determines whether a danmaku should be created, in a global view.
      * For example, if the density of danmakus are too high, this function should returns false when a
-     * {@link SimpleDanamkuProvider} is requesting creation of a new danmaku, to avoid performance drop.
+     * {@link SimpleDanmakuProvider} is requesting creation of a new danmaku, to avoid performance drop.
      * Danmaku providers should check via this function before actually creating a danmaku.
      * @param requestingProvider {DanmakuProviderBase} The danmaku provider requesting the check.
      */
     shouldCreateDanmaku(requestingProvider:DanmakuProviderBase):boolean {
-        if ((requestingProvider.flags & DanmakuProviderFlag.UnlimitedCreation) !== 0) {
-            return true;
-        }
         var canCreate = true;
-        if (false) {
-            // Can create only when 2 conditions are both met:
-            // 1. Total count of danmakus is below global threshold;
-            // 2. Total count of danmakus of the kind of requesting danmaku provider is below the provider's threshold.
-            var totalDanmakuCount = 0;
-            var globalThreshold = 100;
-            var specificThreshold = 10;
-            this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
-                if (canCreate) {
-                    var dl = provider.danmakuList.length;
-                    totalDanmakuCount += dl;
-                    if (totalDanmakuCount > globalThreshold || dl > specificThreshold) {
-                        canCreate = false;
-                    }
-                }
-            });
-            if (!canCreate) {
-                return false;
+        var totalDanmakuCount = 0;
+        var globalThreshold = this.bulletproof.config.globalDanmakuCountThreshold;
+        this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
+            // If a danmaku provider has no number limit, it contributes 0 to the total count.
+            if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag.UnlimitedCreation) !== 0) {
+                return;
             }
-        }
-        return true;
+            totalDanmakuCount += provider.displayingDanmakuList.length;
+            if (totalDanmakuCount > globalThreshold) {
+                canCreate = false;
+            }
+        });
+        return canCreate;
     }
 
     /**
@@ -81,6 +70,7 @@ export class DanmakuCoordinator implements IWebGLElement {
     addDanmakuProvider(provider:DanmakuProviderBase):void {
         if (!_util.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
+            provider.initialize();
         }
     }
 
@@ -126,6 +116,10 @@ export class DanmakuCoordinator implements IWebGLElement {
         // Do nothing.
     }
 
+    /**
+     * Gets the {@link Bulletproof} instance that controls this {@link DanmakuCoordinator}.
+     * @returns {Bulletproof}
+     */
     get bulletproof():Bulletproof {
         return this._bulletproof;
     }

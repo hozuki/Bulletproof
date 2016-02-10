@@ -16,12 +16,10 @@ var CodeDanmakuLayoutManager = (function (_super) {
     }
     CodeDanmakuLayoutManager.prototype.dispose = function () {
     };
-    CodeDanmakuLayoutManager.prototype.getAdvisedLocation = function (danmaku) {
-        // Code danmakus decide their locations by themselves.
-        return null;
-    };
     CodeDanmakuLayoutManager.prototype.performLayout = function () {
         // Do nothing.
+    };
+    CodeDanmakuLayoutManager.prototype.onStageResize = function (sender, e) {
     };
     Object.defineProperty(CodeDanmakuLayoutManager.prototype, "danmakuProvider", {
         get: function () {

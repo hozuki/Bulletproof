@@ -6,21 +6,28 @@ var PlayerState = (function () {
     }
     Object.defineProperty(PlayerState, "PLAYING", {
         get: function () {
-            return 'playing';
+            return "playing";
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(PlayerState, "STOP", {
         get: function () {
-            return 'stop';
+            return "stop";
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(PlayerState, "PAUSE", {
         get: function () {
-            return 'pause';
+            return "pause";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PlayerState, "INVALID", {
+        get: function () {
+            return "invalid";
         },
         enumerable: true,
         configurable: true

@@ -6,22 +6,28 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DanmakuBase_1 = require("../DanmakuBase");
 var DanmakuKind_1 = require("../DanmakuKind");
-var Bulletproof_1 = require("../../Bulletproof");
+var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var CodeDanmaku = (function (_super) {
     __extends(CodeDanmaku, _super);
     function CodeDanmaku(root, parent, layoutManager) {
-        _super.call(this, root, parent, layoutManager);
+        _super.call(this, root, parent);
         this._apiNames = null;
         this._apiContainer = null;
-        this._content = null;
         this._lambda = null;
+        this._content = null;
+        this._bornTime = 0;
         this._bulletproof = null;
-        this._bulletproof = this.layoutManager.danmakuProvider.danmakuCoordinator.bulletproof;
+        this._layoutManager = layoutManager;
+        this._danmakuProvider = layoutManager.danmakuProvider;
+        this._bulletproof = layoutManager.bulletproof;
     }
+    CodeDanmaku.prototype.dispose = function () {
+        this.parent.removeChild(this);
+        _super.prototype.dispose.call(this);
+    };
     Object.defineProperty(CodeDanmaku.prototype, "danmakuKind", {
         get: function () {
             return DanmakuKind_1.DanmakuKind.Code;
@@ -52,15 +58,32 @@ var CodeDanmaku = (function (_super) {
     };
     CodeDanmaku.prototype.initialize = function (content, time) {
         this._content = content;
+        this._bornTime = time;
         this._apiContainer = new BiliBiliDanmakuApiContainer_1.BiliBiliDanmakuApiContainer(this);
+    };
+    CodeDanmaku.prototype.execute = function () {
         if (this.__censor()) {
             this._lambda = this.__buildFunction();
             this.__applyFunction();
         }
     };
+    Object.defineProperty(CodeDanmaku.prototype, "bulletproof", {
+        get: function () {
+            return this._bulletproof;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CodeDanmaku.prototype, "bornTime", {
+        get: function () {
+            return this._bornTime;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CodeDanmaku.prototype, "lifeTime", {
         get: function () {
-            return Bulletproof_1.Bulletproof.CODE_DANMAKU_LIFE_TIME;
+            return this.bulletproof.config.codeDanmakuLifeTimeSecs;
         },
         enumerable: true,
         configurable: true
@@ -71,7 +94,6 @@ var CodeDanmaku = (function (_super) {
     CodeDanmaku.prototype.__update = function () {
         this.__removeDeadDCObjects();
         this.__applyMotionGroups();
-        //console.log("Time elapsed: ", this._bulletproof.timeElapsed);
     };
     CodeDanmaku.prototype.__render = function (renderer) {
         // Do nothing, let children render themselves.
@@ -97,7 +119,7 @@ var CodeDanmaku = (function (_super) {
     };
     CodeDanmaku.prototype.__applyMotionGroups = function () {
         var child;
-        var time = this._bulletproof.timeElapsed;
+        var time = this.bulletproof.timeElapsed;
         for (var i = 0; i < this._children.length; ++i) {
             child = this._children[i];
             if (child.isCreatedByDanmaku) {
@@ -159,7 +181,7 @@ var CodeDanmaku = (function (_super) {
         }
     };
     return CodeDanmaku;
-})(DanmakuBase_1.DanmakuBase);
+})(DisplayObjectContainer_1.DisplayObjectContainer);
 exports.CodeDanmaku = CodeDanmaku;
 
 //# sourceMappingURL=CodeDanmaku.js.map

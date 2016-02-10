@@ -37,11 +37,11 @@ export class Display extends BiliBiliDamakuApiObject {
     }
 
     get width():number {
-        return this._apiContainer.bulletproof.view.width;
+        return this.apiContainer.bulletproof.view.width;
     }
 
     get height():number {
-        return this._apiContainer.bulletproof.view.height;
+        return this.apiContainer.bulletproof.view.height;
     }
 
     createMatrix(a:number = 1, b:number = 0, c:number = 1, d:number = 1, tx:number = 0, ty:number = 0):Matrix {

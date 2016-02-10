@@ -41,14 +41,14 @@ var Display = (function (_super) {
     });
     Object.defineProperty(Display.prototype, "width", {
         get: function () {
-            return this._apiContainer.bulletproof.view.width;
+            return this.apiContainer.bulletproof.view.width;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Display.prototype, "height", {
         get: function () {
-            return this._apiContainer.bulletproof.view.height;
+            return this.apiContainer.bulletproof.view.height;
         },
         enumerable: true,
         configurable: true

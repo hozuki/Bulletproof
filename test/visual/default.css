@@ -1,8 +1,21 @@
 
-.glantern-view {
+#glantern-container {
+    display: inline-block;
+    position: relative;
+}
+
+.black-background {
     background-color: black;
+}
+
+.absolute {
+    position: absolute;
 }
 
 .initially-hidden {
     display: none;
+}
+
+.video-selector {
+    margin-bottom: 15px;
 }

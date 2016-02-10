@@ -2,7 +2,6 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuBase} from "../DanmakuBase";
 import {DanmakuKind} from "../DanmakuKind";
 import {CodeDanmakuLayoutManager} from "./CodeDanmakuLayoutManager";
 import {WebGLRenderer} from "../../../lib/glantern/src/webgl/WebGLRenderer";
@@ -17,12 +16,21 @@ import {IMotion} from "../../bilibili/danmaku_api/data_types/IMotion";
 import {IMotionPropertyAnimation} from "../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
 import {_util} from "../../../lib/glantern/src/_util/_util";
 import {CodeDanmakuProvider} from "./CodeDanmakuProvider";
+import {IDanmaku} from "../IDanmaku";
+import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 
-export class CodeDanmaku extends DanmakuBase {
+export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
 
     constructor(root:Stage, parent:DisplayObjectContainer, layoutManager:CodeDanmakuLayoutManager) {
-        super(root, parent, layoutManager);
-        this._bulletproof = this.layoutManager.danmakuProvider.danmakuCoordinator.bulletproof;
+        super(root, parent);
+        this._layoutManager = layoutManager;
+        this._danmakuProvider = layoutManager.danmakuProvider;
+        this._bulletproof = layoutManager.bulletproof;
+    }
+
+    dispose():void {
+        this.parent.removeChild(this);
+        super.dispose();
     }
 
     get danmakuKind():DanmakuKind {
@@ -48,15 +56,27 @@ export class CodeDanmaku extends DanmakuBase {
 
     initialize(content:string, time:number):void {
         this._content = content;
+        this._bornTime = time;
         this._apiContainer = new BiliBiliDanmakuApiContainer(this);
+    }
+
+    execute():void {
         if (this.__censor()) {
             this._lambda = this.__buildFunction();
             this.__applyFunction();
         }
     }
 
+    get bulletproof():Bulletproof {
+        return this._bulletproof;
+    }
+
+    get bornTime():number {
+        return this._bornTime;
+    }
+
     get lifeTime():number {
-        return Bulletproof.CODE_DANMAKU_LIFE_TIME;
+        return this.bulletproof.config.codeDanmakuLifeTimeSecs;
     }
 
     private __censor():boolean {
@@ -66,7 +86,6 @@ export class CodeDanmaku extends DanmakuBase {
     protected __update():void {
         this.__removeDeadDCObjects();
         this.__applyMotionGroups();
-        //console.log("Time elapsed: ", this._bulletproof.timeElapsed);
     }
 
     protected __render(renderer:WebGLRenderer):void {
@@ -96,7 +115,7 @@ export class CodeDanmaku extends DanmakuBase {
 
     protected __applyMotionGroups():void {
         var child:DisplayObject&IDanmakuCreatedObject;
-        var time = this._bulletproof.timeElapsed;
+        var time = this.bulletproof.timeElapsed;
         for (var i = 0; i < this._children.length; ++i) {
             child = <DisplayObject&IDanmakuCreatedObject><any>this._children[i];
             if (child.isCreatedByDanmaku) {
@@ -162,12 +181,11 @@ export class CodeDanmaku extends DanmakuBase {
 
     private _apiNames:string[] = null;
     private _apiContainer:BiliBiliDanmakuApiContainer = null;
-    private _content:string = null;
     private _lambda:Function = null;
+    private _content:string = null;
+    private _bornTime:number = 0;
     private _bulletproof:Bulletproof = null;
-
-    // Writing in this pattern avoids force initialization of type-overridden members.
-    protected _layoutManager:CodeDanmakuLayoutManager;
-    protected _danmakuProvider:CodeDanmakuProvider;
+    private _layoutManager:CodeDanmakuLayoutManager;
+    private _danmakuProvider:CodeDanmakuProvider;
 
 }
