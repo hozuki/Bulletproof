@@ -350,15 +350,16 @@ var _util = (function () {
         }
         /* Classic ES5 functions. */
         if (sourceObject instanceof Function || typeof sourceObject === "function") {
+            var sourceFunctionObject = sourceObject;
             var fn = (function () {
                 return function () {
-                    return sourceObject.apply(this, arguments);
+                    return sourceFunctionObject.apply(this, arguments);
                 };
             })();
-            fn.prototype = sourceObject.prototype;
-            for (var key in sourceObject) {
-                if (sourceObject.hasOwnProperty(key)) {
-                    fn[key] = sourceObject[key];
+            fn.prototype = sourceFunctionObject.prototype;
+            for (var key in sourceFunctionObject) {
+                if (sourceFunctionObject.hasOwnProperty(key)) {
+                    fn[key] = sourceFunctionObject[key];
                 }
             }
             return fn;
@@ -366,8 +367,15 @@ var _util = (function () {
         /* Classic ES5 objects. */
         if (sourceObject instanceof Object || typeof sourceObject === "object") {
             var newObject = Object.create(null);
-            for (var key in sourceObject) {
-                if (sourceObject.hasOwnProperty(key)) {
+            if (typeof sourceObject.hasOwnProperty === "function") {
+                for (var key in sourceObject) {
+                    if (sourceObject.hasOwnProperty(key)) {
+                        newObject[key] = _util.deepClone(sourceObject[key]);
+                    }
+                }
+            }
+            else {
+                for (var key in sourceObject) {
                     newObject[key] = _util.deepClone(sourceObject[key]);
                 }
             }
@@ -2753,8 +2761,6 @@ var Stage = (function (_super) {
         this._allowFullScreen = true;
         this._allowFullScreenInteractive = true;
         this._colorCorrectionSupport = ColorCorrectionSupport_1.ColorCorrectionSupport.DEFAULT_OFF;
-        this._stageHeight = 0;
-        this._stageWidth = 0;
         this._worldRenderer = null;
         this._root = this;
         this._worldRenderer = renderer;
@@ -2804,7 +2810,7 @@ var Stage = (function (_super) {
     });
     Object.defineProperty(Stage.prototype, "stageHeight", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.worldRenderer.view.height;
         },
         set: function (v) {
             throw new NotImplementedError_1.NotImplementedError();
@@ -2814,7 +2820,7 @@ var Stage = (function (_super) {
     });
     Object.defineProperty(Stage.prototype, "stageWidth", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this.worldRenderer.view.width;
         },
         set: function (v) {
             throw new NotImplementedError_1.NotImplementedError();
@@ -5362,8 +5368,6 @@ var TextField = (function (_super) {
             this._canvasTarget.updateImageContent();
             RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, true, this.transform.matrix3D, this.alpha, false);
         }
-        else {
-        }
     };
     TextField.prototype.__selectShader = function (shaderManager) {
         shaderManager.selectShader(ShaderID_1.ShaderID.COPY_IMAGE);
@@ -6131,9 +6135,12 @@ function isSupported() {
     if (!util.isClassDefinition(globalObject["WebGLRenderingContext"])) {
         return false;
     }
-    // GLantern uses Map class, so it should exist.
-    // Note: Map is a ES6 feature, but it is a de facto standard on modern browsers.
+    // GLantern uses Map and Set class, so they should exist.
+    // Note: Map and Set are ES6 features, but they are implemented on modern browsers.
     if (!util.isClassDefinition(globalObject["Map"])) {
+        return false;
+    }
+    if (!util.isClassDefinition(globalObject["Set"])) {
         return false;
     }
     // No plans for support of Chrome whose version is under 40, due to a WebGL memory leak problem.
@@ -13046,10 +13053,8 @@ var SimpleDanmakuLayoutManager = (function (_super) {
         }
         function handleFlying(danmaku) {
             var state = currentStates.flying;
-            // FIXME: HACK!
-            var isStageSizeUsable = false;
-            var stageWidth = isStageSizeUsable ? stage.stageWidth : currentStates.bulletproof.view.width;
-            var stageHeight = isStageSizeUsable ? stage.stageHeight : currentStates.bulletproof.view.height;
+            var stageWidth = stage.stageWidth;
+            var stageHeight = stage.stageHeight;
             // T-0: At position (STAGE_WIDTH, Y)
             // T-final: At position (-DANMAKU_WIDTH, Y)
             // Add 5 extra pixels to ensure the danmaku is entirely out of the stage when its life should end.
@@ -13168,13 +13173,7 @@ var SimpleDanmakuProvider = (function (_super) {
         var stage = this.bulletproof.stage;
         this._danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
         stage.addChild(this.danmakuLayer);
-        try {
-            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
-        }
-        catch (e) {
-            var view = this.bulletproof.view;
-            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(view.width, view.height));
-        }
+        this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     };
     SimpleDanmakuProvider.prototype.dispose = function () {
         this._danmakuLayer.parent.removeChild(this._danmakuLayer);

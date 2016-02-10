@@ -43,13 +43,7 @@ var SimpleDanmakuProvider = (function (_super) {
         var stage = this.bulletproof.stage;
         this._danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
         stage.addChild(this.danmakuLayer);
-        try {
-            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
-        }
-        catch (e) {
-            var view = this.bulletproof.view;
-            this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(view.width, view.height));
-        }
+        this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     };
     SimpleDanmakuProvider.prototype.dispose = function () {
         this._danmakuLayer.parent.removeChild(this._danmakuLayer);

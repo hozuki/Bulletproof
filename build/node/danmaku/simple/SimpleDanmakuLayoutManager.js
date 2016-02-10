@@ -77,10 +77,8 @@ var SimpleDanmakuLayoutManager = (function (_super) {
         }
         function handleFlying(danmaku) {
             var state = currentStates.flying;
-            // FIXME: HACK!
-            var isStageSizeUsable = false;
-            var stageWidth = isStageSizeUsable ? stage.stageWidth : currentStates.bulletproof.view.width;
-            var stageHeight = isStageSizeUsable ? stage.stageHeight : currentStates.bulletproof.view.height;
+            var stageWidth = stage.stageWidth;
+            var stageHeight = stage.stageHeight;
             // T-0: At position (STAGE_WIDTH, Y)
             // T-final: At position (-DANMAKU_WIDTH, Y)
             // Add 5 extra pixels to ensure the danmaku is entirely out of the stage when its life should end.
