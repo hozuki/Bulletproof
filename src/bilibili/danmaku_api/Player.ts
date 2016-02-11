@@ -18,7 +18,7 @@ export class Player extends BiliBiliDamakuApiObject {
 
     constructor(apiContainer:BiliBiliDanmakuApiContainer) {
         super(apiContainer);
-        this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
+        this._videoPlayer = apiContainer.bulletproof.videoPlayer;
     }
 
     play():void {

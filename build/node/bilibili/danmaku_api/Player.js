@@ -16,7 +16,7 @@ var Player = (function (_super) {
     function Player(apiContainer) {
         _super.call(this, apiContainer);
         this._videoPlayer = null;
-        this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
+        this._videoPlayer = apiContainer.bulletproof.videoPlayer;
     }
     Player.prototype.play = function () {
         if (this._videoPlayer !== null) {
