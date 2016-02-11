@@ -44,7 +44,6 @@ gulp.task("build-compile-glantern", function () {
         .pipe(gulp.dest("build/lib/glantern/src"))
 });
 
-
 gulp.task("build-browserify", ["build-compile", "build-compile-glantern"], function () {
     "use strict";
     return browserify({
@@ -63,13 +62,4 @@ gulp.task("build-browserify", ["build-compile", "build-compile-glantern"], funct
         .on("error", gutil.log)
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("build"));
-});
-
-gulp.task("build-generate-definition", function () {
-    "use strict";
-    return gulp
-        .src(["inc/**/*.ts", "tools/gendef/**/*.ts"])
-        .pipe(ts(tsConfig))
-        .js
-        .pipe(gulp.dest("tools/gendef"))
 });
