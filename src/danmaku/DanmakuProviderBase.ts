@@ -122,6 +122,18 @@ export abstract class DanmakuProviderBase implements IDisposable {
         return this._displayingDanmakuList;
     }
 
+    /**
+     * Gets the list including all danmakus created and managed by this danmaku provider.
+     * @returns {IDanmaku[]}
+     */
+    get fullDanmakuList():IDanmaku[] {
+        throw new NotImplementedError();
+    }
+
+    /**
+     * Gets the {@link DisplayObject} that contains danmakus of this {@link DanmakuProviderBase} as a layer.
+     * @returns {DisplayObject}
+     */
     get danmakuLayer():DisplayObject {
         return this._danmakuLayer;
     }

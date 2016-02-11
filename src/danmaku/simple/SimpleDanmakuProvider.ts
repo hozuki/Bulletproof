@@ -29,7 +29,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         // Mode: 0, 1, 2, 3, 4, 5, 6
         this._partialDanmakuCounts = [0, 0, 0, 0, 0, 0, 0];
         this._partialDisplayingDanmakuCounts = [0, 0, 0, 0, 0, 0, 0];
-        this._summaryDanmakuList = [];
+        this._fullDanmakuList = [];
     }
 
     get danmakuKind():DanmakuKind {
@@ -49,18 +49,18 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         this._danmakuLayer = null;
         this._layoutManager.dispose();
         this._layoutManager = null;
-        for (var i = 0; i < this.summaryDanmakuList.length; ++i) {
-            for (var i = 0; i < this.summaryDanmakuList.length; ++i) {
-                this.summaryDanmakuList[i].dispose();
+        for (var i = 0; i < this.fullDanmakuList.length; ++i) {
+            for (var i = 0; i < this.fullDanmakuList.length; ++i) {
+                this.fullDanmakuList[i].dispose();
             }
         }
-        while (this.summaryDanmakuList.length > 0) {
-            this.summaryDanmakuList.pop();
+        while (this.fullDanmakuList.length > 0) {
+            this.fullDanmakuList.pop();
         }
         while (this.displayingDanmakuList.length > 0) {
             this.displayingDanmakuList.pop();
         }
-        this._summaryDanmakuList = null;
+        this._fullDanmakuList = null;
         this._displayingDanmakuList = null;
     }
 
@@ -78,9 +78,9 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
     removeDanmaku(danmaku:SimpleDanmaku):boolean {
         var index:number;
         var b = false;
-        index = this.summaryDanmakuList.indexOf(danmaku);
+        index = this.fullDanmakuList.indexOf(danmaku);
         if (index >= 0) {
-            this.summaryDanmakuList.splice(index, 1);
+            this.fullDanmakuList.splice(index, 1);
             --this.partialDanmakuCounts[danmaku.createParams.type];
             b = true;
         }
@@ -94,7 +94,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
     updateDisplayDanmakuList():void {
         var partialDisplayingCounts = this.partialDisplayingDanmakuCounts;
-        var summaryList = this.summaryDanmakuList;
+        var fullList = this.fullDanmakuList;
         var displayingList = this.displayingDanmakuList;
 
         // TODO: The algorithm can be optimized!
@@ -126,10 +126,10 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
             // If we removed the last available danmaku in displaying list, we have to use the last removed one as reference.
             var referenceDanmaku = displayingList.length > 0 ? displayingList[displayingList.length - 1] : lastDisplayingDanmaku;
             // Skip danmakus in the front. Beware that the whole list may be skipped.
-            i = summaryList.indexOf(referenceDanmaku) + 1;
-            if (i < summaryList.length) {
-                for (; i < summaryList.length; ++i) {
-                    danmaku = summaryList[i];
+            i = fullList.indexOf(referenceDanmaku) + 1;
+            if (i < fullList.length) {
+                for (; i < fullList.length; ++i) {
+                    danmaku = fullList[i];
                     if (danmaku.bornTime > timeElapsed) {
                         break;
                     } else {
@@ -143,15 +143,15 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
             }
         } else {
             // If there is no displaying danmakus, we have to search a little more...
-            for (var i = 0; i < summaryList.length; ++i) {
-                danmaku = summaryList[i];
+            for (var i = 0; i < fullList.length; ++i) {
+                danmaku = fullList[i];
                 if (danmaku.bornTime > timeElapsed) {
                     break;
                 }
                 if (!this.isDanmakuDead(danmaku)) {
                     var type = danmaku.createParams.type;
                     if (partialDisplayingCounts[type] < config.simpleDanmakuPartCountThreshold) {
-                        displayingList.push(summaryList[i]);
+                        displayingList.push(fullList[i]);
                         ++partialDisplayingCounts[type];
                     }
                 }
@@ -168,24 +168,20 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         return this._layoutManager;
     }
 
-    get displayingDanmakuList():SimpleDanmaku[] {
-        return this._displayingDanmakuList;
-    }
-
     get partialDanmakuCounts():number[] {
         return this._partialDanmakuCounts;
     }
 
-    get partialDisplayingDanmakuCounts():number[] {
-        return this._partialDisplayingDanmakuCounts;
+    get displayingDanmakuList():SimpleDanmaku[] {
+        return this._displayingDanmakuList;
     }
 
-    /**
-     * Gets the list including all danmakus created and managed by this danmaku provider.
-     * @returns {IDanmaku[]}
-     */
-    get summaryDanmakuList():SimpleDanmaku[] {
-        return this._summaryDanmakuList;
+    get fullDanmakuList():SimpleDanmaku[] {
+        return this._fullDanmakuList;
+    }
+
+    get partialDisplayingDanmakuCounts():number[] {
+        return this._partialDisplayingDanmakuCounts;
     }
 
     get flags():DanmakuProviderFlag {
@@ -198,7 +194,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
     update():void {
         if (this._shouldSortDanmakuList) {
-            this.summaryDanmakuList.sort((d1:SimpleDanmaku, d2:SimpleDanmaku):number => {
+            this.fullDanmakuList.sort((d1:SimpleDanmaku, d2:SimpleDanmaku):number => {
                 return d1.bornTime - d2.bornTime;
             });
             this._shouldSortDanmakuList = false;
@@ -215,7 +211,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         }
         var danmaku = new SimpleDanmaku(this.layoutManager, args);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
-        this.summaryDanmakuList.push(danmaku);
+        this.fullDanmakuList.push(danmaku);
         ++this.partialDanmakuCounts[args.type];
         this._shouldSortDanmakuList = true;
         return danmaku;
@@ -225,7 +221,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
     protected _displayingDanmakuList:SimpleDanmaku[];
     protected _layoutManager:SimpleDanmakuLayoutManager;
     private _shouldSortDanmakuList:boolean = false;
-    private _summaryDanmakuList:SimpleDanmaku[] = null;
+    private _fullDanmakuList:SimpleDanmaku[] = null;
     private _partialDanmakuCounts:number[] = null;
     private _partialDisplayingDanmakuCounts:number[] = null;
 

@@ -110,6 +110,16 @@ var CodeDanmaku = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    CodeDanmaku.prototype.getCommentData = function () {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: 0x000000,
+            pool: 0,
+            mode: 8,
+            fontSize: 0
+        };
+    };
     CodeDanmaku.prototype.__censor = function () {
         return true;
     };

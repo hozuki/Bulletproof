@@ -111,6 +111,10 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
         return this._displayingDanmakuList;
     }
 
+    get fullDanmakuList():CodeDanmaku[] {
+        return this._displayingDanmakuList;
+    }
+
     get danmakuLayer():CodeDanmakuLayer {
         return this._danmakuLayer;
     }

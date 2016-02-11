@@ -120,6 +120,16 @@ var SimpleDanmaku = (function () {
         enumerable: true,
         configurable: true
     });
+    SimpleDanmaku.prototype.getCommentData = function () {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: this.createParams.textColor,
+            pool: 0,
+            mode: this.createParams.type,
+            fontSize: this.createParams.fontSize
+        };
+    };
     return SimpleDanmaku;
 })();
 exports.SimpleDanmaku = SimpleDanmaku;

@@ -111,6 +111,13 @@ var CodeDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CodeDanmakuProvider.prototype, "fullDanmakuList", {
+        get: function () {
+            return this._displayingDanmakuList;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuLayer", {
         get: function () {
             return this._danmakuLayer;

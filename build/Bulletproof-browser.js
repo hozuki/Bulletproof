@@ -11293,20 +11293,25 @@ var Player = (function (_super) {
     };
     Object.defineProperty(Player.prototype, "state", {
         get: function () {
-            var state = this._videoPlayer.state;
-            switch (state) {
-                case VideoPlayerState_1.VideoPlayerState.Playing:
-                case VideoPlayerState_1.VideoPlayerState.Seeking:
-                    return PlayerState_1.PlayerState.PLAYING;
-                case VideoPlayerState_1.VideoPlayerState.Paused:
-                    return PlayerState_1.PlayerState.PAUSE;
-                case VideoPlayerState_1.VideoPlayerState.Created:
-                case VideoPlayerState_1.VideoPlayerState.Initialized:
-                case VideoPlayerState_1.VideoPlayerState.Loaded:
-                case VideoPlayerState_1.VideoPlayerState.Stopped:
-                    return PlayerState_1.PlayerState.STOP;
-                default:
-                    return PlayerState_1.PlayerState.INVALID;
+            if (this._videoPlayer === null) {
+                return PlayerState_1.PlayerState.INVALID;
+            }
+            else {
+                var state = this._videoPlayer.state;
+                switch (state) {
+                    case VideoPlayerState_1.VideoPlayerState.Playing:
+                    case VideoPlayerState_1.VideoPlayerState.Seeking:
+                        return PlayerState_1.PlayerState.PLAYING;
+                    case VideoPlayerState_1.VideoPlayerState.Paused:
+                        return PlayerState_1.PlayerState.PAUSE;
+                    case VideoPlayerState_1.VideoPlayerState.Created:
+                    case VideoPlayerState_1.VideoPlayerState.Initialized:
+                    case VideoPlayerState_1.VideoPlayerState.Loaded:
+                    case VideoPlayerState_1.VideoPlayerState.Stopped:
+                        return PlayerState_1.PlayerState.STOP;
+                    default:
+                        return PlayerState_1.PlayerState.INVALID;
+                }
             }
         },
         enumerable: true,
@@ -11337,7 +11342,16 @@ var Player = (function (_super) {
     };
     Object.defineProperty(Player.prototype, "commentList", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            var comments = [];
+            var providers = this.apiContainer.bulletproof.danmakuCoordinator.getDanmakuProviders();
+            var provider;
+            for (var j = 0; j < providers.length; ++j) {
+                provider = providers[j];
+                for (var i = 0; i < provider.fullDanmakuList.length; ++i) {
+                    comments.push(provider.fullDanmakuList[i].getCommentData());
+                }
+            }
+            return comments;
         },
         enumerable: true,
         configurable: true
@@ -11368,14 +11382,14 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "videoWidth", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this._videoPlayer !== null ? this._videoPlayer.videoWidth : 0;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "videoHeight", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this._videoPlayer !== null ? this._videoPlayer.videoHeight : 0;
         },
         enumerable: true,
         configurable: true
@@ -11801,6 +11815,13 @@ var DanmakuCoordinator = (function () {
             return provider;
         }
     };
+    DanmakuCoordinator.prototype.getDanmakuProviders = function () {
+        var providers = [];
+        this._danmakuProviders.forEach(function (provider) {
+            providers.push(provider);
+        });
+        return providers;
+    };
     /**
      * Updates the status of all danmaku providers.
      */
@@ -11994,7 +12015,22 @@ var DanmakuProviderBase = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(DanmakuProviderBase.prototype, "fullDanmakuList", {
+        /**
+         * Gets the list including all danmakus created and managed by this danmaku provider.
+         * @returns {IDanmaku[]}
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuLayer", {
+        /**
+         * Gets the {@link DisplayObject} that contains danmakus of this {@link DanmakuProviderBase} as a layer.
+         * @returns {DisplayObject}
+         */
         get: function () {
             return this._danmakuLayer;
         },
@@ -12198,6 +12234,16 @@ var CodeDanmaku = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    CodeDanmaku.prototype.getCommentData = function () {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: 0x000000,
+            pool: 0,
+            mode: 8,
+            fontSize: 0
+        };
+    };
     CodeDanmaku.prototype.__censor = function () {
         return true;
     };
@@ -12489,6 +12535,13 @@ var CodeDanmakuProvider = (function (_super) {
         configurable: true
     });
     Object.defineProperty(CodeDanmakuProvider.prototype, "displayingDanmakuList", {
+        get: function () {
+            return this._displayingDanmakuList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CodeDanmakuProvider.prototype, "fullDanmakuList", {
         get: function () {
             return this._displayingDanmakuList;
         },
@@ -12894,6 +12947,16 @@ var SimpleDanmaku = (function () {
         enumerable: true,
         configurable: true
     });
+    SimpleDanmaku.prototype.getCommentData = function () {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: this.createParams.textColor,
+            pool: 0,
+            mode: this.createParams.type,
+            fontSize: this.createParams.fontSize
+        };
+    };
     return SimpleDanmaku;
 })();
 exports.SimpleDanmaku = SimpleDanmaku;
@@ -13217,14 +13280,14 @@ var SimpleDanmakuProvider = (function (_super) {
     function SimpleDanmakuProvider(coordinator) {
         _super.call(this, coordinator);
         this._shouldSortDanmakuList = false;
-        this._summaryDanmakuList = null;
+        this._fullDanmakuList = null;
         this._partialDanmakuCounts = null;
         this._partialDisplayingDanmakuCounts = null;
         this._layoutManager = new SimpleDanmakuLayoutManager_1.SimpleDanmakuLayoutManager(this);
         // Mode: 0, 1, 2, 3, 4, 5, 6
         this._partialDanmakuCounts = [0, 0, 0, 0, 0, 0, 0];
         this._partialDisplayingDanmakuCounts = [0, 0, 0, 0, 0, 0, 0];
-        this._summaryDanmakuList = [];
+        this._fullDanmakuList = [];
     }
     Object.defineProperty(SimpleDanmakuProvider.prototype, "danmakuKind", {
         get: function () {
@@ -13245,18 +13308,18 @@ var SimpleDanmakuProvider = (function (_super) {
         this._danmakuLayer = null;
         this._layoutManager.dispose();
         this._layoutManager = null;
-        for (var i = 0; i < this.summaryDanmakuList.length; ++i) {
-            for (var i = 0; i < this.summaryDanmakuList.length; ++i) {
-                this.summaryDanmakuList[i].dispose();
+        for (var i = 0; i < this.fullDanmakuList.length; ++i) {
+            for (var i = 0; i < this.fullDanmakuList.length; ++i) {
+                this.fullDanmakuList[i].dispose();
             }
         }
-        while (this.summaryDanmakuList.length > 0) {
-            this.summaryDanmakuList.pop();
+        while (this.fullDanmakuList.length > 0) {
+            this.fullDanmakuList.pop();
         }
         while (this.displayingDanmakuList.length > 0) {
             this.displayingDanmakuList.pop();
         }
-        this._summaryDanmakuList = null;
+        this._fullDanmakuList = null;
         this._displayingDanmakuList = null;
     };
     SimpleDanmakuProvider.prototype.canCreateDanmaku = function (args) {
@@ -13271,9 +13334,9 @@ var SimpleDanmakuProvider = (function (_super) {
     SimpleDanmakuProvider.prototype.removeDanmaku = function (danmaku) {
         var index;
         var b = false;
-        index = this.summaryDanmakuList.indexOf(danmaku);
+        index = this.fullDanmakuList.indexOf(danmaku);
         if (index >= 0) {
-            this.summaryDanmakuList.splice(index, 1);
+            this.fullDanmakuList.splice(index, 1);
             --this.partialDanmakuCounts[danmaku.createParams.type];
             b = true;
         }
@@ -13286,7 +13349,7 @@ var SimpleDanmakuProvider = (function (_super) {
     };
     SimpleDanmakuProvider.prototype.updateDisplayDanmakuList = function () {
         var partialDisplayingCounts = this.partialDisplayingDanmakuCounts;
-        var summaryList = this.summaryDanmakuList;
+        var fullList = this.fullDanmakuList;
         var displayingList = this.displayingDanmakuList;
         // TODO: The algorithm can be optimized!
         var timeElapsed = this.bulletproof.timeElapsed;
@@ -13316,10 +13379,10 @@ var SimpleDanmakuProvider = (function (_super) {
             // If we removed the last available danmaku in displaying list, we have to use the last removed one as reference.
             var referenceDanmaku = displayingList.length > 0 ? displayingList[displayingList.length - 1] : lastDisplayingDanmaku;
             // Skip danmakus in the front. Beware that the whole list may be skipped.
-            i = summaryList.indexOf(referenceDanmaku) + 1;
-            if (i < summaryList.length) {
-                for (; i < summaryList.length; ++i) {
-                    danmaku = summaryList[i];
+            i = fullList.indexOf(referenceDanmaku) + 1;
+            if (i < fullList.length) {
+                for (; i < fullList.length; ++i) {
+                    danmaku = fullList[i];
                     if (danmaku.bornTime > timeElapsed) {
                         break;
                     }
@@ -13335,15 +13398,15 @@ var SimpleDanmakuProvider = (function (_super) {
         }
         else {
             // If there is no displaying danmakus, we have to search a little more...
-            for (var i = 0; i < summaryList.length; ++i) {
-                danmaku = summaryList[i];
+            for (var i = 0; i < fullList.length; ++i) {
+                danmaku = fullList[i];
                 if (danmaku.bornTime > timeElapsed) {
                     break;
                 }
                 if (!this.isDanmakuDead(danmaku)) {
                     var type = danmaku.createParams.type;
                     if (partialDisplayingCounts[type] < config.simpleDanmakuPartCountThreshold) {
-                        displayingList.push(summaryList[i]);
+                        displayingList.push(fullList[i]);
                         ++partialDisplayingCounts[type];
                     }
                 }
@@ -13361,13 +13424,6 @@ var SimpleDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SimpleDanmakuProvider.prototype, "displayingDanmakuList", {
-        get: function () {
-            return this._displayingDanmakuList;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SimpleDanmakuProvider.prototype, "partialDanmakuCounts", {
         get: function () {
             return this._partialDanmakuCounts;
@@ -13375,20 +13431,23 @@ var SimpleDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SimpleDanmakuProvider.prototype, "partialDisplayingDanmakuCounts", {
+    Object.defineProperty(SimpleDanmakuProvider.prototype, "displayingDanmakuList", {
         get: function () {
-            return this._partialDisplayingDanmakuCounts;
+            return this._displayingDanmakuList;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SimpleDanmakuProvider.prototype, "summaryDanmakuList", {
-        /**
-         * Gets the list including all danmakus created and managed by this danmaku provider.
-         * @returns {IDanmaku[]}
-         */
+    Object.defineProperty(SimpleDanmakuProvider.prototype, "fullDanmakuList", {
         get: function () {
-            return this._summaryDanmakuList;
+            return this._fullDanmakuList;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SimpleDanmakuProvider.prototype, "partialDisplayingDanmakuCounts", {
+        get: function () {
+            return this._partialDisplayingDanmakuCounts;
         },
         enumerable: true,
         configurable: true
@@ -13409,7 +13468,7 @@ var SimpleDanmakuProvider = (function (_super) {
     });
     SimpleDanmakuProvider.prototype.update = function () {
         if (this._shouldSortDanmakuList) {
-            this.summaryDanmakuList.sort(function (d1, d2) {
+            this.fullDanmakuList.sort(function (d1, d2) {
                 return d1.bornTime - d2.bornTime;
             });
             this._shouldSortDanmakuList = false;
@@ -13426,7 +13485,7 @@ var SimpleDanmakuProvider = (function (_super) {
         }
         var danmaku = new SimpleDanmaku_1.SimpleDanmaku(this.layoutManager, args);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
-        this.summaryDanmakuList.push(danmaku);
+        this.fullDanmakuList.push(danmaku);
         ++this.partialDanmakuCounts[args.type];
         this._shouldSortDanmakuList = true;
         return danmaku;

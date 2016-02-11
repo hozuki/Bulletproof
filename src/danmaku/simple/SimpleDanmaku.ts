@@ -13,6 +13,7 @@ import {SimpleDanmakuType} from "./SimpleDanamkuType";
 import {IDanmaku} from "../IDanmaku";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
+import {CommentData} from "../../bilibili/danmaku_api/CommentData";
 
 export class SimpleDanmaku implements IDanmaku {
 
@@ -107,6 +108,17 @@ export class SimpleDanmaku implements IDanmaku {
     visible:boolean = false;
 
     displaying:boolean = false;
+
+    getCommentData():CommentData {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: this.createParams.textColor,
+            pool: 0,
+            mode: this.createParams.type,
+            fontSize: this.createParams.fontSize
+        };
+    }
 
     private _content:string = null;
     private _bornTime:number = 0;

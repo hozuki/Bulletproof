@@ -86,6 +86,13 @@ var DanmakuCoordinator = (function () {
             return provider;
         }
     };
+    DanmakuCoordinator.prototype.getDanmakuProviders = function () {
+        var providers = [];
+        this._danmakuProviders.forEach(function (provider) {
+            providers.push(provider);
+        });
+        return providers;
+    };
     /**
      * Updates the status of all danmaku providers.
      */

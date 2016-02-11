@@ -8,6 +8,7 @@ import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {Point} from "../../lib/glantern/src/flash/geom/Point";
 import {IDisposable} from "../../lib/glantern/src/IDisposable";
+import {CommentData} from "../bilibili/danmaku_api/CommentData";
 
 export interface IDanmaku extends IDisposable {
 
@@ -68,5 +69,10 @@ export interface IDanmaku extends IDisposable {
      * @type {Boolean}
      */
     visible:boolean;
+    /**
+     * Generates and returns the information of this danmaku in {@link CommentData} format.
+     * @returns {CommentData}
+     */
+    getCommentData():CommentData;
 
 }

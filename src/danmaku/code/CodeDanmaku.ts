@@ -19,6 +19,7 @@ import {CodeDanmakuProvider} from "./CodeDanmakuProvider";
 import {IDanmaku} from "../IDanmaku";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {ICodeDanmakuCreateParams} from "./ICodeDanmakuCreateParams";
+import {CommentData} from "../../bilibili/danmaku_api/CommentData";
 
 export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
 
@@ -90,6 +91,17 @@ export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
 
     get lifeTime():number {
         return this.bulletproof.config.codeDanmakuLifeTimeSecs;
+    }
+
+    getCommentData():CommentData {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: 0x000000,
+            pool: 0,
+            mode: 8,
+            fontSize: 0
+        };
     }
 
     private __censor():boolean {

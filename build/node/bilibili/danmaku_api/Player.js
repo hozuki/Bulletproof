@@ -46,20 +46,25 @@ var Player = (function (_super) {
     };
     Object.defineProperty(Player.prototype, "state", {
         get: function () {
-            var state = this._videoPlayer.state;
-            switch (state) {
-                case VideoPlayerState_1.VideoPlayerState.Playing:
-                case VideoPlayerState_1.VideoPlayerState.Seeking:
-                    return PlayerState_1.PlayerState.PLAYING;
-                case VideoPlayerState_1.VideoPlayerState.Paused:
-                    return PlayerState_1.PlayerState.PAUSE;
-                case VideoPlayerState_1.VideoPlayerState.Created:
-                case VideoPlayerState_1.VideoPlayerState.Initialized:
-                case VideoPlayerState_1.VideoPlayerState.Loaded:
-                case VideoPlayerState_1.VideoPlayerState.Stopped:
-                    return PlayerState_1.PlayerState.STOP;
-                default:
-                    return PlayerState_1.PlayerState.INVALID;
+            if (this._videoPlayer === null) {
+                return PlayerState_1.PlayerState.INVALID;
+            }
+            else {
+                var state = this._videoPlayer.state;
+                switch (state) {
+                    case VideoPlayerState_1.VideoPlayerState.Playing:
+                    case VideoPlayerState_1.VideoPlayerState.Seeking:
+                        return PlayerState_1.PlayerState.PLAYING;
+                    case VideoPlayerState_1.VideoPlayerState.Paused:
+                        return PlayerState_1.PlayerState.PAUSE;
+                    case VideoPlayerState_1.VideoPlayerState.Created:
+                    case VideoPlayerState_1.VideoPlayerState.Initialized:
+                    case VideoPlayerState_1.VideoPlayerState.Loaded:
+                    case VideoPlayerState_1.VideoPlayerState.Stopped:
+                        return PlayerState_1.PlayerState.STOP;
+                    default:
+                        return PlayerState_1.PlayerState.INVALID;
+                }
             }
         },
         enumerable: true,
@@ -90,7 +95,16 @@ var Player = (function (_super) {
     };
     Object.defineProperty(Player.prototype, "commentList", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            var comments = [];
+            var providers = this.apiContainer.bulletproof.danmakuCoordinator.getDanmakuProviders();
+            var provider;
+            for (var j = 0; j < providers.length; ++j) {
+                provider = providers[j];
+                for (var i = 0; i < provider.fullDanmakuList.length; ++i) {
+                    comments.push(provider.fullDanmakuList[i].getCommentData());
+                }
+            }
+            return comments;
         },
         enumerable: true,
         configurable: true
@@ -121,14 +135,14 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "videoWidth", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this._videoPlayer !== null ? this._videoPlayer.videoWidth : 0;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "videoHeight", {
         get: function () {
-            throw new NotImplementedError_1.NotImplementedError();
+            return this._videoPlayer !== null ? this._videoPlayer.videoHeight : 0;
         },
         enumerable: true,
         configurable: true

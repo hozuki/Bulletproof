@@ -80,7 +80,22 @@ var DanmakuProviderBase = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(DanmakuProviderBase.prototype, "fullDanmakuList", {
+        /**
+         * Gets the list including all danmakus created and managed by this danmaku provider.
+         * @returns {IDanmaku[]}
+         */
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuLayer", {
+        /**
+         * Gets the {@link DisplayObject} that contains danmakus of this {@link DanmakuProviderBase} as a layer.
+         * @returns {DisplayObject}
+         */
         get: function () {
             return this._danmakuLayer;
         },
