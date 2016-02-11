@@ -208,7 +208,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
     protected __addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):SimpleDanmaku {
         var config = this.bulletproof.config;
-        if (_util.isUndefined(args)) {
+        if (_util.isUndefinedOrNull(args)) {
             args = SimpleDanmakuHelper.getDefaultParams(config);
         } else {
             SimpleDanmakuHelper.fillInCreateParams(config, args);

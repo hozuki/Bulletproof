@@ -18,14 +18,16 @@ import {_util} from "../../../lib/glantern/src/_util/_util";
 import {CodeDanmakuProvider} from "./CodeDanmakuProvider";
 import {IDanmaku} from "../IDanmaku";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
+import {ICodeDanmakuCreateParams} from "./ICodeDanmakuCreateParams";
 
 export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
 
-    constructor(root:Stage, parent:DisplayObjectContainer, layoutManager:CodeDanmakuLayoutManager) {
+    constructor(root:Stage, parent:DisplayObjectContainer, layoutManager:CodeDanmakuLayoutManager, createParams:ICodeDanmakuCreateParams) {
         super(root, parent);
         this._layoutManager = layoutManager;
         this._danmakuProvider = layoutManager.danmakuProvider;
         this._bulletproof = layoutManager.bulletproof;
+        this._createParams = createParams;
     }
 
     dispose():void {
@@ -56,15 +58,26 @@ export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
 
     initialize(content:string, time:number):void {
         this._content = content;
-        this._bornTime = time;
+        this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
         this._apiContainer = new BiliBiliDanmakuApiContainer(this);
     }
 
+    get executed():boolean {
+        return this._executed;
+    }
+
     execute():void {
-        if (this.__censor()) {
-            this._lambda = this.__buildFunction();
-            this.__applyFunction();
+        if (!this._executed) {
+            if (this.__censor()) {
+                this._lambda = this.__buildFunction();
+                this.__applyFunction();
+                this._executed = true;
+            }
         }
+    }
+
+    get createParams():ICodeDanmakuCreateParams {
+        return this._createParams;
     }
 
     get bulletproof():Bulletproof {
@@ -185,7 +198,9 @@ export class CodeDanmaku extends DisplayObjectContainer implements IDanmaku {
     private _content:string = null;
     private _bornTime:number = 0;
     private _bulletproof:Bulletproof = null;
-    private _layoutManager:CodeDanmakuLayoutManager;
-    private _danmakuProvider:CodeDanmakuProvider;
+    private _layoutManager:CodeDanmakuLayoutManager = null;
+    private _danmakuProvider:CodeDanmakuProvider = null;
+    private _createParams:ICodeDanmakuCreateParams = null;
+    private _executed:boolean = false;
 
 }

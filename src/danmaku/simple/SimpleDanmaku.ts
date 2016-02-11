@@ -111,8 +111,8 @@ export class SimpleDanmaku implements IDanmaku {
     private _content:string = null;
     private _bornTime:number = 0;
     private _bulletproof:Bulletproof = null;
-    private _layoutManager:SimpleDanmakuLayoutManager;
-    private _danmakuProvider:SimpleDanmakuProvider;
+    private _layoutManager:SimpleDanmakuLayoutManager = null;
+    private _danmakuProvider:SimpleDanmakuProvider = null;
     private _createParams:ISimpleDanmakuCreateParams = null;
     private _textWidth:number = -1;
     private _textHeight:number = -1;

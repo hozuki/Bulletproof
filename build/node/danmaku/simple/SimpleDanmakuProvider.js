@@ -224,7 +224,7 @@ var SimpleDanmakuProvider = (function (_super) {
     };
     SimpleDanmakuProvider.prototype.__addDanmaku = function (content, args) {
         var config = this.bulletproof.config;
-        if (_util_1._util.isUndefined(args)) {
+        if (_util_1._util.isUndefinedOrNull(args)) {
             args = SimpleDanmakuHelper_1.SimpleDanmakuHelper.getDefaultParams(config);
         }
         else {
