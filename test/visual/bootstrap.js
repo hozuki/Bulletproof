@@ -115,16 +115,14 @@ function initList() {
          */
         var xhr = new XMLHttpRequest();
         xhr.open("GET", path, true);
-        /**
-         * @param response {XMLHttpRequest}
-         */
-        xhr.onreadystatechange = function (response) {
-            if (response.status === XMLHttpRequest.DONE) {
+        xhr.onreadystatechange = function (ev) {
+            console.log(ev, xhr);
+            if (xhr.readyState === XMLHttpRequest.DONE) {
                 var err = null;
-                if (response.status < 200 || response.status >= 400) {
-                    err = response.status.toString() + ": " + response.statusText;
+                if (xhr.status !== 0 && (xhr.status < 200 || xhr.status >= 400)) {
+                    err = xhr.status.toString() + ": " + xhr.statusText;
                 }
-                callback(err, response.responseText);
+                callback(err, xhr.responseText);
             }
         };
         xhr.send();
