@@ -11,6 +11,10 @@ import {DanmakuCoordinator} from "../DanmakuCoordinator";
 import {CodeDanmaku} from "./CodeDanmaku";
 import {DanmakuProviderFlag} from "../DanmakuProviderFlag";
 import {CodeDanmakuLayer} from "./CodeDanmakuLayer";
+import {ICodeDanmakuCreateParams} from "./ICodeDanmakuCreateParams";
+import {_util} from "../../../lib/glantern/src/_util/_util";
+import {CodeDanmakuHelper} from "./CodeDanmakuHelper";
+import {IDanmaku} from "../IDanmaku";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
@@ -24,6 +28,10 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
 
     get danmakuKind():DanmakuKind {
         return DanmakuKind.Code;
+    }
+
+    addDanmaku(content:string, args?:ICodeDanmakuCreateParams):IDanmaku {
+        return super.addDanmaku(content, args);
     }
 
     dispose():void {
@@ -65,7 +73,23 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
 
     isDanmakuDead(danmaku:CodeDanmaku):boolean {
         var timeElapsed = this.bulletproof.timeElapsed;
-        return timeElapsed < danmaku.bornTime || danmaku.bornTime + danmaku.lifeTime * 1000 < timeElapsed;
+        if (timeElapsed < danmaku.bornTime) {
+            return danmaku.executed;
+        } else {
+            return danmaku.bornTime + danmaku.lifeTime * 1000 < timeElapsed;
+        }
+    }
+
+    update():void {
+        super.update();
+        var danmaku:CodeDanmaku;
+        var timeElapsed = this.bulletproof.timeElapsed;
+        for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
+            danmaku = this.displayingDanmakuList[i];
+            if (!danmaku.executed && timeElapsed >= danmaku.bornTime) {
+                danmaku.execute();
+            }
+        }
     }
 
     updateDisplayDanmakuList():void {
@@ -87,6 +111,10 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
         return this._displayingDanmakuList;
     }
 
+    get fullDanmakuList():CodeDanmaku[] {
+        return this._displayingDanmakuList;
+    }
+
     get danmakuLayer():CodeDanmakuLayer {
         return this._danmakuLayer;
     }
@@ -95,12 +123,14 @@ export class CodeDanmakuProvider extends DanmakuProviderBase {
         return DanmakuProviderFlag.UnlimitedCreation;
     }
 
-    protected __addDanmaku(content:string, args?:any):CodeDanmaku {
-        var danmaku = new CodeDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager);
+    protected __addDanmaku(content:string, args?:ICodeDanmakuCreateParams):CodeDanmaku {
+        if (_util.isUndefinedOrNull(args)) {
+            args = CodeDanmakuHelper.getDefaultParams(this.bulletproof.config);
+        }
+        var danmaku = new CodeDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager, args);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.
         this.danmakuLayer.addChild(danmaku);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
-        danmaku.execute();
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     }

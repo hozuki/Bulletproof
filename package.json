@@ -44,8 +44,5 @@
     "url": "https://github.com/Hozuki/Bulletproof.git"
   },
   "license": "MIT",
-  "bugs": "http://github.com/Hozuki/Bulletproof/issues",
-  "webkit": {
-    "page-cache": false
-  }
+  "bugs": "http://github.com/Hozuki/Bulletproof/issues"
 }

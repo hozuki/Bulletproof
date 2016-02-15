@@ -12,7 +12,7 @@ var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiCo
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var CodeDanmaku = (function (_super) {
     __extends(CodeDanmaku, _super);
-    function CodeDanmaku(root, parent, layoutManager) {
+    function CodeDanmaku(root, parent, layoutManager, createParams) {
         _super.call(this, root, parent);
         this._apiNames = null;
         this._apiContainer = null;
@@ -20,9 +20,14 @@ var CodeDanmaku = (function (_super) {
         this._content = null;
         this._bornTime = 0;
         this._bulletproof = null;
+        this._layoutManager = null;
+        this._danmakuProvider = null;
+        this._createParams = null;
+        this._executed = false;
         this._layoutManager = layoutManager;
         this._danmakuProvider = layoutManager.danmakuProvider;
         this._bulletproof = layoutManager.bulletproof;
+        this._createParams = createParams;
     }
     CodeDanmaku.prototype.dispose = function () {
         this.parent.removeChild(this);
@@ -58,15 +63,32 @@ var CodeDanmaku = (function (_super) {
     };
     CodeDanmaku.prototype.initialize = function (content, time) {
         this._content = content;
-        this._bornTime = time;
+        this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
         this._apiContainer = new BiliBiliDanmakuApiContainer_1.BiliBiliDanmakuApiContainer(this);
     };
+    Object.defineProperty(CodeDanmaku.prototype, "executed", {
+        get: function () {
+            return this._executed;
+        },
+        enumerable: true,
+        configurable: true
+    });
     CodeDanmaku.prototype.execute = function () {
-        if (this.__censor()) {
-            this._lambda = this.__buildFunction();
-            this.__applyFunction();
+        if (!this._executed) {
+            if (this.__censor()) {
+                this._lambda = this.__buildFunction();
+                this.__applyFunction();
+                this._executed = true;
+            }
         }
     };
+    Object.defineProperty(CodeDanmaku.prototype, "createParams", {
+        get: function () {
+            return this._createParams;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CodeDanmaku.prototype, "bulletproof", {
         get: function () {
             return this._bulletproof;
@@ -88,6 +110,16 @@ var CodeDanmaku = (function (_super) {
         enumerable: true,
         configurable: true
     });
+    CodeDanmaku.prototype.getCommentData = function () {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: 0x000000,
+            pool: 0,
+            mode: 8,
+            fontSize: 0
+        };
+    };
     CodeDanmaku.prototype.__censor = function () {
         return true;
     };

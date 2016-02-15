@@ -12,12 +12,13 @@ import {_util} from "../../../lib/glantern/src/_util/_util";
 import {VideoPlayerBase} from "../../interactive/video/VideoPlayerBase";
 import {VideoPlayerState} from "../../interactive/video/VideoPlayerState";
 import {PlayerState} from "./PlayerState";
+import {DanmakuProviderBase} from "../../danmaku/DanmakuProviderBase";
 
 export class Player extends BiliBiliDamakuApiObject {
 
     constructor(apiContainer:BiliBiliDanmakuApiContainer) {
         super(apiContainer);
-        this._videoPlayer = this.apiContainer.bulletproof.videoPlayer;
+        this._videoPlayer = apiContainer.bulletproof.videoPlayer;
     }
 
     play():void {
@@ -48,20 +49,24 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get state():string {
-        var state = this._videoPlayer.state;
-        switch (state) {
-            case VideoPlayerState.Playing:
-            case VideoPlayerState.Seeking:
-                return PlayerState.PLAYING;
-            case VideoPlayerState.Paused:
-                return PlayerState.PAUSE;
-            case VideoPlayerState.Created:
-            case VideoPlayerState.Initialized:
-            case VideoPlayerState.Loaded:
-            case VideoPlayerState.Stopped:
-                return PlayerState.STOP;
-            default:
-                return PlayerState.INVALID;
+        if (this._videoPlayer === null) {
+            return PlayerState.INVALID;
+        } else {
+            var state = this._videoPlayer.state;
+            switch (state) {
+                case VideoPlayerState.Playing:
+                case VideoPlayerState.Seeking:
+                    return PlayerState.PLAYING;
+                case VideoPlayerState.Paused:
+                    return PlayerState.PAUSE;
+                case VideoPlayerState.Created:
+                case VideoPlayerState.Initialized:
+                case VideoPlayerState.Loaded:
+                case VideoPlayerState.Stopped:
+                    return PlayerState.STOP;
+                default:
+                    return PlayerState.INVALID;
+            }
         }
     }
 
@@ -86,7 +91,16 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get commentList():CommentData[] {
-        throw new NotImplementedError();
+        var comments:CommentData[] = [];
+        var providers = this.apiContainer.bulletproof.danmakuCoordinator.getDanmakuProviders();
+        var provider:DanmakuProviderBase;
+        for (var j = 0; j < providers.length; ++j) {
+            provider = providers[j];
+            for (var i = 0; i < provider.fullDanmakuList.length; ++i) {
+                comments.push(provider.fullDanmakuList[i].getCommentData());
+            }
+        }
+        return comments;
     }
 
     get refreshRate():number {
@@ -106,11 +120,11 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get videoWidth():number {
-        throw new NotImplementedError();
+        return this._videoPlayer !== null ? this._videoPlayer.videoWidth : 0;
     }
 
     get videoHeight():number {
-        throw new NotImplementedError();
+        return this._videoPlayer !== null ? this._videoPlayer.videoHeight : 0;
     }
 
     private _videoPlayer:VideoPlayerBase = null;

@@ -27,6 +27,8 @@ var SimpleDanmaku = (function () {
         this._content = null;
         this._bornTime = 0;
         this._bulletproof = null;
+        this._layoutManager = null;
+        this._danmakuProvider = null;
         this._createParams = null;
         this._textWidth = -1;
         this._textHeight = -1;
@@ -118,6 +120,16 @@ var SimpleDanmaku = (function () {
         enumerable: true,
         configurable: true
     });
+    SimpleDanmaku.prototype.getCommentData = function () {
+        return {
+            txt: this.getContent(),
+            time: this.bornTime.toString(),
+            color: this.createParams.textColor,
+            pool: 0,
+            mode: this.createParams.type,
+            fontSize: this.createParams.fontSize
+        };
+    };
     return SimpleDanmaku;
 })();
 exports.SimpleDanmaku = SimpleDanmaku;

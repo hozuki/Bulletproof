@@ -99,6 +99,14 @@ export class DanmakuCoordinator implements IWebGLElement {
         }
     }
 
+    getDanmakuProviders():DanmakuProviderBase[] {
+        var providers:DanmakuProviderBase[] = [];
+        this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
+            providers.push(provider);
+        });
+        return providers;
+    }
+
     /**
      * Updates the status of all danmaku providers.
      */
