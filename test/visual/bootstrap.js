@@ -70,44 +70,64 @@ function initList() {
         e.textContent = aElem.name || "(blank)";
         e = document.querySelector("#playground");
         e.style.display = "block";
-        if (aElem.name) {
-            executeCodeDanmakuContent(aElem.name);
-        }
-        initFps();
-        bp.startAnimation();
+        executeCodeDanmakuContent(aElem.name, function () {
+            initFps();
+            bp.startAnimation();
+        });
     }
 
     /**
      * Execute a single script by injecting the script into the window.
      * @param fileName {String} Full JavaScript file name.
+     * @param callback {function():void} Async callback.
      */
-    function executeCodeDanmakuContent(fileName) {
-        var content;
-        if (typeof global !== typeof undefined) {
-            // In Node.js environments
-            var fs = require("fs");
-            content = fs.readFileSync(fileName, "utf-8");
-        } else {
-            // In common browsers
-            // Note: Please view on a server. Local file access is forbidden due to safety restrictions.
-            content = loadFileSync(fileName);
+    function executeCodeDanmakuContent(fileName, callback) {
+        if (fileName) {
+            var exec = function (err, data) {
+                if (err) {
+                    console.error(err, data);
+                } else {
+                    var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
+                    codeProvider.addDanmaku(data);
+                }
+            };
+            if (typeof global === typeof undefined) {
+                // In Node.js environments
+                var fs = require("fs");
+                fs.readFile(fileName, "utf-8", exec);
+            } else {
+                // In common browsers
+                // Note: Please view on a server. Local file access is forbidden due to safety restrictions.
+                loadFileAsync(fileName, exec);
+            }
         }
-        var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
-        codeProvider.addDanmaku(content);
+        callback();
     }
 
     /**
      * Load a text file content from specified path.
      * @param path {String} The file path.
+     * @param callback {function(*,String):void} Async callback.
      */
-    function loadFileSync(path) {
+    function loadFileAsync(path, callback) {
         /**
          * @type {XMLHttpRequest}
          */
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", path, false);
+        xhr.open("GET", path, true);
+        /**
+         * @param response {XMLHttpRequest}
+         */
+        xhr.onreadystatechange = function (response) {
+            if (response.status === XMLHttpRequest.DONE) {
+                var err = null;
+                if (response.status < 200 || response.status >= 400) {
+                    err = response.status.toString() + ": " + response.statusText;
+                }
+                callback(err, response.responseText);
+            }
+        };
         xhr.send();
-        return xhr.responseText;
     }
 
     function initListNormal() {
