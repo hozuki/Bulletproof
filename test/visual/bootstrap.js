@@ -91,7 +91,7 @@ function initList() {
                     codeProvider.addDanmaku(data);
                 }
             };
-            if (typeof global === typeof undefined) {
+            if (typeof global !== typeof undefined) {
                 // In Node.js environments
                 var fs = require("fs");
                 fs.readFile(fileName, "utf-8", exec);
