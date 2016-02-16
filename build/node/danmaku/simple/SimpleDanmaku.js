@@ -11,7 +11,7 @@ var SimpleDanmaku = (function () {
          * bottom right) should recalculate their Y positions to fit in the change.
          * @type {Boolean}
          */
-        this.isYPositionSet = false;
+        this.yPositionSet = false;
         /**
          * X coordinate of the top left point of this {@link SimpleDanmaku}.
          * @type {Number}

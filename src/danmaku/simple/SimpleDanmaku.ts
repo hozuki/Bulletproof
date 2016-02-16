@@ -91,7 +91,7 @@ export class SimpleDanmaku implements IDanmaku {
      * bottom right) should recalculate their Y positions to fit in the change.
      * @type {Boolean}
      */
-    isYPositionSet:boolean = false;
+    yPositionSet:boolean = false;
 
     /**
      * X coordinate of the top left point of this {@link SimpleDanmaku}.
