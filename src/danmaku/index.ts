@@ -8,7 +8,7 @@ export * from "./DanmakuLayoutManagerBase";
 export * from "./DanmakuProviderBase";
 export * from "./StageResizedEventArgs";
 
-import * as code from "./code/index";
+import * as scripted from "./scripted/index";
 import * as simple from "./simple/index";
 
-export {code, simple};
+export {scripted, simple};

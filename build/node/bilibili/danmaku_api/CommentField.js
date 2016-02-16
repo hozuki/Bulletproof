@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DCOHelper_1 = require("../../danmaku/code/dco/DCOHelper");
+var DCOHelper_1 = require("../../danmaku/scripted/dco/DCOHelper");
 var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
 var CommentField = (function (_super) {
     __extends(CommentField, _super);

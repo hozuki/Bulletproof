@@ -87,7 +87,7 @@ function initList() {
                 if (err) {
                     console.error(err, data);
                 } else {
-                    var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
+                    var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Scripted);
                     codeProvider.addDanmaku(data);
                 }
             };
@@ -116,7 +116,6 @@ function initList() {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", path, true);
         xhr.onreadystatechange = function (ev) {
-            console.log(ev, xhr);
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 var err = null;
                 if (xhr.status !== 0 && (xhr.status < 200 || xhr.status >= 400)) {

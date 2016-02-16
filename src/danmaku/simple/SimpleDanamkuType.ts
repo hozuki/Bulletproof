@@ -4,7 +4,7 @@
 
 export enum SimpleDanmakuType {
 
-    Flying = 0,
+    FlyingR2L = 0,
     Top = 1,
     Bottom = 2,
     TopLeft = 3,

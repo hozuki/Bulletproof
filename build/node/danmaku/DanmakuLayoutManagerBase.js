@@ -6,7 +6,7 @@ var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplemented
  * Base class exposing common service of a danmaku layout manager.
  * A danmaku layout manager does layout calculation and performs optimized layout for danmakus of its kind.
  * In special situations, it can also do nothing and let the danmakus themselves to determine the best
- * layout, as in {@link CodeDanmakuLayoutManager}.
+ * layout, as in {@link ScriptedDanmakuLayoutManager}.
  * This class must be inherited.
  */
 var DanmakuLayoutManagerBase = (function () {

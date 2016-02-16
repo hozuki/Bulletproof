@@ -4,7 +4,7 @@
 
 import {IMotionPropertyAnimation} from "./IMotionPropertyAnimation";
 import {DisplayObject} from "../../../../lib/glantern/src/flash/display/DisplayObject";
-import {IDanmakuCreatedObject} from "../../../danmaku/code/dco/IDanmakuCreatedObject";
+import {IDanmakuCreatedObject} from "../../../danmaku/scripted/dco/IDanmakuCreatedObject";
 
 export interface IMotion {
 

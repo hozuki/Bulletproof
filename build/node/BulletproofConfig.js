@@ -9,7 +9,7 @@ exports.BulletproofConfig = Object.create(null);
  */
 exports.BulletproofConfig.simpleDanmakuLifeTimeSecs = 10;
 /**
- * Gets the default life time for code danmakus, in seconds.
+ * Gets the default life time for scripted danmakus, in seconds.
  * @type {Number}
  */
 exports.BulletproofConfig.codeDanmakuLifeTimeSecs = Number.MAX_VALUE;
@@ -22,7 +22,7 @@ exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
     fontName: "SimHei",
     fontStyle: "bold",
     fontSize: 18,
-    type: SimpleDanamkuType_1.SimpleDanmakuType.Flying,
+    type: SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L,
     border: false,
     borderColor: 0x000000,
     borderThickness: 1,
@@ -44,7 +44,7 @@ exports.BulletproofConfig.globalDanmakuCountThreshold = 3000;
  */
 exports.BulletproofConfig.simpleDanmakuPartCountThreshold = 1500;
 /**
- * Whether should enable code danmaku support.
+ * Whether should enable scripted danmaku support.
  * @type {Boolean}
  */
 exports.BulletproofConfig.codeDanmakuEnabled = true;

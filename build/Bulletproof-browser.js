@@ -10437,7 +10437,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
-var CodeDanmakuProvider_1 = require("./danmaku/code/CodeDanmakuProvider");
+var ScriptedDanmakuProvider_1 = require("./danmaku/scripted/ScriptedDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
 var BulletproofConfig_1 = require("./BulletproofConfig");
 var _util_1 = require("../lib/glantern/src/_util/_util");
@@ -10477,7 +10477,7 @@ var Bulletproof = (function (_super) {
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider;
             if (config.codeDanmakuEnabled) {
-                provider = new CodeDanmakuProvider_1.CodeDanmakuProvider(coordinator);
+                provider = new ScriptedDanmakuProvider_1.ScriptedDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
             if (config.simpleDanmakuEnabled) {
@@ -10613,7 +10613,7 @@ exports.Bulletproof = Bulletproof;
 
 
 
-},{"../lib/glantern/src/GLantern":1,"../lib/glantern/src/_util/_util":5,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/code/CodeDanmakuProvider":159,"./danmaku/simple/SimpleDanmakuProvider":171,"./interactive/video/html5/Html5VideoPlayer":177}],129:[function(require,module,exports){
+},{"../lib/glantern/src/GLantern":1,"../lib/glantern/src/_util/_util":5,"./BulletproofConfig":129,"./danmaku/DanmakuCoordinator":149,"./danmaku/scripted/ScriptedDanmakuProvider":160,"./danmaku/simple/SimpleDanmakuProvider":171,"./interactive/video/html5/Html5VideoPlayer":177}],129:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
@@ -10625,7 +10625,7 @@ exports.BulletproofConfig = Object.create(null);
  */
 exports.BulletproofConfig.simpleDanmakuLifeTimeSecs = 10;
 /**
- * Gets the default life time for code danmakus, in seconds.
+ * Gets the default life time for scripted danmakus, in seconds.
  * @type {Number}
  */
 exports.BulletproofConfig.codeDanmakuLifeTimeSecs = Number.MAX_VALUE;
@@ -10638,7 +10638,7 @@ exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
     fontName: "SimHei",
     fontStyle: "bold",
     fontSize: 18,
-    type: SimpleDanamkuType_1.SimpleDanmakuType.Flying,
+    type: SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L,
     border: false,
     borderColor: 0x000000,
     borderThickness: 1,
@@ -10660,7 +10660,7 @@ exports.BulletproofConfig.globalDanmakuCountThreshold = 3000;
  */
 exports.BulletproofConfig.simpleDanmakuPartCountThreshold = 1500;
 /**
- * Whether should enable code danmaku support.
+ * Whether should enable scripted danmaku support.
  * @type {Boolean}
  */
 exports.BulletproofConfig.codeDanmakuEnabled = true;
@@ -10843,7 +10843,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DCOHelper_1 = require("../../danmaku/code/dco/DCOHelper");
+var DCOHelper_1 = require("../../danmaku/scripted/dco/DCOHelper");
 var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
 var CommentField = (function (_super) {
     __extends(CommentField, _super);
@@ -10882,7 +10882,7 @@ exports.CommentField = CommentField;
 
 
 
-},{"../../../lib/glantern/src/flash/text/TextField":73,"../../danmaku/code/dco/DCOHelper":160}],135:[function(require,module,exports){
+},{"../../../lib/glantern/src/flash/text/TextField":73,"../../danmaku/scripted/dco/DCOHelper":161}],135:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -10903,7 +10903,7 @@ var ColorTransform_1 = require("../../../lib/glantern/src/flash/geom/ColorTransf
 var TextFormat_1 = require("../../../lib/glantern/src/flash/text/TextFormat");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var DCShape_1 = require("../../danmaku/code/dco/DCShape");
+var DCShape_1 = require("../../danmaku/scripted/dco/DCShape");
 var CommentField_1 = require("./CommentField");
 var Display = (function (_super) {
     __extends(Display, _super);
@@ -11064,7 +11064,7 @@ exports.Display = Display;
 
 
 
-},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":55,"../../../lib/glantern/src/flash/filters/BlurFilter":56,"../../../lib/glantern/src/flash/filters/GlowFilter":57,"../../../lib/glantern/src/flash/geom/ColorTransform":59,"../../../lib/glantern/src/flash/geom/Matrix":60,"../../../lib/glantern/src/flash/geom/Matrix3D":61,"../../../lib/glantern/src/flash/geom/Point":64,"../../../lib/glantern/src/flash/geom/Vector3D":67,"../../../lib/glantern/src/flash/text/TextFormat":76,"../../danmaku/code/dco/DCShape":161,"./BiliBiliDamakuApiObject":131,"./CommentField":134}],136:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/NotImplementedError":4,"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":55,"../../../lib/glantern/src/flash/filters/BlurFilter":56,"../../../lib/glantern/src/flash/filters/GlowFilter":57,"../../../lib/glantern/src/flash/geom/ColorTransform":59,"../../../lib/glantern/src/flash/geom/Matrix":60,"../../../lib/glantern/src/flash/geom/Matrix3D":61,"../../../lib/glantern/src/flash/geom/Point":64,"../../../lib/glantern/src/flash/geom/Vector3D":67,"../../../lib/glantern/src/flash/text/TextFormat":76,"../../danmaku/scripted/dco/DCShape":162,"./BiliBiliDamakuApiObject":131,"./CommentField":134}],136:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -11624,7 +11624,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
-var FiniteTimer_1 = require("../../danmaku/code/dco/FiniteTimer");
+var FiniteTimer_1 = require("../../danmaku/scripted/dco/FiniteTimer");
 var Utils = (function (_super) {
     __extends(Utils, _super);
     function Utils(apiContainer) {
@@ -11670,7 +11670,7 @@ exports.Utils = Utils;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../danmaku/code/dco/FiniteTimer":162,"./BiliBiliDamakuApiObject":131}],146:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../danmaku/scripted/dco/FiniteTimer":163,"./BiliBiliDamakuApiObject":131}],146:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -11864,7 +11864,7 @@ exports.DanmakuCoordinator = DanmakuCoordinator;
      */
     DanmakuKind[DanmakuKind["Simple"] = 0] = "Simple";
     DanmakuKind[DanmakuKind["Mode7"] = 7] = "Mode7";
-    DanmakuKind[DanmakuKind["Code"] = 8] = "Code";
+    DanmakuKind[DanmakuKind["Scripted"] = 8] = "Scripted";
 })(exports.DanmakuKind || (exports.DanmakuKind = {}));
 var DanmakuKind = exports.DanmakuKind;
 
@@ -11879,7 +11879,7 @@ var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplemented
  * Base class exposing common service of a danmaku layout manager.
  * A danmaku layout manager does layout calculation and performs optimized layout for danmakus of its kind.
  * In special situations, it can also do nothing and let the danmakus themselves to determine the best
- * layout, as in {@link CodeDanmakuLayoutManager}.
+ * layout, as in {@link ScriptedDanmakuLayoutManager}.
  * This class must be inherited.
  */
 var DanmakuLayoutManagerBase = (function () {
@@ -12123,6 +12123,25 @@ exports.StageResizedEventArgs = StageResizedEventArgs;
 
 },{}],155:[function(require,module,exports){
 /**
+ * Created by MIC on 2015/12/29.
+ */
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./DanmakuCoordinator"));
+__export(require("./DanmakuKind"));
+__export(require("./DanmakuLayoutManagerBase"));
+__export(require("./DanmakuProviderBase"));
+__export(require("./StageResizedEventArgs"));
+var scripted = require("./scripted/index");
+exports.scripted = scripted;
+var simple = require("./simple/index");
+exports.simple = simple;
+
+
+
+},{"./DanmakuCoordinator":149,"./DanmakuKind":150,"./DanmakuLayoutManagerBase":151,"./DanmakuProviderBase":152,"./StageResizedEventArgs":154,"./scripted/index":165,"./simple/index":172}],156:[function(require,module,exports){
+/**
  * Created by MIC on 2015/12/28.
  */
 var __extends = (this && this.__extends) || function (d, b) {
@@ -12134,9 +12153,9 @@ var DanmakuKind_1 = require("../DanmakuKind");
 var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
-var CodeDanmaku = (function (_super) {
-    __extends(CodeDanmaku, _super);
-    function CodeDanmaku(root, parent, layoutManager, createParams) {
+var ScriptedDanmaku = (function (_super) {
+    __extends(ScriptedDanmaku, _super);
+    function ScriptedDanmaku(root, parent, layoutManager, createParams) {
         _super.call(this, root, parent);
         this._apiNames = null;
         this._apiContainer = null;
@@ -12153,51 +12172,51 @@ var CodeDanmaku = (function (_super) {
         this._bulletproof = layoutManager.bulletproof;
         this._createParams = createParams;
     }
-    CodeDanmaku.prototype.dispose = function () {
+    ScriptedDanmaku.prototype.dispose = function () {
         this.parent.removeChild(this);
         _super.prototype.dispose.call(this);
     };
-    Object.defineProperty(CodeDanmaku.prototype, "danmakuKind", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "danmakuKind", {
         get: function () {
-            return DanmakuKind_1.DanmakuKind.Code;
+            return DanmakuKind_1.DanmakuKind.Scripted;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmaku.prototype, "layoutManager", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "layoutManager", {
         get: function () {
             return this._layoutManager;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmaku.prototype, "danmakuProvider", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "danmakuProvider", {
         get: function () {
             return this._danmakuProvider;
         },
         enumerable: true,
         configurable: true
     });
-    CodeDanmaku.prototype.getContent = function () {
+    ScriptedDanmaku.prototype.getContent = function () {
         return this._content;
     };
-    CodeDanmaku.prototype.getText = function () {
+    ScriptedDanmaku.prototype.getText = function () {
         // No readable text.
         return "";
     };
-    CodeDanmaku.prototype.initialize = function (content, time) {
+    ScriptedDanmaku.prototype.initialize = function (content, time) {
         this._content = content;
         this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
         this._apiContainer = new BiliBiliDanmakuApiContainer_1.BiliBiliDanmakuApiContainer(this);
     };
-    Object.defineProperty(CodeDanmaku.prototype, "executed", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "executed", {
         get: function () {
             return this._executed;
         },
         enumerable: true,
         configurable: true
     });
-    CodeDanmaku.prototype.execute = function () {
+    ScriptedDanmaku.prototype.execute = function () {
         if (!this._executed) {
             if (this.__censor()) {
                 this._lambda = this.__buildFunction();
@@ -12206,35 +12225,35 @@ var CodeDanmaku = (function (_super) {
             }
         }
     };
-    Object.defineProperty(CodeDanmaku.prototype, "createParams", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "createParams", {
         get: function () {
             return this._createParams;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmaku.prototype, "bulletproof", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "bulletproof", {
         get: function () {
             return this._bulletproof;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmaku.prototype, "bornTime", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "bornTime", {
         get: function () {
             return this._bornTime;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmaku.prototype, "lifeTime", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "lifeTime", {
         get: function () {
             return this.bulletproof.config.codeDanmakuLifeTimeSecs;
         },
         enumerable: true,
         configurable: true
     });
-    CodeDanmaku.prototype.getCommentData = function () {
+    ScriptedDanmaku.prototype.getCommentData = function () {
         return {
             txt: this.getContent(),
             time: this.bornTime.toString(),
@@ -12244,17 +12263,17 @@ var CodeDanmaku = (function (_super) {
             fontSize: 0
         };
     };
-    CodeDanmaku.prototype.__censor = function () {
+    ScriptedDanmaku.prototype.__censor = function () {
         return true;
     };
-    CodeDanmaku.prototype.__update = function () {
+    ScriptedDanmaku.prototype.__update = function () {
         this.__removeDeadDCObjects();
         this.__applyMotionGroups();
     };
-    CodeDanmaku.prototype.__render = function (renderer) {
+    ScriptedDanmaku.prototype.__render = function (renderer) {
         // Do nothing, let children render themselves.
     };
-    CodeDanmaku.prototype.__buildFunction = function () {
+    ScriptedDanmaku.prototype.__buildFunction = function () {
         // Weak defense is better than none.
         // TODO: Use WebWorker to create a safety sandbox.
         var api = this._apiContainer.api;
@@ -12265,7 +12284,7 @@ var CodeDanmaku = (function (_super) {
         var funcArgs = this._apiNames.concat(this._content);
         return Function.prototype.constructor.apply(Object.create(null), funcArgs);
     };
-    CodeDanmaku.prototype.__applyFunction = function () {
+    ScriptedDanmaku.prototype.__applyFunction = function () {
         var ac = this._apiContainer;
         var apiValues = [];
         for (var i = 0; i < this._apiNames.length; ++i) {
@@ -12273,32 +12292,32 @@ var CodeDanmaku = (function (_super) {
         }
         this._lambda.apply(null, apiValues);
     };
-    CodeDanmaku.prototype.__applyMotionGroups = function () {
+    ScriptedDanmaku.prototype.__applyMotionGroups = function () {
         var child;
         var time = this.bulletproof.timeElapsed;
         for (var i = 0; i < this._children.length; ++i) {
             child = this._children[i];
             if (child.isCreatedByDanmaku) {
                 if (!_util_1._util.isUndefinedOrNull(child.createParams.motion)) {
-                    CodeDanmaku.__applyMotion(child.createParams.motion, time);
+                    ScriptedDanmaku.__applyMotion(child.createParams.motion, time);
                 }
                 else if (!_util_1._util.isUndefinedOrNull(child.createParams.motionGroup)) {
-                    CodeDanmaku.__applyMotionGroup(child.createParams.motionGroup, time);
+                    ScriptedDanmaku.__applyMotionGroup(child.createParams.motionGroup, time);
                 }
             }
         }
     };
-    CodeDanmaku.__applyMotionGroup = function (motionGroup, now) {
+    ScriptedDanmaku.__applyMotionGroup = function (motionGroup, now) {
         var motion;
         if (!_util_1._util.isUndefinedOrNull(motionGroup)) {
             //console.log("Calculating: ", obj, " on ", now);
             for (var i = 0; i < motionGroup.length; ++i) {
                 motion = motionGroup[i];
-                CodeDanmaku.__applyMotion(motion, now);
+                ScriptedDanmaku.__applyMotion(motion, now);
             }
         }
     };
-    CodeDanmaku.__applyMotion = function (motion, now) {
+    ScriptedDanmaku.__applyMotion = function (motion, now) {
         var propertyNames = ["x", "y", "alpha", "rotationZ", "rotationY"];
         var motionAnimation;
         var relativeTime;
@@ -12322,7 +12341,7 @@ var CodeDanmaku = (function (_super) {
             }
         }
     };
-    CodeDanmaku.prototype.__removeDeadDCObjects = function () {
+    ScriptedDanmaku.prototype.__removeDeadDCObjects = function () {
         var bulletproof = this._bulletproof;
         var child;
         for (var i = 0; i < this._children.length; ++i) {
@@ -12336,29 +12355,29 @@ var CodeDanmaku = (function (_super) {
             }
         }
     };
-    return CodeDanmaku;
+    return ScriptedDanmaku;
 })(DisplayObjectContainer_1.DisplayObjectContainer);
-exports.CodeDanmaku = CodeDanmaku;
+exports.ScriptedDanmaku = ScriptedDanmaku;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/display/DisplayObjectContainer":32,"../../bilibili/BiliBiliDanmakuApiContainer":130,"../DanmakuKind":150}],156:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../../../lib/glantern/src/flash/display/DisplayObjectContainer":32,"../../bilibili/BiliBiliDanmakuApiContainer":130,"../DanmakuKind":150}],157:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/11.
  */
-var CodeDanmakuHelper = (function () {
-    function CodeDanmakuHelper() {
+var ScriptedDanmakuHelper = (function () {
+    function ScriptedDanmakuHelper() {
     }
-    CodeDanmakuHelper.getDefaultParams = function (config) {
+    ScriptedDanmakuHelper.getDefaultParams = function (config) {
         return {};
     };
-    return CodeDanmakuHelper;
+    return ScriptedDanmakuHelper;
 })();
-exports.CodeDanmakuHelper = CodeDanmakuHelper;
+exports.ScriptedDanmakuHelper = ScriptedDanmakuHelper;
 
 
 
-},{}],157:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
@@ -12368,22 +12387,22 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
-var CodeDanmakuLayer = (function (_super) {
-    __extends(CodeDanmakuLayer, _super);
-    function CodeDanmakuLayer(root, parent) {
+var ScriptedDanmakuLayer = (function (_super) {
+    __extends(ScriptedDanmakuLayer, _super);
+    function ScriptedDanmakuLayer(root, parent) {
         _super.call(this, root, parent);
     }
-    CodeDanmakuLayer.prototype.__update = function () {
+    ScriptedDanmakuLayer.prototype.__update = function () {
     };
-    CodeDanmakuLayer.prototype.__render = function (renderer) {
+    ScriptedDanmakuLayer.prototype.__render = function (renderer) {
     };
-    return CodeDanmakuLayer;
+    return ScriptedDanmakuLayer;
 })(DisplayObjectContainer_1.DisplayObjectContainer);
-exports.CodeDanmakuLayer = CodeDanmakuLayer;
+exports.ScriptedDanmakuLayer = ScriptedDanmakuLayer;
 
 
 
-},{"../../../lib/glantern/src/flash/display/DisplayObjectContainer":32}],158:[function(require,module,exports){
+},{"../../../lib/glantern/src/flash/display/DisplayObjectContainer":32}],159:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -12394,40 +12413,40 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuLayoutManagerBase_1 = require("../DanmakuLayoutManagerBase");
 var DanmakuKind_1 = require("../DanmakuKind");
-var CodeDanmakuLayoutManager = (function (_super) {
-    __extends(CodeDanmakuLayoutManager, _super);
-    function CodeDanmakuLayoutManager(provider) {
+var ScriptedDanmakuLayoutManager = (function (_super) {
+    __extends(ScriptedDanmakuLayoutManager, _super);
+    function ScriptedDanmakuLayoutManager(provider) {
         _super.call(this, provider);
         this._danmakuProvider = provider;
     }
-    CodeDanmakuLayoutManager.prototype.dispose = function () {
+    ScriptedDanmakuLayoutManager.prototype.dispose = function () {
     };
-    CodeDanmakuLayoutManager.prototype.performLayout = function () {
+    ScriptedDanmakuLayoutManager.prototype.performLayout = function () {
         // Do nothing.
     };
-    CodeDanmakuLayoutManager.prototype.onStageResize = function (sender, e) {
+    ScriptedDanmakuLayoutManager.prototype.onStageResize = function (sender, e) {
     };
-    Object.defineProperty(CodeDanmakuLayoutManager.prototype, "danmakuProvider", {
+    Object.defineProperty(ScriptedDanmakuLayoutManager.prototype, "danmakuProvider", {
         get: function () {
             return this._danmakuProvider;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmakuLayoutManager.prototype, "danmakuKind", {
+    Object.defineProperty(ScriptedDanmakuLayoutManager.prototype, "danmakuKind", {
         get: function () {
-            return DanmakuKind_1.DanmakuKind.Code;
+            return DanmakuKind_1.DanmakuKind.Scripted;
         },
         enumerable: true,
         configurable: true
     });
-    return CodeDanmakuLayoutManager;
+    return ScriptedDanmakuLayoutManager;
 })(DanmakuLayoutManagerBase_1.DanmakuLayoutManagerBase);
-exports.CodeDanmakuLayoutManager = CodeDanmakuLayoutManager;
+exports.ScriptedDanmakuLayoutManager = ScriptedDanmakuLayoutManager;
 
 
 
-},{"../DanmakuKind":150,"../DanmakuLayoutManagerBase":151}],159:[function(require,module,exports){
+},{"../DanmakuKind":150,"../DanmakuLayoutManagerBase":151}],160:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -12438,32 +12457,32 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuProviderBase_1 = require("../DanmakuProviderBase");
 var DanmakuKind_1 = require("../DanmakuKind");
-var CodeDanmakuLayoutManager_1 = require("./CodeDanmakuLayoutManager");
-var CodeDanmaku_1 = require("./CodeDanmaku");
+var ScriptedDanmakuLayoutManager_1 = require("./ScriptedDanmakuLayoutManager");
+var ScriptedDanmaku_1 = require("./ScriptedDanmaku");
 var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
-var CodeDanmakuLayer_1 = require("./CodeDanmakuLayer");
+var ScriptedDanmakuLayer_1 = require("./ScriptedDanmakuLayer");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
-var CodeDanmakuHelper_1 = require("./CodeDanmakuHelper");
+var ScriptedDanmakuHelper_1 = require("./ScriptedDanmakuHelper");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
-var CodeDanmakuProvider = (function (_super) {
-    __extends(CodeDanmakuProvider, _super);
-    function CodeDanmakuProvider(coordinator) {
+var ScriptedDanmakuProvider = (function (_super) {
+    __extends(ScriptedDanmakuProvider, _super);
+    function ScriptedDanmakuProvider(coordinator) {
         _super.call(this, coordinator);
-        this._layoutManager = new CodeDanmakuLayoutManager_1.CodeDanmakuLayoutManager(this);
+        this._layoutManager = new ScriptedDanmakuLayoutManager_1.ScriptedDanmakuLayoutManager(this);
     }
-    Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuKind", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "danmakuKind", {
         get: function () {
-            return DanmakuKind_1.DanmakuKind.Code;
+            return DanmakuKind_1.DanmakuKind.Scripted;
         },
         enumerable: true,
         configurable: true
     });
-    CodeDanmakuProvider.prototype.addDanmaku = function (content, args) {
+    ScriptedDanmakuProvider.prototype.addDanmaku = function (content, args) {
         return _super.prototype.addDanmaku.call(this, content, args);
     };
-    CodeDanmakuProvider.prototype.dispose = function () {
+    ScriptedDanmakuProvider.prototype.dispose = function () {
         this._danmakuLayer.parent.removeChild(this._danmakuLayer);
         this._danmakuLayer.dispose();
         this._layoutManager.dispose();
@@ -12477,15 +12496,15 @@ var CodeDanmakuProvider = (function (_super) {
         this._danmakuLayer = null;
         this._displayingDanmakuList = null;
     };
-    CodeDanmakuProvider.prototype.initialize = function () {
+    ScriptedDanmakuProvider.prototype.initialize = function () {
         var stage = this.bulletproof.stage;
-        this._danmakuLayer = new CodeDanmakuLayer_1.CodeDanmakuLayer(stage, stage);
+        this._danmakuLayer = new ScriptedDanmakuLayer_1.ScriptedDanmakuLayer(stage, stage);
         stage.addChild(this._danmakuLayer);
     };
-    CodeDanmakuProvider.prototype.canCreateDanmaku = function (args) {
+    ScriptedDanmakuProvider.prototype.canCreateDanmaku = function (args) {
         return true;
     };
-    CodeDanmakuProvider.prototype.removeDanmaku = function (danmaku) {
+    ScriptedDanmakuProvider.prototype.removeDanmaku = function (danmaku) {
         var index = this.displayingDanmakuList.indexOf(danmaku);
         if (index < 0) {
             return false;
@@ -12497,7 +12516,7 @@ var CodeDanmakuProvider = (function (_super) {
             return true;
         }
     };
-    CodeDanmakuProvider.prototype.isDanmakuDead = function (danmaku) {
+    ScriptedDanmakuProvider.prototype.isDanmakuDead = function (danmaku) {
         var timeElapsed = this.bulletproof.timeElapsed;
         if (timeElapsed < danmaku.bornTime) {
             return danmaku.executed;
@@ -12506,7 +12525,7 @@ var CodeDanmakuProvider = (function (_super) {
             return danmaku.bornTime + danmaku.lifeTime * 1000 < timeElapsed;
         }
     };
-    CodeDanmakuProvider.prototype.update = function () {
+    ScriptedDanmakuProvider.prototype.update = function () {
         _super.prototype.update.call(this);
         var danmaku;
         var timeElapsed = this.bulletproof.timeElapsed;
@@ -12517,7 +12536,7 @@ var CodeDanmakuProvider = (function (_super) {
             }
         }
     };
-    CodeDanmakuProvider.prototype.updateDisplayDanmakuList = function () {
+    ScriptedDanmakuProvider.prototype.updateDisplayDanmakuList = function () {
         var danmaku;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
             danmaku = this.displayingDanmakuList[i];
@@ -12527,59 +12546,59 @@ var CodeDanmakuProvider = (function (_super) {
             }
         }
     };
-    Object.defineProperty(CodeDanmakuProvider.prototype, "layoutManager", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "layoutManager", {
         get: function () {
             return this._layoutManager;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmakuProvider.prototype, "displayingDanmakuList", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "displayingDanmakuList", {
         get: function () {
             return this._displayingDanmakuList;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmakuProvider.prototype, "fullDanmakuList", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "fullDanmakuList", {
         get: function () {
             return this._displayingDanmakuList;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmakuProvider.prototype, "danmakuLayer", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "danmakuLayer", {
         get: function () {
             return this._danmakuLayer;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CodeDanmakuProvider.prototype, "flags", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "flags", {
         get: function () {
             return DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation;
         },
         enumerable: true,
         configurable: true
     });
-    CodeDanmakuProvider.prototype.__addDanmaku = function (content, args) {
+    ScriptedDanmakuProvider.prototype.__addDanmaku = function (content, args) {
         if (_util_1._util.isUndefinedOrNull(args)) {
-            args = CodeDanmakuHelper_1.CodeDanmakuHelper.getDefaultParams(this.bulletproof.config);
+            args = ScriptedDanmakuHelper_1.ScriptedDanmakuHelper.getDefaultParams(this.bulletproof.config);
         }
-        var danmaku = new CodeDanmaku_1.CodeDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager, args);
+        var danmaku = new ScriptedDanmaku_1.ScriptedDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager, args);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.
         this.danmakuLayer.addChild(danmaku);
         danmaku.initialize(content, this.bulletproof.timeElapsed);
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     };
-    return CodeDanmakuProvider;
+    return ScriptedDanmakuProvider;
 })(DanmakuProviderBase_1.DanmakuProviderBase);
-exports.CodeDanmakuProvider = CodeDanmakuProvider;
+exports.ScriptedDanmakuProvider = ScriptedDanmakuProvider;
 
 
 
-},{"../../../lib/glantern/src/_util/_util":5,"../DanmakuKind":150,"../DanmakuProviderBase":152,"../DanmakuProviderFlag":153,"./CodeDanmaku":155,"./CodeDanmakuHelper":156,"./CodeDanmakuLayer":157,"./CodeDanmakuLayoutManager":158}],160:[function(require,module,exports){
+},{"../../../lib/glantern/src/_util/_util":5,"../DanmakuKind":150,"../DanmakuProviderBase":152,"../DanmakuProviderFlag":153,"./ScriptedDanmaku":156,"./ScriptedDanmakuHelper":157,"./ScriptedDanmakuLayer":158,"./ScriptedDanmakuLayoutManager":159}],161:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12669,7 +12688,7 @@ exports.DCOHelper = DCOHelper;
 
 
 
-},{"../../../../lib/glantern/src/_util/_util":5}],161:[function(require,module,exports){
+},{"../../../../lib/glantern/src/_util/_util":5}],162:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12717,7 +12736,7 @@ exports.DCShape = DCShape;
 
 
 
-},{"../../../../lib/glantern/src/flash/display/Shape":42,"./DCOHelper":160}],162:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/display/Shape":42,"./DCOHelper":161}],163:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -12759,7 +12778,7 @@ exports.FiniteTimer = FiniteTimer;
 
 
 
-},{"../../../../lib/glantern/src/flash/events/TimerEvent":53,"../../../../lib/glantern/src/flash/utils/Timer":81}],163:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/events/TimerEvent":53,"../../../../lib/glantern/src/flash/utils/Timer":81}],164:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12771,48 +12790,29 @@ __export(require("./DCShape"));
 
 
 
-},{"./DCOHelper":160,"./DCShape":161}],164:[function(require,module,exports){
+},{"./DCOHelper":161,"./DCShape":162}],165:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-__export(require("./CodeDanmaku"));
-__export(require("./CodeDanmakuLayoutManager"));
-__export(require("./CodeDanmakuProvider"));
-__export(require("./CodeDanmakuLayer"));
-__export(require("./CodeDanmakuHelper"));
+__export(require("./ScriptedDanmaku"));
+__export(require("./ScriptedDanmakuLayoutManager"));
+__export(require("./ScriptedDanmakuProvider"));
+__export(require("./ScriptedDanmakuLayer"));
+__export(require("./ScriptedDanmakuHelper"));
 var dco = require("./dco/index");
 exports.dco = dco;
 
 
 
-},{"./CodeDanmaku":155,"./CodeDanmakuHelper":156,"./CodeDanmakuLayer":157,"./CodeDanmakuLayoutManager":158,"./CodeDanmakuProvider":159,"./dco/index":163}],165:[function(require,module,exports){
-/**
- * Created by MIC on 2015/12/29.
- */
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-__export(require("./DanmakuCoordinator"));
-__export(require("./DanmakuKind"));
-__export(require("./DanmakuLayoutManagerBase"));
-__export(require("./DanmakuProviderBase"));
-__export(require("./StageResizedEventArgs"));
-var code = require("./code/index");
-exports.code = code;
-var simple = require("./simple/index");
-exports.simple = simple;
-
-
-
-},{"./DanmakuCoordinator":149,"./DanmakuKind":150,"./DanmakuLayoutManagerBase":151,"./DanmakuProviderBase":152,"./StageResizedEventArgs":154,"./code/index":164,"./simple/index":172}],166:[function(require,module,exports){
+},{"./ScriptedDanmaku":156,"./ScriptedDanmakuHelper":157,"./ScriptedDanmakuLayer":158,"./ScriptedDanmakuLayoutManager":159,"./ScriptedDanmakuProvider":160,"./dco/index":164}],166:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/2.
  */
 (function (SimpleDanmakuType) {
-    SimpleDanmakuType[SimpleDanmakuType["Flying"] = 0] = "Flying";
+    SimpleDanmakuType[SimpleDanmakuType["FlyingR2L"] = 0] = "FlyingR2L";
     SimpleDanmakuType[SimpleDanmakuType["Top"] = 1] = "Top";
     SimpleDanmakuType[SimpleDanmakuType["Bottom"] = 2] = "Bottom";
     SimpleDanmakuType[SimpleDanmakuType["TopLeft"] = 3] = "TopLeft";
@@ -12838,7 +12838,7 @@ var SimpleDanmaku = (function () {
          * bottom right) should recalculate their Y positions to fit in the change.
          * @type {Boolean}
          */
-        this.isYPositionSet = false;
+        this.yPositionSet = false;
         /**
          * X coordinate of the top left point of this {@link SimpleDanmaku}.
          * @type {Number}
@@ -13127,45 +13127,38 @@ var SimpleDanmakuLayoutManager = (function (_super) {
         // coordinate system.
         var currentTime = this.bulletproof.timeElapsed;
         var stage = this.bulletproof.stage;
-        var displayList = this.danmakuProvider.displayingDanmakuList;
-        var currentStates = {
-            bulletproof: this.bulletproof,
-            flying: {
-                nextYPosition: 0,
-                lowestYPosition: 0
-            }
-        };
+        var displayingList = this.danmakuProvider.displayingDanmakuList;
         function isInPlayingRange(danmaku) {
             return danmaku.bornTime <= currentTime && currentTime <= danmaku.bornTime + danmaku.lifeTime * 1000;
         }
-        if (displayList.length > 0) {
-            for (var i = 0; i < displayList.length; ++i) {
-                var danmaku = displayList[i];
+        if (displayingList.length > 0) {
+            for (var i = 0; i < displayingList.length; ++i) {
+                var danmaku = displayingList[i];
                 if (isInPlayingRange(danmaku)) {
                     if (!danmaku.visible) {
                         danmaku.visible = true;
                     }
                     switch (danmaku.createParams.type) {
-                        case SimpleDanamkuType_1.SimpleDanmakuType.Flying:
-                            handleFlying(danmaku);
+                        case SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L:
+                            positionFlying(danmaku);
                             break;
                         case SimpleDanamkuType_1.SimpleDanmakuType.Top:
-                            handleTop(danmaku);
+                            positionTop(danmaku);
                             break;
                         case SimpleDanamkuType_1.SimpleDanmakuType.Bottom:
-                            handleBottom(danmaku);
+                            positionBottom(danmaku);
                             break;
                         case SimpleDanamkuType_1.SimpleDanmakuType.TopLeft:
-                            handleTopLeft(danmaku);
+                            positionTopLeft(danmaku);
                             break;
                         case SimpleDanamkuType_1.SimpleDanmakuType.TopRight:
-                            handleTopRight(danmaku);
+                            positionTopRight(danmaku);
                             break;
                         case SimpleDanamkuType_1.SimpleDanmakuType.BottomLeft:
-                            handleBottomLeft(danmaku);
+                            positionBottomLeft(danmaku);
                             break;
                         case SimpleDanamkuType_1.SimpleDanmakuType.BottomRight:
-                            handleBottomRight(danmaku);
+                            positionBottomRight(danmaku);
                             break;
                         default:
                             console.warn("What type is this?");
@@ -13178,56 +13171,90 @@ var SimpleDanmakuLayoutManager = (function (_super) {
                 }
             }
         }
-        function handleFlying(danmaku) {
-            var state = currentStates.flying;
+        function positionFlying(danmaku) {
             var stageWidth = stage.stageWidth;
             var stageHeight = stage.stageHeight;
-            // T-0: At position (STAGE_WIDTH, Y)
-            // T-final: At position (-DANMAKU_WIDTH, Y)
+            // T_0: At position (STAGE_WIDTH, Y)
+            // T_final: At position (-DANMAKU_WIDTH, Y)
             // Add 5 extra pixels to ensure the danmaku is entirely out of the stage when its life should end.
             var elapsedLifeRatio = (currentTime - danmaku.bornTime) / (danmaku.lifeTime * 1000);
             danmaku.x = stageWidth - elapsedLifeRatio * (stageWidth + danmaku.textWidth + 5);
-            if (state.nextYPosition > stageHeight - danmaku.textHeight) {
-                state.nextYPosition = 0;
-            }
-            if (danmaku.isYPositionSet) {
-                if (danmaku.x < stageWidth - danmaku.textWidth) {
-                    if (danmaku.y <= state.nextYPosition) {
-                        state.nextYPosition = danmaku.y;
+            if (!danmaku.yPositionSet) {
+                if (displayingList.length > 0) {
+                    var currentY = 0;
+                    var bottommostThereIs = 0;
+                    for (var i = 0; i < displayingList.length; ++i) {
+                        if (displayingList[i].createParams.type === SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L && displayingList[i].yPositionSet) {
+                            // Bottom of current displaying danmaku which is being scanned
+                            var currentDDBottom = displayingList[i].y + displayingList[i].textHeight;
+                            // Estimated value of the bottom of the danmaku being positioned
+                            var estimatedCDPBottom = currentY + danmaku.textHeight;
+                            // The danmaku being scanned has (just) left the right edge of the stage.
+                            if (displayingList[i].x < stageWidth - displayingList[i].textWidth) {
+                                // The danmaku being scanned "embraces" the danmaku being positioned.
+                                if (displayingList[i].y <= currentY && estimatedCDPBottom <= currentDDBottom) {
+                                    currentY = displayingList[i].y;
+                                }
+                            }
+                            else {
+                                // The danmaku being scanned "crashes" with the danmaku being positioned.
+                                if (displayingList[i].y <= estimatedCDPBottom || currentDDBottom <= currentY) {
+                                    currentY = currentDDBottom;
+                                }
+                            }
+                            if (currentY > stageHeight - danmaku.textHeight) {
+                                // Wrapping in a function is used for the optimizers to detect that variable 'i' is not
+                                // modified in the whole array accessing procedure. Sure it can be expanded into normal
+                                // form, but I think it will slightly affect performance.
+                                currentY = handleFlyingOverflow(displayingList, i);
+                                if (currentY > stageHeight - danmaku.textHeight) {
+                                    currentY = 0;
+                                }
+                                break;
+                            }
+                            if (currentDDBottom > bottommostThereIs) {
+                                bottommostThereIs = currentDDBottom;
+                            }
+                        }
+                    }
+                    // If the space in the bottom is enough, we do not have to care about the complicated layout algorithm.
+                    if (bottommostThereIs <= stageHeight - danmaku.textHeight) {
+                        danmaku.y = bottommostThereIs;
+                    }
+                    else {
+                        danmaku.y = currentY;
                     }
                 }
                 else {
-                    if (danmaku.y <= state.nextYPosition) {
-                        state.nextYPosition += danmaku.textHeight;
-                    }
+                    danmaku.y = 0;
                 }
+                danmaku.yPositionSet = true;
             }
-            else {
-                if (state.lowestYPosition + danmaku.textHeight < stageHeight) {
-                    // Fully use the Y space. For example, a 14-pt and a 10-pt danmakus are added to the screen at
-                    // the same time, when there is a 12-pt available space, and the 10-pt danmaku should be placed
-                    // at bottom and the 14-pt danmaku should be placed at top.
-                    state.nextYPosition = state.lowestYPosition;
+        }
+        function handleFlyingOverflow(displayingList, currentIndex) {
+            // The stage is full of flying danmakus. Now follow the last positioned danmaku.
+            // If overflow happens again, reset Y position to the top of the stage.
+            // newY will definitely be assigned.
+            var newY;
+            do {
+                if (displayingList[currentIndex].createParams.type === SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L && displayingList[currentIndex].yPositionSet) {
+                    newY = displayingList[currentIndex].y + displayingList[currentIndex].textHeight;
                 }
-                danmaku.y = state.nextYPosition;
-                state.nextYPosition += danmaku.textHeight;
-                danmaku.isYPositionSet = true;
-            }
-            if (state.lowestYPosition < danmaku.y + danmaku.textHeight) {
-                state.lowestYPosition = danmaku.y + danmaku.textHeight;
-            }
+                ++currentIndex;
+            } while (currentIndex < displayingList.length);
+            return newY;
         }
-        function handleTop(danmaku) {
+        function positionTop(danmaku) {
         }
-        function handleBottom(danmaku) {
+        function positionBottom(danmaku) {
         }
-        function handleTopLeft(danmaku) {
+        function positionTopLeft(danmaku) {
         }
-        function handleTopRight(danmaku) {
+        function positionTopRight(danmaku) {
         }
-        function handleBottomLeft(danmaku) {
+        function positionBottomLeft(danmaku) {
         }
-        function handleBottomRight(danmaku) {
+        function positionBottomRight(danmaku) {
         }
     };
     Object.defineProperty(SimpleDanmakuLayoutManager.prototype, "danmakuProvider", {
@@ -13534,7 +13561,7 @@ __export(require("../lib/glantern/src/index"));
 
 
 
-},{"../lib/glantern/src/index":83,"./Bulletproof":128,"./BulletproofConfig":129,"./bilibili/index":147,"./danmaku/index":165,"./interactive/index":174}],174:[function(require,module,exports){
+},{"../lib/glantern/src/index":83,"./Bulletproof":128,"./BulletproofConfig":129,"./bilibili/index":147,"./danmaku/index":155,"./interactive/index":174}],174:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */

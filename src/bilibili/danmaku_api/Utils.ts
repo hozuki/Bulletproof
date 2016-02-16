@@ -5,7 +5,7 @@
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {_util} from "../../../lib/glantern/src/_util/_util";
-import {FiniteTimer} from "../../danmaku/code/dco/FiniteTimer";
+import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
 
 export class Utils extends BiliBiliDamakuApiObject {
 

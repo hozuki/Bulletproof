@@ -2,12 +2,12 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {IDanmakuCreatedObject} from "../../danmaku/code/dco/IDanmakuCreatedObject";
+import {IDanmakuCreatedObject} from "../../danmaku/scripted/dco/IDanmakuCreatedObject";
 import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
 import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
 import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
-import {IDCExtraCreateParams} from "../../danmaku/code/dco/IDCExtraCreateParams";
-import {DCOHelper} from "../../danmaku/code/dco/DCOHelper";
+import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
+import {DCOHelper} from "../../danmaku/scripted/dco/DCOHelper";
 import {_util} from "../../../lib/glantern/src/_util/_util";
 import {TextField} from "../../../lib/glantern/src/flash/text/TextField";
 

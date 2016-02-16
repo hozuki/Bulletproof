@@ -4,7 +4,7 @@
 
 import {GLantern} from "../lib/glantern/src/GLantern";
 import {DanmakuCoordinator} from "./danmaku/DanmakuCoordinator";
-import {CodeDanmakuProvider} from "./danmaku/code/CodeDanmakuProvider";
+import {ScriptedDanmakuProvider} from "./danmaku/scripted/ScriptedDanmakuProvider";
 import {DanmakuProviderBase} from "./danmaku/DanmakuProviderBase";
 import {NotImplementedError} from "../lib/glantern/src/_util/NotImplementedError";
 import {SimpleDanmakuProvider} from "./danmaku/simple/SimpleDanmakuProvider";
@@ -45,7 +45,7 @@ export class Bulletproof extends GLantern {
             // The earlier a provider is added in, the deeper it is in Z axis.
             var provider:DanmakuProviderBase;
             if (config.codeDanmakuEnabled) {
-                provider = new CodeDanmakuProvider(coordinator);
+                provider = new ScriptedDanmakuProvider(coordinator);
                 coordinator.addDanmakuProvider(provider);
             }
             if (config.simpleDanmakuEnabled) {

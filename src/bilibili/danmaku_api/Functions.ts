@@ -5,7 +5,7 @@
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
 import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
-import {FiniteTimer} from "../../danmaku/code/dco/FiniteTimer";
+import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
 import {_util} from "../../../lib/glantern/src/_util/_util";
 
 export class Functions extends BiliBiliDamakuApiObject {

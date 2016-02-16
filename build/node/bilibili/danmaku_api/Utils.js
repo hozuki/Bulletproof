@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
-var FiniteTimer_1 = require("../../danmaku/code/dco/FiniteTimer");
+var FiniteTimer_1 = require("../../danmaku/scripted/dco/FiniteTimer");
 var Utils = (function (_super) {
     __extends(Utils, _super);
     function Utils(apiContainer) {

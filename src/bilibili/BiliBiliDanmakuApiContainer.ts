@@ -6,7 +6,7 @@ import {Bulletproof} from "../Bulletproof";
 import {IBiliBiliDanmakuApiContract} from "./IBiliBiliDanmakuApiContract";
 import {Display} from "./danmaku_api/Display";
 import {Global} from "./danmaku_api/Global";
-import {CodeDanmaku} from "../danmaku/code/CodeDanmaku";
+import {ScriptedDanmaku} from "../danmaku/scripted/ScriptedDanmaku";
 import {Functions} from "./danmaku_api/Functions";
 import {Utils} from "./danmaku_api/Utils";
 import {Bitmap} from "./danmaku_api/Bitmap";
@@ -17,7 +17,7 @@ import {Tween} from "./danmaku_api/Tween";
 
 export class BiliBiliDanmakuApiContainer {
 
-    constructor(codeDanmaku:CodeDanmaku) {
+    constructor(codeDanmaku:ScriptedDanmaku) {
         this._codeDanmaku = codeDanmaku;
         this._bulletproof = codeDanmaku.layoutManager.danmakuProvider.danmakuCoordinator.bulletproof;
         this.__initializeApi();
@@ -56,11 +56,11 @@ export class BiliBiliDanmakuApiContainer {
         return this._api;
     }
 
-    get danmaku():CodeDanmaku {
+    get danmaku():ScriptedDanmaku {
         return this._codeDanmaku;
     }
 
-    private _codeDanmaku:CodeDanmaku = null;
+    private _codeDanmaku:ScriptedDanmaku = null;
     private _bulletproof:Bulletproof = null;
     private _api:IBiliBiliDanmakuApiContract = null;
 

@@ -10,7 +10,7 @@ import {ScriptManager} from "./danmaku_api/ScriptManager";
 import {Tween} from "./danmaku_api/Tween";
 import {Bitmap} from "./danmaku_api/Bitmap";
 import {Storage} from "./danmaku_api/Storage";
-import {FiniteTimer} from "../danmaku/code/dco/FiniteTimer";
+import {FiniteTimer} from "../danmaku/scripted/dco/FiniteTimer";
 
 export interface IBiliBiliDanmakuApiContract {
 

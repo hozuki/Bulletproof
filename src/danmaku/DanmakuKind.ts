@@ -9,6 +9,6 @@ export enum DanmakuKind {
      */
     Simple = 0,
     Mode7 = 7,
-    Code = 8
+    Scripted = 8
 
 }

@@ -3,7 +3,7 @@
  */
 
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
-import {IDCExtraCreateParams} from "../../danmaku/code/dco/IDCExtraCreateParams";
+import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
 
 export abstract class BiliBiliDamakuApiObject {
 
