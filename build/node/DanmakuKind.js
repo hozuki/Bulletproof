@@ -6,7 +6,7 @@
     DanmakuKind[DanmakuKind["SimpleTop"] = 1] = "SimpleTop";
     DanmakuKind[DanmakuKind["SimpleBottom"] = 2] = "SimpleBottom";
     DanmakuKind[DanmakuKind["Mode7"] = 7] = "Mode7";
-    DanmakuKind[DanmakuKind["Code"] = 8] = "Code";
+    DanmakuKind[DanmakuKind["Scripted"] = 8] = "Code";
 })(exports.DanmakuKind || (exports.DanmakuKind = {}));
 var DanmakuKind = exports.DanmakuKind;
 

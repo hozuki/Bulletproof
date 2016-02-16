@@ -18,7 +18,7 @@ var ColorTransform_1 = require("../../../lib/glantern/src/flash/geom/ColorTransf
 var TextFormat_1 = require("../../../lib/glantern/src/flash/text/TextFormat");
 var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var DCShape_1 = require("../../danmaku/code/dco/DCShape");
+var DCShape_1 = require("../../danmaku/scripted/dco/DCShape");
 var CommentField_1 = require("./CommentField");
 var Display = (function (_super) {
     __extends(Display, _super);

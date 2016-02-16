@@ -7,7 +7,7 @@
      */
     DanmakuKind[DanmakuKind["Simple"] = 0] = "Simple";
     DanmakuKind[DanmakuKind["Mode7"] = 7] = "Mode7";
-    DanmakuKind[DanmakuKind["Code"] = 8] = "Code";
+    DanmakuKind[DanmakuKind["Scripted"] = 8] = "Scripted";
 })(exports.DanmakuKind || (exports.DanmakuKind = {}));
 var DanmakuKind = exports.DanmakuKind;
 

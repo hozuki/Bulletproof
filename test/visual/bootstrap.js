@@ -87,7 +87,7 @@ function initList() {
                 if (err) {
                     console.error(err, data);
                 } else {
-                    var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Code);
+                    var codeProvider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Scripted);
                     codeProvider.addDanmaku(data);
                 }
             };

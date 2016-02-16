@@ -9,8 +9,8 @@ __export(require("./DanmakuKind"));
 __export(require("./DanmakuLayoutManagerBase"));
 __export(require("./DanmakuProviderBase"));
 __export(require("./StageResizedEventArgs"));
-var code = require("./code/index");
-exports.code = code;
+var scripted = require("./scripted/index");
+exports.scripted = scripted;
 var simple = require("./simple/index");
 exports.simple = simple;
 

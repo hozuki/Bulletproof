@@ -43,7 +43,7 @@ export class SimpleDanmakuLayoutManager extends DanmakuLayoutManagerBase {
                         danmaku.visible = true;
                     }
                     switch (danmaku.createParams.type) {
-                        case SimpleDanmakuType.Flying:
+                        case SimpleDanmakuType.FlyingR2L:
                             positionFlying(danmaku);
                             break;
                         case SimpleDanmakuType.Top:
@@ -88,7 +88,7 @@ export class SimpleDanmakuLayoutManager extends DanmakuLayoutManagerBase {
                     var currentY = 0;
                     var bottommostThereIs = 0;
                     for (var i = 0; i < displayingList.length; ++i) {
-                        if (displayingList[i].createParams.type === SimpleDanmakuType.Flying && displayingList[i].yPositionSet) {
+                        if (displayingList[i].createParams.type === SimpleDanmakuType.FlyingR2L && displayingList[i].yPositionSet) {
                             // Bottom of current displaying danmaku which is being scanned
                             var currentDDBottom = displayingList[i].y + displayingList[i].textHeight;
                             // Estimated value of the bottom of the danmaku being positioned
@@ -139,7 +139,7 @@ export class SimpleDanmakuLayoutManager extends DanmakuLayoutManagerBase {
             // newY will definitely be assigned.
             var newY:number;
             do {
-                if (displayingList[currentIndex].createParams.type === SimpleDanmakuType.Flying && displayingList[currentIndex].yPositionSet) {
+                if (displayingList[currentIndex].createParams.type === SimpleDanmakuType.FlyingR2L && displayingList[currentIndex].yPositionSet) {
                     newY = displayingList[currentIndex].y + displayingList[currentIndex].textHeight;
                 }
                 ++currentIndex;

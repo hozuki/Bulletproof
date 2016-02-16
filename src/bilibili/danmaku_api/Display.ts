@@ -16,7 +16,7 @@ import {Graphics} from "../../../lib/glantern/src/flash/display/Graphics";
 import {_util} from "../../../lib/glantern/src/_util/_util";
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {DCShape} from "../../danmaku/code/dco/DCShape";
+import {DCShape} from "../../danmaku/scripted/dco/DCShape";
 import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
 import {ICommentButtonCreateParams} from "./data_types/ICommentButtonCreateParams";
 import {TextField} from "../../../lib/glantern/src/flash/text/TextField";
