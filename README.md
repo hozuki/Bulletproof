@@ -7,8 +7,8 @@ You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
 ## Readme
 
-- [English (en-US)](/docs/readme/README.en-US.md)
-- [简体中文 (zh-CN)](/docs/readme/README.zh-CN.md)
+- [English (en-US)](docs/readme/README.en-US.md)
+- [简体中文 (zh-CN)](docs/readme/README.zh-CN.md)
 
 ## Features
 
@@ -28,4 +28,4 @@ You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 Bulletproof employs [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
 
 Part of Bulletproof uses modifications based on [`webgl-utils.js`](//github.com/KhronosGroup/WebGL/blob/master/sdk/demos/common/webgl-utils.js). Its license file
-can be found [here](/docs/license/webgl-utils.txt).
+can be found [here](docs/license/webgl-utils.txt).
