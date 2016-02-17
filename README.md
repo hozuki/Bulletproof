@@ -7,6 +7,9 @@ You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
 ## Readme
 
+*Note: These readme documents are outdated. They will be rewritten after
+core features are completed.*
+
 - [English (en-US)](docs/readme/README.en-US.md)
 - [简体中文 (zh-CN)](docs/readme/README.zh-CN.md)
 
@@ -15,7 +18,7 @@ You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 - [X] High speed rendering
 - [X] Cross browser compatibility (Chrome, Firefox, IE11, Edge)
 - [ ] Web video player wrapper
-- [ ] Simple danmaku (flying, R2L)
+- [X] Simple danmaku (flying, R2L)
 - [ ] Simple danmaku (anchored)
 - [ ] Mode 7 danmaku
 - [X] Scripted danmaku (graphics)
