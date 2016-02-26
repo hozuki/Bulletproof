@@ -10651,7 +10651,7 @@ exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
     bornTime: undefined,
     fontName: "SimHei",
     fontStyle: "bold",
-    fontSize: 18,
+    fontSize: 20,
     type: SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L,
     border: false,
     borderColor: 0x000000,
@@ -10660,7 +10660,7 @@ exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
     backgroundColor: 0x000000,
     textColor: 0xffffff,
     outline: true,
-    outlineColor: 0x000000,
+    outlineColor: 0x2f2f2f,
     outlineThickness: 1
 };
 /**
@@ -13071,7 +13071,7 @@ var SimpleDanmakuLayer = (function (_super) {
     SimpleDanmakuLayer.prototype.__render = function (renderer) {
         if (this.visible && this.alpha > 0 && this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageContent();
-            RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, true, this.transform.matrix3D, this.alpha, false);
+            RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, renderer.currentRenderTarget.isRoot, this.transform.matrix3D, this.alpha, false);
         }
     };
     SimpleDanmakuLayer.prototype.__drawTextElements = function (context2D) {
@@ -13358,6 +13358,7 @@ var SimpleDanmakuLayer_1 = require("./SimpleDanmakuLayer");
 var SimpleDanmakuHelper_1 = require("./SimpleDanmakuHelper");
 var StageResizedEventArgs_1 = require("../StageResizedEventArgs");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var GlowFilter_1 = require("../../../lib/glantern/src/flash/filters/GlowFilter");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
@@ -13384,8 +13385,12 @@ var SimpleDanmakuProvider = (function (_super) {
     });
     SimpleDanmakuProvider.prototype.initialize = function () {
         var stage = this.bulletproof.stage;
-        this._danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
+        var danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
+        this._danmakuLayer = danmakuLayer;
         stage.addChild(this.danmakuLayer);
+        var glowFilter = new GlowFilter_1.GlowFilter(this.bulletproof.renderer.filterManager, 0x2f2f2f, 0.8, 3.0, 3.0);
+        danmakuLayer.filters = [glowFilter];
+        danmakuLayer.alpha = 0.75;
         this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     };
     SimpleDanmakuProvider.prototype.dispose = function () {
@@ -13582,7 +13587,7 @@ exports.SimpleDanmakuProvider = SimpleDanmakuProvider;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../DanmakuKind":149,"../DanmakuProviderBase":151,"../DanmakuProviderFlag":152,"../StageResizedEventArgs":153,"./SimpleDanmaku":166,"./SimpleDanmakuHelper":167,"./SimpleDanmakuLayer":168,"./SimpleDanmakuLayoutManager":169}],171:[function(require,module,exports){
+},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/flash/filters/GlowFilter":56,"../DanmakuKind":149,"../DanmakuProviderBase":151,"../DanmakuProviderFlag":152,"../StageResizedEventArgs":153,"./SimpleDanmaku":166,"./SimpleDanmakuHelper":167,"./SimpleDanmakuLayer":168,"./SimpleDanmakuLayoutManager":169}],171:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */

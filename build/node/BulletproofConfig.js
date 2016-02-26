@@ -21,7 +21,7 @@ exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
     bornTime: undefined,
     fontName: "SimHei",
     fontStyle: "bold",
-    fontSize: 18,
+    fontSize: 20,
     type: SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L,
     border: false,
     borderColor: 0x000000,
@@ -30,7 +30,7 @@ exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
     backgroundColor: 0x000000,
     textColor: 0xffffff,
     outline: true,
-    outlineColor: 0x000000,
+    outlineColor: 0x2f2f2f,
     outlineThickness: 1
 };
 /**

@@ -15,6 +15,7 @@ var SimpleDanmakuLayer_1 = require("./SimpleDanmakuLayer");
 var SimpleDanmakuHelper_1 = require("./SimpleDanmakuHelper");
 var StageResizedEventArgs_1 = require("../StageResizedEventArgs");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var GlowFilter_1 = require("../../../lib/glantern/src/flash/filters/GlowFilter");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
@@ -41,8 +42,12 @@ var SimpleDanmakuProvider = (function (_super) {
     });
     SimpleDanmakuProvider.prototype.initialize = function () {
         var stage = this.bulletproof.stage;
-        this._danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
+        var danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
+        this._danmakuLayer = danmakuLayer;
         stage.addChild(this.danmakuLayer);
+        var glowFilter = new GlowFilter_1.GlowFilter(this.bulletproof.renderer.filterManager, 0x2f2f2f, 0.8, 3.0, 3.0);
+        danmakuLayer.filters = [glowFilter];
+        danmakuLayer.alpha = 0.75;
         this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     };
     SimpleDanmakuProvider.prototype.dispose = function () {

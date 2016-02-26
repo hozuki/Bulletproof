@@ -36,7 +36,7 @@ export class SimpleDanmakuLayer extends TextField {
     protected __render(renderer:WebGLRenderer):void {
         if (this.visible && this.alpha > 0 && this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageContent();
-            RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, true, this.transform.matrix3D, this.alpha, false);
+            RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, renderer.currentRenderTarget.isRoot, this.transform.matrix3D, this.alpha, false);
         }
     }
 

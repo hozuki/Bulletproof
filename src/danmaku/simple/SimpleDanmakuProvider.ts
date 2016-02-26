@@ -16,6 +16,7 @@ import {SimpleDanmakuHelper} from "./SimpleDanmakuHelper";
 import {StageResizedEventArgs} from "../StageResizedEventArgs";
 import {IDanmaku} from "../IDanmaku";
 import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
+import {GlowFilter} from "../../../lib/glantern/src/flash/filters/GlowFilter";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
@@ -37,8 +38,12 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
     initialize():void {
         var stage = this.bulletproof.stage;
-        this._danmakuLayer = new SimpleDanmakuLayer(stage, stage, this);
+        var danmakuLayer = new SimpleDanmakuLayer(stage, stage, this);
+        this._danmakuLayer = danmakuLayer;
         stage.addChild(this.danmakuLayer);
+        var glowFilter = new GlowFilter(this.bulletproof.renderer.filterManager, 0x2f2f2f, 0.8, 3.0, 3.0);
+        danmakuLayer.filters = [glowFilter];
+        danmakuLayer.alpha = 0.75;
         this.layoutManager.onStageResize(this, new StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     }
 

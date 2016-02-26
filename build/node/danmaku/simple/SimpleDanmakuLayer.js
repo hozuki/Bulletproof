@@ -39,7 +39,7 @@ var SimpleDanmakuLayer = (function (_super) {
     SimpleDanmakuLayer.prototype.__render = function (renderer) {
         if (this.visible && this.alpha > 0 && this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageContent();
-            RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, true, this.transform.matrix3D, this.alpha, false);
+            RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, renderer.currentRenderTarget.isRoot, this.transform.matrix3D, this.alpha, false);
         }
     };
     SimpleDanmakuLayer.prototype.__drawTextElements = function (context2D) {
