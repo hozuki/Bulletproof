@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuKind_1 = require("../DanmakuKind");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
-var DisplayObjectContainer_1 = require("../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer");
+var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var ScriptedDanmaku = (function (_super) {
     __extends(ScriptedDanmaku, _super);

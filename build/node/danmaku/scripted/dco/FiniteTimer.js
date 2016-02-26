@@ -6,8 +6,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Timer_1 = require("../../../../lib/glantern/src/glantern/flash/utils/Timer");
-var TimerEvent_1 = require("../../../../lib/glantern/src/glantern/flash/events/TimerEvent");
+var Timer_1 = require("../../../../lib/glantern/src/flash/utils/Timer");
+var TimerEvent_1 = require("../../../../lib/glantern/src/flash/events/TimerEvent");
 var FiniteTimer = (function (_super) {
     __extends(FiniteTimer, _super);
     function FiniteTimer(obj, delay, repeatCount) {

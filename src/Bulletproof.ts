@@ -2,7 +2,7 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {GLantern} from "../lib/glantern/src/glantern/GLantern";
+import {GLantern} from "../lib/glantern/src/GLantern";
 import {DanmakuCoordinator} from "./danmaku/DanmakuCoordinator";
 import {ScriptedDanmakuProvider} from "./danmaku/scripted/ScriptedDanmakuProvider";
 import {DanmakuProviderBase} from "./danmaku/DanmakuProviderBase";

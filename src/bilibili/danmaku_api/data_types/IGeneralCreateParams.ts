@@ -3,7 +3,7 @@
  */
 
 import {IMotion} from "./IMotion";
-import {DisplayObjectContainer} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
+import {DisplayObjectContainer} from "../../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 
 export interface IGeneralCreateParams {
 

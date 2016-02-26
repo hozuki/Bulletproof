@@ -6,9 +6,9 @@ import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {Bulletproof} from "../Bulletproof";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
-import {IWebGLElement} from "../../lib/glantern/src/glantern/webgl/IWebGLElement";
+import {IWebGLElement} from "../../lib/glantern/src/webgl/IWebGLElement";
 import {GLUtil} from "../../lib/glantern/lib/glantern-utils/src/GLUtil";
-import {WebGLRenderer} from "../../lib/glantern/src/glantern/webgl/WebGLRenderer";
+import {WebGLRenderer} from "../../lib/glantern/src/webgl/WebGLRenderer";
 
 /**
  * The coordinator of all danmakus.

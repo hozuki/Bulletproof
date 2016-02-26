@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GLantern_1 = require("../lib/glantern/src/glantern/GLantern");
+var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var ScriptedDanmakuProvider_1 = require("./danmaku/scripted/ScriptedDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");

@@ -7,7 +7,7 @@ import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {IDanmaku} from "./IDanmaku";
 import {Bulletproof} from "../Bulletproof";
 import {StageResizedEventArgs} from "./StageResizedEventArgs";
-import {IDisposable} from "../../lib/glantern/src/glantern/IDisposable";
+import {IDisposable} from "../../lib/glantern/src/IDisposable";
 import {NotImplementedError} from "../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 /**

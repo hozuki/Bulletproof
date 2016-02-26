@@ -8,7 +8,7 @@ import {ICommentButtonCreateParams} from "../../../bilibili/danmaku_api/data_typ
 import {Bulletproof} from "../../../Bulletproof";
 import {IMotionPropertyAnimation} from "../../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
 import {IMotion} from "../../../bilibili/danmaku_api/data_types/IMotion";
-import {DisplayObject} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObject";
+import {DisplayObject} from "../../../../lib/glantern/src/flash/display/DisplayObject";
 import {GLUtil} from "../../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export abstract class DCOHelper {

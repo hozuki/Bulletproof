@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var Rectangle_1 = require("../../../lib/glantern/src/glantern/flash/geom/Rectangle");
+var Rectangle_1 = require("../../../lib/glantern/src/flash/geom/Rectangle");
 var Bitmap = (function (_super) {
     __extends(Bitmap, _super);
     function Bitmap(apiContainer) {

@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Tween_1 = require("../../../lib/glantern/src/glantern/fl/transitions/Tween");
+var Tween_1 = require("../../../lib/glantern/src/fl/transitions/Tween");
 var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 var TweenImpl = (function (_super) {
     __extends(TweenImpl, _super);

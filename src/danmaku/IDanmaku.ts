@@ -7,7 +7,7 @@ import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {CommentData} from "../bilibili/danmaku_api/CommentData";
-import {IDisposable} from "../../lib/glantern/src/glantern/IDisposable";
+import {IDisposable} from "../../lib/glantern/src/IDisposable";
 
 export interface IDanmaku extends IDisposable {
 

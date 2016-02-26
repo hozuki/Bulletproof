@@ -6,9 +6,9 @@ import {IDanmakuCreatedObject} from "../../danmaku/scripted/dco/IDanmakuCreatedO
 import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
 import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
 import {DCOHelper} from "../../danmaku/scripted/dco/DCOHelper";
-import {TextField} from "../../../lib/glantern/src/glantern/flash/text/TextField";
-import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
+import {TextField} from "../../../lib/glantern/src/flash/text/TextField";
+import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
+import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 
 export class CommentField extends TextField implements IDanmakuCreatedObject {
 

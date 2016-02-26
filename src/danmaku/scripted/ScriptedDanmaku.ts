@@ -13,10 +13,10 @@ import {ScriptedDanmakuProvider} from "./ScriptedDanmakuProvider";
 import {IDanmaku} from "../IDanmaku";
 import {IScriptedDanmakuCreateParams} from "./IScriptedDanmakuCreateParams";
 import {CommentData} from "../../bilibili/danmaku_api/CommentData";
-import {DisplayObjectContainer} from "../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
-import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
-import {WebGLRenderer} from "../../../lib/glantern/src/glantern/webgl/WebGLRenderer";
-import {DisplayObject} from "../../../lib/glantern/src/glantern/flash/display/DisplayObject";
+import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
+import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
+import {WebGLRenderer} from "../../../lib/glantern/src/webgl/WebGLRenderer";
+import {DisplayObject} from "../../../lib/glantern/src/flash/display/DisplayObject";
 import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku {

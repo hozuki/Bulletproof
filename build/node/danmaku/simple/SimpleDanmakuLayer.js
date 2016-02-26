@@ -6,8 +6,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextField_1 = require("../../../lib/glantern/src/glantern/flash/text/TextField");
-var RenderHelper_1 = require("../../../lib/glantern/src/glantern/webgl/RenderHelper");
+var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
+var RenderHelper_1 = require("../../../lib/glantern/src/webgl/RenderHelper");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var SimpleDanmakuLayer = (function (_super) {
     __extends(SimpleDanmakuLayer, _super);

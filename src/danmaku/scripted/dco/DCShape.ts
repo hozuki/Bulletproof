@@ -6,9 +6,9 @@ import {IDanmakuCreatedObject} from "./IDanmakuCreatedObject";
 import {IGeneralCreateParams} from "../../../bilibili/danmaku_api/data_types/IGeneralCreateParams";
 import {IDCExtraCreateParams} from "./IDCExtraCreateParams";
 import {DCOHelper} from "./DCOHelper";
-import {Shape} from "../../../../lib/glantern/src/glantern/flash/display/Shape";
-import {Stage} from "../../../../lib/glantern/src/glantern/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
+import {Shape} from "../../../../lib/glantern/src/flash/display/Shape";
+import {Stage} from "../../../../lib/glantern/src/flash/display/Stage";
+import {DisplayObjectContainer} from "../../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 
 export class DCShape extends Shape implements IDanmakuCreatedObject {
 

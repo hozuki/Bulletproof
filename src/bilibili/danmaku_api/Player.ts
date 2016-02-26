@@ -11,8 +11,8 @@ import {PlayerState} from "./PlayerState";
 import {DanmakuProviderBase} from "../../danmaku/DanmakuProviderBase";
 import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
-import {DisplayObject} from "../../../lib/glantern/src/glantern/flash/display/DisplayObject";
-import {Sound} from "../../../lib/glantern/src/glantern/flash/media/Sound";
+import {DisplayObject} from "../../../lib/glantern/src/flash/display/DisplayObject";
+import {Sound} from "../../../lib/glantern/src/flash/media/Sound";
 
 export class Player extends BiliBiliDamakuApiObject {
 

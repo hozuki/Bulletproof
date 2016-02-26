@@ -3,7 +3,7 @@
  */
 
 import {IGeneralCreateParams} from "./IGeneralCreateParams";
-import {BitmapData} from "../../../../lib/glantern/src/glantern/flash/display/BitmapData";
+import {BitmapData} from "../../../../lib/glantern/src/flash/display/BitmapData";
 
 export interface ICommentBitmapCreateParams extends IGeneralCreateParams {
 

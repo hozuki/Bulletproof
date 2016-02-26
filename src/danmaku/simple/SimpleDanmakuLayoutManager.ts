@@ -9,7 +9,7 @@ import {IDanmaku} from "../IDanmaku";
 import {SimpleDanmaku} from "./SimpleDanmaku";
 import {StageResizedEventArgs} from "../StageResizedEventArgs";
 import {SimpleDanmakuType} from "./SimpleDanamkuType";
-import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
+import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
 import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 interface IMeasureParams {

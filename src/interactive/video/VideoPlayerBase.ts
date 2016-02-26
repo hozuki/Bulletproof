@@ -3,7 +3,7 @@
  */
 
 import {VideoPlayerState} from "./VideoPlayerState";
-import {IDisposable} from "../../../lib/glantern/src/glantern/IDisposable";
+import {IDisposable} from "../../../lib/glantern/src/IDisposable";
 import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 export abstract class VideoPlayerBase implements IDisposable {

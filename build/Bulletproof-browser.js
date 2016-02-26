@@ -375,7 +375,7 @@ exports.NotImplementedError = NotImplementedError;
 var WebGLRenderer_1 = require("./webgl/WebGLRenderer");
 var Stage_1 = require("./flash/display/Stage");
 var FlashEvent_1 = require("./flash/events/FlashEvent");
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../lib/glantern-utils/src/GLUtil");
 var GLantern = (function () {
     function GLantern() {
         this._isRunning = false;
@@ -467,7 +467,7 @@ exports.GLantern = GLantern;
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3,"./flash/display/Stage":43,"./flash/events/FlashEvent":51,"./webgl/WebGLRenderer":99}],6:[function(require,module,exports){
+},{"../lib/glantern-utils/src/GLUtil":3,"./flash/display/Stage":43,"./flash/events/FlashEvent":51,"./webgl/WebGLRenderer":99}],6:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -486,7 +486,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var EventDispatcher_1 = require("../../flash/events/EventDispatcher");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var Tween = (function (_super) {
     __extends(Tween, _super);
     function Tween(obj, prop, func, begin, finish, duration, useSeconds) {
@@ -546,7 +546,7 @@ exports.Tween = Tween;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/events/EventDispatcher":50}],8:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/events/EventDispatcher":50}],8:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -556,7 +556,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var FlashEvent_1 = require("../../flash/events/FlashEvent");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var TweenEvent = (function (_super) {
     __extends(TweenEvent, _super);
     function TweenEvent(type, time, position, bubbles, cancelable) {
@@ -619,7 +619,7 @@ exports.TweenEvent = TweenEvent;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/events/FlashEvent":51}],9:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/events/FlashEvent":51}],9:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -951,7 +951,7 @@ exports.Quintic = Quintic;
 /**
  * Created by MIC on 2015/12/26.
  */
-var NotImplementedError_1 = require("../../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
 var Regular = (function () {
     function Regular() {
     }
@@ -970,7 +970,7 @@ exports.Regular = Regular;
 
 
 
-},{"../../../../../lib/glantern-utils/src/NotImplementedError":4}],20:[function(require,module,exports){
+},{"../../../../lib/glantern-utils/src/NotImplementedError":4}],20:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -996,7 +996,7 @@ exports.Sine = Sine;
 /**
  * Created by MIC on 2015/12/26.
  */
-var NotImplementedError_1 = require("../../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
 var Strong = (function () {
     function Strong() {
     }
@@ -1015,7 +1015,7 @@ exports.Strong = Strong;
 
 
 
-},{"../../../../../lib/glantern-utils/src/NotImplementedError":4}],22:[function(require,module,exports){
+},{"../../../../lib/glantern-utils/src/NotImplementedError":4}],22:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -1320,8 +1320,8 @@ var EventDispatcher_1 = require("../events/EventDispatcher");
 var BlendMode_1 = require("./BlendMode");
 var Matrix3D_1 = require("../geom/Matrix3D");
 var Vector3D_1 = require("../geom/Vector3D");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var DisplayObject = (function (_super) {
     __extends(DisplayObject, _super);
     function DisplayObject(root, parent) {
@@ -1696,7 +1696,7 @@ exports.DisplayObject = DisplayObject;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"../events/EventDispatcher":50,"../geom/Matrix3D":60,"../geom/Transform":65,"../geom/Vector3D":66,"./BlendMode":26}],31:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../events/EventDispatcher":50,"../geom/Matrix3D":60,"../geom/Transform":65,"../geom/Vector3D":66,"./BlendMode":26}],31:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -1706,7 +1706,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var InteractiveObject_1 = require("./InteractiveObject");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var DisplayObjectContainer = (function (_super) {
     __extends(DisplayObjectContainer, _super);
     function DisplayObjectContainer(root, parent) {
@@ -1889,7 +1889,7 @@ exports.DisplayObjectContainer = DisplayObjectContainer;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"./InteractiveObject":36}],32:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./InteractiveObject":36}],32:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -1929,8 +1929,8 @@ var LineScaleMode_1 = require("./LineScaleMode");
 var BrushType_1 = require("../../webgl/graphics/BrushType");
 var SolidStrokeRenderer_1 = require("../../webgl/graphics/SolidStrokeRenderer");
 var SolidFillRenderer_1 = require("../../webgl/graphics/SolidFillRenderer");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var Graphics = (function () {
     function Graphics(attachTo, renderer) {
         this._displayObject = null;
@@ -2404,7 +2404,7 @@ function __checkPathCommands(commands, data) {
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"../../webgl/graphics/BrushType":108,"../../webgl/graphics/SolidFillRenderer":112,"../../webgl/graphics/SolidStrokeRenderer":113,"./GraphicsPathCommand":34,"./GraphicsPathWinding":35,"./InterpolationMethod":37,"./LineScaleMode":39,"./SpreadMethod":42,"./TriangleCulling":48}],34:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../../webgl/graphics/BrushType":108,"../../webgl/graphics/SolidFillRenderer":112,"../../webgl/graphics/SolidStrokeRenderer":113,"./GraphicsPathCommand":34,"./GraphicsPathWinding":35,"./InterpolationMethod":37,"./LineScaleMode":39,"./SpreadMethod":42,"./TriangleCulling":48}],34:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -2732,7 +2732,7 @@ var StageDisplayState_1 = require("./StageDisplayState");
 var ColorCorrection_1 = require("./ColorCorrection");
 var StageAlign_1 = require("./StageAlign");
 var DisplayObjectContainer_1 = require("./DisplayObjectContainer");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var Stage = (function (_super) {
     __extends(Stage, _super);
     function Stage(renderer) {
@@ -2876,7 +2876,7 @@ exports.Stage = Stage;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"./ColorCorrection":28,"./ColorCorrectionSupport":29,"./DisplayObjectContainer":31,"./StageAlign":44,"./StageDisplayState":45,"./StageQuality":46,"./StageScaleMode":47}],44:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./ColorCorrection":28,"./ColorCorrectionSupport":29,"./DisplayObjectContainer":31,"./StageAlign":44,"./StageDisplayState":45,"./StageQuality":46,"./StageScaleMode":47}],44:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -3134,7 +3134,7 @@ __export(require("./TriangleCulling"));
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var EventDispatcher = (function () {
     function EventDispatcher() {
         this._listeners = null;
@@ -3202,7 +3202,7 @@ exports.EventDispatcher = EventDispatcher;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3}],51:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3}],51:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/21.
  */
@@ -3265,7 +3265,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var FlashEvent_1 = require("./FlashEvent");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var TimerEvent = (function (_super) {
     __extends(TimerEvent, _super);
     function TimerEvent(type, bubbles, cancelable) {
@@ -3299,7 +3299,7 @@ exports.TimerEvent = TimerEvent;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"./FlashEvent":51}],53:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./FlashEvent":51}],53:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -3422,7 +3422,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var GlowFilter_1 = require("../../webgl/filters/GlowFilter");
 var BitmapFilterQuality_1 = require("./BitmapFilterQuality");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var GlowFilter = (function (_super) {
     __extends(GlowFilter, _super);
     function GlowFilter(filterManager, color, alpha, blurX, blurY, strength, quality, inner, knockout) {
@@ -3530,7 +3530,7 @@ exports.GlowFilter = GlowFilter;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../webgl/filters/GlowFilter":106,"./BitmapFilterQuality":54}],57:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../webgl/filters/GlowFilter":106,"./BitmapFilterQuality":54}],57:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/30.
  */
@@ -3547,8 +3547,8 @@ __export(require("./GlowFilter"));
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var ColorTransform = (function () {
     function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
         if (redMultiplier === void 0) { redMultiplier = 1; }
@@ -3666,12 +3666,12 @@ exports.ColorTransform = ColorTransform;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4}],59:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4}],59:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
 var Point_1 = require("./Point");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var Matrix = (function () {
     function Matrix(a, b, c, d, tx, ty) {
         if (a === void 0) { a = 1; }
@@ -3866,16 +3866,16 @@ exports.Matrix = Matrix;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"./Point":63}],60:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./Point":63}],60:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
 var Vector3D_1 = require("./Vector3D");
 var Orientation3D_1 = require("./Orientation3D");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
-var ApplicationError_1 = require("../../../../lib/glantern-utils/src/ApplicationError");
-var ArgumentError_1 = require("../../../../lib/glantern-utils/src/ArgumentError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var ApplicationError_1 = require("../../../lib/glantern-utils/src/ApplicationError");
+var ArgumentError_1 = require("../../../lib/glantern-utils/src/ArgumentError");
 var Matrix3D = (function () {
     function Matrix3D(v) {
         if (v === void 0) { v = null; }
@@ -4233,7 +4233,7 @@ exports.Matrix3D = Matrix3D;
 
 
 
-},{"../../../../lib/glantern-utils/src/ApplicationError":1,"../../../../lib/glantern-utils/src/ArgumentError":2,"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"./Orientation3D":61,"./Vector3D":66}],61:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/ApplicationError":1,"../../../lib/glantern-utils/src/ArgumentError":2,"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"./Orientation3D":61,"./Vector3D":66}],61:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -4272,8 +4272,8 @@ exports.Orientation3D = Orientation3D;
  * Created by MIC on 2015/11/18.
  */
 var Point_1 = require("./Point");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var PerspectiveProjection = (function () {
     function PerspectiveProjection() {
         this.focalLength = 10;
@@ -4300,11 +4300,11 @@ exports.PerspectiveProjection = PerspectiveProjection;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"./Point":63}],63:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"./Point":63}],63:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var Point = (function () {
     function Point(x, y) {
         if (x === void 0) { x = 0; }
@@ -4371,7 +4371,7 @@ exports.Point = Point;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3}],64:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3}],64:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -4651,7 +4651,7 @@ var Matrix3D_1 = require("./Matrix3D");
 var ColorTransform_1 = require("./ColorTransform");
 var Matrix_1 = require("./Matrix");
 var PerspectiveProjection_1 = require("./PerspectiveProjection");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var Transform = (function () {
     function Transform() {
         this.colorTransform = null;
@@ -4694,11 +4694,11 @@ exports.Transform = Transform;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"./ColorTransform":58,"./Matrix":59,"./Matrix3D":60,"./PerspectiveProjection":62}],66:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./ColorTransform":58,"./Matrix":59,"./Matrix3D":60,"./PerspectiveProjection":62}],66:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var Vector3D = (function () {
     function Vector3D(x, y, z, w) {
         if (x === void 0) { x = 0; }
@@ -4849,7 +4849,7 @@ exports.Vector3D = Vector3D;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3}],67:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3}],67:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -4958,7 +4958,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var EventDispatcher_1 = require("../events/EventDispatcher");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var StyleSheet = (function (_super) {
     __extends(StyleSheet, _super);
     function StyleSheet() {
@@ -4997,7 +4997,7 @@ exports.StyleSheet = StyleSheet;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"../events/EventDispatcher":50}],72:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../events/EventDispatcher":50}],72:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
@@ -5015,8 +5015,8 @@ var TextInteractionMode_1 = require("./TextInteractionMode");
 var TextFieldType_1 = require("./TextFieldType");
 var ShaderID_1 = require("../../webgl/ShaderID");
 var RenderHelper_1 = require("../../webgl/RenderHelper");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var TextField = (function (_super) {
     __extends(TextField, _super);
     function TextField(root, parent) {
@@ -5428,7 +5428,7 @@ exports.TextField = TextField;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"../../webgl/RenderHelper":91,"../../webgl/ShaderID":94,"../display/InteractiveObject":36,"./AntiAliasType":69,"./GridFitType":70,"./TextFieldAutoSize":73,"./TextFieldType":74,"./TextFormat":75,"./TextInteractionMode":77}],73:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../../webgl/RenderHelper":91,"../../webgl/ShaderID":94,"../display/InteractiveObject":36,"./AntiAliasType":69,"./GridFitType":70,"./TextFieldAutoSize":73,"./TextFieldType":74,"./TextFormat":75,"./TextInteractionMode":77}],73:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
@@ -5509,7 +5509,7 @@ var os = require("os");
 var TextFormatAlign_1 = require("./TextFormatAlign");
 var EventDispatcher_1 = require("../events/EventDispatcher");
 var FlashEvent_1 = require("../events/FlashEvent");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var TextFormat = (function (_super) {
     __extends(TextFormat, _super);
     function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
@@ -5847,7 +5847,7 @@ exports.TextFormat = TextFormat;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../events/EventDispatcher":50,"../events/FlashEvent":51,"./TextFormatAlign":76,"os":180}],76:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../events/EventDispatcher":50,"../events/FlashEvent":51,"./TextFormatAlign":76,"os":180}],76:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
@@ -6114,7 +6114,7 @@ var mx = require("./mx/index");
 exports.mx = mx;
 var GLantern_1 = require("./GLantern");
 exports.GLantern = GLantern_1.GLantern;
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../lib/glantern-utils/src/GLUtil");
 function injectToGlobal($this) {
     $this["flash"] = flash;
     $this["webgl"] = webgl;
@@ -6157,7 +6157,7 @@ exports.isSupported = isSupported;
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3,"./GLantern":5,"./fl/index":6,"./flash/index":68,"./mx/index":85,"./webgl/index":115}],83:[function(require,module,exports){
+},{"../lib/glantern-utils/src/GLUtil":3,"./GLantern":5,"./fl/index":6,"./flash/index":68,"./mx/index":85,"./webgl/index":115}],83:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -6167,7 +6167,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DisplayObjectContainer_1 = require("../../flash/display/DisplayObjectContainer");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var Canvas = (function (_super) {
     __extends(Canvas, _super);
     function Canvas(root, parent) {
@@ -6185,7 +6185,7 @@ exports.Canvas = Canvas;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/display/DisplayObjectContainer":31}],84:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/display/DisplayObjectContainer":31}],84:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
@@ -6647,7 +6647,7 @@ Values.copyImage = [
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
 var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
 var PackedArrayBuffer = (function () {
     function PackedArrayBuffer() {
@@ -6764,14 +6764,14 @@ exports.PackedArrayBuffer = PackedArrayBuffer;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3}],91:[function(require,module,exports){
+},{"../../lib/glantern-utils/src/GLUtil":3}],91:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
 var RenderTarget2D_1 = require("./RenderTarget2D");
 var PackedArrayBuffer_1 = require("./PackedArrayBuffer");
 var ShaderID_1 = require("./ShaderID");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
 var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
 var RenderHelper = (function () {
     function RenderHelper() {
@@ -6929,12 +6929,12 @@ function __checkRenderTargets(source, destination) {
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"./PackedArrayBuffer":90,"./RenderTarget2D":92,"./ShaderID":94}],92:[function(require,module,exports){
+},{"../../lib/glantern-utils/src/GLUtil":3,"./PackedArrayBuffer":90,"./RenderTarget2D":92,"./ShaderID":94}],92:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
 var PackedArrayBuffer_1 = require("./PackedArrayBuffer");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
 var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
 var isInitializedStatically = false;
 /**
@@ -7282,14 +7282,14 @@ function initStaticFields(glc) {
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"./PackedArrayBuffer":90}],93:[function(require,module,exports){
+},{"../../lib/glantern-utils/src/GLUtil":3,"./PackedArrayBuffer":90}],93:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
 var VertexShaders_1 = require("./VertexShaders");
 var FragmentShaders_1 = require("./FragmentShaders");
 var WebGLDataType_1 = require("./WebGLDataType");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
 var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
 var ShaderBase = (function () {
     function ShaderBase(manager, vertexSource, fragmentSource, uniforms, attributes) {
@@ -7582,7 +7582,7 @@ function createShaderFromSource(glc, source, type) {
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"./FragmentShaders":89,"./VertexShaders":97,"./WebGLDataType":98}],94:[function(require,module,exports){
+},{"../../lib/glantern-utils/src/GLUtil":3,"./FragmentShaders":89,"./VertexShaders":97,"./WebGLDataType":98}],94:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -8120,7 +8120,7 @@ var FilterManager_1 = require("./FilterManager");
 var RenderTarget2D_1 = require("./RenderTarget2D");
 var WebGLUtils_1 = require("./WebGLUtils");
 var BlendMode_1 = require("../flash/display/BlendMode");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
 var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
 /**
  * The WebGL renderer, main provider of the rendering services.
@@ -8428,7 +8428,7 @@ BMS[BlendMode_1.BlendMode.SUBTRACT] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../flash/display/BlendMode":26,"./FilterManager":88,"./RenderTarget2D":92,"./ShaderManager":95,"./WebGLUtils":100,"libtess":179}],100:[function(require,module,exports){
+},{"../../lib/glantern-utils/src/GLUtil":3,"../flash/display/BlendMode":26,"./FilterManager":88,"./RenderTarget2D":92,"./ShaderManager":95,"./WebGLUtils":100,"libtess":179}],100:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/13.
  */
@@ -8533,7 +8533,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var FilterBase_1 = require("../FilterBase");
 var RenderHelper_1 = require("../RenderHelper");
 var ShaderID_1 = require("../ShaderID");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var Blur2Filter = (function (_super) {
     __extends(Blur2Filter, _super);
     function Blur2Filter(manager) {
@@ -8626,7 +8626,7 @@ exports.Blur2Filter = Blur2Filter;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],102:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],102:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -8638,7 +8638,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BlurYFilter_1 = require("./BlurYFilter");
 var BlurXFilter_1 = require("./BlurXFilter");
 var FilterBase_1 = require("../FilterBase");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var BlurFilter = (function (_super) {
     __extends(BlurFilter, _super);
     function BlurFilter(manager) {
@@ -8728,7 +8728,7 @@ exports.BlurFilter = BlurFilter;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"./BlurXFilter":103,"./BlurYFilter":104}],103:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"./BlurXFilter":103,"./BlurYFilter":104}],103:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -8740,7 +8740,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var FilterBase_1 = require("../FilterBase");
 var ShaderID_1 = require("../ShaderID");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var BlurXFilter = (function (_super) {
     __extends(BlurXFilter, _super);
     function BlurXFilter(manager) {
@@ -8805,7 +8805,7 @@ exports.BlurXFilter = BlurXFilter;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],104:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],104:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -8817,7 +8817,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var FilterBase_1 = require("../FilterBase");
 var ShaderID_1 = require("../ShaderID");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var BlurYFilter = (function (_super) {
     __extends(BlurYFilter, _super);
     function BlurYFilter(manager) {
@@ -8882,7 +8882,7 @@ exports.BlurYFilter = BlurYFilter;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],105:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],105:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
@@ -8943,7 +8943,7 @@ var ColorTransformFilter_1 = require("./ColorTransformFilter");
 var FilterBase_1 = require("../FilterBase");
 var Blur2Filter_1 = require("./Blur2Filter");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
 var GlowFilter = (function (_super) {
     __extends(GlowFilter, _super);
     function GlowFilter(manager) {
@@ -9051,7 +9051,7 @@ exports.GlowFilter = GlowFilter;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"./Blur2Filter":101,"./ColorTransformFilter":105}],107:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"./Blur2Filter":101,"./ColorTransformFilter":105}],107:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -9176,7 +9176,7 @@ exports.STD_Z = 0;
  * Created by MIC on 2015/11/20.
  */
 var PackedArrayBuffer_1 = require("../PackedArrayBuffer");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
 var GraphicsDataRendererBase = (function () {
     function GraphicsDataRendererBase(graphics, lastPathStartX, lastPathStartY, currentX, currentY) {
@@ -9293,7 +9293,7 @@ exports.GraphicsDataRendererBase = GraphicsDataRendererBase;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4,"../PackedArrayBuffer":90}],112:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../PackedArrayBuffer":90}],112:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -9306,8 +9306,8 @@ var libtess = require("libtess");
 var FillRendererBase_1 = require("./FillRendererBase");
 var GRAPHICS_CONST_1 = require("./GRAPHICS_CONST");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var SolidFillRenderer = (function (_super) {
     __extends(SolidFillRenderer, _super);
     function SolidFillRenderer(graphics, startX, startY, color, alpha) {
@@ -9513,7 +9513,7 @@ exports.SolidFillRenderer = SolidFillRenderer;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"../RenderHelper":91,"./FillRendererBase":109,"./GRAPHICS_CONST":110,"libtess":179}],113:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../RenderHelper":91,"./FillRendererBase":109,"./GRAPHICS_CONST":110,"libtess":179}],113:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -9525,8 +9525,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var StrokeRendererBase_1 = require("./StrokeRendererBase");
 var GRAPHICS_CONST_1 = require("./GRAPHICS_CONST");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../../lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
 var SolidStrokeRenderer = (function (_super) {
     __extends(SolidStrokeRenderer, _super);
     function SolidStrokeRenderer(graphics, lastPathStartX, lastPathStartY, currentX, currentY, lineWidth, color, alpha) {
@@ -9679,7 +9679,7 @@ exports.SolidStrokeRenderer = SolidStrokeRenderer;
 
 
 
-},{"../../../../lib/glantern-utils/src/GLUtil":3,"../../../../lib/glantern-utils/src/NotImplementedError":4,"../RenderHelper":91,"./GRAPHICS_CONST":110,"./StrokeRendererBase":114}],114:[function(require,module,exports){
+},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../RenderHelper":91,"./GRAPHICS_CONST":110,"./StrokeRendererBase":114}],114:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
@@ -10435,7 +10435,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GLantern_1 = require("../lib/glantern/src/glantern/GLantern");
+var GLantern_1 = require("../lib/glantern/src/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var ScriptedDanmakuProvider_1 = require("./danmaku/scripted/ScriptedDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
@@ -10627,7 +10627,7 @@ exports.Bulletproof = Bulletproof;
 
 
 
-},{"../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../lib/glantern/src/glantern/GLantern":5,"./BulletproofConfig":128,"./danmaku/DanmakuCoordinator":148,"./danmaku/scripted/ScriptedDanmakuProvider":159,"./danmaku/simple/SimpleDanmakuProvider":170,"./interactive/video/html5/Html5VideoPlayer":176}],128:[function(require,module,exports){
+},{"../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../lib/glantern/src/GLantern":5,"./BulletproofConfig":128,"./danmaku/DanmakuCoordinator":148,"./danmaku/scripted/ScriptedDanmakuProvider":159,"./danmaku/simple/SimpleDanmakuProvider":170,"./interactive/video/html5/Html5VideoPlayer":176}],128:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
@@ -10808,7 +10808,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var Rectangle_1 = require("../../../lib/glantern/src/glantern/flash/geom/Rectangle");
+var Rectangle_1 = require("../../../lib/glantern/src/flash/geom/Rectangle");
 var Bitmap = (function (_super) {
     __extends(Bitmap, _super);
     function Bitmap(apiContainer) {
@@ -10835,7 +10835,7 @@ exports.Bitmap = Bitmap;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/glantern/flash/geom/Rectangle":64,"./BiliBiliDamakuApiObject":130}],132:[function(require,module,exports){
+},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/flash/geom/Rectangle":64,"./BiliBiliDamakuApiObject":130}],132:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -10858,7 +10858,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCOHelper_1 = require("../../danmaku/scripted/dco/DCOHelper");
-var TextField_1 = require("../../../lib/glantern/src/glantern/flash/text/TextField");
+var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
 var CommentField = (function (_super) {
     __extends(CommentField, _super);
     function CommentField(root, parent, createParams, extraCreateParams) {
@@ -10896,7 +10896,7 @@ exports.CommentField = CommentField;
 
 
 
-},{"../../../lib/glantern/src/glantern/flash/text/TextField":72,"../../danmaku/scripted/dco/DCOHelper":160}],134:[function(require,module,exports){
+},{"../../../lib/glantern/src/flash/text/TextField":72,"../../danmaku/scripted/dco/DCOHelper":160}],134:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -10908,16 +10908,16 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var DCShape_1 = require("../../danmaku/scripted/dco/DCShape");
 var CommentField_1 = require("./CommentField");
-var Matrix_1 = require("../../../lib/glantern/src/glantern/flash/geom/Matrix");
-var Point_1 = require("../../../lib/glantern/src/glantern/flash/geom/Point");
+var Matrix_1 = require("../../../lib/glantern/src/flash/geom/Matrix");
+var Point_1 = require("../../../lib/glantern/src/flash/geom/Point");
 var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var BitmapFilterQuality_1 = require("../../../lib/glantern/src/glantern/flash/filters/BitmapFilterQuality");
-var GlowFilter_1 = require("../../../lib/glantern/src/glantern/flash/filters/GlowFilter");
-var BlurFilter_1 = require("../../../lib/glantern/src/glantern/flash/filters/BlurFilter");
-var Vector3D_1 = require("../../../lib/glantern/src/glantern/flash/geom/Vector3D");
-var Matrix3D_1 = require("../../../lib/glantern/src/glantern/flash/geom/Matrix3D");
-var ColorTransform_1 = require("../../../lib/glantern/src/glantern/flash/geom/ColorTransform");
-var TextFormat_1 = require("../../../lib/glantern/src/glantern/flash/text/TextFormat");
+var BitmapFilterQuality_1 = require("../../../lib/glantern/src/flash/filters/BitmapFilterQuality");
+var GlowFilter_1 = require("../../../lib/glantern/src/flash/filters/GlowFilter");
+var BlurFilter_1 = require("../../../lib/glantern/src/flash/filters/BlurFilter");
+var Vector3D_1 = require("../../../lib/glantern/src/flash/geom/Vector3D");
+var Matrix3D_1 = require("../../../lib/glantern/src/flash/geom/Matrix3D");
+var ColorTransform_1 = require("../../../lib/glantern/src/flash/geom/ColorTransform");
+var TextFormat_1 = require("../../../lib/glantern/src/flash/text/TextFormat");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var Display = (function (_super) {
     __extends(Display, _super);
@@ -11078,7 +11078,7 @@ exports.Display = Display;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/glantern/flash/filters/BitmapFilterQuality":54,"../../../lib/glantern/src/glantern/flash/filters/BlurFilter":55,"../../../lib/glantern/src/glantern/flash/filters/GlowFilter":56,"../../../lib/glantern/src/glantern/flash/geom/ColorTransform":58,"../../../lib/glantern/src/glantern/flash/geom/Matrix":59,"../../../lib/glantern/src/glantern/flash/geom/Matrix3D":60,"../../../lib/glantern/src/glantern/flash/geom/Point":63,"../../../lib/glantern/src/glantern/flash/geom/Vector3D":66,"../../../lib/glantern/src/glantern/flash/text/TextFormat":75,"../../danmaku/scripted/dco/DCShape":161,"./BiliBiliDamakuApiObject":130,"./CommentField":133}],135:[function(require,module,exports){
+},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":54,"../../../lib/glantern/src/flash/filters/BlurFilter":55,"../../../lib/glantern/src/flash/filters/GlowFilter":56,"../../../lib/glantern/src/flash/geom/ColorTransform":58,"../../../lib/glantern/src/flash/geom/Matrix":59,"../../../lib/glantern/src/flash/geom/Matrix3D":60,"../../../lib/glantern/src/flash/geom/Point":63,"../../../lib/glantern/src/flash/geom/Vector3D":66,"../../../lib/glantern/src/flash/text/TextFormat":75,"../../danmaku/scripted/dco/DCShape":161,"./BiliBiliDamakuApiObject":130,"./CommentField":133}],135:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -11597,7 +11597,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Tween_1 = require("../../../lib/glantern/src/glantern/fl/transitions/Tween");
+var Tween_1 = require("../../../lib/glantern/src/fl/transitions/Tween");
 var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 var TweenImpl = (function (_super) {
     __extends(TweenImpl, _super);
@@ -11627,7 +11627,7 @@ exports.TweenImpl = TweenImpl;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/glantern/fl/transitions/Tween":7}],144:[function(require,module,exports){
+},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/fl/transitions/Tween":7}],144:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -12165,7 +12165,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuKind_1 = require("../DanmakuKind");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
-var DisplayObjectContainer_1 = require("../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer");
+var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var ScriptedDanmaku = (function (_super) {
     __extends(ScriptedDanmaku, _super);
@@ -12375,7 +12375,7 @@ exports.ScriptedDanmaku = ScriptedDanmaku;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer":31,"../../bilibili/BiliBiliDanmakuApiContainer":129,"../DanmakuKind":149}],156:[function(require,module,exports){
+},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/flash/display/DisplayObjectContainer":31,"../../bilibili/BiliBiliDanmakuApiContainer":129,"../DanmakuKind":149}],156:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/11.
  */
@@ -12400,7 +12400,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DisplayObjectContainer_1 = require("../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer");
+var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var ScriptedDanmakuLayer = (function (_super) {
     __extends(ScriptedDanmakuLayer, _super);
     function ScriptedDanmakuLayer(root, parent) {
@@ -12416,7 +12416,7 @@ exports.ScriptedDanmakuLayer = ScriptedDanmakuLayer;
 
 
 
-},{"../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer":31}],158:[function(require,module,exports){
+},{"../../../lib/glantern/src/flash/display/DisplayObjectContainer":31}],158:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -12712,7 +12712,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCOHelper_1 = require("./DCOHelper");
-var Shape_1 = require("../../../../lib/glantern/src/glantern/flash/display/Shape");
+var Shape_1 = require("../../../../lib/glantern/src/flash/display/Shape");
 var DCShape = (function (_super) {
     __extends(DCShape, _super);
     function DCShape(root, parent, createParams, extraCreateParams) {
@@ -12750,7 +12750,7 @@ exports.DCShape = DCShape;
 
 
 
-},{"../../../../lib/glantern/src/glantern/flash/display/Shape":41,"./DCOHelper":160}],162:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/display/Shape":41,"./DCOHelper":160}],162:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
@@ -12759,8 +12759,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Timer_1 = require("../../../../lib/glantern/src/glantern/flash/utils/Timer");
-var TimerEvent_1 = require("../../../../lib/glantern/src/glantern/flash/events/TimerEvent");
+var Timer_1 = require("../../../../lib/glantern/src/flash/utils/Timer");
+var TimerEvent_1 = require("../../../../lib/glantern/src/flash/events/TimerEvent");
 var FiniteTimer = (function (_super) {
     __extends(FiniteTimer, _super);
     function FiniteTimer(obj, delay, repeatCount) {
@@ -12792,7 +12792,7 @@ exports.FiniteTimer = FiniteTimer;
 
 
 
-},{"../../../../lib/glantern/src/glantern/flash/events/TimerEvent":52,"../../../../lib/glantern/src/glantern/flash/utils/Timer":80}],163:[function(require,module,exports){
+},{"../../../../lib/glantern/src/flash/events/TimerEvent":52,"../../../../lib/glantern/src/flash/utils/Timer":80}],163:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
@@ -13038,8 +13038,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextField_1 = require("../../../lib/glantern/src/glantern/flash/text/TextField");
-var RenderHelper_1 = require("../../../lib/glantern/src/glantern/webgl/RenderHelper");
+var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
+var RenderHelper_1 = require("../../../lib/glantern/src/webgl/RenderHelper");
 var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var SimpleDanmakuLayer = (function (_super) {
     __extends(SimpleDanmakuLayer, _super);
@@ -13123,7 +13123,7 @@ exports.SimpleDanmakuLayer = SimpleDanmakuLayer;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/glantern/flash/text/TextField":72,"../../../lib/glantern/src/glantern/webgl/RenderHelper":91}],169:[function(require,module,exports){
+},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/flash/text/TextField":72,"../../../lib/glantern/src/webgl/RenderHelper":91}],169:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
@@ -13616,11 +13616,11 @@ var interactive = require("./interactive/index");
 exports.interactive = interactive;
 var BulletproofConfig_1 = require("./BulletproofConfig");
 exports.configuration = BulletproofConfig_1.BulletproofConfig;
-__export(require("../lib/glantern/src/glantern/index"));
+__export(require("../lib/glantern/src/index"));
 
 
 
-},{"../lib/glantern/src/glantern/index":82,"./Bulletproof":127,"./BulletproofConfig":128,"./bilibili/index":146,"./danmaku/index":154,"./interactive/index":173}],173:[function(require,module,exports){
+},{"../lib/glantern/src/index":82,"./Bulletproof":127,"./BulletproofConfig":128,"./bilibili/index":146,"./danmaku/index":154,"./interactive/index":173}],173:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */

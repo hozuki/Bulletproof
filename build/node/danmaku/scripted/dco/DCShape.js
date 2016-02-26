@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCOHelper_1 = require("./DCOHelper");
-var Shape_1 = require("../../../../lib/glantern/src/glantern/flash/display/Shape");
+var Shape_1 = require("../../../../lib/glantern/src/flash/display/Shape");
 var DCShape = (function (_super) {
     __extends(DCShape, _super);
     function DCShape(root, parent, createParams, extraCreateParams) {

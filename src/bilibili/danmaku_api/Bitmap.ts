@@ -6,9 +6,9 @@ import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {ICommentBitmapCreateParams} from "./data_types/ICommentBitmapCreateParams";
 import {CommentBitmap} from "./CommentBitmap";
-import {BitmapData} from "../../../lib/glantern/src/glantern/flash/display/BitmapData";
+import {BitmapData} from "../../../lib/glantern/src/flash/display/BitmapData";
 import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
-import {Rectangle} from "../../../lib/glantern/src/glantern/flash/geom/Rectangle";
+import {Rectangle} from "../../../lib/glantern/src/flash/geom/Rectangle";
 
 export class Bitmap extends BiliBiliDamakuApiObject {
 

@@ -4,11 +4,11 @@
 
 import {SimpleDanmakuProvider} from "./SimpleDanmakuProvider";
 import {SimpleDanmaku} from "./SimpleDanmaku";
-import {TextField} from "../../../lib/glantern/src/glantern/flash/text/TextField";
-import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
-import {WebGLRenderer} from "../../../lib/glantern/src/glantern/webgl/WebGLRenderer";
-import {RenderHelper} from "../../../lib/glantern/src/glantern/webgl/RenderHelper";
+import {TextField} from "../../../lib/glantern/src/flash/text/TextField";
+import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
+import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
+import {WebGLRenderer} from "../../../lib/glantern/src/webgl/WebGLRenderer";
+import {RenderHelper} from "../../../lib/glantern/src/webgl/RenderHelper";
 import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export class SimpleDanmakuLayer extends TextField {
