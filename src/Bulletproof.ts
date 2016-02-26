@@ -62,6 +62,13 @@ export class Bulletproof extends GLantern {
                     this._videoPlayer.initialize(width, height);
                 }
             }
+
+            var blackCurtainView = window.document.createElement("div");
+            var blackCurtainStyle = blackCurtainView.style;
+            blackCurtainStyle.width = `${width}px`;
+            blackCurtainStyle.height = `${height}px`;
+            blackCurtainStyle.backgroundColor = "black";
+            this._blackCurtainView = blackCurtainView;
         }
     }
 
@@ -143,6 +150,10 @@ export class Bulletproof extends GLantern {
         return this._config;
     }
 
+    get blackCurtainView():HTMLDivElement {
+        return this._blackCurtainView;
+    }
+
     protected __updateComponents():void {
         if (this._lastUpdatedTime > 0) {
             var now = Date.now();
@@ -166,5 +177,6 @@ export class Bulletproof extends GLantern {
     protected _coordinator:DanmakuCoordinator = null;
     protected _videoPlayer:VideoPlayerBase = null;
     protected _config:IBulletproofConfig = null;
+    protected _blackCurtainView:HTMLDivElement = null;
 
 }

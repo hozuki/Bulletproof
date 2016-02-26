@@ -32,60 +32,29 @@
             </span>
         </span>
         <div style="margin-top: 5px;">
-            <label for="input-danmaku">Add flying danmaku:</label>
-            <input id="input-danmaku" name="input-danmaku" type="text" style="width: 120px;"/>
-            <button type="button" onclick="addFlyingDanmaku();">Add</button>
+            <label for="input-danmaku">Add simple danmaku:
+                <input id="input-danmaku" name="input-danmaku" type="text" style="width: 120px;"/>
+            </label>
+            <label for="input-danmaku-position">Position:
+                <select id="input-danmaku-position">
+                    <option value="0">Flying (R2L)</option>
+                    <option value="1">Top</option>
+                    <option value="2">Bottom</option>
+                    <option value="3">Top-left</option>
+                    <option value="4">Top-right</option>
+                    <option value="5">Bottom-left</option>
+                    <option value="6">Bottom-right</option>
+                </select>
+            </label>
+            <button id="btn-danmaku-spawner" type="button">Add</button>
         </div>
     </div>
     <div id="glantern-container">
-        <div class="absolute black-background" style="width: 682px; height: 438px; z-index: 0;"></div>
     </div>
 </div>
-<script type="text/javascript" id="bp-source-loader">
-    (function loadBulletproofSource(useNodeVersion, useMinimizedVersion, forceNoCache) {
-        function defaultValue(obj, value) {
-            return typeof obj === "undefined" ? value : obj;
-        }
-
-        useNodeVersion = defaultValue(useNodeVersion, false);
-        useMinimizedVersion = defaultValue(useMinimizedVersion, false);
-        forceNoCache = defaultValue(forceNoCache, true);
-        var src = null;
-        if (useNodeVersion) {
-            src = "../../build/node/index";
-            window.Bulletproof = require(src);
-        } else {
-            src = "../../build/Bulletproof-browser" + (useMinimizedVersion ? ".min" : "") + ".js";
-            if (forceNoCache) {
-                var timeMillis = Date.now();
-                src += "?time=" + timeMillis.toString();
-            }
-            var newScriptTag = document.createElement("script");
-            newScriptTag.type = "text/javascript";
-            newScriptTag.src = src;
-            var thisScriptTag = document.getElementById("bp-source-loader");
-            if (thisScriptTag.nextElementSibling) {
-                document.body.insertBefore(newScriptTag, thisScriptTag.nextElementSibling);
-            } else {
-                document.body.appendChild(newScriptTag);
-            }
-        }
-    })(undefined, true);
-</script>
+<script type="text/javascript" id="bp-source-loader" src="bp-source-loader.js"></script>
 <script type="text/javascript" src="bootstrap.js"></script>
-<script type="text/javascript">
-    function reloadPage() {
-        // Note: Reloading problem
-        //   When caching policy is active, Bulletproof fails to redraw in the new session created by
-        // clicking "Reload" button. Detailed relation between cached scripts and rendering logic
-        // is not analyzed yet, however it is sure that caching does prevent rendering right.
-        //   A workaround to the problem is to disable caching. This action is performed by
-        // loadBulletproofSource() function. In order to disable caching, please use the plain JavaScript
-        // version (useNodeVersion=false) even in NW.js, and force disabling caching (forceNoCache=true).
-        // I have tested and discovered that, setting a specific no-caching header in this page
-        // (<meta http-equiv="cache-control" content="no-store">) does not work.
-        window.location.reload(true);
-    }
-</script>
+<script type="text/javascript" src="danmaku-control.js"></script>
+<script type="text/javascript" src="reload-page.js"></script>
 </body>
 </html>

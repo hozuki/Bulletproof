@@ -5,11 +5,11 @@
 export enum SimpleDanmakuType {
 
     FlyingR2L = 0,
-    Top = 1,
-    Bottom = 2,
-    TopLeft = 3,
-    TopRight = 4,
-    BottomLeft = 5,
-    BottomRight = 6
+    AnchoredTop = 1,
+    AnchoredBottom = 2,
+    AnchoredTopLeft = 3,
+    AnchoredTopRight = 4,
+    AnchoredBottomLeft = 5,
+    AnchoredBottomRight = 6
 
 }

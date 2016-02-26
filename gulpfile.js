@@ -22,7 +22,7 @@ var tsConfig = {
 
 gulp.task("build", ["build-compile", "build-browserify"]);
 
-gulp.task("build-compile", function () {
+gulp.task("build-compile", ["build-compile-glantern"], function () {
     "use strict";
     return gulp
         .src(["src/**/*.ts", "inc/**/*.ts"])
@@ -44,7 +44,7 @@ gulp.task("build-compile-glantern", function () {
         .pipe(gulp.dest("build/lib/glantern/src"))
 });
 
-gulp.task("build-browserify", ["build-compile", "build-compile-glantern"], function () {
+gulp.task("build-browserify", ["build-compile"], function () {
     "use strict";
     return browserify({
         entries: [

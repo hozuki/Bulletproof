@@ -31,6 +31,7 @@ var Bulletproof = (function (_super) {
         this._coordinator = null;
         this._videoPlayer = null;
         this._config = null;
+        this._blackCurtainView = null;
         this._config = _util_1._util.deepClone(BulletproofConfig_1.BulletproofConfig);
     }
     /**
@@ -65,6 +66,12 @@ var Bulletproof = (function (_super) {
                     this._videoPlayer.initialize(width, height);
                 }
             }
+            var blackCurtainView = window.document.createElement("div");
+            var blackCurtainStyle = blackCurtainView.style;
+            blackCurtainStyle.width = width + "px";
+            blackCurtainStyle.height = height + "px";
+            blackCurtainStyle.backgroundColor = "black";
+            this._blackCurtainView = blackCurtainView;
         }
     };
     /**
@@ -160,6 +167,13 @@ var Bulletproof = (function (_super) {
     Object.defineProperty(Bulletproof.prototype, "config", {
         get: function () {
             return this._config;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bulletproof.prototype, "blackCurtainView", {
+        get: function () {
+            return this._blackCurtainView;
         },
         enumerable: true,
         configurable: true

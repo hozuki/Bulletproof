@@ -33,12 +33,15 @@ function initEnv() {
         bp.initialize(682, 438);
         (function (selector) {
             var elem = document.querySelector(selector);
-            elem.appendChild(bp.videoView);
+            bp.blackCurtainView.style.position = "absolute";
+            bp.blackCurtainView.style.zIndex = "0";
             bp.videoView.style.position = "absolute";
             bp.videoView.style.zIndex = "1";
-            elem.appendChild(bp.view);
             bp.view.style.position = "absolute";
             bp.view.style.zIndex = "9999";
+            elem.appendChild(bp.blackCurtainView);
+            elem.appendChild(bp.videoView);
+            elem.appendChild(bp.view);
         })("#glantern-container");
     }
 }
@@ -187,21 +190,6 @@ function uninitFps() {
     if (__timerHandle !== 0) {
         clearInterval(__timerHandle);
     }
-}
-
-function addFlyingDanmaku() {
-    if (!bp) {
-        return;
-    }
-    /**
-     * @type {SimpleDanmakuProvider}
-     */
-    var provider = bp.danmakuCoordinator.getDanmakuProvider(Bulletproof.danmaku.DanmakuKind.Simple);
-    /**
-     * @type {HTMLInputElement}
-     */
-    var textBox = document.querySelector("#input-danmaku");
-    provider.addDanmaku(textBox.value);
 }
 
 function initVideoElements() {
