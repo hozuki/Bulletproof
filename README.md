@@ -18,12 +18,21 @@ core features are completed.*
 - [X] High speed rendering
 - [X] Cross browser compatibility (Chrome, Firefox, IE11, Edge)
 - [ ] Web video player wrapper
-- [X] Simple danmaku (flying, R2L)
-- [ ] Simple danmaku (anchored)
+- [ ] Simple danmakus
+  - [X] Flying, right-to-left
+  - [ ] Anchored
 - [ ] Mode 7 danmaku
-- [X] Scripted danmaku (graphics)
-- [ ] Scripted danmaku (others)
-- [ ] Safety sandbox for scripted danmaku
+- [ ] Scripted danmaku
+  - [X] `Display`
+  - [X] `Functions`
+  - [X] `Global`
+  - [ ] `Tween`
+  - [ ] `Player`
+  - [ ] `ScriptManager`
+  - [X] `Utils`
+  - [ ] External library: `Bitmap`
+  - [ ] External library: `Storage`
+  - [ ] Safety sandbox
 - [ ] BiliBili XML parser
 
 ## License
