@@ -14,6 +14,7 @@ import {IDanmaku} from "../IDanmaku";
 import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
 import {CommentData} from "../../bilibili/danmaku_api/CommentData";
+import {_util} from "../../../lib/glantern/src/_util/_util";
 
 export class SimpleDanmaku implements IDanmaku {
 
@@ -91,7 +92,14 @@ export class SimpleDanmaku implements IDanmaku {
      * bottom right) should recalculate their Y positions to fit in the change.
      * @type {Boolean}
      */
-    yPositionSet:boolean = false;
+    ySet:boolean = false;
+
+    /**
+     * Gets/sets whether the X position of this {@link SimpleDanmaku} is set. Common languages are horizontally displayed,
+     * that means the X position changes much less frequently than the Y position.
+     * @type {boolean}
+     */
+    xSet:boolean = false;
 
     /**
      * X coordinate of the top left point of this {@link SimpleDanmaku}.
@@ -118,6 +126,10 @@ export class SimpleDanmaku implements IDanmaku {
             mode: this.createParams.type,
             fontSize: this.createParams.fontSize
         };
+    }
+
+    isType(type:SimpleDanmakuType):boolean {
+        return this.createParams.type === type;
     }
 
     private _content:string = null;

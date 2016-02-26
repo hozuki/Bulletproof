@@ -3,12 +3,12 @@
  */
 (function (SimpleDanmakuType) {
     SimpleDanmakuType[SimpleDanmakuType["FlyingR2L"] = 0] = "FlyingR2L";
-    SimpleDanmakuType[SimpleDanmakuType["Top"] = 1] = "Top";
-    SimpleDanmakuType[SimpleDanmakuType["Bottom"] = 2] = "Bottom";
-    SimpleDanmakuType[SimpleDanmakuType["TopLeft"] = 3] = "TopLeft";
-    SimpleDanmakuType[SimpleDanmakuType["TopRight"] = 4] = "TopRight";
-    SimpleDanmakuType[SimpleDanmakuType["BottomLeft"] = 5] = "BottomLeft";
-    SimpleDanmakuType[SimpleDanmakuType["BottomRight"] = 6] = "BottomRight";
+    SimpleDanmakuType[SimpleDanmakuType["AnchoredTop"] = 1] = "AnchoredTop";
+    SimpleDanmakuType[SimpleDanmakuType["AnchoredBottom"] = 2] = "AnchoredBottom";
+    SimpleDanmakuType[SimpleDanmakuType["AnchoredTopLeft"] = 3] = "AnchoredTopLeft";
+    SimpleDanmakuType[SimpleDanmakuType["AnchoredTopRight"] = 4] = "AnchoredTopRight";
+    SimpleDanmakuType[SimpleDanmakuType["AnchoredBottomLeft"] = 5] = "AnchoredBottomLeft";
+    SimpleDanmakuType[SimpleDanmakuType["AnchoredBottomRight"] = 6] = "AnchoredBottomRight";
 })(exports.SimpleDanmakuType || (exports.SimpleDanmakuType = {}));
 var SimpleDanmakuType = exports.SimpleDanmakuType;
 
