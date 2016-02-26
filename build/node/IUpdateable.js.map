@@ -1,1 +1,0 @@
-{"version":3,"sources":["iupdateable.ts"],"names":[],"mappings":"AAAA;;GAEG","file":"IUpdateable.js","sourcesContent":["/**\r\n * Created by MIC on 2015/12/28.\r\n */\r\n\r\nexport interface IUpdateable {\r\n\r\n    update():void;\r\n\r\n}\r\n"],"sourceRoot":"/source/"}

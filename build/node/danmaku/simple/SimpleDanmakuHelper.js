@@ -1,21 +1,21 @@
 /**
  * Created by MIC on 2016/2/7.
  */
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var SimpleDanmakuHelper = (function () {
     function SimpleDanmakuHelper() {
     }
     SimpleDanmakuHelper.getDefaultParams = function (config) {
-        return _util_1._util.deepClone(config.defaultSimpleDanmakuCreateParams);
+        return GLUtil_1.GLUtil.deepClone(config.defaultSimpleDanmakuCreateParams);
     };
     SimpleDanmakuHelper.fillInCreateParams = function (config, params) {
         function applyValue(name) {
-            if (_util_1._util.isUndefinedOrNull(params[name])) {
+            if (GLUtil_1.GLUtil.isUndefinedOrNull(params[name])) {
                 params[name] = config.defaultSimpleDanmakuCreateParams[name];
             }
         }
         function setDefaultValue(name, def) {
-            if (_util_1._util.isUndefined(params[name])) {
+            if (GLUtil_1.GLUtil.isUndefined(params[name])) {
                 params[name] = def;
             }
         }

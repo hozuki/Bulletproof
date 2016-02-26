@@ -6,13 +6,13 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var GLantern_1 = require("../lib/glantern/src/GLantern");
+var GLantern_1 = require("../lib/glantern/src/glantern/GLantern");
 var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
 var ScriptedDanmakuProvider_1 = require("./danmaku/scripted/ScriptedDanmakuProvider");
 var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
 var BulletproofConfig_1 = require("./BulletproofConfig");
-var _util_1 = require("../lib/glantern/src/_util/_util");
 var Html5VideoPlayer_1 = require("./interactive/video/html5/Html5VideoPlayer");
+var GLUtil_1 = require("../lib/glantern/lib/glantern-utils/src/GLUtil");
 /**
  * The root controller for Bulletproof.
  */
@@ -32,7 +32,7 @@ var Bulletproof = (function (_super) {
         this._videoPlayer = null;
         this._config = null;
         this._blackCurtainView = null;
-        this._config = _util_1._util.deepClone(BulletproofConfig_1.BulletproofConfig);
+        this._config = GLUtil_1.GLUtil.deepClone(BulletproofConfig_1.BulletproofConfig);
     }
     /**
      * Initialize the {@link Bulletproof} instance with default parameters.
@@ -154,7 +154,7 @@ var Bulletproof = (function (_super) {
     });
     Object.defineProperty(Bulletproof.prototype, "videoView", {
         get: function () {
-            if (_util_1._util.isUndefinedOrNull(this._videoPlayer)) {
+            if (GLUtil_1.GLUtil.isUndefinedOrNull(this._videoPlayer)) {
                 return null;
             }
             else {

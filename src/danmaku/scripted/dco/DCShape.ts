@@ -2,14 +2,13 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {Shape} from "../../../../lib/glantern/src/flash/display/Shape";
 import {IDanmakuCreatedObject} from "./IDanmakuCreatedObject";
 import {IGeneralCreateParams} from "../../../bilibili/danmaku_api/data_types/IGeneralCreateParams";
-import {Stage} from "../../../../lib/glantern/src/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 import {IDCExtraCreateParams} from "./IDCExtraCreateParams";
 import {DCOHelper} from "./DCOHelper";
-import {_util} from "../../../../lib/glantern/src/_util/_util";
+import {Shape} from "../../../../lib/glantern/src/glantern/flash/display/Shape";
+import {Stage} from "../../../../lib/glantern/src/glantern/flash/display/Stage";
+import {DisplayObjectContainer} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
 
 export class DCShape extends Shape implements IDanmakuCreatedObject {
 

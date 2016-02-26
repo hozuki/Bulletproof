@@ -1,8 +1,8 @@
 /**
  * Created by MIC on 2015/12/28.
  */
-var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplementedError");
 var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
+var NotImplementedError_1 = require("../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 /**
  * Base class exposing common service of a danmaku provider.
  * This class must be inherited.

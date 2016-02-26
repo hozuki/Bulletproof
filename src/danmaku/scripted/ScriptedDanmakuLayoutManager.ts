@@ -5,8 +5,6 @@
 import {DanmakuLayoutManagerBase} from "../DanmakuLayoutManagerBase";
 import {ScriptedDanmakuProvider} from "./ScriptedDanmakuProvider";
 import {DanmakuKind} from "../DanmakuKind";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
-import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {IDanmaku} from "../IDanmaku";
 import {StageResizedEventArgs} from "../StageResizedEventArgs";
 

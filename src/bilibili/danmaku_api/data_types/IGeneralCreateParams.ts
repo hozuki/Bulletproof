@@ -2,8 +2,8 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {DisplayObjectContainer} from "../../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 import {IMotion} from "./IMotion";
+import {DisplayObjectContainer} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
 
 export interface IGeneralCreateParams {
 

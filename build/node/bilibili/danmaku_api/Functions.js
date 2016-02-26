@@ -7,8 +7,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var Functions = (function (_super) {
     __extends(Functions, _super);
     function Functions(apiContainer) {
@@ -31,7 +31,7 @@ var Functions = (function (_super) {
         return this.apiContainer.api.Utils.interval(obj, delay, times);
     };
     Functions.prototype.foreach = function (loop, f) {
-        if (!_util_1._util.isUndefinedOrNull(loop)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(loop)) {
             for (var key in loop) {
                 if (loop.hasOwnProperty(key)) {
                     f(key, loop[key]);
@@ -40,7 +40,7 @@ var Functions = (function (_super) {
         }
     };
     Functions.prototype.clone = function (object) {
-        return _util_1._util.deepClone(object);
+        return GLUtil_1.GLUtil.deepClone(object);
     };
     Functions.prototype.load = function (libraryName, onComplete) {
         var availableLibraries = [

@@ -7,8 +7,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
-var Rectangle_1 = require("../../../lib/glantern/src/flash/geom/Rectangle");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var Rectangle_1 = require("../../../lib/glantern/src/glantern/flash/geom/Rectangle");
 var Bitmap = (function (_super) {
     __extends(Bitmap, _super);
     function Bitmap(apiContainer) {

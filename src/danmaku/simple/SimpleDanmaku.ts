@@ -4,17 +4,12 @@
 
 import {DanmakuKind} from "../DanmakuKind";
 import {SimpleDanmakuLayoutManager} from "./SimpleDanmakuLayoutManager";
-import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 import {SimpleDanmakuProvider} from "./SimpleDanmakuProvider";
 import {Bulletproof} from "../../Bulletproof";
-import {WebGLRenderer} from "../../../lib/glantern/src/webgl/WebGLRenderer";
 import {SimpleDanmakuType} from "./SimpleDanamkuType";
 import {IDanmaku} from "../IDanmaku";
-import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
 import {CommentData} from "../../bilibili/danmaku_api/CommentData";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 
 export class SimpleDanmaku implements IDanmaku {
 

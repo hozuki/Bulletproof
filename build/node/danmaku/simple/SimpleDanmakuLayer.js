@@ -6,9 +6,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
-var RenderHelper_1 = require("../../../lib/glantern/src/webgl/RenderHelper");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var TextField_1 = require("../../../lib/glantern/src/glantern/flash/text/TextField");
+var RenderHelper_1 = require("../../../lib/glantern/src/glantern/webgl/RenderHelper");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var SimpleDanmakuLayer = (function (_super) {
     __extends(SimpleDanmakuLayer, _super);
     function SimpleDanmakuLayer(root, parent, provider) {
@@ -62,26 +62,26 @@ var SimpleDanmakuLayer = (function (_super) {
         var baseX = cp.outline && cp.outlineThickness > 0 ? cp.outlineThickness : 0;
         var baseY = baseX;
         var borderThickness = cp.border && cp.borderThickness > 0 ? cp.borderThickness : 0;
-        if (_util_1._util.isUndefinedOrNull(last) || cp.fontName !== last.createParams.fontName || cp.fontSize !== last.createParams.fontSize) {
+        if (GLUtil_1.GLUtil.isUndefinedOrNull(last) || cp.fontName !== last.createParams.fontName || cp.fontSize !== last.createParams.fontSize) {
             context2D.font = cp.fontStyle.toString() + " " + cp.fontSize.toString() + "pt \"" + cp.fontName + "\"";
         }
         var textWidth = danmaku.textWidth;
         // See TextField.ts.
         var textHeight = danmaku.textHeight;
         if (cp.background) {
-            context2D.fillStyle = _util_1._util.colorToCssSharp(cp.backgroundColor);
+            context2D.fillStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.backgroundColor);
             context2D.fillRect(x, y, textWidth + borderThickness * 2, textHeight + borderThickness * 2);
         }
-        context2D.fillStyle = _util_1._util.colorToCssSharp(cp.textColor);
+        context2D.fillStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.textColor);
         context2D.fillText(danmaku.getText(), x + baseX + borderThickness, y + textHeight * 0.75 + borderThickness);
         if (cp.outline && cp.outlineThickness > 0) {
             context2D.lineWidth = cp.outlineThickness;
-            context2D.strokeStyle = _util_1._util.colorToCssSharp(cp.outlineColor);
+            context2D.strokeStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.outlineColor);
             context2D.strokeText(danmaku.getText(), x + baseX + borderThickness, y + textHeight * 0.75 + borderThickness);
         }
         if (cp.border && cp.borderThickness > 0) {
             context2D.lineWidth = cp.borderThickness;
-            context2D.strokeStyle = _util_1._util.colorToCssSharp(cp.borderColor);
+            context2D.strokeStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.borderColor);
             context2D.strokeRect(x + borderThickness, y + borderThickness, textWidth + borderThickness * 2, this.textHeight + borderThickness * 2);
         }
     };

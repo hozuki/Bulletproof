@@ -2,15 +2,13 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {IDisposable} from "../../lib/glantern/src/IDisposable";
-import {NotImplementedError} from "../../lib/glantern/src/_util/NotImplementedError";
-import {_util} from "../../lib/glantern/src/_util/_util";
 import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {Bulletproof} from "../Bulletproof";
-import {IWebGLElement} from "../../lib/glantern/src/webgl/IWebGLElement";
-import {WebGLRenderer} from "../../lib/glantern/src/webgl/WebGLRenderer";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
+import {IWebGLElement} from "../../lib/glantern/src/glantern/webgl/IWebGLElement";
+import {GLUtil} from "../../lib/glantern/lib/glantern-utils/src/GLUtil";
+import {WebGLRenderer} from "../../lib/glantern/src/glantern/webgl/WebGLRenderer";
 
 /**
  * The coordinator of all danmakus.
@@ -68,7 +66,7 @@ export class DanmakuCoordinator implements IWebGLElement {
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be added.
      */
     addDanmakuProvider(provider:DanmakuProviderBase):void {
-        if (!_util.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
+        if (!GLUtil.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
             provider.initialize();
         }
@@ -79,7 +77,7 @@ export class DanmakuCoordinator implements IWebGLElement {
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be removed.
      */
     removeDanmakuProvider(provider:DanmakuProviderBase):void {
-        if (!_util.isUndefinedOrNull(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
+        if (!GLUtil.isUndefinedOrNull(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.delete(provider.danmakuKind);
         }
     }
@@ -92,7 +90,7 @@ export class DanmakuCoordinator implements IWebGLElement {
      */
     getDanmakuProvider(kind:DanmakuKind):DanmakuProviderBase {
         var provider = this._danmakuProviders.get(kind);
-        if (_util.isUndefinedOrNull(provider)) {
+        if (GLUtil.isUndefinedOrNull(provider)) {
             return null;
         } else {
             return provider;

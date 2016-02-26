@@ -2,10 +2,10 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {ITween} from "./ITween";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 export class Tween extends BiliBiliDamakuApiObject {
 

@@ -2,9 +2,9 @@
  * Created by MIC on 2016/2/8.
  */
 
-import {IDisposable} from "../../../lib/glantern/src/IDisposable";
 import {VideoPlayerState} from "./VideoPlayerState";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
+import {IDisposable} from "../../../lib/glantern/src/glantern/IDisposable";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 export abstract class VideoPlayerBase implements IDisposable {
 

@@ -8,7 +8,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var VideoPlayerBase_1 = require("../VideoPlayerBase");
 var VideoPlayerState_1 = require("../VideoPlayerState");
-var _util_1 = require("../../../../lib/glantern/src/_util/_util");
+var GLUtil_1 = require("../../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var Html5VideoPlayer = (function (_super) {
     __extends(Html5VideoPlayer, _super);
     function Html5VideoPlayer() {
@@ -46,7 +46,7 @@ var Html5VideoPlayer = (function (_super) {
         for (var i = 0; i < handlers.length; ++i) {
             video.removeEventListener(handlers[i].name, handlers[i].handler);
         }
-        if (!_util_1._util.isUndefinedOrNull(videoParent)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(videoParent)) {
             videoParent.removeChild(video);
         }
         while (handlers.length > 0) {
@@ -120,7 +120,7 @@ var Html5VideoPlayer = (function (_super) {
         },
         set: function (v) {
             if (this.hasVideo) {
-                v = _util_1._util.limitInto(v, 0, 1);
+                v = GLUtil_1.GLUtil.limitInto(v, 0, 1);
                 this.currentTime = v * this.duration;
             }
         },
@@ -212,7 +212,7 @@ var Html5VideoPlayer = (function (_super) {
         },
         set: function (v) {
             if (this._videoElement !== null) {
-                v = _util_1._util.limitInto(v, 0, 1);
+                v = GLUtil_1.GLUtil.limitInto(v, 0, 1);
                 this._videoElement.volume = v * 200;
             }
         },

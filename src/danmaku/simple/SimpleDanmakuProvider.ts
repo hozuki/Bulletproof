@@ -6,7 +6,6 @@ import {DanmakuProviderBase} from "../DanmakuProviderBase";
 import {DanmakuKind} from "../DanmakuKind";
 import {DanmakuLayoutManagerBase} from "../DanmakuLayoutManagerBase";
 import {SimpleDanmakuLayoutManager} from "./SimpleDanmakuLayoutManager";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {DanmakuCoordinator} from "../DanmakuCoordinator";
 import {SimpleDanmaku} from "./SimpleDanmaku";
 import {DanmakuProviderFlag} from "../DanmakuProviderFlag";
@@ -15,8 +14,8 @@ import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
 import {SimpleDanmakuLayer} from "./SimpleDanmakuLayer";
 import {SimpleDanmakuHelper} from "./SimpleDanmakuHelper";
 import {StageResizedEventArgs} from "../StageResizedEventArgs";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {IDanmaku} from "../IDanmaku";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
@@ -66,9 +65,9 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
     canCreateDanmaku(args?:ISimpleDanmakuCreateParams):boolean {
         var config = this.bulletproof.config;
-        var type:SimpleDanmakuType = _util.isUndefinedOrNull(args) ? config.defaultSimpleDanmakuCreateParams.type : args.type;
+        var type:SimpleDanmakuType = GLUtil.isUndefinedOrNull(args) ? config.defaultSimpleDanmakuCreateParams.type : args.type;
         var count = this.partialDanmakuCounts[type];
-        return _util.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
+        return GLUtil.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
     }
 
     addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):IDanmaku {
@@ -204,7 +203,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
     protected __addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):SimpleDanmaku {
         var config = this.bulletproof.config;
-        if (_util.isUndefinedOrNull(args)) {
+        if (GLUtil.isUndefinedOrNull(args)) {
             args = SimpleDanmakuHelper.getDefaultParams(config);
         } else {
             SimpleDanmakuHelper.fillInCreateParams(config, args);

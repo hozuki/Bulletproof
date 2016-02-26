@@ -3,14 +3,13 @@
  */
 
 import {IGeneralCreateParams} from "../../../bilibili/danmaku_api/data_types/IGeneralCreateParams";
-import {NotImplementedError} from "../../../../lib/glantern/src/_util/NotImplementedError";
-import {DisplayObject} from "../../../../lib/glantern/src/flash/display/DisplayObject";
-import {_util} from "../../../../lib/glantern/src/_util/_util";
 import {IDanmakuCreatedObject} from "./IDanmakuCreatedObject";
 import {ICommentButtonCreateParams} from "../../../bilibili/danmaku_api/data_types/ICommentButtonCreateParams";
 import {Bulletproof} from "../../../Bulletproof";
 import {IMotionPropertyAnimation} from "../../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
 import {IMotion} from "../../../bilibili/danmaku_api/data_types/IMotion";
+import {DisplayObject} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObject";
+import {GLUtil} from "../../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export abstract class DCOHelper {
 
@@ -32,11 +31,11 @@ export abstract class DCOHelper {
             var literalMaxLife:number = 0;
             for (var j = 0; j < propertyNames.length; ++j) {
                 motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
-                if (!_util.isUndefinedOrNull(motionAnimation)) {
-                    if (_util.isUndefinedOrNull(motionAnimation.lifeTime)) {
+                if (!GLUtil.isUndefinedOrNull(motionAnimation)) {
+                    if (GLUtil.isUndefinedOrNull(motionAnimation.lifeTime)) {
                         motionAnimation.lifeTime = requestingObject.extraCreateParams.creator.lifeTime;
                     }
-                    if (!_util.isUndefinedOrNull(motionAnimation.startDelay)) {
+                    if (!GLUtil.isUndefinedOrNull(motionAnimation.startDelay)) {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
                     } else {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000);
@@ -50,20 +49,20 @@ export abstract class DCOHelper {
             };
         }
 
-        if (!_util.isUndefinedOrNull(createParams.motion) && !_util.isUndefinedOrNull(createParams.motionGroup)) {
+        if (!GLUtil.isUndefinedOrNull(createParams.motion) && !GLUtil.isUndefinedOrNull(createParams.motionGroup)) {
             console.warn("'motion' and 'motionGroup' are both set!");
         }
         var now = bulletproof.timeElapsed;
         var life:{maxLife: number, literalMaxLife: number};
         var motion:IMotion;
-        if (!_util.isUndefinedOrNull(createParams.motion)) {
+        if (!GLUtil.isUndefinedOrNull(createParams.motion)) {
             motion = createParams.motion;
             motion.sourceObject = requestingObject;
             motion.createdTime = now;
             life = __getMaximumLifeTime(motion);
             motion.maximumLifeTime = life.maxLife;
         }
-        if (!_util.isUndefinedOrNull(createParams.motionGroup)) {
+        if (!GLUtil.isUndefinedOrNull(createParams.motionGroup)) {
             for (var i = 0; i < createParams.motionGroup.length; ++i) {
                 motion = createParams.motionGroup[i];
                 motion.sourceObject = requestingObject;
@@ -81,13 +80,13 @@ export abstract class DCOHelper {
     }
 
     static applyGeneralCreateParams(displayObject:DisplayObject&IDanmakuCreatedObject, createParams:IGeneralCreateParams):void {
-        if (!_util.isUndefinedOrNull(createParams.alpha)) {
+        if (!GLUtil.isUndefinedOrNull(createParams.alpha)) {
             displayObject.alpha = createParams.alpha;
         }
-        if (!_util.isUndefinedOrNull(createParams.x)) {
+        if (!GLUtil.isUndefinedOrNull(createParams.x)) {
             displayObject.x = createParams.x;
         }
-        if (!_util.isUndefinedOrNull(createParams.y)) {
+        if (!GLUtil.isUndefinedOrNull(createParams.y)) {
             displayObject.y = createParams.y;
         }
     }

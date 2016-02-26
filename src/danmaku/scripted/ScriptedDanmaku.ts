@@ -4,22 +4,20 @@
 
 import {DanmakuKind} from "../DanmakuKind";
 import {ScriptedDanmakuLayoutManager} from "./ScriptedDanmakuLayoutManager";
-import {WebGLRenderer} from "../../../lib/glantern/src/webgl/WebGLRenderer";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
-import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
 import {Bulletproof} from "../../Bulletproof";
-import {DisplayObject} from "../../../lib/glantern/src/flash/display/DisplayObject";
 import {IDanmakuCreatedObject} from "./dco/IDanmakuCreatedObject";
 import {BiliBiliDanmakuApiContainer} from "../../bilibili/BiliBiliDanmakuApiContainer";
 import {IMotion} from "../../bilibili/danmaku_api/data_types/IMotion";
 import {IMotionPropertyAnimation} from "../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {ScriptedDanmakuProvider} from "./ScriptedDanmakuProvider";
 import {IDanmaku} from "../IDanmaku";
-import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {IScriptedDanmakuCreateParams} from "./IScriptedDanmakuCreateParams";
 import {CommentData} from "../../bilibili/danmaku_api/CommentData";
+import {DisplayObjectContainer} from "../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
+import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
+import {WebGLRenderer} from "../../../lib/glantern/src/glantern/webgl/WebGLRenderer";
+import {DisplayObject} from "../../../lib/glantern/src/glantern/flash/display/DisplayObject";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku {
 
@@ -144,9 +142,9 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         for (var i = 0; i < this._children.length; ++i) {
             child = <DisplayObject&IDanmakuCreatedObject><any>this._children[i];
             if (child.isCreatedByDanmaku) {
-                if (!_util.isUndefinedOrNull(child.createParams.motion)) {
+                if (!GLUtil.isUndefinedOrNull(child.createParams.motion)) {
                     ScriptedDanmaku.__applyMotion(child.createParams.motion, time);
-                } else if (!_util.isUndefinedOrNull(child.createParams.motionGroup)) {
+                } else if (!GLUtil.isUndefinedOrNull(child.createParams.motionGroup)) {
                     ScriptedDanmaku.__applyMotionGroup(child.createParams.motionGroup, time);
                 }
             }
@@ -155,7 +153,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
 
     protected static __applyMotionGroup(motionGroup:IMotion[], now:number):void {
         var motion:IMotion;
-        if (!_util.isUndefinedOrNull(motionGroup)) {
+        if (!GLUtil.isUndefinedOrNull(motionGroup)) {
             //console.log("Calculating: ", obj, " on ", now);
             for (var i = 0; i < motionGroup.length; ++i) {
                 motion = motionGroup[i];
@@ -172,9 +170,9 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
             for (var j = 0; j < propertyNames.length; ++j) {
                 motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
-                if (!_util.isUndefinedOrNull(motionAnimation)) {
+                if (!GLUtil.isUndefinedOrNull(motionAnimation)) {
                     relativeTime = now - motion.createdTime;
-                    if (!_util.isUndefinedOrNull(motionAnimation.startDelay)) {
+                    if (!GLUtil.isUndefinedOrNull(motionAnimation.startDelay)) {
                         relativeTime -= motionAnimation.startDelay;
                     }
                     if (relativeTime <= motionAnimation.lifeTime * 1000) {

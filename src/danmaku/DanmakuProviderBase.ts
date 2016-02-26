@@ -2,15 +2,15 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {IDisposable} from "../../lib/glantern/src/IDisposable";
 import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
-import {NotImplementedError} from "../../lib/glantern/src/_util/NotImplementedError";
 import {DanmakuCoordinator} from "./DanmakuCoordinator";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
 import {IDanmaku} from "./IDanmaku";
 import {Bulletproof} from "../Bulletproof";
-import {DisplayObject} from "../../lib/glantern/src/flash/display/DisplayObject";
+import {IDisposable} from "../../lib/glantern/src/glantern/IDisposable";
+import {NotImplementedError} from "../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
+import {DisplayObject} from "../../lib/glantern/src/glantern/flash/display/DisplayObject";
 
 /**
  * Base class exposing common service of a danmaku provider.

@@ -8,8 +8,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuLayoutManagerBase_1 = require("../DanmakuLayoutManagerBase");
 var DanmakuKind_1 = require("../DanmakuKind");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var SimpleDanamkuType_1 = require("./SimpleDanamkuType");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var SimpleDanmakuLayoutManager = (function (_super) {
     __extends(SimpleDanmakuLayoutManager, _super);
     function SimpleDanmakuLayoutManager(provider) {
@@ -183,8 +183,8 @@ function positionTop(danmaku, measureParams) {
                     var currentDDBottom = displayingList[i].y + displayingList[i].textHeight;
                     var estimatedCDPBottom = currentY + danmaku.textHeight;
                     // The displaying danmaku being measured "contains" the danmaku being positioned.
-                    if (_util_1._util.isValueBetweenEquals(estimatedCDPBottom, displayingList[i].y, currentDDBottom) ||
-                        _util_1._util.isValueBetweenEquals(currentY, displayingList[i].y, currentDDBottom)) {
+                    if (GLUtil_1.GLUtil.isValueBetweenEquals(estimatedCDPBottom, displayingList[i].y, currentDDBottom) ||
+                        GLUtil_1.GLUtil.isValueBetweenEquals(currentY, displayingList[i].y, currentDDBottom)) {
                         currentY = currentDDBottom;
                     }
                     if (currentY > stageHeight - danmaku.textHeight) {

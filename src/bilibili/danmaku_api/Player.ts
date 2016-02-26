@@ -4,15 +4,15 @@
 
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
-import {DisplayObject} from "../../../lib/glantern/src/flash/display/DisplayObject";
 import {CommentData} from "./CommentData";
-import {Sound} from "../../../lib/glantern/src/flash/media/Sound";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {VideoPlayerBase} from "../../interactive/video/VideoPlayerBase";
 import {VideoPlayerState} from "../../interactive/video/VideoPlayerState";
 import {PlayerState} from "./PlayerState";
 import {DanmakuProviderBase} from "../../danmaku/DanmakuProviderBase";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
+import {DisplayObject} from "../../../lib/glantern/src/glantern/flash/display/DisplayObject";
+import {Sound} from "../../../lib/glantern/src/glantern/flash/media/Sound";
 
 export class Player extends BiliBiliDamakuApiObject {
 
@@ -40,7 +40,7 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     jump(av:string, page:number = 1, newWindow:boolean = false):void {
-        var url = _util.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+        var url = GLUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
         if (newWindow) {
             window.open(url, "_blank");
         } else {

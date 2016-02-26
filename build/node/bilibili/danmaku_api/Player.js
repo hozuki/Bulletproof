@@ -7,10 +7,10 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var VideoPlayerState_1 = require("../../interactive/video/VideoPlayerState");
 var PlayerState_1 = require("./PlayerState");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 var Player = (function (_super) {
     __extends(Player, _super);
     function Player(apiContainer) {
@@ -36,7 +36,7 @@ var Player = (function (_super) {
     Player.prototype.jump = function (av, page, newWindow) {
         if (page === void 0) { page = 1; }
         if (newWindow === void 0) { newWindow = false; }
-        var url = _util_1._util.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+        var url = GLUtil_1.GLUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
         if (newWindow) {
             window.open(url, "_blank");
         }

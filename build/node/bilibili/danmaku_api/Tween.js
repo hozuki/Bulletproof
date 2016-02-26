@@ -6,8 +6,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 var Tween = (function (_super) {
     __extends(Tween, _super);
     function Tween(apiContainer) {

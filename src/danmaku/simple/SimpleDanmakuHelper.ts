@@ -4,24 +4,24 @@
 
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
 import {SimpleDanmakuType} from "./SimpleDanamkuType";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {IBulletproofConfig} from "../../IBulletproofConfig";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export abstract class SimpleDanmakuHelper {
 
     static getDefaultParams(config:IBulletproofConfig):ISimpleDanmakuCreateParams {
-        return _util.deepClone(config.defaultSimpleDanmakuCreateParams);
+        return GLUtil.deepClone(config.defaultSimpleDanmakuCreateParams);
     }
 
     static fillInCreateParams(config:IBulletproofConfig, params:ISimpleDanmakuCreateParams):void {
         function applyValue(name:string):void {
-            if (_util.isUndefinedOrNull((<any>params)[name])) {
+            if (GLUtil.isUndefinedOrNull((<any>params)[name])) {
                 (<any>params)[name] = (<any>config.defaultSimpleDanmakuCreateParams)[name];
             }
         }
 
         function setDefaultValue<T>(name:string, def:T):void {
-            if (_util.isUndefined((<any>params)[name])) {
+            if (GLUtil.isUndefined((<any>params)[name])) {
                 (<any>params)[name] = def;
             }
         }

@@ -14,7 +14,7 @@ var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
 var SimpleDanmakuLayer_1 = require("./SimpleDanmakuLayer");
 var SimpleDanmakuHelper_1 = require("./SimpleDanmakuHelper");
 var StageResizedEventArgs_1 = require("../StageResizedEventArgs");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
@@ -67,9 +67,9 @@ var SimpleDanmakuProvider = (function (_super) {
     };
     SimpleDanmakuProvider.prototype.canCreateDanmaku = function (args) {
         var config = this.bulletproof.config;
-        var type = _util_1._util.isUndefinedOrNull(args) ? config.defaultSimpleDanmakuCreateParams.type : args.type;
+        var type = GLUtil_1.GLUtil.isUndefinedOrNull(args) ? config.defaultSimpleDanmakuCreateParams.type : args.type;
         var count = this.partialDanmakuCounts[type];
-        return _util_1._util.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
+        return GLUtil_1.GLUtil.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
     };
     SimpleDanmakuProvider.prototype.addDanmaku = function (content, args) {
         return _super.prototype.addDanmaku.call(this, content, args);
@@ -220,7 +220,7 @@ var SimpleDanmakuProvider = (function (_super) {
     };
     SimpleDanmakuProvider.prototype.__addDanmaku = function (content, args) {
         var config = this.bulletproof.config;
-        if (_util_1._util.isUndefinedOrNull(args)) {
+        if (GLUtil_1.GLUtil.isUndefinedOrNull(args)) {
             args = SimpleDanmakuHelper_1.SimpleDanmakuHelper.getDefaultParams(config);
         }
         else {

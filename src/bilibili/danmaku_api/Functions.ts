@@ -4,9 +4,9 @@
 
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
-import {_util} from "../../../lib/glantern/src/_util/_util";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export class Functions extends BiliBiliDamakuApiObject {
 
@@ -41,7 +41,7 @@ export class Functions extends BiliBiliDamakuApiObject {
     }
 
     foreach(loop:any, f:(key:string, value:any) => void):void {
-        if (!_util.isUndefinedOrNull(loop)) {
+        if (!GLUtil.isUndefinedOrNull(loop)) {
             for (var key in loop) {
                 if (loop.hasOwnProperty(key)) {
                     f(key, loop[key]);
@@ -51,7 +51,7 @@ export class Functions extends BiliBiliDamakuApiObject {
     }
 
     clone(object:any):any {
-        return _util.deepClone(object);
+        return GLUtil.deepClone(object);
     }
 
     load(libraryName:string, onComplete:() => void):void {

@@ -2,9 +2,9 @@
  * Created by MIC on 2016/2/8.
  */
 
-import {DisplayObjectContainer} from "../../../lib/glantern/src/flash/display/DisplayObjectContainer";
-import {WebGLRenderer} from "../../../lib/glantern/src/webgl/WebGLRenderer";
-import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
+import {DisplayObjectContainer} from "../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer";
+import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
+import {WebGLRenderer} from "../../../lib/glantern/src/glantern/webgl/WebGLRenderer";
 
 export class ScriptedDanmakuLayer extends DisplayObjectContainer {
 

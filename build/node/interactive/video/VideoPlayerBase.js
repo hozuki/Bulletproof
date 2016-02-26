@@ -2,7 +2,7 @@
  * Created by MIC on 2016/2/8.
  */
 var VideoPlayerState_1 = require("./VideoPlayerState");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 var VideoPlayerBase = (function () {
     function VideoPlayerBase() {
     }

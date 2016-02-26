@@ -7,7 +7,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 var ScriptManager = (function (_super) {
     __extends(ScriptManager, _super);
     function ScriptManager(apiContainer) {

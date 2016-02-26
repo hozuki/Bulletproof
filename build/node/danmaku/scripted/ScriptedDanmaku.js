@@ -7,9 +7,9 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DanmakuKind_1 = require("../DanmakuKind");
-var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
+var DisplayObjectContainer_1 = require("../../../lib/glantern/src/glantern/flash/display/DisplayObjectContainer");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var ScriptedDanmaku = (function (_super) {
     __extends(ScriptedDanmaku, _super);
     function ScriptedDanmaku(root, parent, layoutManager, createParams) {
@@ -155,10 +155,10 @@ var ScriptedDanmaku = (function (_super) {
         for (var i = 0; i < this._children.length; ++i) {
             child = this._children[i];
             if (child.isCreatedByDanmaku) {
-                if (!_util_1._util.isUndefinedOrNull(child.createParams.motion)) {
+                if (!GLUtil_1.GLUtil.isUndefinedOrNull(child.createParams.motion)) {
                     ScriptedDanmaku.__applyMotion(child.createParams.motion, time);
                 }
-                else if (!_util_1._util.isUndefinedOrNull(child.createParams.motionGroup)) {
+                else if (!GLUtil_1.GLUtil.isUndefinedOrNull(child.createParams.motionGroup)) {
                     ScriptedDanmaku.__applyMotionGroup(child.createParams.motionGroup, time);
                 }
             }
@@ -166,7 +166,7 @@ var ScriptedDanmaku = (function (_super) {
     };
     ScriptedDanmaku.__applyMotionGroup = function (motionGroup, now) {
         var motion;
-        if (!_util_1._util.isUndefinedOrNull(motionGroup)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionGroup)) {
             //console.log("Calculating: ", obj, " on ", now);
             for (var i = 0; i < motionGroup.length; ++i) {
                 motion = motionGroup[i];
@@ -182,9 +182,9 @@ var ScriptedDanmaku = (function (_super) {
         if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
             for (var j = 0; j < propertyNames.length; ++j) {
                 motionAnimation = motion[propertyNames[j]];
-                if (!_util_1._util.isUndefinedOrNull(motionAnimation)) {
+                if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation)) {
                     relativeTime = now - motion.createdTime;
-                    if (!_util_1._util.isUndefinedOrNull(motionAnimation.startDelay)) {
+                    if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation.startDelay)) {
                         relativeTime -= motionAnimation.startDelay;
                     }
                     if (relativeTime <= motionAnimation.lifeTime * 1000) {

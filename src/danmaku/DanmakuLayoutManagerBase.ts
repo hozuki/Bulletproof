@@ -3,14 +3,12 @@
  */
 
 import {DanmakuKind} from "./DanmakuKind";
-import {IDisposable} from "../../lib/glantern/src/IDisposable";
-import {Point} from "../../lib/glantern/src/flash/geom/Point";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
-import {NotImplementedError} from "../../lib/glantern/src/_util/NotImplementedError";
-import {_util} from "../../lib/glantern/src/_util/_util";
 import {IDanmaku} from "./IDanmaku";
 import {Bulletproof} from "../Bulletproof";
 import {StageResizedEventArgs} from "./StageResizedEventArgs";
+import {IDisposable} from "../../lib/glantern/src/glantern/IDisposable";
+import {NotImplementedError} from "../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 /**
  * Base class exposing common service of a danmaku layout manager.

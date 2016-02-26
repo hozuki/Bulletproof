@@ -1,7 +1,7 @@
 /**
  * Created by MIC on 2015/12/29.
  */
-var _util_1 = require("../../../../lib/glantern/src/_util/_util");
+var GLUtil_1 = require("../../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var DCOHelper = (function () {
     function DCOHelper() {
     }
@@ -21,11 +21,11 @@ var DCOHelper = (function () {
             var literalMaxLife = 0;
             for (var j = 0; j < propertyNames.length; ++j) {
                 motionAnimation = motion[propertyNames[j]];
-                if (!_util_1._util.isUndefinedOrNull(motionAnimation)) {
-                    if (_util_1._util.isUndefinedOrNull(motionAnimation.lifeTime)) {
+                if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation)) {
+                    if (GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation.lifeTime)) {
                         motionAnimation.lifeTime = requestingObject.extraCreateParams.creator.lifeTime;
                     }
-                    if (!_util_1._util.isUndefinedOrNull(motionAnimation.startDelay)) {
+                    if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation.startDelay)) {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
                     }
                     else {
@@ -39,20 +39,20 @@ var DCOHelper = (function () {
                 literalMaxLife: literalMaxLife
             };
         }
-        if (!_util_1._util.isUndefinedOrNull(createParams.motion) && !_util_1._util.isUndefinedOrNull(createParams.motionGroup)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motion) && !GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motionGroup)) {
             console.warn("'motion' and 'motionGroup' are both set!");
         }
         var now = bulletproof.timeElapsed;
         var life;
         var motion;
-        if (!_util_1._util.isUndefinedOrNull(createParams.motion)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motion)) {
             motion = createParams.motion;
             motion.sourceObject = requestingObject;
             motion.createdTime = now;
             life = __getMaximumLifeTime(motion);
             motion.maximumLifeTime = life.maxLife;
         }
-        if (!_util_1._util.isUndefinedOrNull(createParams.motionGroup)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motionGroup)) {
             for (var i = 0; i < createParams.motionGroup.length; ++i) {
                 motion = createParams.motionGroup[i];
                 motion.sourceObject = requestingObject;
@@ -68,13 +68,13 @@ var DCOHelper = (function () {
         return r;
     };
     DCOHelper.applyGeneralCreateParams = function (displayObject, createParams) {
-        if (!_util_1._util.isUndefinedOrNull(createParams.alpha)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.alpha)) {
             displayObject.alpha = createParams.alpha;
         }
-        if (!_util_1._util.isUndefinedOrNull(createParams.x)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.x)) {
             displayObject.x = createParams.x;
         }
-        if (!_util_1._util.isUndefinedOrNull(createParams.y)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.y)) {
             displayObject.y = createParams.y;
         }
     };

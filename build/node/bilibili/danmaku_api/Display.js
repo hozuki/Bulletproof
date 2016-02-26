@@ -6,20 +6,20 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var NotImplementedError_1 = require("../../../lib/glantern/src/_util/NotImplementedError");
-var Matrix_1 = require("../../../lib/glantern/src/flash/geom/Matrix");
-var Point_1 = require("../../../lib/glantern/src/flash/geom/Point");
-var BitmapFilterQuality_1 = require("../../../lib/glantern/src/flash/filters/BitmapFilterQuality");
-var GlowFilter_1 = require("../../../lib/glantern/src/flash/filters/GlowFilter");
-var BlurFilter_1 = require("../../../lib/glantern/src/flash/filters/BlurFilter");
-var Vector3D_1 = require("../../../lib/glantern/src/flash/geom/Vector3D");
-var Matrix3D_1 = require("../../../lib/glantern/src/flash/geom/Matrix3D");
-var ColorTransform_1 = require("../../../lib/glantern/src/flash/geom/ColorTransform");
-var TextFormat_1 = require("../../../lib/glantern/src/flash/text/TextFormat");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var DCShape_1 = require("../../danmaku/scripted/dco/DCShape");
 var CommentField_1 = require("./CommentField");
+var Matrix_1 = require("../../../lib/glantern/src/glantern/flash/geom/Matrix");
+var Point_1 = require("../../../lib/glantern/src/glantern/flash/geom/Point");
+var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var BitmapFilterQuality_1 = require("../../../lib/glantern/src/glantern/flash/filters/BitmapFilterQuality");
+var GlowFilter_1 = require("../../../lib/glantern/src/glantern/flash/filters/GlowFilter");
+var BlurFilter_1 = require("../../../lib/glantern/src/glantern/flash/filters/BlurFilter");
+var Vector3D_1 = require("../../../lib/glantern/src/glantern/flash/geom/Vector3D");
+var Matrix3D_1 = require("../../../lib/glantern/src/glantern/flash/geom/Matrix3D");
+var ColorTransform_1 = require("../../../lib/glantern/src/glantern/flash/geom/ColorTransform");
+var TextFormat_1 = require("../../../lib/glantern/src/glantern/flash/text/TextFormat");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 var Display = (function (_super) {
     __extends(Display, _super);
     function Display(apiContainer) {
@@ -163,7 +163,7 @@ var Display = (function (_super) {
             projectedVertices.pop();
         }
         if (vertices.length % 3 != 0) {
-            _util_1._util.trace("Display.projectVectors input vertex Vector must be a multiple of 3.");
+            GLUtil_1.GLUtil.trace("Display.projectVectors input vertex Vector must be a multiple of 3.");
             return;
         }
         var transformed = [];

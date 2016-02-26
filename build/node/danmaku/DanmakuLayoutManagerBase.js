@@ -1,7 +1,7 @@
 /**
  * Created by MIC on 2015/12/28.
  */
-var NotImplementedError_1 = require("../../lib/glantern/src/_util/NotImplementedError");
+var NotImplementedError_1 = require("../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
 /**
  * Base class exposing common service of a danmaku layout manager.
  * A danmaku layout manager does layout calculation and performs optimized layout for danmakus of its kind.

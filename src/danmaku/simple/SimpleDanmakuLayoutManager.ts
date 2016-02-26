@@ -5,14 +5,12 @@
 import {DanmakuLayoutManagerBase} from "../DanmakuLayoutManagerBase";
 import {SimpleDanmakuProvider} from "./SimpleDanmakuProvider";
 import {DanmakuKind} from "../DanmakuKind";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
-import {Point} from "../../../lib/glantern/src/flash/geom/Point";
 import {IDanmaku} from "../IDanmaku";
 import {SimpleDanmaku} from "./SimpleDanmaku";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {StageResizedEventArgs} from "../StageResizedEventArgs";
 import {SimpleDanmakuType} from "./SimpleDanamkuType";
-import {Stage} from "../../../lib/glantern/src/flash/display/Stage";
+import {Stage} from "../../../lib/glantern/src/glantern/flash/display/Stage";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 interface IMeasureParams {
     currentTime:number;
@@ -193,8 +191,8 @@ function positionTop(danmaku:SimpleDanmaku, measureParams:IMeasureParams):void {
                     var currentDDBottom = displayingList[i].y + displayingList[i].textHeight;
                     var estimatedCDPBottom = currentY + danmaku.textHeight;
                     // The displaying danmaku being measured "contains" the danmaku being positioned.
-                    if (_util.isValueBetweenEquals(estimatedCDPBottom, displayingList[i].y, currentDDBottom) ||
-                        _util.isValueBetweenEquals(currentY, displayingList[i].y, currentDDBottom)) {
+                    if (GLUtil.isValueBetweenEquals(estimatedCDPBottom, displayingList[i].y, currentDDBottom) ||
+                        GLUtil.isValueBetweenEquals(currentY, displayingList[i].y, currentDDBottom)) {
                         currentY = currentDDBottom;
                     }
                     if (currentY > stageHeight - danmaku.textHeight) {

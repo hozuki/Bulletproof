@@ -4,7 +4,7 @@
 
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 export class Storage extends BiliBiliDamakuApiObject {
 

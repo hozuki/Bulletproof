@@ -6,9 +6,8 @@ import {Bulletproof} from "../Bulletproof";
 import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
-import {Point} from "../../lib/glantern/src/flash/geom/Point";
-import {IDisposable} from "../../lib/glantern/src/IDisposable";
 import {CommentData} from "../bilibili/danmaku_api/CommentData";
+import {IDisposable} from "../../lib/glantern/src/glantern/IDisposable";
 
 export interface IDanmaku extends IDisposable {
 

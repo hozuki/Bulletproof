@@ -6,15 +6,14 @@ import {DanmakuProviderBase} from "../DanmakuProviderBase";
 import {DanmakuKind} from "../DanmakuKind";
 import {DanmakuLayoutManagerBase} from "../DanmakuLayoutManagerBase";
 import {ScriptedDanmakuLayoutManager} from "./ScriptedDanmakuLayoutManager";
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {DanmakuCoordinator} from "../DanmakuCoordinator";
 import {ScriptedDanmaku} from "./ScriptedDanmaku";
 import {DanmakuProviderFlag} from "../DanmakuProviderFlag";
 import {ScriptedDanmakuLayer} from "./ScriptedDanmakuLayer";
 import {IScriptedDanmakuCreateParams} from "./IScriptedDanmakuCreateParams";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {ScriptedDanmakuHelper} from "./ScriptedDanmakuHelper";
 import {IDanmaku} from "../IDanmaku";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
@@ -124,7 +123,7 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     protected __addDanmaku(content:string, args?:IScriptedDanmakuCreateParams):ScriptedDanmaku {
-        if (_util.isUndefinedOrNull(args)) {
+        if (GLUtil.isUndefinedOrNull(args)) {
             args = ScriptedDanmakuHelper.getDefaultParams(this.bulletproof.config);
         }
         var danmaku = new ScriptedDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager, args);

@@ -4,8 +4,7 @@
 
 import {VideoPlayerBase} from "../VideoPlayerBase";
 import {VideoPlayerState} from "../VideoPlayerState";
-import {NotImplementedError} from "../../../../lib/glantern/src/_util/NotImplementedError";
-import {_util} from "../../../../lib/glantern/src/_util/_util";
+import {GLUtil} from "../../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 type EventHandler<T extends Event> = (ev:T) => void;
 
@@ -46,7 +45,7 @@ export class Html5VideoPlayer extends VideoPlayerBase {
         for (var i = 0; i < handlers.length; ++i) {
             video.removeEventListener(handlers[i].name, handlers[i].handler);
         }
-        if (!_util.isUndefinedOrNull(videoParent)) {
+        if (!GLUtil.isUndefinedOrNull(videoParent)) {
             videoParent.removeChild(video);
         }
         while (handlers.length > 0) {
@@ -124,7 +123,7 @@ export class Html5VideoPlayer extends VideoPlayerBase {
 
     set currentRatio(v:number) {
         if (this.hasVideo) {
-            v = _util.limitInto(v, 0, 1);
+            v = GLUtil.limitInto(v, 0, 1);
             this.currentTime = v * this.duration;
         }
     }
@@ -199,7 +198,7 @@ export class Html5VideoPlayer extends VideoPlayerBase {
 
     set volume(v:number) {
         if (this._videoElement !== null) {
-            v = _util.limitInto(v, 0, 1);
+            v = GLUtil.limitInto(v, 0, 1);
             this._videoElement.volume = v * 200;
         }
     }

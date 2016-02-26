@@ -3,11 +3,11 @@
  */
 
 
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {ITween} from "./ITween";
-import {Tween} from "../../../lib/glantern/src/fl/transitions/Tween";
+import {Tween} from "../../../lib/glantern/src/glantern/fl/transitions/Tween";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
 
 export class TweenImpl extends Tween implements ITween {
 

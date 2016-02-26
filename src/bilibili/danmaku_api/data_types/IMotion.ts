@@ -3,8 +3,8 @@
  */
 
 import {IMotionPropertyAnimation} from "./IMotionPropertyAnimation";
-import {DisplayObject} from "../../../../lib/glantern/src/flash/display/DisplayObject";
 import {IDanmakuCreatedObject} from "../../../danmaku/scripted/dco/IDanmakuCreatedObject";
+import {DisplayObject} from "../../../../lib/glantern/src/glantern/flash/display/DisplayObject";
 
 export interface IMotion {
 

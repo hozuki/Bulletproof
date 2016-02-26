@@ -12,8 +12,8 @@ var ScriptedDanmakuLayoutManager_1 = require("./ScriptedDanmakuLayoutManager");
 var ScriptedDanmaku_1 = require("./ScriptedDanmaku");
 var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
 var ScriptedDanmakuLayer_1 = require("./ScriptedDanmakuLayer");
-var _util_1 = require("../../../lib/glantern/src/_util/_util");
 var ScriptedDanmakuHelper_1 = require("./ScriptedDanmakuHelper");
+var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
@@ -133,7 +133,7 @@ var ScriptedDanmakuProvider = (function (_super) {
         configurable: true
     });
     ScriptedDanmakuProvider.prototype.__addDanmaku = function (content, args) {
-        if (_util_1._util.isUndefinedOrNull(args)) {
+        if (GLUtil_1.GLUtil.isUndefinedOrNull(args)) {
             args = ScriptedDanmakuHelper_1.ScriptedDanmakuHelper.getDefaultParams(this.bulletproof.config);
         }
         var danmaku = new ScriptedDanmaku_1.ScriptedDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager, args);

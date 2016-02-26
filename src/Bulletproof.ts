@@ -2,17 +2,16 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {GLantern} from "../lib/glantern/src/GLantern";
+import {GLantern} from "../lib/glantern/src/glantern/GLantern";
 import {DanmakuCoordinator} from "./danmaku/DanmakuCoordinator";
 import {ScriptedDanmakuProvider} from "./danmaku/scripted/ScriptedDanmakuProvider";
 import {DanmakuProviderBase} from "./danmaku/DanmakuProviderBase";
-import {NotImplementedError} from "../lib/glantern/src/_util/NotImplementedError";
 import {SimpleDanmakuProvider} from "./danmaku/simple/SimpleDanmakuProvider";
 import {BulletproofConfig} from "./BulletproofConfig";
 import {VideoPlayerBase} from "./interactive/video/VideoPlayerBase";
-import {_util} from "../lib/glantern/src/_util/_util";
 import {Html5VideoPlayer} from "./interactive/video/html5/Html5VideoPlayer";
 import {IBulletproofConfig} from "./IBulletproofConfig";
+import {GLUtil} from "../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 /**
  * The root controller for Bulletproof.
@@ -24,7 +23,7 @@ export class Bulletproof extends GLantern {
      */
     constructor() {
         super();
-        this._config = _util.deepClone(BulletproofConfig);
+        this._config = GLUtil.deepClone(BulletproofConfig);
     }
 
     /**
@@ -139,7 +138,7 @@ export class Bulletproof extends GLantern {
     }
 
     get videoView():HTMLElement {
-        if (_util.isUndefinedOrNull(this._videoPlayer)) {
+        if (GLUtil.isUndefinedOrNull(this._videoPlayer)) {
             return null;
         } else {
             return this._videoPlayer.view;

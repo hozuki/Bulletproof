@@ -2,25 +2,25 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {NotImplementedError} from "../../../lib/glantern/src/_util/NotImplementedError";
-import {Matrix} from "../../../lib/glantern/src/flash/geom/Matrix";
-import {Point} from "../../../lib/glantern/src/flash/geom/Point";
-import {BitmapFilterQuality} from "../../../lib/glantern/src/flash/filters/BitmapFilterQuality";
-import {GlowFilter} from "../../../lib/glantern/src/flash/filters/GlowFilter";
-import {BlurFilter} from "../../../lib/glantern/src/flash/filters/BlurFilter";
-import {Vector3D} from "../../../lib/glantern/src/flash/geom/Vector3D";
-import {Matrix3D} from "../../../lib/glantern/src/flash/geom/Matrix3D";
-import {ColorTransform} from "../../../lib/glantern/src/flash/geom/ColorTransform";
-import {TextFormat} from "../../../lib/glantern/src/flash/text/TextFormat";
-import {Graphics} from "../../../lib/glantern/src/flash/display/Graphics";
-import {_util} from "../../../lib/glantern/src/_util/_util";
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
 import {DCShape} from "../../danmaku/scripted/dco/DCShape";
 import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
 import {ICommentButtonCreateParams} from "./data_types/ICommentButtonCreateParams";
-import {TextField} from "../../../lib/glantern/src/flash/text/TextField";
 import {CommentField} from "./CommentField";
+import {Matrix} from "../../../lib/glantern/src/glantern/flash/geom/Matrix";
+import {Point} from "../../../lib/glantern/src/glantern/flash/geom/Point";
+import {TextField} from "../../../lib/glantern/src/glantern/flash/text/TextField";
+import {NotImplementedError} from "../../../lib/glantern/lib/glantern-utils/src/NotImplementedError";
+import {BitmapFilterQuality} from "../../../lib/glantern/src/glantern/flash/filters/BitmapFilterQuality";
+import {GlowFilter} from "../../../lib/glantern/src/glantern/flash/filters/GlowFilter";
+import {BlurFilter} from "../../../lib/glantern/src/glantern/flash/filters/BlurFilter";
+import {Vector3D} from "../../../lib/glantern/src/glantern/flash/geom/Vector3D";
+import {Matrix3D} from "../../../lib/glantern/src/glantern/flash/geom/Matrix3D";
+import {ColorTransform} from "../../../lib/glantern/src/glantern/flash/geom/ColorTransform";
+import {TextFormat} from "../../../lib/glantern/src/glantern/flash/text/TextFormat";
+import {Graphics} from "../../../lib/glantern/src/glantern/flash/display/Graphics";
+import {GLUtil} from "../../../lib/glantern/lib/glantern-utils/src/GLUtil";
 
 export class Display extends BiliBiliDamakuApiObject {
 
@@ -149,7 +149,7 @@ export class Display extends BiliBiliDamakuApiObject {
             projectedVertices.pop();
         }
         if (vertices.length % 3 != 0) {
-            _util.trace("Display.projectVectors input vertex Vector must be a multiple of 3.");
+            GLUtil.trace("Display.projectVectors input vertex Vector must be a multiple of 3.");
             return;
         }
         var transformed:number[] = [];

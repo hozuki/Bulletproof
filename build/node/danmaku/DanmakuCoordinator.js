@@ -1,8 +1,8 @@
 /**
  * Created by MIC on 2015/12/29.
  */
-var _util_1 = require("../../lib/glantern/src/_util/_util");
 var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
+var GLUtil_1 = require("../../lib/glantern/lib/glantern-utils/src/GLUtil");
 /**
  * The coordinator of all danmakus.
  * This class is a factory and manager of danmaku providers.
@@ -57,7 +57,7 @@ var DanmakuCoordinator = (function () {
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be added.
      */
     DanmakuCoordinator.prototype.addDanmakuProvider = function (provider) {
-        if (!_util_1._util.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
             provider.initialize();
         }
@@ -67,7 +67,7 @@ var DanmakuCoordinator = (function () {
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be removed.
      */
     DanmakuCoordinator.prototype.removeDanmakuProvider = function (provider) {
-        if (!_util_1._util.isUndefinedOrNull(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
+        if (!GLUtil_1.GLUtil.isUndefinedOrNull(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.delete(provider.danmakuKind);
         }
     };
@@ -79,7 +79,7 @@ var DanmakuCoordinator = (function () {
      */
     DanmakuCoordinator.prototype.getDanmakuProvider = function (kind) {
         var provider = this._danmakuProviders.get(kind);
-        if (_util_1._util.isUndefinedOrNull(provider)) {
+        if (GLUtil_1.GLUtil.isUndefinedOrNull(provider)) {
             return null;
         }
         else {

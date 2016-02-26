@@ -22,7 +22,7 @@ var tsConfig = {
 
 gulp.task("build", ["build-compile", "build-browserify"]);
 
-gulp.task("build-compile", ["build-compile-glantern"], function () {
+gulp.task("build-compile", ["build-compile-glantern-utils", "build-compile-glantern"], function () {
     "use strict";
     return gulp
         .src(["src/**/*.ts", "inc/**/*.ts"])
@@ -42,6 +42,17 @@ gulp.task("build-compile-glantern", function () {
         .js
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("build/lib/glantern/src"))
+});
+
+gulp.task("build-compile-glantern-utils", function () {
+    "use strict";
+    return gulp
+        .src(["lib/glantern/lib/glantern-utils/src/**/*.ts", "lib/glantern/lib/glantern-utils/inc/**/*.ts"])
+        .pipe(sourcemaps.init())
+        .pipe(ts(tsConfig))
+        .js
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest("build/lib/glantern/lib/glantern-utils/src"))
 });
 
 gulp.task("build-browserify", ["build-compile"], function () {
