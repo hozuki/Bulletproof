@@ -21,8 +21,8 @@ core features are completed.*
 - [ ] Simple danmakus
   - [X] Flying, right-to-left
   - [ ] Anchored
-- [ ] Mode 7 danmaku
-- [ ] Scripted danmaku
+- [ ] Mode 7 danmakus
+- [ ] Scripted danmakus
   - [X] `Display`
   - [X] `Functions`
   - [X] `Global`
