@@ -11,6 +11,21 @@ You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
 Coming soon...
 
+## Building & Testing
+
+Git, Node.js, NPM and Gulp are required.
+
+```bash
+$ git clone https://github.com/Hozuki/Bulletproof.git
+$ npm install
+$ gulp
+```
+
+To preview, at least one of the modern browsers is required: Chrome, Firefox, IE11,
+Edge, NW.js, Electron<sup>i</sup>.
+
+<sup>i</sup> Has not been tested, but should work.
+
 ## Features
 
 - [X] High speed rendering
