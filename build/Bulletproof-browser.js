@@ -1,492 +1,25 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Created by MIC on 2015/11/18.
- */
-var ApplicationError = (function () {
-    function ApplicationError(message) {
-        if (message === void 0) { message = ""; }
-        this._message = null;
-        this._message = message;
-    }
-    Object.defineProperty(ApplicationError.prototype, "message", {
-        get: function () {
-            return this._message;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ApplicationError.prototype, "name", {
-        get: function () {
-            return "ApplicationError";
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return ApplicationError;
-})();
-exports.ApplicationError = ApplicationError;
-
-
-
-},{}],2:[function(require,module,exports){
-/**
- * Created by MIC on 2015/11/18.
- */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ApplicationError_1 = require("./ApplicationError");
-var ArgumentError = (function (_super) {
-    __extends(ArgumentError, _super);
-    function ArgumentError(message, argument) {
-        if (message === void 0) { message = "Argument error"; }
-        if (argument === void 0) { argument = null; }
-        _super.call(this, message);
-        this._argument = null;
-        this._argument = argument;
-    }
-    Object.defineProperty(ArgumentError.prototype, "argument", {
-        get: function () {
-            return this._argument;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ArgumentError.prototype, "name", {
-        get: function () {
-            return "ArgumentError";
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return ArgumentError;
-})(ApplicationError_1.ApplicationError);
-exports.ArgumentError = ArgumentError;
-
-
-
-},{"./ApplicationError":1}],3:[function(require,module,exports){
-(function (global){
-/**
- * Created by MIC on 2015/11/17.
- */
-var $global = window || self || global || {};
-/**
- * The class providing utility functions.
- */
-var GLUtil = (function () {
-    function GLUtil() {
-    }
-    /**
-     * Check whether a value is {@link undefined} or {@link null}.
-     * @param value {*} The value to check.
-     * @returns {Boolean} True if the value is {@link undefined} or {@link null}, and false otherwise.
-     */
-    GLUtil.isUndefinedOrNull = function (value) {
-        return value === undefined || value === null;
-    };
-    /**
-     * Check whether a value is {@link undefined}.
-     * @param value {*} The value to check.
-     * @returns {Boolean} True if the value is {@link undefined}, and false otherwise.
-     */
-    GLUtil.isUndefined = function (value) {
-        return value === undefined;
-    };
-    /**
-     * Check whether a value is a function.
-     * @param value {*} The value to check.
-     * @returns {Boolean} True if the value is a function, and false otherwise.
-     */
-    GLUtil.isFunction = function (value) {
-        return typeof value === "function";
-    };
-    /**
-     * Check whether a value is a class prototype.
-     * @param value {*} The value to check.
-     * @returns {Boolean} True if the value is a class definition, and false otherwise.
-     * @remarks IE11 has a non-standard behavior to declare experimental features (e.g. Map) as functions,
-     *          and tested features (e.g. WebGLRenderingContext) as objects.
-     */
-    GLUtil.isClassDefinition = function (value) {
-        var typeCheck;
-        if (typeof value === "function") {
-            typeCheck = true;
-        }
-        else {
-            var isIE11 = window.navigator.appVersion.indexOf("Trident/7.0") >= 0 && window.navigator.appVersion.indexOf("rv:11.0") >= 0;
-            typeCheck = isIE11 && typeof value === "object";
-        }
-        var constructorCheck = (value && value.prototype ? value.prototype.constructor === value : false);
-        return typeCheck && constructorCheck;
-    };
-    /**
-     * Limit a number inside a range specified by min and max (both are reachable).
-     * @param v {Number} The number to limit.
-     * @param min {Number} The lower bound. Numbers strictly less than this bound will be set to the value.
-     * @param max {Number} The upper bound. Numbers strictly greater than this bound will be set to this value.
-     * @returns {Number} The limited value. If the original number is inside the specified range, it will not be
-     * altered. Otherwise, it will be either min or max.
-     */
-    GLUtil.limitInto = function (v, min, max) {
-        v < min && (v = min);
-        v > max && (v = max);
-        return v;
-    };
-    /**
-     * Check whether a number is inside a range specified min a max (both are unreachable).
-     * @param v {Number} The number to check.
-     * @param min {Number} The lower bound.
-     * @param max {Number} The upper bound.
-     * @returns {Boolean} True if the number to check is strictly greater than min and strictly less than max, and
-     * false otherwise.
-     */
-    GLUtil.isValueBetweenNotEquals = function (v, min, max) {
-        return min < v && v < max;
-    };
-    /**
-     * Check whether a number is inside a range specified min a max (both are reachable).
-     * @param v {Number} The number to check.
-     * @param min {Number} The lower bound.
-     * @param max {Number} The upper bound.
-     * @returns {Boolean} True if the number to check is not less than min and not greater than max, and
-     * false otherwise.
-     */
-    GLUtil.isValueBetweenEquals = function (v, min, max) {
-        return min <= v && v <= max;
-    };
-    /**
-     * Generate a string based on the template, and provided values. This function acts similarly to the String.Format()
-     * function in CLR.
-     * @param format {String} The template string.
-     * @param replaceWithArray {*[]} The value array to provide values for formatting.
-     * @example
-     * var person = { name: "John Doe", age: 20 };
-     * console.log(_util.formatString("{0}'s age is {1}.", person.name, person.age);
-     * @returns {String} The generated string, with valid placeholders replaced by values matched.
-     */
-    GLUtil.formatString = function (format) {
-        var replaceWithArray = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            replaceWithArray[_i - 1] = arguments[_i];
-        }
-        var replaceWithArrayIsNull = GLUtil.isUndefinedOrNull(replaceWithArray);
-        var replaceWithArrayLength = replaceWithArrayIsNull ? -1 : replaceWithArray.length;
-        function __stringFormatter(matched) {
-            var indexString = matched.substring(1, matched.length - 1);
-            var indexValue = parseInt(indexString);
-            if (!replaceWithArrayIsNull && (0 <= indexValue && indexValue < replaceWithArrayLength)) {
-                if (replaceWithArray[indexValue] === undefined) {
-                    return "undefined";
-                }
-                else if (replaceWithArray[indexValue] === null) {
-                    return "null";
-                }
-                else {
-                    return replaceWithArray[indexValue].toString();
-                }
-            }
-            else {
-                return matched;
-            }
-        }
-        var regex = /{[\d]+}/g;
-        return format.replace(regex, __stringFormatter);
-    };
-    GLUtil.deepClone = function (sourceObject) {
-        if (sourceObject === undefined || sourceObject === null || sourceObject === true || sourceObject === false) {
-            return sourceObject;
-        }
-        if (typeof sourceObject === "string" || typeof sourceObject === "number") {
-            return sourceObject;
-        }
-        /* Arrays */
-        if (Array.isArray(sourceObject)) {
-            var tmpArray = [];
-            for (var i = 0; i < sourceObject.length; ++i) {
-                tmpArray.push(GLUtil.deepClone(sourceObject[i]));
-            }
-            return tmpArray;
-        }
-        /* ES6 classes. Chrome has implemented a part of them so they must be considered. */
-        if ($global.Map !== undefined && sourceObject instanceof Map) {
-            var newMap = new Map();
-            sourceObject.forEach(function (v, k) {
-                newMap.set(k, v);
-            });
-            return newMap;
-        }
-        if ($global.Set !== undefined && sourceObject instanceof Set) {
-            var newSet = new Set();
-            sourceObject.forEach(function (v) {
-                newSet.add(v);
-            });
-            return newSet;
-        }
-        /* Classic ES5 functions. */
-        if (sourceObject instanceof Function || typeof sourceObject === "function") {
-            var sourceFunctionObject = sourceObject;
-            var fn = (function () {
-                return function () {
-                    return sourceFunctionObject.apply(this, arguments);
-                };
-            })();
-            fn.prototype = sourceFunctionObject.prototype;
-            for (var key in sourceFunctionObject) {
-                if (sourceFunctionObject.hasOwnProperty(key)) {
-                    fn[key] = sourceFunctionObject[key];
-                }
-            }
-            return fn;
-        }
-        /* Classic ES5 objects. */
-        if (sourceObject instanceof Object || typeof sourceObject === "object") {
-            var newObject = Object.create(null);
-            if (typeof sourceObject.hasOwnProperty === "function") {
-                for (var key in sourceObject) {
-                    if (sourceObject.hasOwnProperty(key)) {
-                        newObject[key] = GLUtil.deepClone(sourceObject[key]);
-                    }
-                }
-            }
-            else {
-                for (var key in sourceObject) {
-                    newObject[key] = GLUtil.deepClone(sourceObject[key]);
-                }
-            }
-            return newObject;
-        }
-        return undefined;
-    };
-    /**
-     * Test whether a positive number is a power of 2.
-     * @param positiveNumber {Number} The positive number to test.
-     * @returns {Boolean} True if the number is a power of 2, and false otherwise.
-     */
-    GLUtil.isPowerOfTwo = function (positiveNumber) {
-        var num = positiveNumber | 0;
-        if (num != positiveNumber || isNaN(num) || !isFinite(num)) {
-            return false;
-        }
-        else {
-            return num > 0 && (num & (num - 1)) === 0;
-        }
-    };
-    /**
-     * Calculate the smallest power of 2 which is greater than or equals the given positive number.
-     * @param positiveNumber {Number} The positive number as the basis.
-     * @returns {Number} The smallest power of 2 which is greater than or equals the given positive number
-     */
-    GLUtil.power2Roundup = function (positiveNumber) {
-        if (positiveNumber < 0)
-            return 0;
-        --positiveNumber;
-        positiveNumber |= positiveNumber >>> 1;
-        positiveNumber |= positiveNumber >>> 2;
-        positiveNumber |= positiveNumber >>> 4;
-        positiveNumber |= positiveNumber >>> 8;
-        positiveNumber |= positiveNumber >>> 16;
-        return positiveNumber + 1;
-    };
-    /**
-     * Prints out a message with a stack trace.
-     * @param message {String} The message to print.
-     * @param [extra] {*} Extra information.
-     */
-    GLUtil.trace = function (message, extra) {
-        if (extra !== undefined) {
-            console.info(message, extra);
-        }
-        else {
-            console.info(message);
-        }
-        console.trace();
-    };
-    GLUtil.requestAnimationFrame = function (f) {
-        return window.requestAnimationFrame(f);
-    };
-    GLUtil.cancelAnimationFrame = function (handle) {
-        window.cancelAnimationFrame(handle);
-    };
-    GLUtil.colorToCssSharp = function (color) {
-        color |= 0;
-        return "#" + GLUtil.padLeft(color.toString(16), 6, "0");
-    };
-    GLUtil.colorToCssRgba = function (color) {
-        color |= 0;
-        var a = (color >> 24) & 0xff;
-        var r = (color >> 16) & 0xff;
-        var g = (color >> 8) & 0xff;
-        var b = color & 0xff;
-        return "rgba(" + [r, g, b, a].join(",") + ")";
-    };
-    GLUtil.padLeft = function (str, targetLength, padWith) {
-        while (str.length < targetLength) {
-            str = padWith + str;
-        }
-        if (str.length > targetLength) {
-            str = str.substring(str.length - targetLength, str.length - 1);
-        }
-        return str;
-    };
-    return GLUtil;
-})();
-exports.GLUtil = GLUtil;
-
-
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{}],4:[function(require,module,exports){
-/**
- * Created by MIC on 2015/11/18.
- */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var ApplicationError_1 = require("./ApplicationError");
-var NotImplementedError = (function (_super) {
-    __extends(NotImplementedError, _super);
-    function NotImplementedError(message) {
-        if (message === void 0) { message = "Not implemented"; }
-        _super.call(this, message);
-    }
-    Object.defineProperty(NotImplementedError.prototype, "name", {
-        get: function () {
-            return "NotImplementedError";
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return NotImplementedError;
-})(ApplicationError_1.ApplicationError);
-exports.NotImplementedError = NotImplementedError;
-
-
-
-},{"./ApplicationError":1}],5:[function(require,module,exports){
-/**
- * Created by MIC on 2015/11/25.
- */
-var WebGLRenderer_1 = require("./webgl/WebGLRenderer");
-var Stage_1 = require("./flash/display/Stage");
-var FlashEvent_1 = require("./flash/events/FlashEvent");
-var GLUtil_1 = require("../lib/glantern-utils/src/GLUtil");
-var GLantern = (function () {
-    function GLantern() {
-        this._isRunning = false;
-        this._renderer = null;
-        this._stage = null;
-        this._isInitialized = false;
-        this._attachedUpdateFunction = null;
-    }
-    GLantern.prototype.initialize = function (width, height, options) {
-        if (options === void 0) { options = WebGLRenderer_1.WebGLRenderer.DEFAULT_OPTIONS; }
-        if (this._isInitialized) {
-            return;
-        }
-        this._renderer = new WebGLRenderer_1.WebGLRenderer(width, height, options);
-        this._stage = new Stage_1.Stage(this._renderer);
-        this._isInitialized = true;
-    };
-    GLantern.prototype.dispose = function () {
-        if (!this._isInitialized) {
-            return;
-        }
-        this._stage.dispose();
-        this._renderer.dispose();
-        this._stage = null;
-        this._renderer = null;
-        this._isInitialized = false;
-    };
-    GLantern.prototype.startAnimation = function () {
-        if (!this._isInitialized) {
-            return;
-        }
-        this._isRunning = true;
-        GLUtil_1.GLUtil.requestAnimationFrame(this.__mainLoop.bind(this));
-    };
-    GLantern.prototype.stopAnimation = function () {
-        if (!this._isInitialized) {
-            return;
-        }
-        this._isRunning = false;
-    };
-    GLantern.prototype.clear = function () {
-        this._renderer.clear();
-    };
-    GLantern.prototype.runOneFrame = function () {
-        if (!this._isInitialized) {
-            return;
-        }
-        this._stage.dispatchEvent(FlashEvent_1.FlashEvent.create(FlashEvent_1.FlashEvent.ENTER_FRAME));
-        if (this._attachedUpdateFunction !== null && this._attachedUpdateFunction instanceof Function) {
-            this._attachedUpdateFunction();
-        }
-        this._stage.update();
-        this._stage.render(this._renderer);
-    };
-    Object.defineProperty(GLantern.prototype, "stage", {
-        get: function () {
-            return this._stage;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GLantern.prototype, "renderer", {
-        get: function () {
-            return this._renderer;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GLantern.prototype, "view", {
-        get: function () {
-            return this._isInitialized ? this._renderer.view : null;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    GLantern.prototype.attachUpdateFunction = function (func) {
-        this._attachedUpdateFunction = func;
-    };
-    GLantern.prototype.__mainLoop = function (time) {
-        if (!this._isRunning || !this._isInitialized) {
-            return;
-        }
-        this.runOneFrame();
-        GLUtil_1.GLUtil.requestAnimationFrame(this.__mainLoop.bind(this));
-    };
-    return GLantern;
-})();
-exports.GLantern = GLantern;
-
-
-
-},{"../lib/glantern-utils/src/GLUtil":3,"./flash/display/Stage":43,"./flash/events/FlashEvent":51,"./webgl/WebGLRenderer":99}],6:[function(require,module,exports){
-/**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var transitions = require("./transitions/index");
 exports.transitions = transitions;
 
 
 
-},{"./transitions/index":23}],7:[function(require,module,exports){
+},{"./transitions/index":18}],2:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var EventDispatcher_1 = require("../../flash/events/EventDispatcher");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../flash/errors/NotImplementedError");
 var Tween = (function (_super) {
     __extends(Tween, _super);
     function Tween(obj, prop, func, begin, finish, duration, useSeconds) {
@@ -541,22 +74,23 @@ var Tween = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Tween;
-})(EventDispatcher_1.EventDispatcher);
+}(EventDispatcher_1.EventDispatcher));
 exports.Tween = Tween;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/events/EventDispatcher":50}],8:[function(require,module,exports){
+},{"../../flash/errors/NotImplementedError":51,"../../flash/events/EventDispatcher":53}],3:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var FlashEvent_1 = require("../../flash/events/FlashEvent");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../flash/errors/NotImplementedError");
 var TweenEvent = (function (_super) {
     __extends(TweenEvent, _super);
     function TweenEvent(type, time, position, bubbles, cancelable) {
@@ -614,15 +148,16 @@ var TweenEvent = (function (_super) {
         configurable: true
     });
     return TweenEvent;
-})(FlashEvent_1.FlashEvent);
+}(FlashEvent_1.FlashEvent));
 exports.TweenEvent = TweenEvent;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/events/FlashEvent":51}],9:[function(require,module,exports){
+},{"../../flash/errors/NotImplementedError":51,"../../flash/events/FlashEvent":54}],4:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Back = (function () {
     function Back() {
     }
@@ -647,15 +182,16 @@ var Back = (function () {
         return c * ((t = t / d - 1) * t * ((s + 1) * t + s) + 1) + b;
     };
     return Back;
-})();
+}());
 exports.Back = Back;
 
 
 
-},{}],10:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Bounce = (function () {
     function Bounce() {
     }
@@ -685,15 +221,16 @@ var Bounce = (function () {
         }
     };
     return Bounce;
-})();
+}());
 exports.Bounce = Bounce;
 
 
 
-},{}],11:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Circular = (function () {
     function Circular() {
     }
@@ -712,15 +249,16 @@ var Circular = (function () {
         return c * Math.sqrt(1 - (t = t / d - 1) * t) + b;
     };
     return Circular;
-})();
+}());
 exports.Circular = Circular;
 
 
 
-},{}],12:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Cubic = (function () {
     function Cubic() {
     }
@@ -739,15 +277,16 @@ var Cubic = (function () {
         return c * ((t = t / d - 1) * t * t + 1) + b;
     };
     return Cubic;
-})();
+}());
 exports.Cubic = Cubic;
 
 
 
-},{}],13:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Elastic = (function () {
     function Elastic() {
     }
@@ -808,15 +347,16 @@ var Elastic = (function () {
         return (a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b);
     };
     return Elastic;
-})();
+}());
 exports.Elastic = Elastic;
 
 
 
-},{}],14:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Exponential = (function () {
     function Exponential() {
     }
@@ -836,15 +376,16 @@ var Exponential = (function () {
         return (t == d) ? b + c : c * (-Math.pow(2, -10 * t / d) + 1) + b;
     };
     return Exponential;
-})();
+}());
 exports.Exponential = Exponential;
 
 
 
-},{}],15:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var None = (function () {
     function None() {
     }
@@ -861,15 +402,16 @@ var None = (function () {
         return c * t / d + b;
     };
     return None;
-})();
+}());
 exports.None = None;
 
 
 
-},{}],16:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Quadratic = (function () {
     function Quadratic() {
     }
@@ -888,15 +430,16 @@ var Quadratic = (function () {
         return -c * (t /= d) * (t - 2) + b;
     };
     return Quadratic;
-})();
+}());
 exports.Quadratic = Quadratic;
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Quartic = (function () {
     function Quartic() {
     }
@@ -915,15 +458,16 @@ var Quartic = (function () {
         return -c * ((t = t / d - 1) * t * t * t - 1) + b;
     };
     return Quartic;
-})();
+}());
 exports.Quartic = Quartic;
 
 
 
-},{}],18:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Quintic = (function () {
     function Quintic() {
     }
@@ -942,16 +486,17 @@ var Quintic = (function () {
         return c * ((t = t / d - 1) * t * t * t * t + 1) + b;
     };
     return Quintic;
-})();
+}());
 exports.Quintic = Quintic;
 
 
 
-},{}],19:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+"use strict";
+var NotImplementedError_1 = require("../../../flash/errors/NotImplementedError");
 var Regular = (function () {
     function Regular() {
     }
@@ -965,15 +510,16 @@ var Regular = (function () {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Regular;
-})();
+}());
 exports.Regular = Regular;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4}],20:[function(require,module,exports){
+},{"../../../flash/errors/NotImplementedError":51}],15:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var Sine = (function () {
     function Sine() {
     }
@@ -987,16 +533,17 @@ var Sine = (function () {
         return c * Math.sin(t / d * (Math.PI / 2)) + b;
     };
     return Sine;
-})();
+}());
 exports.Sine = Sine;
 
 
 
-},{}],21:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
-var NotImplementedError_1 = require("../../../../lib/glantern-utils/src/NotImplementedError");
+"use strict";
+var NotImplementedError_1 = require("../../../flash/errors/NotImplementedError");
 var Strong = (function () {
     function Strong() {
     }
@@ -1010,15 +557,16 @@ var Strong = (function () {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Strong;
-})();
+}());
 exports.Strong = Strong;
 
 
 
-},{"../../../../lib/glantern-utils/src/NotImplementedError":4}],22:[function(require,module,exports){
+},{"../../../flash/errors/NotImplementedError":51}],17:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -1038,10 +586,11 @@ __export(require("./Strong"));
 
 
 
-},{"./Back":9,"./Bounce":10,"./Circular":11,"./Cubic":12,"./Elastic":13,"./Exponential":14,"./None":15,"./Quadratic":16,"./Quartic":17,"./Quintic":18,"./Regular":19,"./Sine":20,"./Strong":21}],23:[function(require,module,exports){
+},{"./Back":4,"./Bounce":5,"./Circular":6,"./Cubic":7,"./Elastic":8,"./Exponential":9,"./None":10,"./Quadratic":11,"./Quartic":12,"./Quintic":13,"./Regular":14,"./Sine":15,"./Strong":16}],18:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -1052,44 +601,679 @@ __export(require("./TweenEvent"));
 
 
 
-},{"./Tween":7,"./TweenEvent":8,"./easing/index":22}],24:[function(require,module,exports){
+},{"./Tween":2,"./TweenEvent":3,"./easing/index":17}],19:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DisplayObject_1 = require("./DisplayObject");
+var PixelSnapping_1 = require("./PixelSnapping");
+var ShaderID_1 = require("../../webgl/ShaderID");
+var RenderHelper_1 = require("../../webgl/RenderHelper");
 var Bitmap = (function (_super) {
     __extends(Bitmap, _super);
-    function Bitmap() {
-        _super.apply(this, arguments);
+    function Bitmap(root, parent, bitmapData, pixelSnapping, smoothing) {
+        if (bitmapData === void 0) { bitmapData = null; }
+        if (pixelSnapping === void 0) { pixelSnapping = PixelSnapping_1.PixelSnapping.AUTO; }
+        if (smoothing === void 0) { smoothing = false; }
+        _super.call(this, root, parent);
+        this._bitmapData = null;
+        this._renderTarget = null;
+        this._pixelSnapping = null;
+        this._smoothing = false;
+        this.bitmapData = bitmapData;
+        this.pixelSnapping = pixelSnapping;
+        this.smoothing = smoothing;
     }
+    Object.defineProperty(Bitmap.prototype, "bitmapData", {
+        get: function () {
+            return this._bitmapData;
+        },
+        set: function (v) {
+            this.__disposeRenderTarget();
+            this._bitmapData = v;
+            // HACK: not-assured cast.
+            this._renderTarget = this.root.worldRenderer.createRenderTarget(v.canvas);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bitmap.prototype, "pixelSnapping", {
+        get: function () {
+            return this._pixelSnapping;
+        },
+        set: function (v) {
+            this._pixelSnapping = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Bitmap.prototype, "smoothing", {
+        get: function () {
+            return this._smoothing;
+        },
+        set: function (v) {
+            this._smoothing = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Bitmap.prototype.dispose = function () {
+        this.__disposeRenderTarget();
+        _super.prototype.dispose.call(this);
+    };
+    Bitmap.prototype._$update = function (timeInfo) {
+    };
+    Bitmap.prototype._$render = function (renderer) {
+        if (!this.bitmapData) {
+            return;
+        }
+        RenderHelper_1.RenderHelper.renderImage(renderer, this._renderTarget, renderer.currentRenderTarget, false);
+    };
+    Bitmap.prototype._$selectShader = function (shaderManager) {
+        shaderManager.selectShader(ShaderID_1.ShaderID.COPY_IMAGE);
+    };
+    Bitmap.prototype.__disposeRenderTarget = function () {
+        if (this._renderTarget) {
+            this._renderTarget.dispose();
+            this._renderTarget = null;
+        }
+    };
     return Bitmap;
-})(DisplayObject_1.DisplayObject);
+}(DisplayObject_1.DisplayObject));
 exports.Bitmap = Bitmap;
 
 
 
-},{"./DisplayObject":30}],25:[function(require,module,exports){
+},{"../../webgl/RenderHelper":107,"../../webgl/ShaderID":110,"./DisplayObject":26,"./PixelSnapping":36}],20:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
+var Rectangle_1 = require("../geom/Rectangle");
+var Point_1 = require("../geom/Point");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var ByteArray_1 = require("../utils/ByteArray");
+var GLUtil_1 = require("../../glantern/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
+var ArgumentError_1 = require("../errors/ArgumentError");
+var StageQuality_1 = require("./StageQuality");
+var DisplayObject_1 = require("./DisplayObject");
+var WebGLRenderer_1 = require("../../webgl/WebGLRenderer");
+var BlendMode_1 = require("./BlendMode");
+var EOFError_1 = require("../errors/EOFError");
+// TODO: Endian matters.
+// On Windows (x86/x86-64, little endian), the conversion of 32-bit RGBA to 8-bit bytes are correct. When retrieving
+// ImageData objects, the data is always in [RR,GG,BB,AA] order. Thus when constructing a Uint32Array from a Uint8ClampedArray,
+// reading from the Uint32Array automatically outputs 0xAABBGGRR. However, on big endian systems, it may outputs 0xRRGGBBAA.
 var BitmapData = (function () {
-    function BitmapData() {
+    function BitmapData(width, height, transparent, fillColor) {
+        if (transparent === void 0) { transparent = true; }
+        if (fillColor === void 0) { fillColor = 0xffffffff; }
+        this._canvas = null;
+        this._context = null;
+        this._supportsTransparent = true;
+        this._isLocked = false;
+        this._cachedImageData = null;
+        this._cachedRenderer = null;
+        this._isDataChangedDuringLockDown = false;
+        var canvas = window.document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        var context = canvas.getContext("2d");
+        context.fillStyle = GLUtil_1.GLUtil.colorToCssSharp(fillColor);
+        context.fillRect(0, 0, width, height);
+        this._canvas = canvas;
+        this._context = context;
+        this._supportsTransparent = transparent;
     }
+    BitmapData.prototype.applyFilter = function (sourceBitmapData, sourceRect, destPoint, filter) {
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.clone = function () {
+        var bitmapData = new BitmapData(this.width, this.height, this._supportsTransparent);
+        bitmapData._context.putImageData(this.__getArea(0, 0, this.width, this.height), 0, 0);
+        return bitmapData;
+    };
+    BitmapData.prototype.colorTransform = function (rect, colorTransform) {
+        var realRect = rect.clone();
+        realRect.width = MathUtil_1.MathUtil.clampUpper(realRect.width, this.width - realRect.x);
+        realRect.height = MathUtil_1.MathUtil.clampUpper(realRect.height, this.height - realRect.y);
+        var imageData = this.__getArea(realRect.x, realRect.y, realRect.width, realRect.height);
+        var imageArray = new Uint32Array(imageData.data.buffer);
+        for (var i = 0; i < imageArray.length; ++i) {
+            imageArray[i] = colorTransform.transform(imageArray[i]);
+        }
+        this.__setArea(imageData, realRect.x, realRect.y);
+    };
+    BitmapData.prototype.compare = function (otherBitmapData) {
+        if (this.width !== otherBitmapData.width) {
+            return -3;
+        }
+        if (this.height !== otherBitmapData.height) {
+            return -4;
+        }
+        var thisData = this.__getArea(0, 0, this.width, this.height);
+        var thatData = otherBitmapData.__getArea(0, 0, otherBitmapData.width, otherBitmapData.height);
+        var thisArray = new Uint32Array(thisData.data.buffer), thatArray = new Uint32Array(thatData.data.buffer);
+        var imageData = null;
+        var imageArray = null;
+        for (var i = 0; i < thisArray.length; ++i) {
+            var thisColor = GLUtil_1.GLUtil.decomposeRgba(thisArray[i]), thatColor = GLUtil_1.GLUtil.decomposeRgba(thatArray[i]);
+            var colorDiff = {
+                r: Math.abs(thisColor.r - thatColor.r),
+                g: Math.abs(thisColor.g - thatColor.g),
+                b: Math.abs(thisColor.b - thatColor.b),
+                a: Math.abs(thisColor.a - thatColor.a)
+            };
+            if (colorDiff.r || colorDiff.g || colorDiff.b) {
+                initImageData();
+                imageArray[i] = GLUtil_1.GLUtil.rgb(colorDiff.r, colorDiff.g, colorDiff.b);
+            }
+            else if (colorDiff.a) {
+                initImageData();
+                imageArray[i] = (colorDiff.a << 24) | 0x00ffffff;
+            }
+        }
+        return imageData !== null ? BitmapData.fromImageData(imageData) : 0;
+        function initImageData() {
+            if (imageData) {
+                return;
+            }
+            imageData = new ImageData(this.width, this.height);
+            imageArray = new Uint32Array(imageData.data);
+        }
+    };
+    BitmapData.prototype.copyChannel = function (sourceBitmapData, sourceRect, destPoint, sourceChannel, destChannel) {
+        var realRect = sourceRect.clone();
+        realRect.width = MathUtil_1.MathUtil.clampUpper(realRect.width, sourceBitmapData.width - realRect.x);
+        realRect.height = MathUtil_1.MathUtil.clampUpper(realRect.height, sourceBitmapData.height - realRect.y);
+        realRect.width = MathUtil_1.MathUtil.clampUpper(realRect.width, this.width - destPoint.x);
+        realRect.height = MathUtil_1.MathUtil.clampUpper(realRect.height, this.height - destPoint.y);
+        var thisData = this.__getArea(destPoint.x, destPoint.y, realRect.width, realRect.height);
+        var thatData = sourceBitmapData.__getArea(realRect.x, realRect.y, realRect.width, realRect.height);
+        var thisArray = thisData.data, thatArray = thatData.data;
+        var srcIndex = Math.round(Math.LOG2E * Math.log(sourceChannel));
+        var destIndex = Math.round(Math.LOG2E * Math.log(destChannel));
+        for (var i = 0; i < thisArray.length; i += 4) {
+            thisArray[i + destIndex] = thatArray[i + srcIndex];
+        }
+        this.__setArea(thisData, destPoint.x, destPoint.y);
+    };
+    BitmapData.prototype.copyPixels = function (sourceBitmapData, sourceRect, destPoint, alphaBitmapData, alphaPoint, mergeAlpha) {
+        if (alphaBitmapData === void 0) { alphaBitmapData = null; }
+        if (alphaPoint === void 0) { alphaPoint = null; }
+        if (mergeAlpha === void 0) { mergeAlpha = false; }
+        var realRect = sourceRect.clone();
+        realRect.width = MathUtil_1.MathUtil.clampUpper(realRect.width, sourceBitmapData.width - realRect.x);
+        realRect.height = MathUtil_1.MathUtil.clampUpper(realRect.height, sourceBitmapData.height - realRect.y);
+        realRect.width = MathUtil_1.MathUtil.clampUpper(realRect.width, this.width - destPoint.x);
+        realRect.height = MathUtil_1.MathUtil.clampUpper(realRect.height, this.height - destPoint.y);
+        if (alphaBitmapData) {
+            if (!alphaPoint) {
+                alphaPoint = new Point_1.Point();
+            }
+            realRect.width = MathUtil_1.MathUtil.clampUpper(realRect.width, alphaBitmapData.width - alphaPoint.x);
+            realRect.height = MathUtil_1.MathUtil.clampUpper(realRect.height, alphaBitmapData.height - alphaPoint.y);
+        }
+        var thisData = new ImageData(realRect.width, realRect.height);
+        var thatData = sourceBitmapData.__getArea(realRect.x, realRect.y, realRect.width, realRect.height);
+        var thisArray = new Uint32Array(thisData.data.buffer), thatArray = new Uint32Array(thatData.data.buffer);
+        var alphaData = null, alphaArray = null;
+        if (alphaBitmapData) {
+            alphaData = alphaBitmapData.__getArea(alphaPoint.x, alphaPoint.y, realRect.width, realRect.height);
+            alphaArray = new Uint32Array(alphaData.data.buffer);
+        }
+        for (var i = 0; i < thisArray.length; ++i) {
+            var value = thatArray[i];
+            if (alphaBitmapData && mergeAlpha) {
+                var alphaAlpha = alphaArray[i] >>> 24;
+                var sourceAlpha = (value & 0xff000000) >>> 24;
+                sourceAlpha *= (alphaAlpha / 0xff) | 0;
+                value = (value & 0x00ffffff) | (sourceAlpha << 24);
+            }
+            thisArray[i] = value;
+        }
+        this.__setArea(thisData, destPoint.x, destPoint.y);
+    };
+    BitmapData.prototype.copyPixelsToByteArray = function (rect, data) {
+        var expectedLength = rect.width * rect.height * 4;
+        if (data.bytesAvailable < expectedLength) {
+            data.length = data.position + expectedLength;
+        }
+        var imageData = this.__getArea(rect.x, rect.y, rect.width, rect.height);
+        var dataArray = new Uint32Array(imageData.data.buffer);
+        for (var i = 0; i < dataArray.length; ++i) {
+            data.writeUnsignedInt(dataArray[i]);
+        }
+    };
+    BitmapData.prototype.dispose = function () {
+        this._canvas = null;
+        this._context = null;
+        if (this._cachedRenderer !== null) {
+            this._cachedRenderer.dispose();
+            this._cachedRenderer = null;
+        }
+    };
+    BitmapData.prototype.draw = function (source, matrix, colorTransform, blendMode, clipRect, smoothing) {
+        if (matrix === void 0) { matrix = null; }
+        if (colorTransform === void 0) { colorTransform = null; }
+        if (blendMode === void 0) { blendMode = null; }
+        if (clipRect === void 0) { clipRect = null; }
+        if (smoothing === void 0) { smoothing = false; }
+        this.drawWithQuality(source, matrix, colorTransform, blendMode, clipRect, smoothing, StageQuality_1.StageQuality.MEDIUM);
+    };
+    BitmapData.prototype.drawWithQuality = function (source, matrix, colorTransform, blendMode, clipRect, smoothing, quality) {
+        if (matrix === void 0) { matrix = null; }
+        if (colorTransform === void 0) { colorTransform = null; }
+        if (blendMode === void 0) { blendMode = null; }
+        if (clipRect === void 0) { clipRect = null; }
+        if (smoothing === void 0) { smoothing = false; }
+        if (quality === void 0) { quality = null; }
+        if (source instanceof DisplayObject_1.DisplayObject) {
+            var displayObject = source;
+            this.__buildRenderer();
+            var renderer = this._cachedRenderer;
+            renderer.setBlendMode(blendMode || BlendMode_1.BlendMode.NORMAL);
+            displayObject.render(renderer);
+        }
+        else {
+            throw new NotImplementedError_1.NotImplementedError();
+        }
+    };
+    BitmapData.prototype.encode = function (rect, compressor, byteArray) {
+        if (byteArray === void 0) { byteArray = null; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.fillRect = function (rect, color) {
+        var context = this._context;
+        context.fillStyle = GLUtil_1.GLUtil.colorToCssSharp(color);
+        context.fillRect(rect.x, rect.y, rect.width, rect.height);
+    };
+    BitmapData.prototype.floodFill = function (x, y, color) {
+        if (this.isLocked) {
+            return;
+        }
+        floodFill(this, this.__getArea, this.__setArea, x, y, color);
+    };
+    BitmapData.prototype.generateFilterRect = function (sourceRect, filter) {
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.getColorBoundsRect = function (mask, color, findColor) {
+        if (findColor === void 0) { findColor = true; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.getPixel = function (x, y) {
+        var imageData = this.__getArea(x, y, 1, 1);
+        var dataBuffer = imageData.data;
+        // ImageData order: r,g,b,a
+        return GLUtil_1.GLUtil.rgb(dataBuffer[0], dataBuffer[1], dataBuffer[2]);
+    };
+    BitmapData.prototype.getPixel32 = function (x, y) {
+        var imageData = this.__getArea(x, y, 1, 1);
+        var dataBuffer = imageData.data;
+        return GLUtil_1.GLUtil.rgba(dataBuffer[0], dataBuffer[1], dataBuffer[2], dataBuffer[3]);
+    };
+    BitmapData.prototype.getPixels = function (rect) {
+        var imageData = this.__getArea(rect.x, rect.y, rect.width, rect.height);
+        var dataBuffer = imageData.data;
+        return ByteArray_1.ByteArray.from(dataBuffer.buffer);
+    };
+    BitmapData.prototype.getVector = function (rect) {
+        var imageData = this.__getArea(rect.x, rect.y, rect.width, rect.height);
+        var dataBuffer = imageData.data;
+        var uint32Array = new Uint32Array(dataBuffer.buffer);
+        var result = new Array(uint32Array.length);
+        for (var i = 0; i < result.length; ++i) {
+            result[i] = uint32Array[i];
+        }
+        return result;
+    };
+    Object.defineProperty(BitmapData.prototype, "height", {
+        get: function () {
+            return this._canvas.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitmapData.prototype.histogram = function (hRect) {
+        if (hRect === void 0) { hRect = null; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.hitTest = function (firstPoint, firstAlphaThreshold, secondObject, secondBitmapDataPoint, secondAlphaThreshold) {
+        if (secondBitmapDataPoint === void 0) { secondBitmapDataPoint = null; }
+        if (secondAlphaThreshold === void 0) { secondAlphaThreshold = 1; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.lock = function () {
+        this._isLocked = true;
+        this._cachedImageData = this._context.getImageData(0, 0, this.width, this.height);
+    };
+    BitmapData.prototype.merge = function (sourceBitmapData, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier) {
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.noise = function (randomSeed, low, high, channelOptions, greyScale) {
+        if (low === void 0) { low = 0; }
+        if (high === void 0) { high = 255; }
+        if (channelOptions === void 0) { channelOptions = 7; }
+        if (greyScale === void 0) { greyScale = false; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.paletteMap = function (sourceBitmapData, sourceRect, destPoint, redArray, greenArray, blueArray, alphaArray) {
+        if (redArray === void 0) { redArray = null; }
+        if (greenArray === void 0) { greenArray = null; }
+        if (blueArray === void 0) { blueArray = null; }
+        if (alphaArray === void 0) { alphaArray = null; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.perlinNoise = function (baseX, baseY, numOctaves, randomSeed, stitch, fractalNoise, channelOptions, grayScale, offsets) {
+        if (channelOptions === void 0) { channelOptions = 7; }
+        if (grayScale === void 0) { grayScale = false; }
+        if (offsets === void 0) { offsets = null; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.pixelDissolve = function (sourceBitmapData, sourceRect, destPoint, randomSeed, numPixels, fillColor) {
+        if (randomSeed === void 0) { randomSeed = 0; }
+        if (numPixels === void 0) { numPixels = 0; }
+        if (fillColor === void 0) { fillColor = 0; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    Object.defineProperty(BitmapData.prototype, "rect", {
+        get: function () {
+            return new Rectangle_1.Rectangle(0, 0, this.width, this.height);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitmapData.prototype.scroll = function (x, y) {
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    BitmapData.prototype.setPixel = function (x, y, color) {
+        this.setPixel32(x, y, color | 0xff000000);
+    };
+    BitmapData.prototype.setPixel32 = function (x, y, color) {
+        color &= 0xffffffff;
+        var imageData = new ImageData(1, 1);
+        var rgba = GLUtil_1.GLUtil.decomposeRgba(color);
+        var dataBuffer = imageData.data;
+        dataBuffer[0] = rgba.r;
+        dataBuffer[1] = rgba.g;
+        dataBuffer[2] = rgba.b;
+        dataBuffer[3] = rgba.a;
+        this.__setArea(imageData, x, y);
+    };
+    /**
+     * http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/BitmapData.html#setPixels()
+     * @param rect {Rectangle}
+     * @param inputByteArray {ByteArray}
+     */
+    BitmapData.prototype.setPixels = function (rect, inputByteArray) {
+        var r = rect.clone();
+        r.width = MathUtil_1.MathUtil.clampUpper(r.width, this.width - r.x);
+        r.height = MathUtil_1.MathUtil.clampUpper(r.height, this.height - r.y);
+        var originalPosition = inputByteArray.position;
+        var expectedLength = rect.width * rect.height * 4;
+        var pixelsToRead = (inputByteArray.bytesAvailable / 4) | 0;
+        var imageData = this.__getArea(rect.x, rect.y, rect.width, rect.height);
+        var dataBuffer = new Uint32Array(imageData.data.buffer);
+        for (var i = 0; i < expectedLength; ++i) {
+            if (i >= pixelsToRead) {
+                this._context.putImageData(imageData, rect.x, rect.y);
+                throw new EOFError_1.EOFError("The input ByteArray is not large enough.");
+            }
+            dataBuffer[i] = inputByteArray.readUnsignedInt();
+        }
+        inputByteArray.position = originalPosition;
+        this.__setArea(imageData, rect.x, rect.y);
+    };
+    BitmapData.prototype.setVector = function (rect, inputVector) {
+        var r = rect.clone();
+        r.width = MathUtil_1.MathUtil.clampUpper(r.width, this.width - r.x);
+        r.height = MathUtil_1.MathUtil.clampUpper(r.height, this.height - r.y);
+        var expectedLength = rect.width * rect.height;
+        if (inputVector.length !== expectedLength) {
+            throw new ArgumentError_1.ArgumentError("Invalid vector is used when trying to set pixels.");
+        }
+        var imageData = new ImageData(r.width, r.height);
+        var dataBuffer = imageData.data;
+        var uint32Array = new Uint32Array(dataBuffer.buffer);
+        for (var i = 0; i < dataBuffer.length; ++i) {
+            uint32Array[i] = inputVector[i] | 0;
+        }
+        this.__setArea(imageData, rect.x, rect.y);
+    };
+    BitmapData.prototype.threshold = function (sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource) {
+        if (color === void 0) { color = 0; }
+        if (mask === void 0) { mask = 0xffffffff; }
+        if (copySource === void 0) { copySource = false; }
+        throw new NotImplementedError_1.NotImplementedError();
+    };
+    Object.defineProperty(BitmapData.prototype, "transparent", {
+        get: function () {
+            return this._supportsTransparent;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitmapData.prototype.unlock = function () {
+        if (this._isDataChangedDuringLockDown) {
+            this._context.putImageData(this._cachedImageData, 0, 0);
+        }
+        this._isLocked = false;
+        this._cachedImageData = null;
+        this._isDataChangedDuringLockDown = false;
+    };
+    Object.defineProperty(BitmapData.prototype, "width", {
+        get: function () {
+            return this._canvas.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapData.prototype, "isLocked", {
+        // Bulletproof
+        get: function () {
+            return this._isLocked;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapData.prototype, "canvas", {
+        // Bulletproof
+        get: function () {
+            return this._canvas;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    // Bulletproof
+    BitmapData.fromImageData = function (imageData) {
+        var bitmapData = new BitmapData(imageData.width, imageData.height, true, 0x00000000);
+        bitmapData._context.putImageData(imageData, 0, 0);
+        return bitmapData;
+    };
+    BitmapData.prototype.__getArea = function (x, y, width, height) {
+        if (this.isLocked) {
+            var imageData = this._cachedImageData;
+            var imageArray = new Uint32Array(imageData.data.buffer);
+            var resultData = new ImageData(width, height);
+            var resultArray = new Uint32Array(resultData.data.buffer);
+            if (x === 0 && y === 0 && width === this.width && height === this.height) {
+                // Fast copy
+                for (var i = 0; i < imageArray.length; ++i) {
+                    resultArray[i] = imageArray[i];
+                }
+            }
+            else {
+                width = MathUtil_1.MathUtil.clampUpper(width, this.width - x);
+                height = MathUtil_1.MathUtil.clampUpper(height, this.height - y);
+                var lineWidth = this.width;
+                var k = 0;
+                for (var i = 0; i < imageArray.length; ++i) {
+                    var row = (i / lineWidth) | 0;
+                    var col = i - row * lineWidth;
+                    if (x <= col && col <= x + width && y <= row && row <= y + height) {
+                        resultArray[k++] = imageArray[i];
+                    }
+                }
+            }
+            return resultData;
+        }
+        else {
+            return this._context.getImageData(x, y, width, height);
+        }
+    };
+    BitmapData.prototype.__setArea = function (imageData, x, y) {
+        if (this.isLocked) {
+            var cachedData = this._cachedImageData;
+            var cachedArray = new Uint32Array(cachedData.data.buffer);
+            var imageArray = new Uint32Array(imageData.data.buffer);
+            if (x === 0 && y === 0 && imageData.width === this.width && imageData.height === this.height) {
+                // Fast copy
+                for (var i = 0; i < cachedArray.length; ++i) {
+                    cachedArray[i] = imageArray[i];
+                }
+            }
+            else {
+                var width = MathUtil_1.MathUtil.clampUpper(imageData.width, this.width - x);
+                var height = MathUtil_1.MathUtil.clampUpper(imageData.height, this.height - y);
+                var lineWidth = this.width;
+                var k = 0;
+                for (var i = 0; i < cachedArray.length; ++i) {
+                    var row = (i / lineWidth) | 0;
+                    var col = i - row * lineWidth;
+                    if (x <= col && col <= x + width && y <= row && row <= y + height) {
+                        cachedArray[i] = imageArray[k++];
+                    }
+                }
+            }
+            this._isDataChangedDuringLockDown = true;
+        }
+        else {
+            this._context.putImageData(imageData, x, y);
+        }
+    };
+    BitmapData.prototype.__buildRenderer = function () {
+        if (this._cachedRenderer !== null) {
+            return;
+        }
+        this._cachedRenderer = new WebGLRenderer_1.WebGLRenderer(this._canvas, WebGLRenderer_1.WebGLRenderer.DEFAULT_OPTIONS);
+    };
     return BitmapData;
-})();
+}());
 exports.BitmapData = BitmapData;
+function floodFill(bitmapData, getCall, setCall, x, y, color) {
+    var imageData = getCall(0, 0, bitmapData.width, bitmapData.height);
+    var dataBuffer = imageData.data.buffer;
+    var u32 = new Uint32Array(dataBuffer);
+    var lineWidth = bitmapData.width;
+    function point2Index(x, y) {
+        return x + y * lineWidth;
+    }
+    function getColor(x, y) {
+        return u32[point2Index(x, y)];
+    }
+    function setColor(x, y, c) {
+        u32[point2Index(x, y)] = c;
+    }
+    var queue = [{ x: x, y: y }];
+    var visited = new Array(u32.length);
+    var refColor = getColor(x, y);
+    visited[point2Index(x, y)] = true;
+    while (queue.length > 0) {
+        var coord = queue.shift();
+        setColor(coord.x, coord.y, color);
+        var index;
+        // Top
+        if (coord.y > 0) {
+            index = point2Index(coord.x, coord.y - 1);
+            if (!visited[index] && getColor(coord.x, coord.y - 1) === refColor) {
+                visited[index] = true;
+                queue.push({ x: coord.x, y: coord.y - 1 });
+            }
+        }
+        // Left
+        if (coord.x > 0) {
+            index = point2Index(coord.x - 1, coord.y);
+            if (!visited[index] && getColor(coord.x - 1, coord.y) === refColor) {
+                visited[index] = true;
+                queue.push({ x: coord.x - 1, y: coord.y });
+            }
+        }
+        // Bottom
+        if (coord.y < this.height - 1) {
+            index = point2Index(coord.x, coord.y + 1);
+            if (!visited[index] && getColor(coord.x, coord.y + 1) === refColor) {
+                visited[index] = true;
+                queue.push({ x: coord.x, y: coord.y + 1 });
+            }
+        }
+        // Right
+        if (coord.x < this.width - 1) {
+            index = point2Index(coord.x + 1, coord.y);
+            if (!visited[index] && getColor(coord.x + 1, coord.y) === refColor) {
+                visited[index] = true;
+                queue.push({ x: coord.x + 1, y: coord.y });
+            }
+        }
+    }
+    setCall(imageData, 0, 0);
+}
 
 
 
-},{}],26:[function(require,module,exports){
+},{"../../glantern/GLUtil":94,"../../glantern/MathUtil":95,"../../webgl/WebGLRenderer":115,"../errors/ArgumentError":48,"../errors/EOFError":49,"../errors/NotImplementedError":51,"../geom/Point":66,"../geom/Rectangle":67,"../utils/ByteArray":85,"./BlendMode":22,"./DisplayObject":26,"./StageQuality":43}],21:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/12.
+ */
+"use strict";
+var BitmapDataChannel = (function () {
+    function BitmapDataChannel() {
+    }
+    Object.defineProperty(BitmapDataChannel, "ALPHA", {
+        get: function () {
+            return 8;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapDataChannel, "BLUE", {
+        get: function () {
+            return 4;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapDataChannel, "GREEN", {
+        get: function () {
+            return 2;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(BitmapDataChannel, "RED", {
+        get: function () {
+            return 1;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return BitmapDataChannel;
+}());
+exports.BitmapDataChannel = BitmapDataChannel;
+
+
+
+},{}],22:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var BlendMode = (function () {
     function BlendMode() {
     }
@@ -1199,15 +1383,16 @@ var BlendMode = (function () {
         configurable: true
     });
     return BlendMode;
-})();
+}());
 exports.BlendMode = BlendMode;
 
 
 
-},{}],27:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var CapsStyle = (function () {
     function CapsStyle() {
     }
@@ -1233,15 +1418,16 @@ var CapsStyle = (function () {
         configurable: true
     });
     return CapsStyle;
-})();
+}());
 exports.CapsStyle = CapsStyle;
 
 
 
-},{}],28:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var ColorCorrection = (function () {
     function ColorCorrection() {
     }
@@ -1267,15 +1453,16 @@ var ColorCorrection = (function () {
         configurable: true
     });
     return ColorCorrection;
-})();
+}());
 exports.ColorCorrection = ColorCorrection;
 
 
 
-},{}],29:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var ColorCorrectionSupport = (function () {
     function ColorCorrectionSupport() {
     }
@@ -1301,15 +1488,16 @@ var ColorCorrectionSupport = (function () {
         configurable: true
     });
     return ColorCorrectionSupport;
-})();
+}());
 exports.ColorCorrectionSupport = ColorCorrectionSupport;
 
 
 
-},{}],30:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -1320,8 +1508,9 @@ var EventDispatcher_1 = require("../events/EventDispatcher");
 var BlendMode_1 = require("./BlendMode");
 var Matrix3D_1 = require("../geom/Matrix3D");
 var Vector3D_1 = require("../geom/Vector3D");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var GLUtil_1 = require("../../glantern/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var DisplayObject = (function (_super) {
     __extends(DisplayObject, _super);
     function DisplayObject(root, parent) {
@@ -1365,7 +1554,7 @@ var DisplayObject = (function (_super) {
             return this._alpha;
         },
         set: function (v) {
-            this._alpha = GLUtil_1.GLUtil.limitInto(v, 0, 1);
+            this._alpha = MathUtil_1.MathUtil.clamp(v, 0, 1);
         },
         enumerable: true,
         configurable: true
@@ -1416,10 +1605,10 @@ var DisplayObject = (function (_super) {
             }
             if (hasFiltersNow !== hasFiltersBefore) {
                 if (hasFiltersNow) {
-                    this.__createFilterTarget(this._root.worldRenderer);
+                    this._$createFilterTarget(this._root.worldRenderer);
                 }
                 else {
-                    this.__releaseFilterTarget();
+                    this._$releaseFilterTarget();
                 }
             }
         },
@@ -1610,19 +1799,19 @@ var DisplayObject = (function (_super) {
     DisplayObject.prototype.getRect = function (targetCoordinateSpace) {
         throw new NotImplementedError_1.NotImplementedError();
     };
-    DisplayObject.prototype.update = function () {
+    DisplayObject.prototype.update = function (timeInfo) {
         if (this._isTransformDirty) {
-            this.__updateTransform();
+            this._$updateTransform();
         }
         if (this.enabled) {
-            this.__update();
+            this._$update(timeInfo);
         }
     };
     DisplayObject.prototype.render = function (renderer) {
         if (this.visible && this.alpha > 0) {
-            this.__preprocess(renderer);
-            this.__render(renderer);
-            this.__postprocess(renderer);
+            this._$preprocess(renderer);
+            this._$render(renderer);
+            this._$postprocess(renderer);
         }
         else {
         }
@@ -1630,7 +1819,7 @@ var DisplayObject = (function (_super) {
     DisplayObject.prototype.requestUpdateTransform = function () {
         this._isTransformDirty = true;
     };
-    DisplayObject.prototype.__updateTransform = function () {
+    DisplayObject.prototype._$updateTransform = function () {
         var matrix3D;
         if (this._isRoot) {
             matrix3D = new Matrix3D_1.Matrix3D();
@@ -1644,7 +1833,7 @@ var DisplayObject = (function (_super) {
         matrix3D.prependRotation(this.rotationZ, Vector3D_1.Vector3D.Z_AXIS);
         this.transform.matrix3D.copyFrom(matrix3D);
     };
-    DisplayObject.prototype.__preprocess = function (renderer) {
+    DisplayObject.prototype._$preprocess = function (renderer) {
         var _this = this;
         if (this.__shouldProcessFilters()) {
             this._filterTarget.clear();
@@ -1654,9 +1843,9 @@ var DisplayObject = (function (_super) {
             renderer.setRenderTarget(null);
         }
         var manager = renderer.shaderManager;
-        this.__selectShader(manager);
+        this._$selectShader(manager);
         var shader = manager.currentShader;
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(shader)) {
+        if (GLUtil_1.GLUtil.ptr(shader)) {
             shader.changeValue("uTransformMatrix", function (u) {
                 u.value = _this.transform.matrix3D.toArray();
             });
@@ -1666,7 +1855,7 @@ var DisplayObject = (function (_super) {
         }
         renderer.setBlendMode(this.blendMode);
     };
-    DisplayObject.prototype.__postprocess = function (renderer) {
+    DisplayObject.prototype._$postprocess = function (renderer) {
         if (this.__shouldProcessFilters()) {
             var filterManager = renderer.filterManager;
             filterManager.pushFilterGroup(this.filters);
@@ -1674,13 +1863,13 @@ var DisplayObject = (function (_super) {
             filterManager.popFilterGroup();
         }
     };
-    DisplayObject.prototype.__createFilterTarget = function (renderer) {
+    DisplayObject.prototype._$createFilterTarget = function (renderer) {
         if (this._filterTarget !== null) {
             return;
         }
         this._filterTarget = renderer.createRenderTarget();
     };
-    DisplayObject.prototype.__releaseFilterTarget = function () {
+    DisplayObject.prototype._$releaseFilterTarget = function () {
         if (this._filterTarget === null) {
             return;
         }
@@ -1691,22 +1880,23 @@ var DisplayObject = (function (_super) {
         return this.filters !== null && this.filters.length > 0;
     };
     return DisplayObject;
-})(EventDispatcher_1.EventDispatcher);
+}(EventDispatcher_1.EventDispatcher));
 exports.DisplayObject = DisplayObject;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../events/EventDispatcher":50,"../geom/Matrix3D":60,"../geom/Transform":65,"../geom/Vector3D":66,"./BlendMode":26}],31:[function(require,module,exports){
+},{"../../glantern/GLUtil":94,"../../glantern/MathUtil":95,"../errors/NotImplementedError":51,"../events/EventDispatcher":53,"../geom/Matrix3D":63,"../geom/Transform":68,"../geom/Vector3D":69,"./BlendMode":22}],27:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var InteractiveObject_1 = require("./InteractiveObject");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
 var DisplayObjectContainer = (function (_super) {
     __extends(DisplayObjectContainer, _super);
     function DisplayObjectContainer(root, parent) {
@@ -1851,23 +2041,23 @@ var DisplayObjectContainer = (function (_super) {
         }
         return r;
     };
-    DisplayObjectContainer.prototype.update = function () {
-        _super.prototype.update.call(this);
+    DisplayObjectContainer.prototype.update = function (timeInfo) {
+        _super.prototype.update.call(this, timeInfo);
         if (this.enabled) {
             for (var i = 0; i < this._children.length; ++i) {
-                this._children[i].update();
+                this._children[i].update(timeInfo);
             }
         }
     };
     DisplayObjectContainer.prototype.render = function (renderer) {
         if (this.visible && this.alpha > 0) {
-            this.__preprocess(renderer);
-            this.__render(renderer);
+            this._$preprocess(renderer);
+            this._$render(renderer);
             for (var i = 0; i < this._children.length; ++i) {
                 var child = this._children[i];
                 child.render(renderer);
             }
-            this.__postprocess(renderer);
+            this._$postprocess(renderer);
         }
         else {
         }
@@ -1880,19 +2070,20 @@ var DisplayObjectContainer = (function (_super) {
             }
         }
     };
-    DisplayObjectContainer.prototype.__selectShader = function (shaderManager) {
+    DisplayObjectContainer.prototype._$selectShader = function (shaderManager) {
         // Do nothing
     };
     return DisplayObjectContainer;
-})(InteractiveObject_1.InteractiveObject);
+}(InteractiveObject_1.InteractiveObject));
 exports.DisplayObjectContainer = DisplayObjectContainer;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./InteractiveObject":36}],32:[function(require,module,exports){
+},{"../errors/NotImplementedError":51,"./InteractiveObject":32}],28:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var GradientType = (function () {
     function GradientType() {
     }
@@ -1911,15 +2102,16 @@ var GradientType = (function () {
         configurable: true
     });
     return GradientType;
-})();
+}());
 exports.GradientType = GradientType;
 
 
 
-},{}],33:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var SpreadMethod_1 = require("./SpreadMethod");
 var InterpolationMethod_1 = require("./InterpolationMethod");
 var GraphicsPathWinding_1 = require("./GraphicsPathWinding");
@@ -1929,8 +2121,9 @@ var LineScaleMode_1 = require("./LineScaleMode");
 var BrushType_1 = require("../../webgl/graphics/BrushType");
 var SolidStrokeRenderer_1 = require("../../webgl/graphics/SolidStrokeRenderer");
 var SolidFillRenderer_1 = require("../../webgl/graphics/SolidFillRenderer");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var GLUtil_1 = require("../../glantern/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var Graphics = (function () {
     function Graphics(attachTo, renderer) {
         this._displayObject = null;
@@ -2153,7 +2346,7 @@ var Graphics = (function () {
     };
     Graphics.prototype.drawRoundRect = function (x, y, width, height, ellipseWidth, ellipseHeight) {
         if (ellipseHeight === void 0) { ellipseHeight = NaN; }
-        if (isNaN(ellipseHeight)) {
+        if (MathUtil_1.MathUtil.isNaN(ellipseHeight)) {
             ellipseHeight = ellipseWidth;
         }
         throw new NotImplementedError_1.NotImplementedError();
@@ -2242,7 +2435,7 @@ var Graphics = (function () {
         if (miterLimit === void 0) { miterLimit = 3; }
         if (this._lineType !== BrushType_1.BrushType.SOLID || this._lineWidth !== thickness || this._lineColor !== color || this._lineAlpha !== alpha) {
             this._lineType = BrushType_1.BrushType.SOLID;
-            if (!isNaN(thickness)) {
+            if (!MathUtil_1.MathUtil.isNaN(thickness)) {
                 this._lineWidth = thickness;
             }
             this._lineColor = color;
@@ -2268,7 +2461,7 @@ var Graphics = (function () {
         this.__updateLastPathStartPoint(x, y);
         this._isDirty = true;
     };
-    Graphics.prototype.update = function () {
+    Graphics.prototype.update = function (timeInfo) {
         if (this._isDirty) {
             var j = 0, fillLen = this._fillRenderers.length;
             for (var i = 0; i < this._strokeRenderers.length; ++i) {
@@ -2327,7 +2520,6 @@ var Graphics = (function () {
         switch (this._lineType) {
             case BrushType_1.BrushType.SOLID:
                 return new SolidStrokeRenderer_1.SolidStrokeRenderer(this, this._lastPathStartX, this._lastPathStartY, this._currentX, this._currentY, this._lineWidth, this._lineColor, this._lineAlpha);
-                break;
             default:
                 throw new NotImplementedError_1.NotImplementedError();
         }
@@ -2347,7 +2539,7 @@ var Graphics = (function () {
         this._lineAlpha = 1;
     };
     return Graphics;
-})();
+}());
 exports.Graphics = Graphics;
 function __checkPathCommands(commands, data) {
     if (commands === null || data === null || data.length % 2 !== 0) {
@@ -2404,10 +2596,11 @@ function __checkPathCommands(commands, data) {
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../../webgl/graphics/BrushType":108,"../../webgl/graphics/SolidFillRenderer":112,"../../webgl/graphics/SolidStrokeRenderer":113,"./GraphicsPathCommand":34,"./GraphicsPathWinding":35,"./InterpolationMethod":37,"./LineScaleMode":39,"./SpreadMethod":42,"./TriangleCulling":48}],34:[function(require,module,exports){
+},{"../../glantern/GLUtil":94,"../../glantern/MathUtil":95,"../../webgl/graphics/BrushType":124,"../../webgl/graphics/SolidFillRenderer":128,"../../webgl/graphics/SolidStrokeRenderer":129,"../errors/NotImplementedError":51,"./GraphicsPathCommand":30,"./GraphicsPathWinding":31,"./InterpolationMethod":33,"./LineScaleMode":35,"./SpreadMethod":39,"./TriangleCulling":45}],30:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var GraphicsPathCommand = (function () {
     function GraphicsPathCommand() {
     }
@@ -2461,15 +2654,16 @@ var GraphicsPathCommand = (function () {
         configurable: true
     });
     return GraphicsPathCommand;
-})();
+}());
 exports.GraphicsPathCommand = GraphicsPathCommand;
 
 
 
-},{}],35:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var GraphicsPathWinding = (function () {
     function GraphicsPathWinding() {
     }
@@ -2488,15 +2682,16 @@ var GraphicsPathWinding = (function () {
         configurable: true
     });
     return GraphicsPathWinding;
-})();
+}());
 exports.GraphicsPathWinding = GraphicsPathWinding;
 
 
 
-},{}],36:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2515,15 +2710,16 @@ var InteractiveObject = (function (_super) {
         this.tabIndex = -1;
     }
     return InteractiveObject;
-})(DisplayObject_1.DisplayObject);
+}(DisplayObject_1.DisplayObject));
 exports.InteractiveObject = InteractiveObject;
 
 
 
-},{"./DisplayObject":30}],37:[function(require,module,exports){
+},{"./DisplayObject":26}],33:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var InterpolationMethod = (function () {
     function InterpolationMethod() {
     }
@@ -2542,15 +2738,16 @@ var InterpolationMethod = (function () {
         configurable: true
     });
     return InterpolationMethod;
-})();
+}());
 exports.InterpolationMethod = InterpolationMethod;
 
 
 
-},{}],38:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var JointStyle = (function () {
     function JointStyle() {
     }
@@ -2576,15 +2773,16 @@ var JointStyle = (function () {
         configurable: true
     });
     return JointStyle;
-})();
+}());
 exports.JointStyle = JointStyle;
 
 
 
-},{}],39:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var LineScaleMode = (function () {
     function LineScaleMode() {
     }
@@ -2617,28 +2815,65 @@ var LineScaleMode = (function () {
         configurable: true
     });
     return LineScaleMode;
-})();
+}());
 exports.LineScaleMode = LineScaleMode;
 
 
 
-},{}],40:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/15.
+ */
+"use strict";
+var PixelSnapping = (function () {
+    function PixelSnapping() {
+    }
+    Object.defineProperty(PixelSnapping, "ALWAYS", {
+        get: function () {
+            return "always";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PixelSnapping, "AUTO", {
+        get: function () {
+            return "auto";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(PixelSnapping, "NEVER", {
+        get: function () {
+            return "never";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return PixelSnapping;
+}());
+exports.PixelSnapping = PixelSnapping;
+
+
+
+},{}],37:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var Shader = (function () {
     function Shader() {
     }
     return Shader;
-})();
+}());
 exports.Shader = Shader;
 
 
 
-},{}],41:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2666,26 +2901,27 @@ var Shape = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Shape.prototype.__update = function () {
-        this._graphics.update();
+    Shape.prototype._$update = function (timeInfo) {
+        this._graphics.update(timeInfo);
     };
-    Shape.prototype.__render = function (renderer) {
+    Shape.prototype._$render = function (renderer) {
         this.graphics.render(renderer, renderer.currentRenderTarget, false);
     };
-    Shape.prototype.__selectShader = function (shaderManager) {
+    Shape.prototype._$selectShader = function (shaderManager) {
         // Switched to the new Primitive2Shader. Consider the obsolete of PrimitiveShader.
         shaderManager.selectShader(ShaderID_1.ShaderID.PRIMITIVE2);
     };
     return Shape;
-})(DisplayObject_1.DisplayObject);
+}(DisplayObject_1.DisplayObject));
 exports.Shape = Shape;
 
 
 
-},{"../../webgl/ShaderID":94,"./DisplayObject":30,"./Graphics":33}],42:[function(require,module,exports){
+},{"../../webgl/ShaderID":110,"./DisplayObject":26,"./Graphics":29}],39:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var SpreadMethod = (function () {
     function SpreadMethod() {
     }
@@ -2711,15 +2947,16 @@ var SpreadMethod = (function () {
         configurable: true
     });
     return SpreadMethod;
-})();
+}());
 exports.SpreadMethod = SpreadMethod;
 
 
 
-},{}],43:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -2732,7 +2969,7 @@ var StageDisplayState_1 = require("./StageDisplayState");
 var ColorCorrection_1 = require("./ColorCorrection");
 var StageAlign_1 = require("./StageAlign");
 var DisplayObjectContainer_1 = require("./DisplayObjectContainer");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
 var Stage = (function (_super) {
     __extends(Stage, _super);
     function Stage(renderer) {
@@ -2865,21 +3102,22 @@ var Stage = (function (_super) {
         this._height = height;
         // TODO: Fully implement this
     };
-    Stage.prototype.__render = function (renderer) {
+    Stage.prototype._$update = function (timeInfo) {
+    };
+    Stage.prototype._$render = function (renderer) {
         renderer.currentRenderTarget.clear();
     };
-    Stage.prototype.__update = function () {
-    };
     return Stage;
-})(DisplayObjectContainer_1.DisplayObjectContainer);
+}(DisplayObjectContainer_1.DisplayObjectContainer));
 exports.Stage = Stage;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./ColorCorrection":28,"./ColorCorrectionSupport":29,"./DisplayObjectContainer":31,"./StageAlign":44,"./StageDisplayState":45,"./StageQuality":46,"./StageScaleMode":47}],44:[function(require,module,exports){
+},{"../errors/NotImplementedError":51,"./ColorCorrection":24,"./ColorCorrectionSupport":25,"./DisplayObjectContainer":27,"./StageAlign":41,"./StageDisplayState":42,"./StageQuality":43,"./StageScaleMode":44}],41:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var StageAlign = (function () {
     function StageAlign() {
     }
@@ -2940,15 +3178,16 @@ var StageAlign = (function () {
         configurable: true
     });
     return StageAlign;
-})();
+}());
 exports.StageAlign = StageAlign;
 
 
 
-},{}],45:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var StageDisplayState = (function () {
     function StageDisplayState() {
     }
@@ -2974,15 +3213,16 @@ var StageDisplayState = (function () {
         configurable: true
     });
     return StageDisplayState;
-})();
+}());
 exports.StageDisplayState = StageDisplayState;
 
 
 
-},{}],46:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var StageQuality = (function () {
     function StageQuality() {
     }
@@ -3015,15 +3255,16 @@ var StageQuality = (function () {
         configurable: true
     });
     return StageQuality;
-})();
+}());
 exports.StageQuality = StageQuality;
 
 
 
-},{}],47:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var StageScaleMode = (function () {
     function StageScaleMode() {
     }
@@ -3056,15 +3297,16 @@ var StageScaleMode = (function () {
         configurable: true
     });
     return StageScaleMode;
-})();
+}());
 exports.StageScaleMode = StageScaleMode;
 
 
 
-},{}],48:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var TriangleCulling = (function () {
     function TriangleCulling() {
     }
@@ -3090,20 +3332,22 @@ var TriangleCulling = (function () {
         configurable: true
     });
     return TriangleCulling;
-})();
+}());
 exports.TriangleCulling = TriangleCulling;
 
 
 
-},{}],49:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require("./Bitmap"));
 __export(require("./BitmapData"));
+__export(require("./BitmapDataChannel"));
 __export(require("./BlendMode"));
 __export(require("./CapsStyle"));
 __export(require("./ColorCorrection"));
@@ -3118,6 +3362,7 @@ __export(require("./InteractiveObject"));
 __export(require("./InterpolationMethod"));
 __export(require("./JointStyle"));
 __export(require("./LineScaleMode"));
+__export(require("./PixelSnapping"));
 __export(require("./Shader"));
 __export(require("./Shape"));
 __export(require("./SpreadMethod"));
@@ -3130,11 +3375,188 @@ __export(require("./TriangleCulling"));
 
 
 
-},{"./Bitmap":24,"./BitmapData":25,"./BlendMode":26,"./CapsStyle":27,"./ColorCorrection":28,"./ColorCorrectionSupport":29,"./DisplayObject":30,"./DisplayObjectContainer":31,"./GradientType":32,"./Graphics":33,"./GraphicsPathCommand":34,"./GraphicsPathWinding":35,"./InteractiveObject":36,"./InterpolationMethod":37,"./JointStyle":38,"./LineScaleMode":39,"./Shader":40,"./Shape":41,"./SpreadMethod":42,"./Stage":43,"./StageAlign":44,"./StageDisplayState":45,"./StageQuality":46,"./StageScaleMode":47,"./TriangleCulling":48}],50:[function(require,module,exports){
+},{"./Bitmap":19,"./BitmapData":20,"./BitmapDataChannel":21,"./BlendMode":22,"./CapsStyle":23,"./ColorCorrection":24,"./ColorCorrectionSupport":25,"./DisplayObject":26,"./DisplayObjectContainer":27,"./GradientType":28,"./Graphics":29,"./GraphicsPathCommand":30,"./GraphicsPathWinding":31,"./InteractiveObject":32,"./InterpolationMethod":33,"./JointStyle":34,"./LineScaleMode":35,"./PixelSnapping":36,"./Shader":37,"./Shape":38,"./SpreadMethod":39,"./Stage":40,"./StageAlign":41,"./StageDisplayState":42,"./StageQuality":43,"./StageScaleMode":44,"./TriangleCulling":45}],47:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/**
+ * Created by MIC on 2016/6/8.
+ */
+var ErrorBase_1 = require("../../glantern/ErrorBase");
+var ApplicationError = (function (_super) {
+    __extends(ApplicationError, _super);
+    function ApplicationError(message) {
+        if (message === void 0) { message = ""; }
+        _super.call(this, message);
+    }
+    Object.defineProperty(ApplicationError.prototype, "name", {
+        get: function () {
+            return "ApplicationError";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ApplicationError;
+}(ErrorBase_1.ErrorBase));
+exports.ApplicationError = ApplicationError;
+
+
+
+},{"../../glantern/ErrorBase":92}],48:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var ErrorBase_1 = require("../../glantern/ErrorBase");
+var ArgumentError = (function (_super) {
+    __extends(ArgumentError, _super);
+    function ArgumentError(message, argument) {
+        if (message === void 0) { message = ""; }
+        if (argument === void 0) { argument = null; }
+        _super.call(this, message);
+        this._argument = null;
+        this._argument = argument;
+    }
+    Object.defineProperty(ArgumentError.prototype, "argument", {
+        get: function () {
+            return this._argument;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ArgumentError.prototype, "name", {
+        get: function () {
+            return "ArgumentError";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ArgumentError;
+}(ErrorBase_1.ErrorBase));
+exports.ArgumentError = ArgumentError;
+
+
+
+},{"../../glantern/ErrorBase":92}],49:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var ErrorBase_1 = require("../../glantern/ErrorBase");
+var EOFError = (function (_super) {
+    __extends(EOFError, _super);
+    function EOFError(message) {
+        if (message === void 0) { message = ""; }
+        _super.call(this, message);
+    }
+    Object.defineProperty(EOFError.prototype, "name", {
+        get: function () {
+            return "EOFError";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return EOFError;
+}(ErrorBase_1.ErrorBase));
+exports.EOFError = EOFError;
+
+
+
+},{"../../glantern/ErrorBase":92}],50:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var ErrorBase_1 = require("../../glantern/ErrorBase");
+var IOError = (function (_super) {
+    __extends(IOError, _super);
+    function IOError(message) {
+        if (message === void 0) { message = ""; }
+        _super.call(this, message);
+    }
+    Object.defineProperty(IOError.prototype, "name", {
+        get: function () {
+            return "IOError";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return IOError;
+}(ErrorBase_1.ErrorBase));
+exports.IOError = IOError;
+
+
+
+},{"../../glantern/ErrorBase":92}],51:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/11/18.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var ErrorBase_1 = require("../../glantern/ErrorBase");
+var NotImplementedError = (function (_super) {
+    __extends(NotImplementedError, _super);
+    function NotImplementedError(message) {
+        if (message === void 0) { message = ""; }
+        _super.call(this, message);
+    }
+    Object.defineProperty(NotImplementedError.prototype, "name", {
+        get: function () {
+            return "NotImplementedError";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return NotImplementedError;
+}(ErrorBase_1.ErrorBase));
+exports.NotImplementedError = NotImplementedError;
+
+
+
+},{"../../glantern/ErrorBase":92}],52:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/8.
+ */
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./ApplicationError"));
+__export(require("./ArgumentError"));
+__export(require("./NotImplementedError"));
+__export(require("./IOError"));
+__export(require("./EOFError"));
+
+
+
+},{"./ApplicationError":47,"./ArgumentError":48,"./EOFError":49,"./IOError":50,"./NotImplementedError":51}],53:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/11/18.
+ */
+"use strict";
+var GLUtil_1 = require("../../glantern/GLUtil");
 var EventDispatcher = (function () {
     function EventDispatcher() {
         this._listeners = null;
@@ -3157,12 +3579,7 @@ var EventDispatcher = (function () {
                     arr[i].call(null, data);
                 }
                 catch (ex) {
-                    if (ex.hasOwnProperty("stack")) {
-                        GLUtil_1.GLUtil.trace(ex.stack.toString(), "dispatchEvent: error");
-                    }
-                    else {
-                        GLUtil_1.GLUtil.trace(ex.toString(), "dispatchEvent: error");
-                    }
+                    GLUtil_1.GLUtil.trace(ex.toString(), "dispatchEvent: error");
                 }
             }
             return true;
@@ -3197,51 +3614,27 @@ var EventDispatcher = (function () {
         this._listeners.clear();
     };
     return EventDispatcher;
-})();
+}());
 exports.EventDispatcher = EventDispatcher;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3}],51:[function(require,module,exports){
+},{"../../glantern/GLUtil":94}],54:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/21.
  */
-var FlashEvent = (function () {
-    function FlashEvent(type, bubbles, cancelable) {
-        if (bubbles === void 0) { bubbles = false; }
-        if (cancelable === void 0) { cancelable = false; }
-        this.bubbles = false;
-        this.cancelBubble = false;
-        this.cancelable = false;
-        this.currentTarget = null;
-        this.defaultPrevented = false;
-        this.eventPhase = -1;
-        this.isTrusted = true;
-        this.returnValue = false;
-        this.srcElement = null;
-        this.target = null;
-        this.timeStamp = 0;
-        this.type = null;
-        this.AT_TARGET = 2;
-        this.BUBBLING_PHASE = 0;
-        this.CAPTURING_PHASE = 1;
-        this.type = type;
-        this.bubbles = bubbles;
-        this.cancelable = cancelable;
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("../../glantern/EventBase");
+var FlashEvent = (function (_super) {
+    __extends(FlashEvent, _super);
+    function FlashEvent() {
+        _super.apply(this, arguments);
     }
-    FlashEvent.prototype.initEvent = function (eventTypeArg, canBubbleArg, cancelableArg) {
-    };
-    FlashEvent.prototype.preventDefault = function () {
-    };
-    FlashEvent.prototype.stopImmediatePropagation = function () {
-    };
-    FlashEvent.prototype.stopPropagation = function () {
-    };
-    FlashEvent.create = function (type) {
-        var ev = new FlashEvent(type, false, false);
-        ev.timeStamp = Date.now();
-        return ev;
-    };
     Object.defineProperty(FlashEvent, "ENTER_FRAME", {
         get: function () {
             return "enterFrame";
@@ -3250,22 +3643,23 @@ var FlashEvent = (function () {
         configurable: true
     });
     return FlashEvent;
-})();
+}(EventBase_1.EventBase));
 exports.FlashEvent = FlashEvent;
 
 
 
-},{}],52:[function(require,module,exports){
+},{"../../glantern/EventBase":93}],55:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var FlashEvent_1 = require("./FlashEvent");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
 var TimerEvent = (function (_super) {
     __extends(TimerEvent, _super);
     function TimerEvent(type, bubbles, cancelable) {
@@ -3294,15 +3688,16 @@ var TimerEvent = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return TimerEvent;
-})(FlashEvent_1.FlashEvent);
+}(FlashEvent_1.FlashEvent));
 exports.TimerEvent = TimerEvent;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./FlashEvent":51}],53:[function(require,module,exports){
+},{"../errors/NotImplementedError":51,"./FlashEvent":54}],56:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -3313,10 +3708,11 @@ __export(require("./TimerEvent"));
 
 
 
-},{"./EventDispatcher":50,"./FlashEvent":51,"./TimerEvent":52}],54:[function(require,module,exports){
+},{"./EventDispatcher":53,"./FlashEvent":54,"./TimerEvent":55}],57:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/30.
  */
+"use strict";
 var BitmapFilterQuality = (function () {
     function BitmapFilterQuality() {
     }
@@ -3342,15 +3738,16 @@ var BitmapFilterQuality = (function () {
         configurable: true
     });
     return BitmapFilterQuality;
-})();
+}());
 exports.BitmapFilterQuality = BitmapFilterQuality;
 
 
 
-},{}],55:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/30.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -3406,15 +3803,16 @@ var BlurFilter = (function (_super) {
         return new BlurFilter(this.filterManager, this.blurX, this.blurY, this.quality);
     };
     return BlurFilter;
-})(Blur2Filter_1.Blur2Filter);
+}(Blur2Filter_1.Blur2Filter));
 exports.BlurFilter = BlurFilter;
 
 
 
-},{"../../webgl/filters/Blur2Filter":101,"./BitmapFilterQuality":54}],56:[function(require,module,exports){
+},{"../../webgl/filters/Blur2Filter":117,"./BitmapFilterQuality":57}],59:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/30.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -3422,7 +3820,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var GlowFilter_1 = require("../../webgl/filters/GlowFilter");
 var BitmapFilterQuality_1 = require("./BitmapFilterQuality");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var GlowFilter = (function (_super) {
     __extends(GlowFilter, _super);
     function GlowFilter(filterManager, color, alpha, blurX, blurY, strength, quality, inner, knockout) {
@@ -3441,7 +3839,7 @@ var GlowFilter = (function (_super) {
         this._color = 0x000000;
         this._alpha = 1;
         this.color = color;
-        this.alpha = GLUtil_1.GLUtil.limitInto(alpha, 0, 1);
+        this.alpha = MathUtil_1.MathUtil.clamp(alpha, 0, 1);
         this.blurX = blurX;
         this.blurY = blurY;
         this.strength = strength;
@@ -3525,15 +3923,16 @@ var GlowFilter = (function (_super) {
         this.setColorMatrix(cm);
     };
     return GlowFilter;
-})(GlowFilter_1.GlowFilter);
+}(GlowFilter_1.GlowFilter));
 exports.GlowFilter = GlowFilter;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../webgl/filters/GlowFilter":106,"./BitmapFilterQuality":54}],57:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../../webgl/filters/GlowFilter":122,"./BitmapFilterQuality":57}],60:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/30.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -3543,12 +3942,14 @@ __export(require("./GlowFilter"));
 
 
 
-},{"./BitmapFilterQuality":54,"./BlurFilter":55,"./GlowFilter":56}],58:[function(require,module,exports){
+},{"./BitmapFilterQuality":57,"./BlurFilter":58,"./GlowFilter":59}],61:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+"use strict";
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var MathUtil_1 = require("../../glantern/MathUtil");
+var GLUtil_1 = require("../../glantern/GLUtil");
 var ColorTransform = (function () {
     function ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset) {
         if (redMultiplier === void 0) { redMultiplier = 1; }
@@ -3592,7 +3993,7 @@ var ColorTransform = (function () {
             return this._alphaOffset;
         },
         set: function (v) {
-            this._alphaOffset = GLUtil_1.GLUtil.limitInto(v, -1, 1);
+            this._alphaOffset = MathUtil_1.MathUtil.clamp(v, -1, 1);
         },
         enumerable: true,
         configurable: true
@@ -3612,7 +4013,7 @@ var ColorTransform = (function () {
             return this._redOffset;
         },
         set: function (v) {
-            this._redOffset = GLUtil_1.GLUtil.limitInto(v, -1, 1);
+            this._redOffset = MathUtil_1.MathUtil.clamp(v, -1, 1);
         },
         enumerable: true,
         configurable: true
@@ -3632,7 +4033,7 @@ var ColorTransform = (function () {
             return this._greenOffset;
         },
         set: function (v) {
-            this._greenOffset = GLUtil_1.GLUtil.limitInto(v, -1, 1);
+            this._greenOffset = MathUtil_1.MathUtil.clamp(v, -1, 1);
         },
         enumerable: true,
         configurable: true
@@ -3652,7 +4053,7 @@ var ColorTransform = (function () {
             return this._blueOffset;
         },
         set: function (v) {
-            this._blueOffset = GLUtil_1.GLUtil.limitInto(v, -1, 1);
+            this._blueOffset = MathUtil_1.MathUtil.clamp(v, -1, 1);
         },
         enumerable: true,
         configurable: true
@@ -3660,18 +4061,28 @@ var ColorTransform = (function () {
     ColorTransform.prototype.concat = function (second) {
         throw new NotImplementedError_1.NotImplementedError();
     };
+    // MIC
+    ColorTransform.prototype.transform = function (color) {
+        var rgba = GLUtil_1.GLUtil.decomposeRgba(color);
+        rgba.r = MathUtil_1.MathUtil.clamp(rgba.r * this.redMultiplier + this.redOffset, 0, 0xff);
+        rgba.g = MathUtil_1.MathUtil.clamp(rgba.g * this.greenMultiplier + this.greenOffset, 0, 0xff);
+        rgba.b = MathUtil_1.MathUtil.clamp(rgba.b * this.blueMultiplier + this.blueOffset, 0, 0xff);
+        rgba.a = MathUtil_1.MathUtil.clamp(rgba.a * this.alphaMultiplier + this.alphaOffset, 0, 0xff);
+        return GLUtil_1.GLUtil.rgba(rgba.r, rgba.g, rgba.b, rgba.a);
+    };
     return ColorTransform;
-})();
+}());
 exports.ColorTransform = ColorTransform;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4}],59:[function(require,module,exports){
+},{"../../glantern/GLUtil":94,"../../glantern/MathUtil":95,"../errors/NotImplementedError":51}],62:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Point_1 = require("./Point");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
 var Matrix = (function () {
     function Matrix(a, b, c, d, tx, ty) {
         if (a === void 0) { a = 1; }
@@ -3746,7 +4157,7 @@ var Matrix = (function () {
         return new Matrix(this.a, this.b, this.c, this.d, this.tx, this.ty);
     };
     Matrix.prototype.concat = function (m) {
-        this._data = Matrix.dotProduct(this._data, m._data);
+        this._data = Matrix.__dotProduct(this._data, m._data);
     };
     Matrix.prototype.copyColumnFrom = function (column, vector3D) {
         if (column < 0 || column > 2) {
@@ -3808,21 +4219,21 @@ var Matrix = (function () {
         throw new NotImplementedError_1.NotImplementedError();
     };
     Matrix.prototype.rotate = function (angle) {
-        this._data = Matrix.dotProduct(this._data, [
+        this._data = Matrix.__dotProduct(this._data, [
             Math.cos(angle), -Math.sin(angle), 0,
             Math.sin(angle), Math.cos(angle), 0,
             0, 0, 1
         ]);
     };
     Matrix.prototype.scale = function (sx, sy) {
-        this._data = Matrix.dotProduct(this._data, [
+        this._data = Matrix.__dotProduct(this._data, [
             sx, 0, 0,
             0, sy, 0,
             0, 0, 1
         ]);
     };
     Matrix.prototype.skew = function (skewX, skewY) {
-        this._data = Matrix.dotProduct(this._data, [
+        this._data = Matrix.__dotProduct(this._data, [
             0, Math.tan(skewX), 0,
             Math.tan(skewY), 0, 0,
             0, 0, 1
@@ -3846,7 +4257,7 @@ var Matrix = (function () {
         this.tx += dx;
         this.ty += dy;
     };
-    Matrix.dotProduct = function (a, b) {
+    Matrix.__dotProduct = function (a, b) {
         if (b.length != 9) {
             throw new Error('Matrix dot product requires a 3x3 matrix.');
         }
@@ -3861,21 +4272,22 @@ var Matrix = (function () {
         return result;
     };
     return Matrix;
-})();
+}());
 exports.Matrix = Matrix;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./Point":63}],60:[function(require,module,exports){
+},{"../errors/NotImplementedError":51,"./Point":66}],63:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Vector3D_1 = require("./Vector3D");
 var Orientation3D_1 = require("./Orientation3D");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
-var ApplicationError_1 = require("../../../lib/glantern-utils/src/ApplicationError");
-var ArgumentError_1 = require("../../../lib/glantern-utils/src/ArgumentError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var ArgumentError_1 = require("../errors/ArgumentError");
+var ApplicationError_1 = require("../errors/ApplicationError");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var Matrix3D = (function () {
     function Matrix3D(v) {
         if (v === void 0) { v = null; }
@@ -4015,7 +4427,7 @@ var Matrix3D = (function () {
         ];
     };
     Matrix3D.interpolate = function (thisMat, toMat, percent) {
-        percent = GLUtil_1.GLUtil.limitInto(percent, 0, 1);
+        percent = MathUtil_1.MathUtil.clamp(percent, 0, 1);
         var data = [];
         for (var i = 0; i < 16; i++) {
             data.push(thisMat._data[i] * (1 - percent) + toMat._data[i] * percent);
@@ -4228,15 +4640,16 @@ var Matrix3D = (function () {
         ];
     };
     return Matrix3D;
-})();
+}());
 exports.Matrix3D = Matrix3D;
 
 
 
-},{"../../../lib/glantern-utils/src/ApplicationError":1,"../../../lib/glantern-utils/src/ArgumentError":2,"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"./Orientation3D":61,"./Vector3D":66}],61:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../errors/ApplicationError":47,"../errors/ArgumentError":48,"../errors/NotImplementedError":51,"./Orientation3D":64,"./Vector3D":69}],64:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Orientation3D = (function () {
     function Orientation3D() {
     }
@@ -4262,18 +4675,19 @@ var Orientation3D = (function () {
         configurable: true
     });
     return Orientation3D;
-})();
+}());
 exports.Orientation3D = Orientation3D;
 
 
 
-},{}],62:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Point_1 = require("./Point");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var PerspectiveProjection = (function () {
     function PerspectiveProjection() {
         this.focalLength = 10;
@@ -4286,7 +4700,7 @@ var PerspectiveProjection = (function () {
             return this._fieldOfView;
         },
         set: function (v) {
-            this._fieldOfView = GLUtil_1.GLUtil.limitInto(v, 0, 180);
+            this._fieldOfView = MathUtil_1.MathUtil.clamp(v, 0, 180);
         },
         enumerable: true,
         configurable: true
@@ -4295,16 +4709,17 @@ var PerspectiveProjection = (function () {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return PerspectiveProjection;
-})();
+}());
 exports.PerspectiveProjection = PerspectiveProjection;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"./Point":63}],63:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../errors/NotImplementedError":51,"./Point":66}],66:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+"use strict";
+var MathUtil_1 = require("../../glantern/MathUtil");
 var Point = (function () {
     function Point(x, y) {
         if (x === void 0) { x = 0; }
@@ -4331,7 +4746,7 @@ var Point = (function () {
         return this.x === toCompare.x && this.y === toCompare.y;
     };
     Point.interpolate = function (pt1, pt2, f) {
-        f = GLUtil_1.GLUtil.limitInto(f, 0, 1);
+        f = MathUtil_1.MathUtil.clamp(f, 0, 1);
         return new Point(pt1.x * f + pt2.x * (1 - f), pt1.y * f + pt2.y * (1 - f));
     };
     Object.defineProperty(Point.prototype, "length", {
@@ -4366,15 +4781,16 @@ var Point = (function () {
         return "(X=" + this.x + ", y=" + this.y + ")";
     };
     return Point;
-})();
+}());
 exports.Point = Point;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3}],64:[function(require,module,exports){
+},{"../../glantern/MathUtil":95}],67:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Point_1 = require("./Point");
 var Rectangle = (function () {
     function Rectangle(x, y, width, height) {
@@ -4457,67 +4873,18 @@ var Rectangle = (function () {
         this.inflate(point.x, point.y);
     };
     Rectangle.prototype.intersection = function (toIntersect) {
-        var x;
-        var y;
-        var w;
-        var h;
-        var rect1;
-        var rect2;
-        if (this.left < toIntersect.left) {
-            rect1 = this;
-            rect2 = toIntersect;
+        var areIntersect = this.intersects(toIntersect);
+        if (areIntersect) {
+            var r1 = this, r2 = toIntersect;
+            var x0 = Math.max(r1.x, r2.x), y1 = Math.max(r1.bottom, r2.bottom), x1 = Math.min(r1.right, r2.right), y0 = Math.min(r1.y, r2.y);
+            return new Rectangle(x0, y0, x1 - x0, y1 - y0);
         }
         else {
-            rect1 = toIntersect;
-            rect2 = this;
+            return Rectangle.empty;
         }
-        if (rect1.right < rect2.left) {
-            return new Rectangle(); // Does not intersect
-        }
-        else {
-            x = rect2.left;
-            w = Math.min(rect1.right, rect2.right) - x;
-        }
-        if (this.top < toIntersect.top) {
-            rect1 = this;
-            rect2 = toIntersect;
-        }
-        else {
-            rect1 = toIntersect;
-            rect2 = this;
-        }
-        if (rect1.bottom < rect2.top) {
-            return new Rectangle(); // Does not intersect
-        }
-        else {
-            y = rect2.top;
-            h = Math.min(rect1.bottom, rect2.bottom) - y;
-        }
-        return new Rectangle(x, y, w, h);
     };
     Rectangle.prototype.intersects = function (toIntersect) {
-        var rect1;
-        var rect2;
-        if (this.left < toIntersect.left) {
-            rect1 = this;
-            rect2 = toIntersect;
-        }
-        else {
-            rect1 = toIntersect;
-            rect2 = this;
-        }
-        if (rect1.right < rect2.left) {
-            return false;
-        }
-        if (this.top < toIntersect.top) {
-            rect1 = this;
-            rect2 = toIntersect;
-        }
-        else {
-            rect1 = toIntersect;
-            rect2 = this;
-        }
-        return rect1.bottom >= rect2.top;
+        return Rectangle.testIntersection(this, toIntersect);
     };
     Rectangle.prototype.isEmpty = function () {
         return this._w <= 0 || this._h <= 0;
@@ -4637,21 +5004,50 @@ var Rectangle = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(Rectangle, "empty", {
+        // Bulletproof
+        get: function () {
+            return emptyRectangle.clone();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    // Bulletproof
+    /**
+     * Test intersection between two rectangles.
+     * @param rect1 {Rectangle}
+     * @param rect2 {Rectangle}
+     * @param [strict] {Boolean} In strict mode, edge contact is regarded as intersection.
+     * @returns {Boolean}
+     */
+    Rectangle.testIntersection = function (rect1, rect2, strict) {
+        if (strict === void 0) { strict = true; }
+        var areSeparate;
+        if (strict) {
+            areSeparate = rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom;
+        }
+        else {
+            areSeparate = rect1.right <= rect2.left || rect1.left >= rect2.right || rect1.bottom <= rect2.top || rect1.top >= rect2.bottom;
+        }
+        return !areSeparate;
+    };
     return Rectangle;
-})();
+}());
 exports.Rectangle = Rectangle;
+var emptyRectangle = new Rectangle();
 
 
 
-},{"./Point":63}],65:[function(require,module,exports){
+},{"./Point":66}],68:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Matrix3D_1 = require("./Matrix3D");
 var ColorTransform_1 = require("./ColorTransform");
 var Matrix_1 = require("./Matrix");
 var PerspectiveProjection_1 = require("./PerspectiveProjection");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
 var Transform = (function () {
     function Transform() {
         this.colorTransform = null;
@@ -4689,16 +5085,17 @@ var Transform = (function () {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Transform;
-})();
+}());
 exports.Transform = Transform;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"./ColorTransform":58,"./Matrix":59,"./Matrix3D":60,"./PerspectiveProjection":62}],66:[function(require,module,exports){
+},{"../errors/NotImplementedError":51,"./ColorTransform":61,"./Matrix":62,"./Matrix3D":63,"./PerspectiveProjection":65}],69:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+"use strict";
+var MathUtil_1 = require("../../glantern/MathUtil");
 var Vector3D = (function () {
     function Vector3D(x, y, z, w) {
         if (x === void 0) { x = 0; }
@@ -4802,9 +5199,9 @@ var Vector3D = (function () {
     };
     Vector3D.prototype.nearEquals = function (toCompare, tolerance, allFour) {
         if (allFour === void 0) { allFour = false; }
-        return GLUtil_1.GLUtil.isValueBetweenNotEquals(this.x, toCompare.x - tolerance, toCompare.x + tolerance) &&
-            GLUtil_1.GLUtil.isValueBetweenNotEquals(this.y, toCompare.y - tolerance, toCompare.y + tolerance) &&
-            GLUtil_1.GLUtil.isValueBetweenNotEquals(this.z, toCompare.z - tolerance, toCompare.z + tolerance) && !(allFour && !GLUtil_1.GLUtil.isValueBetweenNotEquals(this.w, toCompare.w - tolerance, toCompare.w + tolerance));
+        return MathUtil_1.MathUtil.isValueBetweenNotEquals(this.x, toCompare.x - tolerance, toCompare.x + tolerance) &&
+            MathUtil_1.MathUtil.isValueBetweenNotEquals(this.y, toCompare.y - tolerance, toCompare.y + tolerance) &&
+            MathUtil_1.MathUtil.isValueBetweenNotEquals(this.z, toCompare.z - tolerance, toCompare.z + tolerance) && !(allFour && !MathUtil_1.MathUtil.isValueBetweenNotEquals(this.w, toCompare.w - tolerance, toCompare.w + tolerance));
     };
     Vector3D.prototype.negate = function () {
         this.x = -this.x;
@@ -4844,15 +5241,16 @@ var Vector3D = (function () {
         return "[x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", w=" + this.w + "]";
     };
     return Vector3D;
-})();
+}());
 exports.Vector3D = Vector3D;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3}],67:[function(require,module,exports){
+},{"../../glantern/MathUtil":95}],70:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -4868,10 +5266,11 @@ __export(require("./Vector3D"));
 
 
 
-},{"./ColorTransform":58,"./Matrix":59,"./Matrix3D":60,"./Orientation3D":61,"./PerspectiveProjection":62,"./Point":63,"./Rectangle":64,"./Transform":65,"./Vector3D":66}],68:[function(require,module,exports){
+},{"./ColorTransform":61,"./Matrix":62,"./Matrix3D":63,"./Orientation3D":64,"./PerspectiveProjection":65,"./Point":66,"./Rectangle":67,"./Transform":68,"./Vector3D":69}],71:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var display = require("./display/index");
 exports.display = display;
 var events = require("./events/index");
@@ -4884,13 +5283,52 @@ var text = require("./text/index");
 exports.text = text;
 var utils = require("./utils/index");
 exports.utils = utils;
+var media = require("./media/index");
+exports.media = media;
+var errors = require("./errors/index");
+exports.errors = errors;
 
 
 
-},{"./display/index":49,"./events/index":53,"./filters/index":57,"./geom/index":67,"./text/index":79,"./utils/index":81}],69:[function(require,module,exports){
+},{"./display/index":46,"./errors/index":52,"./events/index":56,"./filters/index":60,"./geom/index":70,"./media/index":73,"./text/index":84,"./utils/index":89}],72:[function(require,module,exports){
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventDispatcher_1 = require("../events/EventDispatcher");
+/**
+ * Created by MIC on 2016/1/7.
+ */
+var Sound = (function (_super) {
+    __extends(Sound, _super);
+    function Sound() {
+        _super.apply(this, arguments);
+    }
+    return Sound;
+}(EventDispatcher_1.EventDispatcher));
+exports.Sound = Sound;
+
+
+
+},{"../events/EventDispatcher":53}],73:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/1/7.
+ */
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./Sound"));
+
+
+
+},{"./Sound":72}],74:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var AntiAliasType = (function () {
     function AntiAliasType() {
     }
@@ -4909,15 +5347,16 @@ var AntiAliasType = (function () {
         configurable: true
     });
     return AntiAliasType;
-})();
+}());
 exports.AntiAliasType = AntiAliasType;
 
 
 
-},{}],70:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var GridFitType = (function () {
     function GridFitType() {
     }
@@ -4943,22 +5382,23 @@ var GridFitType = (function () {
         configurable: true
     });
     return GridFitType;
-})();
+}());
 exports.GridFitType = GridFitType;
 
 
 
-},{}],71:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var EventDispatcher_1 = require("../events/EventDispatcher");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
 var StyleSheet = (function (_super) {
     __extends(StyleSheet, _super);
     function StyleSheet() {
@@ -4992,15 +5432,16 @@ var StyleSheet = (function (_super) {
         configurable: true
     });
     return StyleSheet;
-})(EventDispatcher_1.EventDispatcher);
+}(EventDispatcher_1.EventDispatcher));
 exports.StyleSheet = StyleSheet;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../events/EventDispatcher":50}],72:[function(require,module,exports){
+},{"../errors/NotImplementedError":51,"../events/EventDispatcher":53}],77:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5015,8 +5456,8 @@ var TextInteractionMode_1 = require("./TextInteractionMode");
 var TextFieldType_1 = require("./TextFieldType");
 var ShaderID_1 = require("../../webgl/ShaderID");
 var RenderHelper_1 = require("../../webgl/RenderHelper");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var GLUtil_1 = require("../../glantern/GLUtil");
 var TextField = (function (_super) {
     __extends(TextField, _super);
     function TextField(root, parent) {
@@ -5064,7 +5505,7 @@ var TextField = (function (_super) {
         this._textOutlineColor = 0x000000;
         this._thickness = 0;
         if (root !== null) {
-            this._canvasTarget = this.__createCanvasTarget(root.worldRenderer);
+            this._canvasTarget = this._$createCanvasTarget(root.worldRenderer);
         }
         this._textFormatChangedHandler = this.__textFormatChanged.bind(this);
         this.defaultTextFormat = new TextFormat_1.TextFormat();
@@ -5150,7 +5591,7 @@ var TextField = (function (_super) {
             if (this._defaultTextFormat !== null) {
                 this._defaultTextFormat.removeEventListener(TextFormat_1.TextFormat.TEXT_FORMAT_CHANGE, this._textFormatChangedHandler);
             }
-            this._defaultTextFormat = !GLUtil_1.GLUtil.isUndefinedOrNull(v) ? v : new TextFormat_1.TextFormat();
+            this._defaultTextFormat = GLUtil_1.GLUtil.ptr(v) ? v : new TextFormat_1.TextFormat();
             this._defaultTextFormat.addEventListener(TextFormat_1.TextFormat.TEXT_FORMAT_CHANGE, this._textFormatChangedHandler);
         },
         enumerable: true,
@@ -5213,7 +5654,7 @@ var TextField = (function (_super) {
     };
     Object.defineProperty(TextField.prototype, "length", {
         get: function () {
-            return !GLUtil_1.GLUtil.isUndefinedOrNull(this.text) ? this.text.length : 0;
+            return GLUtil_1.GLUtil.ptr(this.text) ? this.text.length : 0;
         },
         enumerable: true,
         configurable: true
@@ -5351,7 +5792,7 @@ var TextField = (function (_super) {
         this._canvas = null;
         this._context2D = null;
     };
-    TextField.prototype.__update = function () {
+    TextField.prototype._$update = function (timeInfo) {
         if (!this._isContentChanged) {
             return;
         }
@@ -5362,20 +5803,20 @@ var TextField = (function (_super) {
         //canvas.height = this.defaultTextFormat.size * 1.15;
         //canvas.width = metrics.width;
         this._canvasTarget.updateImageSize();
-        this.__updateCanvasTextStyle(this._context2D);
-        this.__drawTextElements(this._context2D);
+        this._$updateCanvasTextStyle(this._context2D);
+        this._$drawTextElements(this._context2D);
         this._isContentChanged = false;
     };
-    TextField.prototype.__render = function (renderer) {
+    TextField.prototype._$render = function (renderer) {
         if (this.visible && this.alpha > 0 && this.text !== null && this.text.length > 0) {
             this._canvasTarget.updateImageContent();
             RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, true, this.transform.matrix3D, this.alpha, false);
         }
     };
-    TextField.prototype.__selectShader = function (shaderManager) {
+    TextField.prototype._$selectShader = function (shaderManager) {
         shaderManager.selectShader(ShaderID_1.ShaderID.COPY_IMAGE);
     };
-    TextField.prototype.__createCanvasTarget = function (renderer) {
+    TextField.prototype._$createCanvasTarget = function (renderer) {
         if (this._canvas === null) {
             var canvas = window.document.createElement("canvas");
             canvas.width = renderer.view.width;
@@ -5385,7 +5826,7 @@ var TextField = (function (_super) {
         }
         return renderer.createRenderTarget(this._canvas);
     };
-    TextField.prototype.__updateCanvasTextStyle = function (context2D) {
+    TextField.prototype._$updateCanvasTextStyle = function (context2D) {
         var fontStyles = [];
         if (this.defaultTextFormat.bold) {
             fontStyles.push("bold");
@@ -5397,7 +5838,7 @@ var TextField = (function (_super) {
         fontStyles.push("\"" + this.defaultTextFormat.font + "\"");
         context2D.font = fontStyles.join(" ");
     };
-    TextField.prototype.__drawTextElements = function (context2D) {
+    TextField.prototype._$drawTextElements = function (context2D) {
         var baseX = this.thickness;
         var baseY = this.thickness;
         var borderThickness = 1;
@@ -5420,18 +5861,20 @@ var TextField = (function (_super) {
         }
     };
     TextField.prototype.__textFormatChanged = function () {
+        // Cannot be declared as static or TypeScript compilation will fail.
         this._isContentChanged = true;
     };
     return TextField;
-})(InteractiveObject_1.InteractiveObject);
+}(InteractiveObject_1.InteractiveObject));
 exports.TextField = TextField;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../../webgl/RenderHelper":91,"../../webgl/ShaderID":94,"../display/InteractiveObject":36,"./AntiAliasType":69,"./GridFitType":70,"./TextFieldAutoSize":73,"./TextFieldType":74,"./TextFormat":75,"./TextInteractionMode":77}],73:[function(require,module,exports){
+},{"../../glantern/GLUtil":94,"../../webgl/RenderHelper":107,"../../webgl/ShaderID":110,"../display/InteractiveObject":32,"../errors/NotImplementedError":51,"./AntiAliasType":74,"./GridFitType":75,"./TextFieldAutoSize":78,"./TextFieldType":79,"./TextFormat":80,"./TextInteractionMode":82}],78:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var TextFieldAutoSize = (function () {
     function TextFieldAutoSize() {
     }
@@ -5464,15 +5907,16 @@ var TextFieldAutoSize = (function () {
         configurable: true
     });
     return TextFieldAutoSize;
-})();
+}());
 exports.TextFieldAutoSize = TextFieldAutoSize;
 
 
 
-},{}],74:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var TextFieldType = (function () {
     function TextFieldType() {
     }
@@ -5491,15 +5935,16 @@ var TextFieldType = (function () {
         configurable: true
     });
     return TextFieldType;
-})();
+}());
 exports.TextFieldType = TextFieldType;
 
 
 
-},{}],75:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -5508,8 +5953,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var os = require("os");
 var TextFormatAlign_1 = require("./TextFormatAlign");
 var EventDispatcher_1 = require("../events/EventDispatcher");
-var FlashEvent_1 = require("../events/FlashEvent");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../glantern/GLUtil");
+var EventBase_1 = require("../../glantern/EventBase");
 var TextFormat = (function (_super) {
     __extends(TextFormat, _super);
     function TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading) {
@@ -5772,7 +6217,7 @@ var TextFormat = (function (_super) {
             return this._tabStops;
         },
         set: function (v) {
-            if (GLUtil_1.GLUtil.isUndefinedOrNull(v)) {
+            if (!GLUtil_1.GLUtil.ptr(v)) {
                 v = [];
             }
             var b = false;
@@ -5838,19 +6283,20 @@ var TextFormat = (function (_super) {
         configurable: true
     });
     TextFormat.prototype.__raiseChange = function () {
-        var ev = FlashEvent_1.FlashEvent.create(TextFormat.TEXT_FORMAT_CHANGE);
+        var ev = EventBase_1.EventBase.create(TextFormat.TEXT_FORMAT_CHANGE);
         this.dispatchEvent(ev);
     };
     return TextFormat;
-})(EventDispatcher_1.EventDispatcher);
+}(EventDispatcher_1.EventDispatcher));
 exports.TextFormat = TextFormat;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../events/EventDispatcher":50,"../events/FlashEvent":51,"./TextFormatAlign":76,"os":180}],76:[function(require,module,exports){
+},{"../../glantern/EventBase":93,"../../glantern/GLUtil":94,"../events/EventDispatcher":53,"./TextFormatAlign":81,"os":209}],81:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var TextFormatAlign = (function () {
     function TextFormatAlign() {
     }
@@ -5897,15 +6343,16 @@ var TextFormatAlign = (function () {
         configurable: true
     });
     return TextFormatAlign;
-})();
+}());
 exports.TextFormatAlign = TextFormatAlign;
 
 
 
-},{}],77:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var TextInteractionMode = (function () {
     function TextInteractionMode() {
     }
@@ -5924,15 +6371,16 @@ var TextInteractionMode = (function () {
         configurable: true
     });
     return TextInteractionMode;
-})();
+}());
 exports.TextInteractionMode = TextInteractionMode;
 
 
 
-},{}],78:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var TextLineMetrics = (function () {
     function TextLineMetrics(x, width, height, ascent, descent, leading) {
         this.ascent = 0;
@@ -5949,15 +6397,16 @@ var TextLineMetrics = (function () {
         this.leading = leading;
     }
     return TextLineMetrics;
-})();
+}());
 exports.TextLineMetrics = TextLineMetrics;
 
 
 
-},{}],79:[function(require,module,exports){
+},{}],84:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -5974,10 +6423,388 @@ __export(require("./TextLineMetrics"));
 
 
 
-},{"./AntiAliasType":69,"./GridFitType":70,"./StyleSheet":71,"./TextField":72,"./TextFieldAutoSize":73,"./TextFieldType":74,"./TextFormat":75,"./TextFormatAlign":76,"./TextInteractionMode":77,"./TextLineMetrics":78}],80:[function(require,module,exports){
+},{"./AntiAliasType":74,"./GridFitType":75,"./StyleSheet":76,"./TextField":77,"./TextFieldAutoSize":78,"./TextFieldType":79,"./TextFormat":80,"./TextFormatAlign":81,"./TextInteractionMode":82,"./TextLineMetrics":83}],85:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/5/18.
+ */
+"use strict";
+var pako = require("pako");
+var NotImplementedError_1 = require("../errors/NotImplementedError");
+var Endian_1 = require("./Endian");
+var ArgumentError_1 = require("../errors/ArgumentError");
+var GLUtil_1 = require("../../glantern/GLUtil");
+var EOFError_1 = require("../errors/EOFError");
+var CompressionAlgorithm_1 = require("./CompressionAlgorithm");
+var ApplicationError_1 = require("../errors/ApplicationError");
+var ByteArray = (function () {
+    function ByteArray() {
+        this._length = 0;
+        this._position = -1;
+        this._endian = Endian_1.Endian.BIG_ENDIAN;
+        this._buffer = null;
+        this._dataView = null;
+    }
+    Object.defineProperty(ByteArray.prototype, "bytesAvailable", {
+        get: function () {
+            var available = this.length - this.position - 1;
+            return available < 0 ? 0 : available;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ByteArray.prototype, "endian", {
+        get: function () {
+            return this._endian;
+        },
+        set: function (v) {
+            if (v === Endian_1.Endian.BIG_ENDIAN || v === Endian_1.Endian.LITTLE_ENDIAN) {
+                this._endian = v;
+            }
+            else {
+                throw new ArgumentError_1.ArgumentError("Argument out of range.", "v");
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ByteArray.prototype, "length", {
+        get: function () {
+            return this._length;
+        },
+        set: function (v) {
+            if (v > 0 && v !== this._length) {
+                this.__adjustLength(v);
+                this._length = v;
+                if (this.position >= v) {
+                    this._position = v;
+                }
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ByteArray.prototype, "position", {
+        get: function () {
+            return this._position;
+        },
+        set: function (v) {
+            if (v >= this.length) {
+                return;
+            }
+            else {
+                this._position = v;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ByteArray.prototype.clear = function () {
+        this._dataView = null;
+        this._buffer = null;
+        this._position = 0;
+        this._length = 0;
+    };
+    ByteArray.prototype.compress = function (algorithm) {
+        if (algorithm === void 0) { algorithm = CompressionAlgorithm_1.CompressionAlgorithm.ZLIB; }
+        this.__ensureBufferExists();
+        var oldDataView = new Uint8Array(this._buffer);
+        var newData;
+        switch (algorithm) {
+            case CompressionAlgorithm_1.CompressionAlgorithm.DEFLATE:
+                // Definition hack.
+                newData = pako.deflateRaw(oldDataView);
+                break;
+            case CompressionAlgorithm_1.CompressionAlgorithm.ZLIB:
+                // Definition hack.
+                newData = pako.deflate(oldDataView);
+                break;
+            case CompressionAlgorithm_1.CompressionAlgorithm.LZMA:
+                throw new NotImplementedError_1.NotImplementedError("LZMA compression algorithm is not implemented yet.");
+            default:
+                throw new ArgumentError_1.ArgumentError("Unknown compression algorithm.");
+        }
+        this._buffer = newData.buffer;
+        this._dataView = new DataView(this._buffer);
+        this._length = this._buffer.byteLength;
+        this._position = this._length;
+    };
+    ByteArray.prototype.deflate = function () {
+        this.compress(CompressionAlgorithm_1.CompressionAlgorithm.DEFLATE);
+    };
+    ByteArray.prototype.inflate = function () {
+        this.uncompress(CompressionAlgorithm_1.CompressionAlgorithm.DEFLATE);
+    };
+    ByteArray.prototype.readBoolean = function () {
+        return this.readByte() !== 0;
+    };
+    ByteArray.prototype.readByte = function () {
+        this.__checkPosition(1);
+        var value = this._dataView.getInt8(this.position);
+        this.position += 1;
+        return value;
+    };
+    ByteArray.prototype.readBytes = function (bytes, offset, length) {
+        if (offset === void 0) { offset = 0; }
+        if (length === void 0) { length = 0; }
+        this.__checkPosition(length);
+        bytes.__checkPosition(length);
+        if (length > 0) {
+            bytes.position = offset;
+            var position = this.position;
+            for (var i = 0; i < length; ++i) {
+                bytes._dataView.setUint8(offset, this._dataView.getUint8(position + i));
+            }
+            this.position += length;
+            bytes.position += length;
+        }
+    };
+    ByteArray.prototype.readDouble = function () {
+        this.__checkPosition(8);
+        var value = this._dataView.getFloat64(this.position, this.__isLittleEndian());
+        this.position += 8;
+        return value;
+    };
+    ByteArray.prototype.readFloat = function () {
+        this.__checkPosition(4);
+        var value = this._dataView.getFloat32(this.position, this.__isLittleEndian());
+        this.position += 4;
+        return value;
+    };
+    ByteArray.prototype.readInt = function () {
+        this.__checkPosition(4);
+        var value = this._dataView.getInt32(this.position, this.__isLittleEndian());
+        this.position += 4;
+        return value;
+    };
+    ByteArray.prototype.readShort = function () {
+        this.__checkPosition(2);
+        var value = this._dataView.getInt16(this.position, this.__isLittleEndian());
+        this.position += 2;
+        return value;
+    };
+    ByteArray.prototype.readUnsignedByte = function () {
+        this.__checkPosition(1);
+        var value = this._dataView.getUint8(this.position);
+        this.position += 1;
+        return value;
+    };
+    ByteArray.prototype.readUnsignedInt = function () {
+        this.__checkPosition(4);
+        var value = this._dataView.getUint32(this.position, this.__isLittleEndian());
+        this.position += 4;
+        return value;
+    };
+    ByteArray.prototype.readUnsignedShort = function () {
+        this.__checkPosition(2);
+        var value = this._dataView.getUint16(this.position, this.__isLittleEndian());
+        this.position += 2;
+        return value;
+    };
+    ByteArray.prototype.uncompress = function (algorithm) {
+        if (algorithm === void 0) { algorithm = CompressionAlgorithm_1.CompressionAlgorithm.ZLIB; }
+        this.__ensureBufferExists();
+        var oldDataView = new Uint8Array(this._buffer);
+        var newData;
+        switch (algorithm) {
+            case CompressionAlgorithm_1.CompressionAlgorithm.DEFLATE:
+                newData = pako.inflateRaw(oldDataView);
+                break;
+            case CompressionAlgorithm_1.CompressionAlgorithm.ZLIB:
+                newData = pako.inflate(oldDataView);
+                break;
+            case CompressionAlgorithm_1.CompressionAlgorithm.LZMA:
+                throw new NotImplementedError_1.NotImplementedError("LZMA compression algorithm is not implemented yet.");
+            default:
+                throw new ArgumentError_1.ArgumentError("Unknown compression algorithm.");
+        }
+        this._buffer = newData.buffer;
+        this._dataView = new DataView(this._buffer);
+        this._length = this._buffer.byteLength;
+        this._position = this._length;
+    };
+    ByteArray.prototype.writeBoolean = function (value) {
+        this.writeByte(value ? 1 : 0);
+    };
+    ByteArray.prototype.writeByte = function (value) {
+        this.__checkPosition(1);
+        this._dataView.setInt8(this.position, value);
+        this.position += 1;
+    };
+    ByteArray.prototype.writeBytes = function (bytes, offset, length) {
+        if (offset === void 0) { offset = 0; }
+        if (length === void 0) { length = 0; }
+        bytes.readBytes(this, offset, length);
+    };
+    ByteArray.prototype.writeDouble = function (value) {
+        this.__checkPosition(8);
+        this._dataView.setFloat64(this.position, value, this.__isLittleEndian());
+        this.position += 8;
+    };
+    ByteArray.prototype.writeFloat = function (value) {
+        this.__checkPosition(4);
+        this._dataView.setFloat64(this.position, value, this.__isLittleEndian());
+        this.position += 4;
+    };
+    ByteArray.prototype.writeInt = function (value) {
+        this.__checkPosition(4);
+        this._dataView.setInt32(this.position, value, this.__isLittleEndian());
+        this.position += 4;
+    };
+    ByteArray.prototype.writeShort = function (value) {
+        this.__checkPosition(2);
+        this._dataView.setInt16(this.position, value, this.__isLittleEndian());
+        this.position += 2;
+    };
+    ByteArray.prototype.writeUnsignedByte = function (value) {
+        this.__checkPosition(1);
+        this._dataView.setUint8(this.position, value);
+        this.position += 1;
+    };
+    ByteArray.prototype.writeUnsignedInt = function (value) {
+        this.__checkPosition(4);
+        this._dataView.setUint32(this.position, value, this.__isLittleEndian());
+        this.position += 4;
+    };
+    ByteArray.prototype.writeUnsignedShort = function (value) {
+        this.__checkPosition(2);
+        this._dataView.setUint16(this.position, value, this.__isLittleEndian());
+        this.position += 2;
+    };
+    // MIC
+    ByteArray.from = function (buffer) {
+        var arrayBuffer = new ByteArray();
+        arrayBuffer._buffer = buffer;
+        arrayBuffer._dataView = new DataView(buffer);
+        arrayBuffer._length = buffer.byteLength;
+        arrayBuffer._position = 0;
+        return arrayBuffer;
+    };
+    // MIC
+    ByteArray.prototype.flatten = function () {
+        this.__ensureBufferExists();
+        var array = new Array(this.length);
+        for (var i = 0; i < array.length; ++i) {
+            array[i] = this._dataView.getUint8(i);
+        }
+        return array;
+    };
+    Object.defineProperty(ByteArray.prototype, "rawBuffer", {
+        get: function () {
+            return this._buffer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ByteArray.prototype.__adjustLength = function (targetLength) {
+        var oldBuffer = this._buffer;
+        var oldDataView = this._dataView;
+        var newBuffer = new ArrayBuffer(targetLength);
+        var newDataView = new DataView(newBuffer);
+        if (GLUtil_1.GLUtil.ptr(oldBuffer)) {
+            var copyLength = targetLength > this.length ? oldBuffer.byteLength : newBuffer.byteLength;
+            for (var i = 0; i < copyLength; ++i) {
+                newDataView.setUint8(i, oldDataView.getUint8(i));
+            }
+            for (var i = copyLength; i < newBuffer.byteLength; ++i) {
+                newDataView.setUint8(i, 0);
+            }
+        }
+        else {
+            for (var i = 0; i < newBuffer.byteLength; ++i) {
+                newDataView.setUint8(i, 0);
+            }
+        }
+        this._buffer = newBuffer;
+        this._dataView = newDataView;
+    };
+    ByteArray.prototype.__ensureBufferExists = function () {
+        if (this._buffer === null) {
+            throw new ApplicationError_1.ApplicationError("Buffer has not been allocated.");
+        }
+    };
+    ByteArray.prototype.__checkPosition = function (minimumReservedBytes) {
+        this.__ensureBufferExists();
+        if (this.bytesAvailable < minimumReservedBytes) {
+            throw new EOFError_1.EOFError("Position is out of buffer range.");
+        }
+    };
+    ByteArray.prototype.__isLittleEndian = function () {
+        return this.endian === Endian_1.Endian.LITTLE_ENDIAN;
+    };
+    return ByteArray;
+}());
+exports.ByteArray = ByteArray;
+
+
+
+},{"../../glantern/GLUtil":94,"../errors/ApplicationError":47,"../errors/ArgumentError":48,"../errors/EOFError":49,"../errors/NotImplementedError":51,"./CompressionAlgorithm":86,"./Endian":87,"pako":210}],86:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+var CompressionAlgorithm = (function () {
+    function CompressionAlgorithm() {
+    }
+    Object.defineProperty(CompressionAlgorithm, "DEFLATE", {
+        get: function () {
+            return "deflate";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompressionAlgorithm, "LZMA", {
+        get: function () {
+            return "lzma";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CompressionAlgorithm, "ZLIB", {
+        get: function () {
+            return "zlib";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return CompressionAlgorithm;
+}());
+exports.CompressionAlgorithm = CompressionAlgorithm;
+
+
+
+},{}],87:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/5/18.
+ */
+"use strict";
+var Endian = (function () {
+    function Endian() {
+    }
+    Object.defineProperty(Endian, "BIG_ENDIAN", {
+        get: function () {
+            return "bigEndian";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Endian, "LITTLE_ENDIAN", {
+        get: function () {
+            return "littleEndian";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return Endian;
+}());
+exports.Endian = Endian;
+
+
+
+},{}],88:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6046,7 +6873,7 @@ var Timer = (function (_super) {
     };
     Timer.prototype.start = function () {
         if (!this.running && (this.currentCount < this.repeatCount || this.repeatCount === 0)) {
-            this._handle = window.setInterval(this.__timerCallback.bind(this), this.delay);
+            this._handle = window.setInterval(this._$timerCallback.bind(this), this.delay);
             this._running = true;
         }
     };
@@ -6061,49 +6888,959 @@ var Timer = (function (_super) {
         _super.prototype.dispose.call(this);
         this.reset();
     };
-    Timer.prototype.__timerCallback = function () {
+    Timer.prototype._$timerCallback = function () {
         if (this.enabled) {
             this._currentCount++;
             if (this.repeatCount > 0 && this.currentCount > this.repeatCount) {
                 this.stop();
-                this.__raiseTimerCompleteEvent();
+                this._$raiseTimerCompleteEvent();
             }
             else {
-                this.__raiseTimerEvent();
+                this._$raiseTimerEvent();
             }
         }
     };
-    Timer.prototype.__raiseTimerEvent = function () {
+    Timer.prototype._$raiseTimerEvent = function () {
         var ev = new TimerEvent_1.TimerEvent(TimerEvent_1.TimerEvent.TIMER);
         ev.timeStamp = Date.now();
         this.dispatchEvent(ev);
     };
-    Timer.prototype.__raiseTimerCompleteEvent = function () {
+    Timer.prototype._$raiseTimerCompleteEvent = function () {
         var ev = new TimerEvent_1.TimerEvent(TimerEvent_1.TimerEvent.TIMER_COMPLETE);
         ev.timeStamp = Date.now();
         this.dispatchEvent(ev);
     };
     return Timer;
-})(EventDispatcher_1.EventDispatcher);
+}(EventDispatcher_1.EventDispatcher));
 exports.Timer = Timer;
 
 
 
-},{"../events/EventDispatcher":50,"../events/TimerEvent":52}],81:[function(require,module,exports){
+},{"../events/EventDispatcher":53,"../events/TimerEvent":55}],89:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require("./Timer"));
+__export(require("./ByteArray"));
+__export(require("./Endian"));
+__export(require("./CompressionAlgorithm"));
 
 
 
-},{"./Timer":80}],82:[function(require,module,exports){
+},{"./ByteArray":85,"./CompressionAlgorithm":86,"./Endian":87,"./Timer":88}],90:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+var MathUtil_1 = require("./MathUtil");
+var arrayBuffer = new ArrayBuffer(8);
+var views = {
+    uint8View: new Uint8Array(arrayBuffer),
+    int8View: new Int8Array(arrayBuffer),
+    uint16View: new Uint16Array(arrayBuffer),
+    int16View: new Int16Array(arrayBuffer),
+    uint32View: new Uint32Array(arrayBuffer),
+    int32View: new Int32Array(arrayBuffer),
+    float32View: new Float32Array(arrayBuffer),
+    float64View: new Float64Array(arrayBuffer)
+};
+var isSystemLittleEndian;
+(function () {
+    var buffer = new ArrayBuffer(2);
+    var dataView = new DataView(buffer);
+    dataView.setInt16(0, 256, true);
+    var newBuffer = new Int16Array(buffer);
+    isSystemLittleEndian = newBuffer[0] === 256;
+})();
+function getBufferArray(length) {
+    var array = new Array(length);
+    for (var i = 0; i < length; ++i) {
+        array[i] = views.uint8View[i];
+    }
+    return array;
+}
+function setBufferArray(data, dataStartIndex, length) {
+    for (var i = dataStartIndex; i < dataStartIndex + length; ++i) {
+        views.uint8View[i - dataStartIndex] = data[i];
+    }
+}
+var BitConverter = (function () {
+    function BitConverter() {
+    }
+    Object.defineProperty(BitConverter, "isLittleEndian", {
+        get: function () {
+            return isSystemLittleEndian;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BitConverter.float32ToBytes = function (value) {
+        views.float32View[0] = value;
+        return getBufferArray(4);
+    };
+    BitConverter.float64ToBytes = function (value) {
+        views.float64View[0] = value;
+        return getBufferArray(8);
+    };
+    BitConverter.bytesToFloat32 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        setBufferArray(bytes, startIndex, 4);
+        return views.float32View[0];
+    };
+    BitConverter.bytesToFloat64 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        setBufferArray(bytes, startIndex, 8);
+        return views.float64View[0];
+    };
+    BitConverter.int16ToBytes = function (value) {
+        views.int16View[0] = value;
+        return getBufferArray(2);
+    };
+    BitConverter.uint16ToBytes = function (value) {
+        views.uint16View[0] = value;
+        return getBufferArray(2);
+    };
+    BitConverter.int32ToBytes = function (value) {
+        views.int32View[0] = value;
+        return getBufferArray(4);
+    };
+    BitConverter.uint32ToBytes = function (value) {
+        views.uint32View[0] = value;
+        return getBufferArray(4);
+    };
+    BitConverter.int64ToBytes = function (value) {
+        var byteArray = [0, 0, 0, 0, 0, 0, 0, 0];
+        for (var index = byteArray.length - 1; index >= 0; index--) {
+            var byte = value & 0xff;
+            byteArray[index] = byte;
+            value = (value - byte) / 256;
+        }
+        return byteArray;
+    };
+    BitConverter.uint64ToBytes = function (value) {
+        return BitConverter.int64ToBytes(value >= 0 ? value : -value);
+    };
+    BitConverter.bytesToInt64 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        var value = BitConverter.bytesToUint64(bytes, startIndex);
+        var isNegative = BitConverter.__isComplement(bytes, startIndex, 8);
+        if (isNegative) {
+            value = MathUtil_1.MathUtil.complementToNegative(value);
+        }
+        return value;
+    };
+    BitConverter.bytesToUint64 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        var value = 0;
+        for (var i = startIndex; i < startIndex + 8; i++) {
+            value = (value << 8) + bytes[i];
+        }
+        return value;
+    };
+    BitConverter.bytesToInt32 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        setBufferArray(bytes, startIndex, 4);
+        return views.int32View[0];
+    };
+    BitConverter.bytesToUint32 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        setBufferArray(bytes, startIndex, 4);
+        return views.uint32View[0];
+    };
+    BitConverter.bytesToInt16 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        setBufferArray(bytes, startIndex, 2);
+        return views.int16View[0];
+    };
+    BitConverter.bytesToUint16 = function (bytes, startIndex) {
+        if (startIndex === void 0) { startIndex = 0; }
+        setBufferArray(bytes, startIndex, 2);
+        return views.uint16View[0];
+    };
+    BitConverter.swapEndian = function (bytes, startIndex, length) {
+        if (startIndex === void 0) { startIndex = 0; }
+        if (length === void 0) { length = bytes.length; }
+        var result = new Array(length);
+        var endIndex = startIndex + length - 1;
+        var halfIndex = startIndex + (((length + 1) / 2) | 0);
+        for (var i = startIndex; i < halfIndex; i++) {
+            result[i - startIndex] = bytes[endIndex - i];
+        }
+        return result;
+    };
+    BitConverter.float64ToInt64Bits = function (value) {
+        // Be careful! Only 6-7 digits are significant!
+        views.float64View[0] = value;
+        var bytes = getBufferArray(8);
+        return BitConverter.bytesToInt64(bytes);
+    };
+    BitConverter.int64ToFloat64Bits = function (value) {
+        // Be careful! Only 6-7 digits are significant!
+        var bytes = BitConverter.int64ToBytes(value);
+        setBufferArray(bytes, 0, bytes.length);
+        return views.float64View[0];
+    };
+    BitConverter.float32ToInt32Bits = function (value) {
+        views.float32View[0] = value;
+        return views.int32View[0];
+    };
+    BitConverter.int32ToFloat32Bits = function (value) {
+        views.int32View[0] = value;
+        return views.float32View[0];
+    };
+    BitConverter.__isComplement = function (bytes, startIndex, length) {
+        return MathUtil_1.MathUtil.isByteComplement(bytes[startIndex + length - 1]);
+    };
+    return BitConverter;
+}());
+exports.BitConverter = BitConverter;
+
+
+
+},{"./MathUtil":95}],91:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/11/25.
+ */
+"use strict";
+var WebGLRenderer_1 = require("../webgl/WebGLRenderer");
+var Stage_1 = require("../flash/display/Stage");
+var FlashEvent_1 = require("../flash/events/FlashEvent");
+var VisualUtil_1 = require("./VisualUtil");
+var EventBase_1 = require("./EventBase");
+var EngineBase = (function () {
+    function EngineBase() {
+        this._isRunning = false;
+        this._renderer = null;
+        this._stage = null;
+        this._isInitialized = false;
+        this._attachedUpdateFunctions = null;
+        this._loopFunction = null;
+        this._elapsedMillis = 0;
+        this._fps = 0;
+        this._fpsCounter = 0;
+        this._lastTimeFpsUpdated = 0;
+        this._lastTimeUpdated = -1;
+        this._attachedUpdateFunctions = [];
+    }
+    EngineBase.prototype.initialize = function (width, height, options) {
+        if (options === void 0) { options = WebGLRenderer_1.WebGLRenderer.DEFAULT_OPTIONS; }
+        if (this.isInitialized) {
+            return;
+        }
+        this._renderer = new WebGLRenderer_1.WebGLRenderer(width, height, options);
+        this._stage = new Stage_1.Stage(this._renderer);
+        this._loopFunction = this.__mainLoop.bind(this);
+        this._isInitialized = true;
+    };
+    EngineBase.prototype.dispose = function () {
+        if (!this.isInitialized) {
+            return;
+        }
+        this._stage.dispose();
+        this._renderer.dispose();
+        this._stage = null;
+        this._renderer = null;
+        while (this._attachedUpdateFunctions.length > 0) {
+            this._attachedUpdateFunctions.pop();
+        }
+        this._isInitialized = false;
+    };
+    /**
+     * Starts the animation loop. Updating and rendering are automatically handled in the loop.
+     * By default, {@link startAnimation} uses {@link window.requestAnimationFrame} function and relies
+     * on the frame rate adjuster of the browser window.
+     */
+    EngineBase.prototype.startAnimation = function () {
+        if (!this.isInitialized) {
+            return;
+        }
+        if (!this.isAnimationRunning) {
+            this._lastTimeUpdated = Date.now();
+        }
+        this._isRunning = true;
+        VisualUtil_1.VisualUtil.requestAnimationFrame(this._loopFunction);
+    };
+    /**
+     * Stops the animation loop. Internal state is preserved, and the next {@link startAnimation} call resumes
+     * from last state.
+     */
+    EngineBase.prototype.stopAnimation = function () {
+        if (!this.isInitialized) {
+            return;
+        }
+        this.__updateTimeCounters();
+        this._fps = 0;
+        this._isRunning = false;
+    };
+    EngineBase.prototype.clear = function () {
+        this._renderer.clear();
+    };
+    EngineBase.prototype.runOneFrame = function (timeInfo) {
+        if (!this._isInitialized) {
+            return;
+        }
+        if (this._attachedUpdateFunctions.length > 0) {
+            for (var i = 0; i < this._attachedUpdateFunctions.length; ++i) {
+                var func = this._attachedUpdateFunctions[i];
+                if (typeof func === "function") {
+                    func(timeInfo);
+                }
+            }
+        }
+        this._stage.dispatchEvent(EventBase_1.EventBase.create(FlashEvent_1.FlashEvent.ENTER_FRAME));
+        this._stage.update(timeInfo);
+        this._stage.render(this._renderer);
+    };
+    Object.defineProperty(EngineBase.prototype, "stage", {
+        get: function () {
+            return this._stage;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EngineBase.prototype, "renderer", {
+        get: function () {
+            return this._renderer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EngineBase.prototype, "view", {
+        get: function () {
+            return this.isInitialized ? this._renderer.view : null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EngineBase.prototype, "isAnimationRunning", {
+        /**
+         * Gets a boolean flag indicating whether the animation loop is running.
+         * @returns {Boolean}
+         */
+        get: function () {
+            return this.isInitialized && this._isRunning;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EngineBase.prototype, "isInitialized", {
+        get: function () {
+            return this._isInitialized;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    EngineBase.prototype.attachUpdateFunction = function (func) {
+        if (typeof func === "function" && this._attachedUpdateFunctions.indexOf(func) < 0) {
+            this._attachedUpdateFunctions.push(func);
+        }
+    };
+    Object.defineProperty(EngineBase.prototype, "elapsedMillis", {
+        /**
+         * Gets total time elapsed in handling the animation loop, in milliseconds.
+         * @returns {Number}
+         */
+        get: function () {
+            return this._elapsedMillis;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(EngineBase.prototype, "fps", {
+        /**
+         * Gets the average FPS (frame per second) of last second.
+         * @returns {Number}
+         */
+        get: function () {
+            return this._fps;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    EngineBase.prototype.__updateTimeCounters = function () {
+        if (this._lastTimeUpdated > 0) {
+            var now = Date.now();
+            this._elapsedMillis += now - this._lastTimeUpdated;
+            this._lastTimeUpdated = now;
+        }
+        ++this._fpsCounter;
+        if (this.elapsedMillis - this._lastTimeFpsUpdated > 1000) {
+            this._fps = this._fpsCounter / (this.elapsedMillis - this._lastTimeFpsUpdated) * 1000;
+            this._fpsCounter = 0;
+            this._lastTimeFpsUpdated = this.elapsedMillis;
+        }
+    };
+    /**
+     * The main render loop.
+     * @param time {Number} The time argument of {@link window#requestAnimationFrame} callback. However, some browsers
+     * does not invoke with this argument.
+     * @private
+     */
+    EngineBase.prototype.__mainLoop = function (time) {
+        if (!this.isAnimationRunning) {
+            return;
+        }
+        this.__updateTimeCounters();
+        var timeInfo = { millisFromStartup: this.elapsedMillis };
+        this.runOneFrame(timeInfo);
+        VisualUtil_1.VisualUtil.requestAnimationFrame(this._loopFunction);
+    };
+    return EngineBase;
+}());
+exports.EngineBase = EngineBase;
+
+
+
+},{"../flash/display/Stage":40,"../flash/events/FlashEvent":54,"../webgl/WebGLRenderer":115,"./EventBase":93,"./VisualUtil":96}],92:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/11/18.
+ */
+"use strict";
+var ErrorBase = (function () {
+    function ErrorBase(message) {
+        if (message === void 0) { message = ""; }
+        this._message = null;
+        this._message = message;
+    }
+    Object.defineProperty(ErrorBase.prototype, "message", {
+        get: function () {
+            return this._message;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ErrorBase.prototype, "name", {
+        get: function () {
+            return "ErrorBase";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return ErrorBase;
+}());
+exports.ErrorBase = ErrorBase;
+
+
+
+},{}],93:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/13.
+ */
+"use strict";
+var EventBase = (function () {
+    function EventBase(type, bubbles, cancelable) {
+        if (bubbles === void 0) { bubbles = false; }
+        if (cancelable === void 0) { cancelable = false; }
+        this.bubbles = false;
+        this.cancelBubble = false;
+        this.cancelable = false;
+        this.currentTarget = null;
+        this.defaultPrevented = false;
+        this.eventPhase = -1;
+        this.isTrusted = true;
+        this.returnValue = false;
+        this.srcElement = null;
+        this.target = null;
+        this.timeStamp = 0;
+        this.type = null;
+        this.AT_TARGET = 2;
+        this.BUBBLING_PHASE = 0;
+        this.CAPTURING_PHASE = 1;
+        this.type = type;
+        this.bubbles = bubbles;
+        this.cancelable = cancelable;
+    }
+    EventBase.prototype.initEvent = function (eventTypeArg, canBubbleArg, cancelableArg) {
+    };
+    EventBase.prototype.preventDefault = function () {
+    };
+    EventBase.prototype.stopImmediatePropagation = function () {
+    };
+    EventBase.prototype.stopPropagation = function () {
+    };
+    EventBase.create = function (type) {
+        var ev = new EventBase(type, false, false);
+        ev.timeStamp = Date.now();
+        return ev;
+    };
+    return EventBase;
+}());
+exports.EventBase = EventBase;
+
+
+
+},{}],94:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/11/17.
+ */
+"use strict";
+var $global = window;
+/**
+ * The class providing utility functions.
+ */
+var GLUtil = (function () {
+    function GLUtil() {
+    }
+    GLUtil.checkSupportStatus = function () {
+        var result = {
+            ok: true,
+            reasons: []
+        };
+        var globalObject = window;
+        if (!globalObject) {
+            result.ok = false;
+            result.reasons.push("'window' object is not found in global scope.");
+        }
+        var notSupportedPrompt = " is not supported by this browser";
+        // GLantern is based on <canvas>, so it should exist.
+        if (!GLUtil.isClassDefinition(globalObject["HTMLCanvasElement"])) {
+            result.ok = false;
+            result.reasons.push("Canvas element" + notSupportedPrompt);
+        }
+        // GLantern uses WebGL, so there should be a corresponding rendering context.
+        if (!GLUtil.isClassDefinition(globalObject["WebGLRenderingContext"])) {
+            result.ok = false;
+            result.reasons.push("WebGL" + notSupportedPrompt);
+        }
+        // Classes related to array buffer.
+        var arrayBufferClasses = ["ArrayBuffer", "DataView", "Uint8Array", "Int8Array", "Uint16Array", "Int16Array", "Uint32Array", "Int32Array", "Float32Array", "Float64Array"];
+        for (var i = 0; i < arrayBufferClasses.length; ++i) {
+            if (!GLUtil.isClassDefinition(globalObject[arrayBufferClasses[i]])) {
+                result.ok = false;
+                result.reasons.push("'" + arrayBufferClasses[i] + "' class" + notSupportedPrompt);
+            }
+        }
+        // GLantern uses Map and Set class, so they should exist.
+        // Note: Map and Set are ES6 features, but they are implemented on modern browsers.
+        if (!GLUtil.isClassDefinition(globalObject["Map"])) {
+            result.ok = false;
+            result.reasons.push("'Map' class" + notSupportedPrompt);
+        }
+        if (!GLUtil.isClassDefinition(globalObject["Set"])) {
+            result.ok = false;
+            result.reasons.push("'Set' class" + notSupportedPrompt);
+        }
+        // No plans for support of Chrome whose version is under 40, due to a WebGL memory leak problem.
+        if (typeof globalObject["chrome"] === "object") {
+            var chromeVersionRegExp = /Chrome\/(\d+)(?:\.\d+)*/;
+            var chromeVersionInfo = chromeVersionRegExp.exec(window.navigator.appVersion);
+            if (chromeVersionInfo.length < 2 || parseInt(chromeVersionInfo[1]) < 40) {
+                result.ok = false;
+                result.reasons.push("Chrome under version 40 is not supported due to performance faults.");
+            }
+        }
+        return result;
+    };
+    /**
+     * Check whether a value is {@link undefined} or {@link null}.
+     * @param value {*} The value to check.
+     * @returns {Boolean} True if the value is {@link undefined} or {@link null}, and false otherwise.
+     */
+    GLUtil.isUndefinedOrNull = function (value) {
+        return value === void (0) || value === null;
+    };
+    /**
+     * Check whether a value is {@link undefined}.
+     * @param value {*} The value to check.
+     * @returns {Boolean} True if the value is {@link undefined}, and false otherwise.
+     */
+    GLUtil.isUndefined = function (value) {
+        return value === void (0);
+    };
+    /**
+     * Check whether a value is logically true.
+     * @param value {*} The value to check.
+     * @returns {Boolean}
+     */
+    GLUtil.ptr = function (value) {
+        return !!value;
+    };
+    /**
+     * Check whether a value is a function.
+     * @param value {*} The value to check.
+     * @returns {Boolean} True if the value is a function, and false otherwise.
+     */
+    GLUtil.isFunction = function (value) {
+        return typeof value === "function";
+    };
+    /**
+     * Check whether a value is a class prototype.
+     * @param value {*} The value to check.
+     * @returns {Boolean} True if the value is a class definition, and false otherwise.
+     * @remarks IE11 has a non-standard behavior to declare experimental features (e.g. Map) as functions,
+     *          and tested features (e.g. WebGLRenderingContext) as objects.
+     */
+    GLUtil.isClassDefinition = function (value) {
+        var typeCheck;
+        if (typeof value === "function") {
+            typeCheck = true;
+        }
+        else {
+            var isIE11 = window.navigator.appVersion.indexOf("Trident/7.0") >= 0 && window.navigator.appVersion.indexOf("rv:11.0") >= 0;
+            typeCheck = isIE11 && typeof value === "object";
+        }
+        var constructorCheck = (value && value.prototype ? value.prototype.constructor === value : false);
+        return typeCheck && constructorCheck;
+    };
+    /**
+     * Generate a string based on the template, and provided values. This function acts similarly to the String.Format()
+     * function in CLR.
+     * @param format {String} The template string.
+     * @param replaceWithArray {*[]} The value array to provide values for formatting.
+     * @example
+     * var person = { name: "John Doe", age: 20 };
+     * console.log(_util.formatString("{0}'s age is {1}.", person.name, person.age);
+     * @returns {String} The generated string, with valid placeholders replaced by values matched.
+     */
+    GLUtil.formatString = function (format) {
+        var replaceWithArray = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            replaceWithArray[_i - 1] = arguments[_i];
+        }
+        var replaceWithArrayIsNull = !GLUtil.ptr(replaceWithArray);
+        var replaceWithArrayLength = replaceWithArrayIsNull ? -1 : replaceWithArray.length;
+        function __stringFormatter(matched) {
+            var indexString = matched.substring(1, matched.length - 1);
+            var indexValue = parseInt(indexString);
+            if (!replaceWithArrayIsNull && (0 <= indexValue && indexValue < replaceWithArrayLength)) {
+                if (typeof replaceWithArray[indexValue] === "undefined") {
+                    return "undefined";
+                }
+                else if (replaceWithArray[indexValue] === null) {
+                    return "null";
+                }
+                else {
+                    return replaceWithArray[indexValue].toString();
+                }
+            }
+            else {
+                return matched;
+            }
+        }
+        var regex = /{[\d]+}/g;
+        return format.replace(regex, __stringFormatter);
+    };
+    GLUtil.deepClone = function (sourceObject) {
+        if (typeof sourceObject === "undefined" || sourceObject === null || sourceObject === true || sourceObject === false) {
+            return sourceObject;
+        }
+        if (typeof sourceObject === "string" || typeof sourceObject === "number") {
+            return sourceObject;
+        }
+        /* Arrays */
+        if (Array.isArray(sourceObject)) {
+            var tmpArray = [];
+            for (var i = 0; i < sourceObject.length; ++i) {
+                tmpArray.push(GLUtil.deepClone(sourceObject[i]));
+            }
+            return tmpArray;
+        }
+        /* ES6 classes. Chrome has implemented a part of them so they must be considered. */
+        if (typeof $global.Map !== "undefined" && sourceObject instanceof Map) {
+            var newMap = new Map();
+            sourceObject.forEach(function (v, k) {
+                newMap.set(GLUtil.deepClone(k), GLUtil.deepClone(v));
+            });
+            return newMap;
+        }
+        if (typeof $global.Set !== "undefined" && sourceObject instanceof Set) {
+            var newSet = new Set();
+            sourceObject.forEach(function (v) {
+                newSet.add(GLUtil.deepClone(v));
+            });
+            return newSet;
+        }
+        /* Classic ES5 functions. */
+        if (sourceObject instanceof Function || typeof sourceObject === "function") {
+            var sourceFunctionObject = sourceObject;
+            var fn = (function () {
+                return function () {
+                    return sourceFunctionObject.apply(this, arguments);
+                };
+            })();
+            fn.prototype = sourceFunctionObject.prototype;
+            for (var key in sourceFunctionObject) {
+                if (sourceFunctionObject.hasOwnProperty(key)) {
+                    fn[key] = sourceFunctionObject[key];
+                }
+            }
+            return fn;
+        }
+        /* Classic ES5 objects. */
+        if (sourceObject instanceof Object || typeof sourceObject === "object") {
+            var newObject = Object.create(null);
+            if (typeof sourceObject.hasOwnProperty === "function") {
+                for (var key in sourceObject) {
+                    if (sourceObject.hasOwnProperty(key)) {
+                        newObject[key] = GLUtil.deepClone(sourceObject[key]);
+                    }
+                }
+            }
+            else {
+                for (var key in sourceObject) {
+                    newObject[key] = GLUtil.deepClone(sourceObject[key]);
+                }
+            }
+            return newObject;
+        }
+        return (void 0);
+    };
+    /**
+     * Prints out a message with a stack trace.
+     * @param message {String} The message to print.
+     * @param [extra] {*} Extra information.
+     */
+    GLUtil.trace = function (message, extra) {
+        if (extra === void 0) { extra = void (0); }
+        if (GLUtil.isUndefined(extra)) {
+            console.info(message);
+        }
+        else {
+            console.info(message, extra);
+        }
+        console.trace();
+    };
+    GLUtil.colorToCssSharp = function (color) {
+        color |= 0;
+        return "#" + GLUtil.padLeft(color.toString(16), 6, "0");
+    };
+    GLUtil.colorToCssRgba = function (color) {
+        color |= 0;
+        var a = (color >> 24) & 0xff;
+        var r = (color >> 16) & 0xff;
+        var g = (color >> 8) & 0xff;
+        var b = color & 0xff;
+        return "rgba(" + r + ", " + g + ", " + b + ", " + a + ")";
+    };
+    GLUtil.rgb = function (r, g, b) {
+        return GLUtil.rgba(r, g, b, 0xff);
+    };
+    GLUtil.rgba = function (r, g, b, a) {
+        return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+    };
+    GLUtil.decomposeRgb = function (color) {
+        var r = (color >> 16) & 0xff;
+        var g = (color >> 8) & 0xff;
+        var b = color & 0xff;
+        return {
+            r: r, g: g, b: b, a: 0xff
+        };
+    };
+    GLUtil.decomposeRgba = function (color) {
+        var a = (color >> 24) & 0xff;
+        var r = (color >> 16) & 0xff;
+        var g = (color >> 8) & 0xff;
+        var b = color & 0xff;
+        return {
+            r: r, g: g, b: b, a: a
+        };
+    };
+    GLUtil.padLeft = function (str, targetLength, padWith) {
+        while (str.length < targetLength) {
+            str = padWith + str;
+        }
+        if (str.length > targetLength) {
+            str = str.substring(str.length - targetLength, str.length - 1);
+        }
+        return str;
+    };
+    GLUtil.remove = function (array, value, equalFunc) {
+        if (equalFunc === void 0) { equalFunc = null; }
+        if (typeof equalFunc !== "function") {
+            var searchIndex = array.indexOf(value);
+            if (searchIndex >= 0) {
+                array.splice(searchIndex, 1);
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        for (var i = 0; i < array.length; ++i) {
+            if (equalFunc(value, array[i])) {
+                array.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    };
+    GLUtil.removeAll = function (array, value, equalFunc) {
+        if (equalFunc === void 0) { equalFunc = null; }
+        var func = typeof equalFunc === "function" ? equalFunc : simpleEquals;
+        var counter = 0;
+        var arrayLength = array.length;
+        for (var i = 0; i < arrayLength; ++i) {
+            if (func(value, array[i])) {
+                array.splice(i, 1);
+                --i;
+                --arrayLength;
+                ++counter;
+            }
+        }
+        return counter;
+    };
+    GLUtil.removeAt = function (array, index) {
+        index |= 0;
+        if (0 <= index && index < array.length) {
+            array.splice(index, 1);
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+    return GLUtil;
+}());
+exports.GLUtil = GLUtil;
+function simpleEquals(t1, t2) {
+    return t1 === t2;
+}
+
+
+
+},{}],95:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+var MathUtil = (function () {
+    function MathUtil() {
+    }
+    /**
+     * Limit a number inside a range specified by min and max (both are reachable).
+     * @param v {Number} The number to limit.
+     * @param min {Number} The lower bound. Numbers strictly less than this bound will be set to the value.
+     * @param max {Number} The upper bound. Numbers strictly greater than this bound will be set to this value.
+     * @returns {Number} The limited value. If the original number is inside the specified range, it will not be
+     * altered. Otherwise, it will be either min or max.
+     */
+    MathUtil.clamp = function (v, min, max) {
+        v < min && (v = min);
+        v > max && (v = max);
+        return v;
+    };
+    /**
+     * Check whether a number is inside a range specified min a max (both are unreachable).
+     * @param v {Number} The number to check.
+     * @param min {Number} The lower bound.
+     * @param max {Number} The upper bound.
+     * @returns {Boolean} True if the number to check is strictly greater than min and strictly less than max, and
+     * false otherwise.
+     */
+    MathUtil.isValueBetweenNotEquals = function (v, min, max) {
+        return min < v && v < max;
+    };
+    /**
+     * Check whether a number is inside a range specified min a max (both are reachable).
+     * @param v {Number} The number to check.
+     * @param min {Number} The lower bound.
+     * @param max {Number} The upper bound.
+     * @returns {Boolean} True if the number to check is not less than min and not greater than max, and
+     * false otherwise.
+     */
+    MathUtil.isValueBetweenEquals = function (v, min, max) {
+        return min <= v && v <= max;
+    };
+    /**
+     * Test whether a positive number is a power of 2.
+     * @param positiveNumber {Number} The positive number to test.
+     * @returns {Boolean} True if the number is a power of 2, and false otherwise.
+     */
+    MathUtil.isPowerOfTwo = function (positiveNumber) {
+        var num = positiveNumber | 0;
+        if (num != positiveNumber || MathUtil.isNaN(num) || !isFinite(num)) {
+            return false;
+        }
+        else {
+            return num > 0 && (num & (num - 1)) === 0;
+        }
+    };
+    /**
+     * Calculate the smallest power of 2 which is greater than or equals the given positive number.
+     * @param positiveNumber {Number} The positive number as the basis.
+     * @returns {Number} The smallest power of 2 which is greater than or equals the given positive number
+     */
+    MathUtil.power2Roundup = function (positiveNumber) {
+        if (positiveNumber < 0)
+            return 0;
+        --positiveNumber;
+        positiveNumber |= positiveNumber >>> 1;
+        positiveNumber |= positiveNumber >>> 2;
+        positiveNumber |= positiveNumber >>> 4;
+        positiveNumber |= positiveNumber >>> 8;
+        positiveNumber |= positiveNumber >>> 16;
+        return positiveNumber + 1;
+    };
+    MathUtil.complementToNegative = function (complement) {
+        return -((~complement) + 1);
+    };
+    MathUtil.isByteComplement = function (value) {
+        return ((value & 0xff) & 0x80) !== 0;
+    };
+    MathUtil.isInt32Complement = function (value) {
+        return ((value & 0xffffffff) & 0x80000000) !== 0;
+    };
+    MathUtil.clampUpper = function (value, upperBound) {
+        return value > upperBound ? upperBound : value;
+    };
+    MathUtil.clampLower = function (value, lowerBound) {
+        return value < lowerBound ? lowerBound : value;
+    };
+    MathUtil.isNaN = function (value) {
+        return value !== value;
+    };
+    return MathUtil;
+}());
+exports.MathUtil = MathUtil;
+
+
+
+},{}],96:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+var VisualUtil = (function () {
+    function VisualUtil() {
+    }
+    VisualUtil.requestAnimationFrame = function (f) {
+        return window.requestAnimationFrame(f);
+    };
+    VisualUtil.cancelAnimationFrame = function (handle) {
+        window.cancelAnimationFrame(handle);
+    };
+    return VisualUtil;
+}());
+exports.VisualUtil = VisualUtil;
+
+
+
+},{}],97:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/11.
+ */
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./EngineBase"));
+__export(require("./ErrorBase"));
+__export(require("./GLUtil"));
+__export(require("./MathUtil"));
+__export(require("./VisualUtil"));
+__export(require("./BitConverter"));
+
+
+
+},{"./BitConverter":90,"./EngineBase":91,"./ErrorBase":92,"./GLUtil":94,"./MathUtil":95,"./VisualUtil":96}],98:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var flash = require("./flash/index");
 exports.flash = flash;
 var webgl = require("./webgl/index");
@@ -6112,9 +7849,11 @@ var fl = require("./fl/index");
 exports.fl = fl;
 var mx = require("./mx/index");
 exports.mx = mx;
-var GLantern_1 = require("./GLantern");
-exports.GLantern = GLantern_1.GLantern;
-var GLUtil_1 = require("../lib/glantern-utils/src/GLUtil");
+var glantern = require("./glantern/index");
+exports.glantern = glantern;
+var EngineBase_1 = require("./glantern/EngineBase");
+exports.EngineBase = EngineBase_1.EngineBase;
+var GLUtil_1 = require("./glantern/GLUtil");
 function injectToGlobal($this) {
     $this["flash"] = flash;
     $this["webgl"] = webgl;
@@ -6123,72 +7862,46 @@ function injectToGlobal($this) {
 }
 exports.injectToGlobal = injectToGlobal;
 function isSupported() {
-    var globalObject = window;
-    if (!globalObject) {
-        return false;
-    }
-    // GLantern is based on <canvas>, so it should exist.
-    if (!GLUtil_1.GLUtil.isClassDefinition(globalObject["HTMLCanvasElement"])) {
-        return false;
-    }
-    // GLantern uses WebGL, so there should be a corresponding rendering context.
-    if (!GLUtil_1.GLUtil.isClassDefinition(globalObject["WebGLRenderingContext"])) {
-        return false;
-    }
-    // GLantern uses Map and Set class, so they should exist.
-    // Note: Map and Set are ES6 features, but they are implemented on modern browsers.
-    if (!GLUtil_1.GLUtil.isClassDefinition(globalObject["Map"])) {
-        return false;
-    }
-    if (!GLUtil_1.GLUtil.isClassDefinition(globalObject["Set"])) {
-        return false;
-    }
-    // No plans for support of Chrome whose version is under 40, due to a WebGL memory leak problem.
-    if (typeof globalObject["chrome"] === "object") {
-        var chromeVersionRegExp = /Chrome\/(\d+)(?:\.\d+)*/;
-        var chromeVersionInfo = chromeVersionRegExp.exec(window.navigator.appVersion);
-        if (chromeVersionInfo.length < 2 || parseInt(chromeVersionInfo[1]) < 40) {
-            return false;
-        }
-    }
-    return true;
+    return GLUtil_1.GLUtil.checkSupportStatus().ok;
 }
 exports.isSupported = isSupported;
 
 
 
-},{"../lib/glantern-utils/src/GLUtil":3,"./GLantern":5,"./fl/index":6,"./flash/index":68,"./mx/index":85,"./webgl/index":115}],83:[function(require,module,exports){
+},{"./fl/index":1,"./flash/index":71,"./glantern/EngineBase":91,"./glantern/GLUtil":94,"./glantern/index":97,"./mx/index":101,"./webgl/index":131}],99:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DisplayObjectContainer_1 = require("../../flash/display/DisplayObjectContainer");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../flash/errors/NotImplementedError");
 var Canvas = (function (_super) {
     __extends(Canvas, _super);
     function Canvas(root, parent) {
         _super.call(this, root, parent);
     }
-    Canvas.prototype.__update = function () {
+    Canvas.prototype._$update = function (timeInfo) {
         throw new NotImplementedError_1.NotImplementedError();
     };
-    Canvas.prototype.__render = function (renderer) {
+    Canvas.prototype._$render = function (renderer) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Canvas;
-})(DisplayObjectContainer_1.DisplayObjectContainer);
+}(DisplayObjectContainer_1.DisplayObjectContainer));
 exports.Canvas = Canvas;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../../flash/display/DisplayObjectContainer":31}],84:[function(require,module,exports){
+},{"../../flash/display/DisplayObjectContainer":27,"../../flash/errors/NotImplementedError":51}],100:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -6196,19 +7909,21 @@ __export(require("./Canvas"));
 
 
 
-},{"./Canvas":83}],85:[function(require,module,exports){
+},{"./Canvas":99}],101:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/26.
  */
+"use strict";
 var containers = require("./containers/index");
 exports.containers = containers;
 
 
 
-},{"./containers/index":84}],86:[function(require,module,exports){
+},{"./containers/index":100}],102:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var AttributeCache = (function () {
     function AttributeCache() {
         this.name = null;
@@ -6216,15 +7931,16 @@ var AttributeCache = (function () {
         this.location = -1;
     }
     return AttributeCache;
-})();
+}());
 exports.AttributeCache = AttributeCache;
 
 
 
-},{}],87:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var FilterBase = (function () {
     function FilterBase(manager) {
         this._filterManager = null;
@@ -6240,7 +7956,7 @@ var FilterBase = (function () {
      */
     FilterBase.prototype.notifyAdded = function () {
         if (this._referenceCount <= 0) {
-            this.__initialize();
+            this._$initialize();
         }
         this._referenceCount++;
     };
@@ -6251,14 +7967,14 @@ var FilterBase = (function () {
     FilterBase.prototype.notifyRemoved = function () {
         this._referenceCount--;
         if (this._referenceCount <= 0) {
-            this.__dispose();
+            this._$dispose();
         }
     };
     FilterBase.prototype.dispose = function () {
-        this.__dispose();
+        this._$dispose();
     };
     FilterBase.prototype.initialize = function () {
-        this.__initialize();
+        this._$initialize();
     };
     Object.defineProperty(FilterBase.prototype, "filterManager", {
         get: function () {
@@ -6287,20 +8003,21 @@ var FilterBase = (function () {
         enumerable: true,
         configurable: true
     });
-    FilterBase.prototype.__initialize = function () {
+    FilterBase.prototype._$initialize = function () {
     };
-    FilterBase.prototype.__dispose = function () {
+    FilterBase.prototype._$dispose = function () {
     };
     return FilterBase;
-})();
+}());
 exports.FilterBase = FilterBase;
 
 
 
-},{}],88:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
+"use strict";
 var RenderHelper_1 = require("./RenderHelper");
 var FilterManager = (function () {
     function FilterManager(renderer) {
@@ -6379,15 +8096,16 @@ var FilterManager = (function () {
         }
     };
     return FilterManager;
-})();
+}());
 exports.FilterManager = FilterManager;
 
 
 
-},{"./RenderHelper":91}],89:[function(require,module,exports){
+},{"./RenderHelper":107}],105:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Values = Object.create(null);
 var FragmentShaders = (function () {
     function FragmentShaders() {
@@ -6442,40 +8160,10 @@ var FragmentShaders = (function () {
         configurable: true
     });
     return FragmentShaders;
-})();
+}());
 exports.FragmentShaders = FragmentShaders;
-Values.buffered = [
-    "precision mediump float;",
-    "",
-    "uniform sampler2D uSampler;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "void main() {",
-    "    gl_FragColor = texture2D(uSampler, vTextureCoord);",
-    "}"
-].join("\n");
-Values.blur = [
-    "precision lowp float;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "varying vec2 vBlurTexCoords[6];",
-    "",
-    "uniform sampler2D uSampler;",
-    "",
-    "void main()",
-    "{",
-    "   gl_FragColor = vec4(0.0);",
-    "   ",
-    "   gl_FragColor += texture2D(uSampler, vBlurTexCoords[0]) * 0.004431848411938341;",
-    "   gl_FragColor += texture2D(uSampler, vBlurTexCoords[1]) * 0.05399096651318985;",
-    "   gl_FragColor += texture2D(uSampler, vBlurTexCoords[2]) * 0.2419707245191454;",
-    "   gl_FragColor += texture2D(uSampler, vTextureCoord    ) * 0.3989422804014327;",
-    "   gl_FragColor += texture2D(uSampler, vBlurTexCoords[3]) * 0.2419707245191454;",
-    "   gl_FragColor += texture2D(uSampler, vBlurTexCoords[4]) * 0.05399096651318985;",
-    "   gl_FragColor += texture2D(uSampler, vBlurTexCoords[5]) * 0.004431848411938341;",
-    "}"
-].join("\n");
+Values.buffered = "\n    precision mediump float;\n\n    uniform sampler2D uSampler;\n\n    varying vec2 vTextureCoord;\n\n    void main() {\n        gl_FragColor = texture2D(uSampler, vTextureCoord);\n    }\n";
+Values.blur = "\n    precision lowp float;\n\n    varying vec2 vTextureCoord;\n    varying vec2 vBlurTexCoords[6];\n\n    uniform sampler2D uSampler;\n\n    void main()\n    {\n       gl_FragColor = vec4(0.0);\n\n       gl_FragColor += texture2D(uSampler, vBlurTexCoords[0]) * 0.004431848411938341;\n       gl_FragColor += texture2D(uSampler, vBlurTexCoords[1]) * 0.05399096651318985;\n       gl_FragColor += texture2D(uSampler, vBlurTexCoords[2]) * 0.2419707245191454;\n       gl_FragColor += texture2D(uSampler, vTextureCoord    ) * 0.3989422804014327;\n       gl_FragColor += texture2D(uSampler, vBlurTexCoords[3]) * 0.2419707245191454;\n       gl_FragColor += texture2D(uSampler, vBlurTexCoords[4]) * 0.05399096651318985;\n       gl_FragColor += texture2D(uSampler, vBlurTexCoords[5]) * 0.004431848411938341;\n    }\n";
 Values.primitive = [
     "precision mediump float;",
     "",
@@ -6487,168 +8175,21 @@ Values.primitive = [
     "   gl_FragColor = vVertexColor * uAlpha;",
     "}"
 ].join("\n");
-Values.colorTransform = [
-    "precision mediump float;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "uniform sampler2D uSampler;",
-    "uniform float uColorMatrix[25];",
-    "",
-    "void main(void)",
-    "{",
-    "   vec4 c = texture2D(uSampler, vTextureCoord);",
-    "   ",
-    "   gl_FragColor.r =  (uColorMatrix[0] * c.r);",
-    "   gl_FragColor.r += (uColorMatrix[1] * c.g);",
-    "   gl_FragColor.r += (uColorMatrix[2] * c.b);",
-    "   gl_FragColor.r += (uColorMatrix[3] * c.a);",
-    "   gl_FragColor.r +=  uColorMatrix[4];",
-    "   ",
-    "   gl_FragColor.g =  (uColorMatrix[5] * c.r);",
-    "   gl_FragColor.g += (uColorMatrix[6] * c.g);",
-    "   gl_FragColor.g += (uColorMatrix[7] * c.b);",
-    "   gl_FragColor.g += (uColorMatrix[8] * c.a);",
-    "   gl_FragColor.g +=  uColorMatrix[9];",
-    "   ",
-    "   gl_FragColor.b =  (uColorMatrix[10] * c.r);",
-    "   gl_FragColor.b += (uColorMatrix[11] * c.g);",
-    "   gl_FragColor.b += (uColorMatrix[12] * c.b);",
-    "   gl_FragColor.b += (uColorMatrix[13] * c.a);",
-    "   gl_FragColor.b +=  uColorMatrix[14];",
-    "   ",
-    "   gl_FragColor.a =  (uColorMatrix[15] * c.r);",
-    "   gl_FragColor.a += (uColorMatrix[16] * c.g);",
-    "   gl_FragColor.a += (uColorMatrix[17] * c.b);",
-    "   gl_FragColor.a += (uColorMatrix[18] * c.a);",
-    "   gl_FragColor.a +=  uColorMatrix[19];",
-    "}"
-].join("\n");
+Values.colorTransform = "\n    precision mediump float;\n\n    varying vec2 vTextureCoord;\n    uniform sampler2D uSampler;\n    uniform float uColorMatrix[25];\n\n    void main(void)\n    {\n       vec4 c = texture2D(uSampler, vTextureCoord);\n\n       gl_FragColor.r =  (uColorMatrix[0] * c.r);\n       gl_FragColor.r += (uColorMatrix[1] * c.g);\n       gl_FragColor.r += (uColorMatrix[2] * c.b);\n       gl_FragColor.r += (uColorMatrix[3] * c.a);\n       gl_FragColor.r +=  uColorMatrix[4];\n\n       gl_FragColor.g =  (uColorMatrix[5] * c.r);\n       gl_FragColor.g += (uColorMatrix[6] * c.g);\n       gl_FragColor.g += (uColorMatrix[7] * c.b);\n       gl_FragColor.g += (uColorMatrix[8] * c.a);\n       gl_FragColor.g +=  uColorMatrix[9];\n\n       gl_FragColor.b =  (uColorMatrix[10] * c.r);\n       gl_FragColor.b += (uColorMatrix[11] * c.g);\n       gl_FragColor.b += (uColorMatrix[12] * c.b);\n       gl_FragColor.b += (uColorMatrix[13] * c.a);\n       gl_FragColor.b +=  uColorMatrix[14];\n\n       gl_FragColor.a =  (uColorMatrix[15] * c.r);\n       gl_FragColor.a += (uColorMatrix[16] * c.g);\n       gl_FragColor.a += (uColorMatrix[17] * c.b);\n       gl_FragColor.a += (uColorMatrix[18] * c.a);\n       gl_FragColor.a +=  uColorMatrix[19];\n    }\n";
 // For the full license, please refer to shaders/glsl/fxaa.frag
-Values.fxaa = [
-    "precision lowp float;",
-    "",
-    "#ifndef FXAA_REDUCE_MIN",
-    "#define FXAA_REDUCE_MIN   (1.0/ 128.0)",
-    "#endif",
-    "#ifndef FXAA_REDUCE_MUL",
-    "#define FXAA_REDUCE_MUL   (1.0 / 8.0)",
-    "#endif",
-    "#ifndef FXAA_SPAN_MAX",
-    "#define FXAA_SPAN_MAX     8.0",
-    "#endif",
-    "",
-    "vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,",
-    "vec2 v_rgbNW, vec2 v_rgbNE,",
-    "vec2 v_rgbSW, vec2 v_rgbSE,",
-    "vec2 v_rgbM) {",
-    "vec4 color;",
-    "mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);",
-    "vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;",
-    "vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;",
-    "vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;",
-    "vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;",
-    "vec4 texColor = texture2D(tex, v_rgbM);",
-    "vec3 rgbM  = texColor.xyz;",
-    "vec3 luma = vec3(0.299, 0.587, 0.114);",
-    "float lumaNW = dot(rgbNW, luma);",
-    "float lumaNE = dot(rgbNE, luma);",
-    "float lumaSW = dot(rgbSW, luma);",
-    "float lumaSE = dot(rgbSE, luma);",
-    "float lumaM  = dot(rgbM,  luma);",
-    "float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));",
-    "float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));",
-    "",
-    "mediump vec2 dir;",
-    "dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));",
-    "dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));",
-    "",
-    "float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *",
-    "    (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);",
-    "",
-    "float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);",
-    "dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),",
-    "        max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),",
-    "            dir * rcpDirMin)) * inverseVP;",
-    "",
-    "vec3 rgbA = 0.5 * (",
-    "    texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +",
-    "    texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);",
-    "vec3 rgbB = rgbA * 0.5 + 0.25 * (",
-    "    texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +",
-    "    texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);",
-    "",
-    "float lumaB = dot(rgbB, luma);",
-    "if ((lumaB < lumaMin) || (lumaB > lumaMax))",
-    "    color = vec4(rgbA, texColor.a);",
-    "else",
-    "    color = vec4(rgbB, texColor.a);",
-    "return color;",
-    "}",
-    "",
-    "varying vec2 vTextureCoord;",
-    "varying vec2 vResolution;",
-    "",
-    "varying vec2 v_rgbNW;",
-    "varying vec2 v_rgbNE;",
-    "varying vec2 v_rgbSW;",
-    "varying vec2 v_rgbSE;",
-    "varying vec2 v_rgbM;",
-    "",
-    "uniform sampler2D uSampler;",
-    "",
-    "void main() {",
-    "    gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);",
-    "}"
-].join("\n");
-Values.blur2 = [
-    "precision lowp float;",
-    "",
-    "uniform sampler2D uSampler;",
-    "",
-    "uniform float uResolution;",
-    "uniform float uStrength;",
-    "uniform vec2 uBlurDirection;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "float offset[3];",
-    "float weight[3];",
-    "",
-    "void main()",
-    "{",
-    "    offset[0] = 0.0; offset[1] = 1.3846153846; offset[2] = 3.2307692308;",
-    "    weight[0] = 0.2270270270; weight[1] = 0.3162162162; weight[2] = 0.0702702703;",
-    "    gl_FragColor = texture2D(uSampler, vec2(vTextureCoord)) * weight[0];",
-    "    float xDir = uBlurDirection.x / sqrt(uBlurDirection.x * uBlurDirection.x + uBlurDirection.y * uBlurDirection.y);",
-    "    float yDir = uBlurDirection.y / sqrt(uBlurDirection.x * uBlurDirection.x + uBlurDirection.y * uBlurDirection.y);",
-    "    for (int i = 1; i < 3; i++)",
-    "    {",
-    "        gl_FragColor += texture2D(uSampler, (vec2(vTextureCoord) + vec2(offset[i] * xDir, offset[i] * yDir) * uStrength / uResolution)) * weight[i];",
-    "        gl_FragColor += texture2D(uSampler, (vec2(vTextureCoord) - vec2(offset[i] * xDir, offset[i] * yDir) * uStrength / uResolution)) * weight[i];",
-    "    }",
-    "}"
-].join("\n");
-Values.copyImage = [
-    "precision mediump float;",
-    "",
-    "uniform sampler2D uSampler;",
-    "uniform float uAlpha;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "void main() {",
-    "    gl_FragColor = texture2D(uSampler, vTextureCoord) * uAlpha;",
-    "}"
-].join("\n");
+Values.fxaa = "\n    precision lowp float;\n\n    #ifndef FXAA_REDUCE_MIN\n    #define FXAA_REDUCE_MIN   (1.0/ 128.0)\n    #endif\n    #ifndef FXAA_REDUCE_MUL\n    #define FXAA_REDUCE_MUL   (1.0 / 8.0)\n    #endif\n    #ifndef FXAA_SPAN_MAX\n    #define FXAA_SPAN_MAX     8.0\n    #endif\n\n    vec4 fxaa(sampler2D tex, vec2 fragCoord, vec2 resolution,\n    vec2 v_rgbNW, vec2 v_rgbNE,\n    vec2 v_rgbSW, vec2 v_rgbSE,\n    vec2 v_rgbM) {\n    vec4 color;\n    mediump vec2 inverseVP = vec2(1.0 / resolution.x, 1.0 / resolution.y);\n    vec3 rgbNW = texture2D(tex, v_rgbNW).xyz;\n    vec3 rgbNE = texture2D(tex, v_rgbNE).xyz;\n    vec3 rgbSW = texture2D(tex, v_rgbSW).xyz;\n    vec3 rgbSE = texture2D(tex, v_rgbSE).xyz;\n    vec4 texColor = texture2D(tex, v_rgbM);\n    vec3 rgbM  = texColor.xyz;\n    vec3 luma = vec3(0.299, 0.587, 0.114);\n    float lumaNW = dot(rgbNW, luma);\n    float lumaNE = dot(rgbNE, luma);\n    float lumaSW = dot(rgbSW, luma);\n    float lumaSE = dot(rgbSE, luma);\n    float lumaM  = dot(rgbM,  luma);\n    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));\n    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));\n\n    mediump vec2 dir;\n    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));\n    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));\n\n    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) *\n        (0.25 * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);\n\n    float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);\n    dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),\n            max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),\n                dir * rcpDirMin)) * inverseVP;\n\n    vec3 rgbA = 0.5 * (\n        texture2D(tex, fragCoord * inverseVP + dir * (1.0 / 3.0 - 0.5)).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * (2.0 / 3.0 - 0.5)).xyz);\n    vec3 rgbB = rgbA * 0.5 + 0.25 * (\n        texture2D(tex, fragCoord * inverseVP + dir * -0.5).xyz +\n        texture2D(tex, fragCoord * inverseVP + dir * 0.5).xyz);\n\n    float lumaB = dot(rgbB, luma);\n    if ((lumaB < lumaMin) || (lumaB > lumaMax))\n        color = vec4(rgbA, texColor.a);\n    else\n        color = vec4(rgbB, texColor.a);\n    return color;\n    }\n\n    varying vec2 vTextureCoord;\n    varying vec2 vResolution;\n\n    varying vec2 v_rgbNW;\n    varying vec2 v_rgbNE;\n    varying vec2 v_rgbSW;\n    varying vec2 v_rgbSE;\n    varying vec2 v_rgbM;\n\n    uniform sampler2D uSampler;\n\n    void main() {\n        gl_FragColor = fxaa(uSampler, vTextureCoord * vResolution, vResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n    }\n";
+Values.blur2 = "\n    precision lowp float;\n\n    uniform sampler2D uSampler;\n    \n    uniform float uResolution;\n    uniform float uStrength;\n    uniform vec2 uBlurDirection;\n\n    varying vec2 vTextureCoord;\n\n    float offset[3];\n    float weight[3];\n\n    void main()\n    {\n        offset[0] = 0.0; offset[1] = 1.3846153846; offset[2] = 3.2307692308;\n        weight[0] = 0.2270270270; weight[1] = 0.3162162162; weight[2] = 0.0702702703;\n        gl_FragColor = texture2D(uSampler, vec2(vTextureCoord)) * weight[0];\n        float xDir = uBlurDirection.x / sqrt(uBlurDirection.x * uBlurDirection.x + uBlurDirection.y * uBlurDirection.y);\n        float yDir = uBlurDirection.y / sqrt(uBlurDirection.x * uBlurDirection.x + uBlurDirection.y * uBlurDirection.y);\n        for (int i = 1; i < 3; i++)\n        {\n            gl_FragColor += texture2D(uSampler, (vec2(vTextureCoord) + vec2(offset[i] * xDir, offset[i] * yDir) * uStrength / uResolution)) * weight[i];\n            gl_FragColor += texture2D(uSampler, (vec2(vTextureCoord) - vec2(offset[i] * xDir, offset[i] * yDir) * uStrength / uResolution)) * weight[i];\n        }\n    }\n";
+Values.copyImage = "\n    precision mediump float;\n\n    uniform sampler2D uSampler;\n    uniform float uAlpha;\n\n    varying vec2 vTextureCoord;\n\n    void main() {\n        gl_FragColor = texture2D(uSampler, vTextureCoord) * uAlpha;\n    }\n";
 
 
 
-},{}],90:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+"use strict";
+var GLUtil_1 = require("../glantern/GLUtil");
+var gl = window.WebGLRenderingContext;
 var PackedArrayBuffer = (function () {
     function PackedArrayBuffer() {
         this._glc = null;
@@ -6710,12 +8251,7 @@ var PackedArrayBuffer = (function () {
         configurable: true
     });
     PackedArrayBuffer.prototype.setNewData = function (data) {
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(data)) {
-            this._array = [];
-        }
-        else {
-            this._array = data.slice();
-        }
+        this._array = GLUtil_1.GLUtil.ptr(data) ? data.slice() : [];
     };
     PackedArrayBuffer.prototype.becomeDirty = function () {
         this._isDirty = true;
@@ -6759,20 +8295,21 @@ var PackedArrayBuffer = (function () {
         }
     };
     return PackedArrayBuffer;
-})();
+}());
 exports.PackedArrayBuffer = PackedArrayBuffer;
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3}],91:[function(require,module,exports){
+},{"../glantern/GLUtil":94}],107:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var RenderTarget2D_1 = require("./RenderTarget2D");
 var PackedArrayBuffer_1 = require("./PackedArrayBuffer");
 var ShaderID_1 = require("./ShaderID");
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+var GLUtil_1 = require("../glantern/GLUtil");
+var gl = window.WebGLRenderingContext;
 var RenderHelper = (function () {
     function RenderHelper() {
     }
@@ -6855,7 +8392,7 @@ var RenderHelper = (function () {
         });
     };
     RenderHelper.renderBuffered = function (renderer, source, destination, shaderID, clearOutput, shaderInit) {
-        if (!__checkRenderTargets(source, destination)) {
+        if (!checkRenderTargets(source, destination)) {
             return;
         }
         var glc = renderer.context;
@@ -6882,7 +8419,7 @@ var RenderHelper = (function () {
             glc.vertexAttribPointer(attributeLocation, 3, glVertexPositionBuffer.elementGLType, false, glVertexPositionBuffer.elementSize * 3, 0);
             glc.enableVertexAttribArray(attributeLocation);
         }
-        // Some shaders, e.g. the blur-2 shader, has no texture coordinates.
+        // Some shaders, e.g. the blur-2 shader, have no texture coordinates.
         attributeLocation = shader.getAttributeLocation("aTextureCoord");
         if (attributeLocation >= 0) {
             var textureCoords = RenderTarget2D_1.RenderTarget2D.textureCoords;
@@ -6905,10 +8442,10 @@ var RenderHelper = (function () {
     // Be careful! Manually dispose it when the whole module is finalizing.
     RenderHelper._glVertexPositionBuffer = null;
     return RenderHelper;
-})();
+}());
 exports.RenderHelper = RenderHelper;
-function __checkRenderTargets(source, destination) {
-    if (GLUtil_1.GLUtil.isUndefinedOrNull(source)) {
+function checkRenderTargets(source, destination) {
+    if (!GLUtil_1.GLUtil.ptr(source)) {
         console.warn("Cannot render a null RenderTarget2D onto another RenderTarget2D.");
         return false;
     }
@@ -6929,13 +8466,14 @@ function __checkRenderTargets(source, destination) {
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3,"./PackedArrayBuffer":90,"./RenderTarget2D":92,"./ShaderID":94}],92:[function(require,module,exports){
+},{"../glantern/GLUtil":94,"./PackedArrayBuffer":106,"./RenderTarget2D":108,"./ShaderID":110}],108:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
+"use strict";
 var PackedArrayBuffer_1 = require("./PackedArrayBuffer");
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+var MathUtil_1 = require("../glantern/MathUtil");
+var gl = window.WebGLRenderingContext;
 var isInitializedStatically = false;
 /**
  * Represents a 2D render target based on WebGL texture.
@@ -7137,8 +8675,8 @@ var RenderTarget2D = (function () {
         // Find a way to optimize, for example, freeze the size when created, or implement a draw call
         // flexible enough to handle all sort of sizes.
         try {
-            image.width = GLUtil_1.GLUtil.power2Roundup(image.width);
-            image.height = GLUtil_1.GLUtil.power2Roundup(image.height);
+            image.width = MathUtil_1.MathUtil.power2Roundup(image.width);
+            image.height = MathUtil_1.MathUtil.power2Roundup(image.height);
         }
         catch (ex) {
         }
@@ -7211,11 +8749,11 @@ var RenderTarget2D = (function () {
             newHeight |= 0;
             this._originalWidth = newWidth;
             this._originalHeight = newHeight;
-            if (!GLUtil_1.GLUtil.isPowerOfTwo(newWidth)) {
-                newWidth = GLUtil_1.GLUtil.power2Roundup(newWidth);
+            if (!MathUtil_1.MathUtil.isPowerOfTwo(newWidth)) {
+                newWidth = MathUtil_1.MathUtil.power2Roundup(newWidth);
             }
-            if (!GLUtil_1.GLUtil.isPowerOfTwo(newHeight)) {
-                newHeight = GLUtil_1.GLUtil.power2Roundup(newHeight);
+            if (!MathUtil_1.MathUtil.isPowerOfTwo(newHeight)) {
+                newHeight = MathUtil_1.MathUtil.power2Roundup(newHeight);
             }
             this._fitWidth = newWidth;
             this._fitHeight = newHeight;
@@ -7259,7 +8797,7 @@ var RenderTarget2D = (function () {
     RenderTarget2D.textureCoords = null;
     RenderTarget2D.textureIndices = null;
     return RenderTarget2D;
-})();
+}());
 exports.RenderTarget2D = RenderTarget2D;
 function initStaticFields(glc) {
     if (isInitializedStatically) {
@@ -7282,15 +8820,16 @@ function initStaticFields(glc) {
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3,"./PackedArrayBuffer":90}],93:[function(require,module,exports){
+},{"../glantern/MathUtil":95,"./PackedArrayBuffer":106}],109:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var VertexShaders_1 = require("./VertexShaders");
 var FragmentShaders_1 = require("./FragmentShaders");
 var WebGLDataType_1 = require("./WebGLDataType");
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+var GLUtil_1 = require("../glantern/GLUtil");
+var gl = window.WebGLRenderingContext;
 var ShaderBase = (function () {
     function ShaderBase(manager, vertexSource, fragmentSource, uniforms, attributes) {
         this._shaderManager = null;
@@ -7309,14 +8848,14 @@ var ShaderBase = (function () {
         this._id = manager.getNextAvailableID();
         this.__initialize(manager.context, vertexSource, fragmentSource);
         this.select();
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(uniforms) || GLUtil_1.GLUtil.isUndefinedOrNull(attributes)) {
-            this._uniforms = new Map();
-            this._attributes = new Map();
-            this.__localInit(manager, this._uniforms, this._attributes);
-        }
-        else {
+        if (GLUtil_1.GLUtil.ptr(uniforms) && GLUtil_1.GLUtil.ptr(attributes)) {
             this._uniforms = uniforms;
             this._attributes = attributes;
+        }
+        else {
+            this._uniforms = new Map();
+            this._attributes = new Map();
+            this._$localInit(manager, this._uniforms, this._attributes);
         }
         this.__cacheUniformLocations();
         this.__cacheAttributeLocations();
@@ -7351,7 +8890,7 @@ var ShaderBase = (function () {
     };
     ShaderBase.prototype.changeValue = function (name, callback) {
         var uniform = this._uniforms.get(name);
-        if (uniform !== undefined && uniform !== null) {
+        if (uniform !== (void 0) && uniform !== null) {
             callback(uniform);
         }
     };
@@ -7378,6 +8917,8 @@ var ShaderBase = (function () {
         enumerable: true,
         configurable: true
     });
+    ShaderBase.prototype._$localInit = function (manager, uniforms, attributes) {
+    };
     ShaderBase.prototype.__initialize = function (glc, vertexSource, fragmentSource) {
         this._glc = glc;
         function error(message, extra) {
@@ -7554,13 +9095,11 @@ var ShaderBase = (function () {
             v.location = glc.getAttribLocation(program, k);
         });
     };
-    ShaderBase.prototype.__localInit = function (manager, uniforms, attributes) {
-    };
     ShaderBase.SHADER_CLASS_NAME = "ShaderBase";
     ShaderBase.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.buffered;
     ShaderBase.VERTEX_SOURCE = VertexShaders_1.VertexShaders.buffered;
     return ShaderBase;
-})();
+}());
 exports.ShaderBase = ShaderBase;
 function createShaderFromSource(glc, source, type) {
     var shader = glc.createShader(type);
@@ -7582,10 +9121,11 @@ function createShaderFromSource(glc, source, type) {
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3,"./FragmentShaders":89,"./VertexShaders":97,"./WebGLDataType":98}],94:[function(require,module,exports){
+},{"../glantern/GLUtil":94,"./FragmentShaders":105,"./VertexShaders":113,"./WebGLDataType":114}],110:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var ShaderID = (function () {
     function ShaderID() {
     }
@@ -7653,15 +9193,16 @@ var ShaderID = (function () {
         configurable: true
     });
     return ShaderID;
-})();
+}());
 exports.ShaderID = ShaderID;
 
 
 
-},{}],95:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
+"use strict";
 var PrimitiveShader_1 = require("./shaders/PrimitiveShader");
 var BlurXShader_1 = require("./shaders/BlurXShader");
 var BlurYShader_1 = require("./shaders/BlurYShader");
@@ -7755,15 +9296,16 @@ var ShaderManager = (function () {
         shaderList.push(new Primitive2Shader_1.Primitive2Shader(this));
     };
     return ShaderManager;
-})();
+}());
 exports.ShaderManager = ShaderManager;
 
 
 
-},{"./shaders/Blur2Shader":116,"./shaders/BlurXShader":117,"./shaders/BlurYShader":118,"./shaders/ColorTransformShader":120,"./shaders/CopyImageShader":121,"./shaders/FxaaShader":122,"./shaders/Primitive2Shader":123,"./shaders/PrimitiveShader":124,"./shaders/ReplicateShader":125}],96:[function(require,module,exports){
+},{"./shaders/Blur2Shader":132,"./shaders/BlurXShader":133,"./shaders/BlurYShader":134,"./shaders/ColorTransformShader":136,"./shaders/CopyImageShader":137,"./shaders/FxaaShader":138,"./shaders/Primitive2Shader":139,"./shaders/PrimitiveShader":140,"./shaders/ReplicateShader":141}],112:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
+"use strict";
 var WebGLDataType_1 = require("./WebGLDataType");
 var UniformCache = (function () {
     function UniformCache() {
@@ -7776,15 +9318,16 @@ var UniformCache = (function () {
         this.texture = null;
     }
     return UniformCache;
-})();
+}());
 exports.UniformCache = UniformCache;
 
 
 
-},{"./WebGLDataType":98}],97:[function(require,module,exports){
+},{"./WebGLDataType":114}],113:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var Values = Object.create(null);
 var VertexShaders = (function () {
     function VertexShaders() {
@@ -7853,230 +9396,26 @@ var VertexShaders = (function () {
         configurable: true
     });
     return VertexShaders;
-})();
+}());
 exports.VertexShaders = VertexShaders;
-Values.buffered = [
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "void main() {",
-    "   gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);",
-    "   vTextureCoord = aTextureCoord;",
-    "}"
-].join("\n");
-Values.blurX = [
-    "precision mediump float;",
-    "",
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform float uStrength;",
-    "uniform mat4 uProjectionMatrix;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "varying vec2 vBlurTexCoords[6];",
-    "",
-    "void main()",
-    "{",
-    "    gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);",
-    "    vTextureCoord = aTextureCoord;",
-    "",
-    "    vBlurTexCoords[0] = aTextureCoord + vec2(-0.012 * uStrength, 0.0);",
-    "    vBlurTexCoords[1] = aTextureCoord + vec2(-0.008 * uStrength, 0.0);",
-    "    vBlurTexCoords[2] = aTextureCoord + vec2(-0.004 * uStrength, 0.0);",
-    "    vBlurTexCoords[3] = aTextureCoord + vec2( 0.004 * uStrength, 0.0);",
-    "    vBlurTexCoords[4] = aTextureCoord + vec2( 0.008 * uStrength, 0.0);",
-    "    vBlurTexCoords[5] = aTextureCoord + vec2( 0.012 * uStrength, 0.0);",
-    "}"
-].join("\n");
-Values.blurY = [
-    "precision mediump float;",
-    "",
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform float uStrength;",
-    "uniform mat4 uProjectionMatrix;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "varying vec2 vBlurTexCoords[6];",
-    "",
-    "void main()",
-    "{",
-    "    gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);",
-    "    vTextureCoord = aTextureCoord;",
-    "",
-    "    vBlurTexCoords[0] = aTextureCoord + vec2(0.0, -0.012 * uStrength);",
-    "    vBlurTexCoords[1] = aTextureCoord + vec2(0.0, -0.008 * uStrength);",
-    "    vBlurTexCoords[2] = aTextureCoord + vec2(0.0, -0.004 * uStrength);",
-    "    vBlurTexCoords[3] = aTextureCoord + vec2(0.0,  0.004 * uStrength);",
-    "    vBlurTexCoords[4] = aTextureCoord + vec2(0.0,  0.008 * uStrength);",
-    "    vBlurTexCoords[5] = aTextureCoord + vec2(0.0,  0.012 * uStrength);",
-    "}"
-].join("\n");
-Values.primitive = [
-    "precision mediump float;",
-    "",
-    "attribute vec3 aVertexPosition;",
-    "attribute vec4 aVertexColor;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "uniform mat4 uTransformMatrix;",
-    "",
-    "varying vec4 vVertexColor;",
-    "",
-    "void main() {",
-    "   gl_Position = uProjectionMatrix * uTransformMatrix * vec4(aVertexPosition.xyz, 1.0);",
-    "   vVertexColor = aVertexColor;",
-    "}"
-].join("\n");
-Values.replicate = [
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "uniform vec2 uOriginalSize;",
-    "uniform vec2 uFitSize;",
-    "uniform bool uFlipX;",
-    "uniform bool uFlipY;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "void main() {",
-    "    vec3 newVertexPostion = aVertexPosition;",
-    "   vec2 newTextureCoord = aTextureCoord;",
-    "   if (uFlipX) {",
-    "       newTextureCoord.x = 1.0 - newTextureCoord.x;",
-    "       newVertexPostion.x -= (uFitSize - uOriginalSize).x;",
-    "   }",
-    "   if (uFlipY) {",
-    "       newTextureCoord.y = 1.0 - newTextureCoord.y;",
-    "       newVertexPostion.y -= (uFitSize - uOriginalSize).y;",
-    "   }",
-    "   gl_Position = uProjectionMatrix * vec4(newVertexPostion.xyz, 1.0);",
-    "   vTextureCoord = newTextureCoord;",
-    "}"
-].join("\n");
+Values.buffered = "\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform mat4 uProjectionMatrix;\n\n    varying vec2 vTextureCoord;\n\n    void main() {\n       gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);\n       vTextureCoord = aTextureCoord;\n    }\n";
+Values.blurX = "\n    precision mediump float;\n\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform float uStrength;\n    uniform mat4 uProjectionMatrix;\n\n    varying vec2 vTextureCoord;\n    varying vec2 vBlurTexCoords[6];\n\n    void main()\n    {\n        gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);\n        vTextureCoord = aTextureCoord;\n\n        vBlurTexCoords[0] = aTextureCoord + vec2(-0.012 * uStrength, 0.0);\n        vBlurTexCoords[1] = aTextureCoord + vec2(-0.008 * uStrength, 0.0);\n        vBlurTexCoords[2] = aTextureCoord + vec2(-0.004 * uStrength, 0.0);\n        vBlurTexCoords[3] = aTextureCoord + vec2( 0.004 * uStrength, 0.0);\n        vBlurTexCoords[4] = aTextureCoord + vec2( 0.008 * uStrength, 0.0);\n        vBlurTexCoords[5] = aTextureCoord + vec2( 0.012 * uStrength, 0.0);\n    }\n";
+Values.blurY = "\n    precision mediump float;\n\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform float uStrength;\n    uniform mat4 uProjectionMatrix;\n\n    varying vec2 vTextureCoord;\n    varying vec2 vBlurTexCoords[6];\n\n    void main()\n    {\n        gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);\n        vTextureCoord = aTextureCoord;\n\n        vBlurTexCoords[0] = aTextureCoord + vec2(0.0, -0.012 * uStrength);\n        vBlurTexCoords[1] = aTextureCoord + vec2(0.0, -0.008 * uStrength);\n        vBlurTexCoords[2] = aTextureCoord + vec2(0.0, -0.004 * uStrength);\n        vBlurTexCoords[3] = aTextureCoord + vec2(0.0,  0.004 * uStrength);\n        vBlurTexCoords[4] = aTextureCoord + vec2(0.0,  0.008 * uStrength);\n        vBlurTexCoords[5] = aTextureCoord + vec2(0.0,  0.012 * uStrength);\n    }\n";
+Values.primitive = "\n    precision mediump float;\n\n    attribute vec3 aVertexPosition;\n    attribute vec4 aVertexColor;\n\n    uniform mat4 uProjectionMatrix;\n    uniform mat4 uTransformMatrix;\n\n    varying vec4 vVertexColor;\n\n    void main() {\n       gl_Position = uProjectionMatrix * uTransformMatrix * vec4(aVertexPosition.xyz, 1.0);\n       vVertexColor = aVertexColor;\n    }\n";
+Values.replicate = "\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uOriginalSize;\n    uniform vec2 uFitSize;\n    uniform bool uFlipX;\n    uniform bool uFlipY;\n\n    varying vec2 vTextureCoord;\n\n    void main() {\n        vec3 newVertexPostion = aVertexPosition;\n       vec2 newTextureCoord = aTextureCoord;\n       if (uFlipX) {\n           newTextureCoord.x = 1.0 - newTextureCoord.x;\n           newVertexPostion.x -= (uFitSize - uOriginalSize).x;\n       }\n       if (uFlipY) {\n           newTextureCoord.y = 1.0 - newTextureCoord.y;\n           newVertexPostion.y -= (uFitSize - uOriginalSize).y;\n       }\n       gl_Position = uProjectionMatrix * vec4(newVertexPostion.xyz, 1.0);\n       vTextureCoord = newTextureCoord;\n    }\n";
 // For the full license, please refer to shaders/glsl/fxaa.vert
-Values.fxaa = [
-    "precision mediump float;",
-    "",
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "uniform vec2 uResolution;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "varying vec2 vResolution;",
-    "",
-    "varying vec2 v_rgbNW;",
-    "varying vec2 v_rgbNE;",
-    "varying vec2 v_rgbSW;",
-    "varying vec2 v_rgbSE;",
-    "varying vec2 v_rgbM;",
-    "",
-    "void texcoords(vec2 fragCoord, vec2 resolution,",
-    "   out vec2 v_rgbNW, out vec2 v_rgbNE,",
-    "   out vec2 v_rgbSW, out vec2 v_rgbSE,",
-    "   out vec2 v_rgbM) {",
-    "   vec2 inverseVP = 1.0 / resolution.xy;",
-    "   v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;",
-    "   v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;",
-    "   v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;",
-    "   v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;",
-    "   v_rgbM = vec2(fragCoord * inverseVP);",
-    "}",
-    "",
-    "void main() {",
-    "   gl_Position = uProjectionMatrix * vec4(aVertexPosition, 1.0);",
-    "   vTextureCoord = aTextureCoord;",
-    "   vResolution = uResolution;",
-    "   ",
-    "   texcoords(aTextureCoord * uResolution, uResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);",
-    "}"
-].join("\n");
-Values.blur2 = [
-    "precision mediump float;",
-    "",
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "void main()",
-    "{",
-    "    gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);",
-    "    vTextureCoord = aTextureCoord;",
-    "}"
-].join("\n");
-Values.copyImage = [
-    "attribute vec3 aVertexPosition;",
-    "attribute vec2 aTextureCoord;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "uniform mat4 uTransformMatrix;",
-    "uniform vec2 uOriginalSize;",
-    "uniform vec2 uFitSize;",
-    "uniform bool uFlipX;",
-    "uniform bool uFlipY;",
-    "",
-    "varying vec2 vTextureCoord;",
-    "",
-    "void main() {",
-    "    vec3 newVertexPostion = aVertexPosition;",
-    "    vec2 newTextureCoord = aTextureCoord;",
-    "    if (uFlipX) {",
-    "        newTextureCoord.x = 1.0 - newTextureCoord.x;",
-    "        newVertexPostion.x -= (uFitSize - uOriginalSize).x;",
-    "    }",
-    "    if (uFlipY) {",
-    "        newTextureCoord.y = 1.0 - newTextureCoord.y;",
-    "        newVertexPostion.y -= (uFitSize - uOriginalSize).y;",
-    "    }",
-    "    gl_Position = uProjectionMatrix * uTransformMatrix * vec4(newVertexPostion.xyz, 1.0);",
-    "    vTextureCoord = newTextureCoord;",
-    "}"
-].join("\n");
-Values.primitive2 = [
-    "precision mediump float;",
-    "",
-    "attribute vec3 aVertexPosition;",
-    "attribute vec4 aVertexColor;",
-    "",
-    "uniform mat4 uProjectionMatrix;",
-    "uniform mat4 uTransformMatrix;",
-    "uniform vec2 uOriginalSize;",
-    "uniform bool uFlipX;",
-    "uniform bool uFlipY;",
-    "",
-    "varying vec4 vVertexColor;",
-    "",
-    "void main() {",
-    "    vec3 newVertexPostion = aVertexPosition;",
-    "    if (uFlipX) {",
-    "        newVertexPostion.x = uOriginalSize.x - newVertexPostion.x;",
-    "    }",
-    "    if (uFlipY) {",
-    "        newVertexPostion.y = uOriginalSize.y - newVertexPostion.y;",
-    "    }",
-    "    gl_Position = uProjectionMatrix * uTransformMatrix * vec4(newVertexPostion.xyz, 1.0);",
-    "    vVertexColor = aVertexColor;",
-    "}"
-].join("\n");
+Values.fxaa = "\n    precision mediump float;\n\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform mat4 uProjectionMatrix;\n    uniform vec2 uResolution;\n\n    varying vec2 vTextureCoord;\n    varying vec2 vResolution;\n\n    varying vec2 v_rgbNW;\n    varying vec2 v_rgbNE;\n    varying vec2 v_rgbSW;\n    varying vec2 v_rgbSE;\n    varying vec2 v_rgbM;\n\n    void texcoords(vec2 fragCoord, vec2 resolution,\n       out vec2 v_rgbNW, out vec2 v_rgbNE,\n       out vec2 v_rgbSW, out vec2 v_rgbSE,\n       out vec2 v_rgbM) {\n       vec2 inverseVP = 1.0 / resolution.xy;\n       v_rgbNW = (fragCoord + vec2(-1.0, -1.0)) * inverseVP;\n       v_rgbNE = (fragCoord + vec2(1.0, -1.0)) * inverseVP;\n       v_rgbSW = (fragCoord + vec2(-1.0, 1.0)) * inverseVP;\n       v_rgbSE = (fragCoord + vec2(1.0, 1.0)) * inverseVP;\n       v_rgbM = vec2(fragCoord * inverseVP);\n    }\n\n    void main() {\n       gl_Position = uProjectionMatrix * vec4(aVertexPosition, 1.0);\n       vTextureCoord = aTextureCoord;\n       vResolution = uResolution;\n\n       texcoords(aTextureCoord * uResolution, uResolution, v_rgbNW, v_rgbNE, v_rgbSW, v_rgbSE, v_rgbM);\n    }\n";
+Values.blur2 = "\n    precision mediump float;\n\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform mat4 uProjectionMatrix;\n\n    varying vec2 vTextureCoord;\n\n    void main()\n    {\n        gl_Position = uProjectionMatrix * vec4(aVertexPosition.xyz, 1.0);\n        vTextureCoord = aTextureCoord;\n    }\n";
+Values.copyImage = "\n    attribute vec3 aVertexPosition;\n    attribute vec2 aTextureCoord;\n\n    uniform mat4 uProjectionMatrix;\n    uniform mat4 uTransformMatrix;\n    uniform vec2 uOriginalSize;\n    uniform vec2 uFitSize;\n    uniform bool uFlipX;\n    uniform bool uFlipY;\n\n    varying vec2 vTextureCoord;\n\n    void main() {\n        vec3 newVertexPostion = aVertexPosition;\n        vec2 newTextureCoord = aTextureCoord;\n        if (uFlipX) {\n            newTextureCoord.x = 1.0 - newTextureCoord.x;\n            newVertexPostion.x -= (uFitSize - uOriginalSize).x;\n        }\n        if (uFlipY) {\n            newTextureCoord.y = 1.0 - newTextureCoord.y;\n            newVertexPostion.y -= (uFitSize - uOriginalSize).y;\n        }\n        gl_Position = uProjectionMatrix * uTransformMatrix * vec4(newVertexPostion.xyz, 1.0);\n        vTextureCoord = newTextureCoord;\n    }\n";
+Values.primitive2 = "\n    precision mediump float;\n\n    attribute vec3 aVertexPosition;\n    attribute vec4 aVertexColor;\n\n    uniform mat4 uProjectionMatrix;\n    uniform mat4 uTransformMatrix;\n    uniform vec2 uOriginalSize;\n    uniform bool uFlipX;\n    uniform bool uFlipY;\n\n    varying vec4 vVertexColor;\n\n    void main() {\n        vec3 newVertexPostion = aVertexPosition;\n        if (uFlipX) {\n            newVertexPostion.x = uOriginalSize.x - newVertexPostion.x;\n        }\n        if (uFlipY) {\n            newVertexPostion.y = uOriginalSize.y - newVertexPostion.y;\n        }\n        gl_Position = uProjectionMatrix * uTransformMatrix * vec4(newVertexPostion.xyz, 1.0);\n        vVertexColor = aVertexColor;\n    }\n";
 
 
 
-},{}],98:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
+"use strict";
 (function (WebGLDataType) {
     WebGLDataType[WebGLDataType["UUnknown"] = 0] = "UUnknown";
     WebGLDataType[WebGLDataType["UBool"] = 1] = "UBool";
@@ -8110,30 +9449,26 @@ var WebGLDataType = exports.WebGLDataType;
 
 
 
-},{}],99:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/17.
  */
+"use strict";
 var libtess = require("libtess");
 var ShaderManager_1 = require("./ShaderManager");
 var FilterManager_1 = require("./FilterManager");
 var RenderTarget2D_1 = require("./RenderTarget2D");
 var WebGLUtils_1 = require("./WebGLUtils");
 var BlendMode_1 = require("../flash/display/BlendMode");
-var GLUtil_1 = require("../../lib/glantern-utils/src/GLUtil");
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+var GLUtil_1 = require("../glantern/GLUtil");
+var ArgumentError_1 = require("../flash/errors/ArgumentError");
+var gl = window.WebGLRenderingContext;
 /**
  * The WebGL renderer, main provider of the rendering services.
+ * @implements {IDisposable}
  */
 var WebGLRenderer = (function () {
-    /**
-     * Instantiates a new {@link WebGLRenderer}.
-     * @param width {Number} The width for presentation of the renderer.
-     * @param height {Number} The height for presentation of the renderer.
-     * @param options {RendererOptions} Options for initializing the newly created {@link WebGLRenderer}.
-     * @implements {IDisposable}
-     */
-    function WebGLRenderer(width, height, options) {
+    function WebGLRenderer(p1, p2, p3) {
         this._currentRenderTarget = null;
         this._currentBlendMode = null;
         this._screenTarget = null;
@@ -8143,7 +9478,15 @@ var WebGLRenderer = (function () {
         this._context = null;
         this._options = null;
         this._isInitialized = false;
-        this.__initialize(width, height, options);
+        if (typeof p1 === "number") {
+            this.__initialize(p3, null, p1, p2);
+        }
+        else if (p1 instanceof HTMLCanvasElement) {
+            this.__initialize(p2, p1);
+        }
+        else {
+            throw new ArgumentError_1.ArgumentError("Invalid constructor parameters.");
+        }
     }
     /**
      * Clear the screen.
@@ -8178,16 +9521,11 @@ var WebGLRenderer = (function () {
      */
     WebGLRenderer.prototype.setRenderTarget = function (target) {
         if (target === void 0) { target = null; }
-        if (target === this._currentRenderTarget && target !== null) {
+        if (target === this._currentRenderTarget && GLUtil_1.GLUtil.ptr(target)) {
             return;
         }
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(target)) {
-            this._currentRenderTarget = this._screenTarget;
-        }
-        else {
-            this._currentRenderTarget = target;
-        }
-        this._currentRenderTarget.activate();
+        var t = this._currentRenderTarget = GLUtil_1.GLUtil.ptr(target) ? target : this._screenTarget;
+        t.activate();
     };
     Object.defineProperty(WebGLRenderer.prototype, "currentRenderTarget", {
         /**
@@ -8324,21 +9662,28 @@ var WebGLRenderer = (function () {
     };
     /**
      * Initializes the newly created {@link WebGLRenderer}.
-     * @param width {Number} The width, in pixels.
-     * @param height {Number} The height, in pixels.
      * @param options {RendererOptions} Initialization options.
+     * @param [canvas] {HTMLCanvasElement} Base canvas. If not specified, then a new canvas will be created using
+     *                                     parameters width and height.
+     * @param [width] {Number} The width, in pixels.
+     * @param [height] {Number} The height, in pixels.
      * @private
      */
-    WebGLRenderer.prototype.__initialize = function (width, height, options) {
+    WebGLRenderer.prototype.__initialize = function (options, canvas, width, height) {
+        if (canvas === void 0) { canvas = null; }
+        if (width === void 0) { width = 400; }
+        if (height === void 0) { height = 300; }
         if (this._isInitialized) {
             return;
         }
         this._isInitialized = true;
         this._options = GLUtil_1.GLUtil.deepClone(options);
-        var canvas = window.document.createElement("canvas");
-        canvas.className = "glantern-view";
-        canvas.width = width;
-        canvas.height = height;
+        if (!canvas) {
+            canvas = window.document.createElement("canvas");
+            canvas.className = "glantern-view";
+            canvas.width = width;
+            canvas.height = height;
+        }
         var attributes = Object.create(null);
         attributes.alpha = options.transparent;
         attributes.antialias = options.antialias;
@@ -8352,8 +9697,8 @@ var WebGLRenderer = (function () {
         glc.enable(gl.BLEND);
         this.setBlendMode(BlendMode_1.BlendMode.NORMAL);
         this._screenTarget = this.createRootRenderTarget();
-        canvas.addEventListener("webglcontextlost", this.onContextLost.bind(this));
-        canvas.addEventListener("webglcontextrestored", this.onContextRestored.bind(this));
+        canvas.addEventListener("webglcontextlost", this.__onContextLost.bind(this));
+        canvas.addEventListener("webglcontextrestored", this.__onContextRestored.bind(this));
         this._tessellator = new libtess.GluTesselator();
         this._shaderManager = new ShaderManager_1.ShaderManager(this);
         this._filterManager = new FilterManager_1.FilterManager(this);
@@ -8389,13 +9734,13 @@ var WebGLRenderer = (function () {
      * The event handler for handling the lost of active {@link WebGLRenderingContext}.
      * @param ev {Event} Event parameters.
      */
-    WebGLRenderer.prototype.onContextLost = function (ev) {
+    WebGLRenderer.prototype.__onContextLost = function (ev) {
     };
     /**
      * The event handler for handling the restoration of active {@link WebGLRenderingContext}.
      * @param ev {Event} Event parameters.
      */
-    WebGLRenderer.prototype.onContextRestored = function (ev) {
+    WebGLRenderer.prototype.__onContextRestored = function (ev) {
     };
     /**
      * The default {@link RendererOptions} for instantiating a {@link WebGLRenderer}.
@@ -8407,7 +9752,7 @@ var WebGLRenderer = (function () {
         transparent: true
     };
     return WebGLRenderer;
-})();
+}());
 exports.WebGLRenderer = WebGLRenderer;
 var BMS = Object.create(null);
 BMS[BlendMode_1.BlendMode.ADD] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
@@ -8428,10 +9773,11 @@ BMS[BlendMode_1.BlendMode.SUBTRACT] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
 
 
 
-},{"../../lib/glantern-utils/src/GLUtil":3,"../flash/display/BlendMode":26,"./FilterManager":88,"./RenderTarget2D":92,"./ShaderManager":95,"./WebGLUtils":100,"libtess":179}],100:[function(require,module,exports){
+},{"../flash/display/BlendMode":22,"../flash/errors/ArgumentError":48,"../glantern/GLUtil":94,"./FilterManager":104,"./RenderTarget2D":108,"./ShaderManager":111,"./WebGLUtils":116,"libtess":208}],116:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/13.
  */
+"use strict";
 /*
  * Copyright 2010, Google Inc.
  * All rights reserved.
@@ -8462,40 +9808,36 @@ BMS[BlendMode_1.BlendMode.SUBTRACT] = [1, gl.ONE, gl.ONE_MINUS_SRC_ALPHA];
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+var GLUtil_1 = require("../glantern/GLUtil");
+var gl = window.WebGLRenderingContext;
+var GET_A_WEBGL_BROWSER = "This page requires a browser that supports WebGL.<br/><a href=\"http://get.webgl.org\">Click here to upgrade your browser.</a>";
+var OTHER_PROBLEM = "It appears your computer may not support WebGL.<br/><a href=\"http://get.webgl.org/troubleshooting/\">Click here for more information.</a>";
 var WebGLUtils = (function () {
     function WebGLUtils() {
     }
     WebGLUtils.setupWebGL = function (canvas, optionalAttributes) {
-        function showLink(str) {
-            var failHtml = makeFailHtml(str);
-            console.error(failHtml);
-            var container = canvas.parentElement;
-            if (container) {
-                container.innerHTML = failHtml;
-            }
-        }
-        if (gl === undefined) {
-            showLink(GET_A_WEBGL_BROWSER);
+        if (GLUtil_1.GLUtil.isUndefined(gl)) {
+            showLink(canvas.parentElement, GET_A_WEBGL_BROWSER);
             return null;
         }
         var context = create3DContext(canvas, optionalAttributes);
-        if (context == null) {
-            showLink(OTHER_PROBLEM);
+        if (!context) {
+            showLink(canvas.parentElement, OTHER_PROBLEM);
         }
         return context;
     };
     return WebGLUtils;
-})();
+}());
 exports.WebGLUtils = WebGLUtils;
+function showLink(container, str) {
+    var failHtml = makeFailHtml(str);
+    console.error(failHtml);
+    if (container) {
+        container.innerHTML = failHtml;
+    }
+}
 function makeFailHtml(message) {
-    return '' +
-        '<table style="background-color: #8CE; width: 100%; height: 100%;"><tr>' +
-        '<td align="center">' +
-        '<div style="display: table-cell; vertical-align: middle;">' +
-        '<div style="">' + message + '</div>' +
-        '</div>' +
-        '</td></tr></table>';
+    return "\n<table style=\"background-color: #8CE; width: 100%; height: 100%;\"><tr>\n<td align=\"center\">\n<div style=\"display: table-cell; vertical-align: middle;\">\n<div>" + message + "</div>\n</div>\n</td></tr></table>";
 }
 function create3DContext(canvas, optionalAttributes) {
     var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
@@ -8512,19 +9854,14 @@ function create3DContext(canvas, optionalAttributes) {
     }
     return context;
 }
-var GET_A_WEBGL_BROWSER = '' +
-    'This page requires a browser that supports WebGL.<br/>' +
-    '<a href="http://get.webgl.org">Click here to upgrade your browser.</a>';
-var OTHER_PROBLEM = '' +
-    "It doesn't appear your computer can support WebGL.<br/>" +
-    '<a href="http://get.webgl.org/troubleshooting/">Click here for more information.</a>';
 
 
 
-},{}],101:[function(require,module,exports){
+},{"../glantern/GLUtil":94}],117:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/22.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8533,7 +9870,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var FilterBase_1 = require("../FilterBase");
 var RenderHelper_1 = require("../RenderHelper");
 var ShaderID_1 = require("../ShaderID");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var Blur2Filter = (function (_super) {
     __extends(Blur2Filter, _super);
     function Blur2Filter(manager) {
@@ -8575,7 +9912,7 @@ var Blur2Filter = (function (_super) {
             return this._pass;
         },
         set: function (v) {
-            v = GLUtil_1.GLUtil.limitInto(v, 1, 3) | 0;
+            v = MathUtil_1.MathUtil.clamp(v, 1, 3) | 0;
             this._pass = v;
         },
         enumerable: true,
@@ -8613,23 +9950,24 @@ var Blur2Filter = (function (_super) {
         }
         RenderHelper_1.RenderHelper.copyTargetContent(renderer, t1, output, this.flipX, this.flipY, clearOutput);
     };
-    Blur2Filter.prototype.__initialize = function () {
+    Blur2Filter.prototype._$initialize = function () {
         this._tempTarget = this.filterManager.renderer.createRenderTarget();
     };
-    Blur2Filter.prototype.__dispose = function () {
+    Blur2Filter.prototype._$dispose = function () {
         this.filterManager.renderer.releaseRenderTarget(this._tempTarget);
         this._tempTarget = null;
     };
     return Blur2Filter;
-})(FilterBase_1.FilterBase);
+}(FilterBase_1.FilterBase));
 exports.Blur2Filter = Blur2Filter;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],102:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../FilterBase":103,"../RenderHelper":107,"../ShaderID":110}],118:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8638,7 +9976,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BlurYFilter_1 = require("./BlurYFilter");
 var BlurXFilter_1 = require("./BlurXFilter");
 var FilterBase_1 = require("../FilterBase");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var BlurFilter = (function (_super) {
     __extends(BlurFilter, _super);
     function BlurFilter(manager) {
@@ -8687,7 +10025,7 @@ var BlurFilter = (function (_super) {
             return this._pass;
         },
         set: function (v) {
-            v = GLUtil_1.GLUtil.limitInto(v, 1, 3) | 0;
+            v = MathUtil_1.MathUtil.clamp(v, 1, 3) | 0;
             this._pass = v;
             if (this._blurXFilter !== null) {
                 this._blurXFilter.pass = v;
@@ -8703,7 +10041,7 @@ var BlurFilter = (function (_super) {
         this._blurXFilter.process(renderer, input, this._tempTarget, true);
         this._blurYFilter.process(renderer, this._tempTarget, output, clearOutput);
     };
-    BlurFilter.prototype.__initialize = function () {
+    BlurFilter.prototype._$initialize = function () {
         this._blurXFilter = new BlurXFilter_1.BlurXFilter(this.filterManager);
         this._blurYFilter = new BlurYFilter_1.BlurYFilter(this.filterManager);
         this._blurXFilter.initialize();
@@ -8715,7 +10053,7 @@ var BlurFilter = (function (_super) {
         this._blurXFilter.flipY = false;
         this._tempTarget = this.filterManager.renderer.createRenderTarget();
     };
-    BlurFilter.prototype.__dispose = function () {
+    BlurFilter.prototype._$dispose = function () {
         this.filterManager.renderer.releaseRenderTarget(this._tempTarget);
         this._tempTarget = null;
         this._blurXFilter.dispose();
@@ -8723,15 +10061,16 @@ var BlurFilter = (function (_super) {
         this._blurXFilter = this._blurYFilter = null;
     };
     return BlurFilter;
-})(FilterBase_1.FilterBase);
+}(FilterBase_1.FilterBase));
 exports.BlurFilter = BlurFilter;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"./BlurXFilter":103,"./BlurYFilter":104}],103:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../FilterBase":103,"./BlurXFilter":119,"./BlurYFilter":120}],119:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8740,7 +10079,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var FilterBase_1 = require("../FilterBase");
 var ShaderID_1 = require("../ShaderID");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var BlurXFilter = (function (_super) {
     __extends(BlurXFilter, _super);
     function BlurXFilter(manager) {
@@ -8767,7 +10106,7 @@ var BlurXFilter = (function (_super) {
             return this._pass;
         },
         set: function (v) {
-            v = GLUtil_1.GLUtil.limitInto(v, 1, 3) | 0;
+            v = MathUtil_1.MathUtil.clamp(v, 1, 3) | 0;
             this._pass = v;
         },
         enumerable: true,
@@ -8792,23 +10131,24 @@ var BlurXFilter = (function (_super) {
         //renderer.copyRenderTargetContent(t1, output, clearOutput);
         RenderHelper_1.RenderHelper.copyTargetContent(renderer, t1, output, this.flipX, this.flipY, clearOutput);
     };
-    BlurXFilter.prototype.__initialize = function () {
+    BlurXFilter.prototype._$initialize = function () {
         this._tempTarget = this.filterManager.renderer.createRenderTarget();
     };
-    BlurXFilter.prototype.__dispose = function () {
+    BlurXFilter.prototype._$dispose = function () {
         this.filterManager.renderer.releaseRenderTarget(this._tempTarget);
         this._tempTarget = null;
     };
     return BlurXFilter;
-})(FilterBase_1.FilterBase);
+}(FilterBase_1.FilterBase));
 exports.BlurXFilter = BlurXFilter;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],104:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../FilterBase":103,"../RenderHelper":107,"../ShaderID":110}],120:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8817,7 +10157,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 var FilterBase_1 = require("../FilterBase");
 var ShaderID_1 = require("../ShaderID");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var BlurYFilter = (function (_super) {
     __extends(BlurYFilter, _super);
     function BlurYFilter(manager) {
@@ -8844,7 +10184,7 @@ var BlurYFilter = (function (_super) {
             return this._pass;
         },
         set: function (v) {
-            v = GLUtil_1.GLUtil.limitInto(v, 1, 3) | 0;
+            v = MathUtil_1.MathUtil.clamp(v, 1, 3) | 0;
             this._pass = v;
         },
         enumerable: true,
@@ -8869,23 +10209,24 @@ var BlurYFilter = (function (_super) {
         //renderer.copyRenderTargetContent(t1, output, clearOutput);
         RenderHelper_1.RenderHelper.copyTargetContent(renderer, t1, output, this.flipX, this.flipY, clearOutput);
     };
-    BlurYFilter.prototype.__initialize = function () {
+    BlurYFilter.prototype._$initialize = function () {
         this._tempTarget = this.filterManager.renderer.createRenderTarget();
     };
-    BlurYFilter.prototype.__dispose = function () {
+    BlurYFilter.prototype._$dispose = function () {
         this.filterManager.renderer.releaseRenderTarget(this._tempTarget);
         this._tempTarget = null;
     };
     return BlurYFilter;
-})(FilterBase_1.FilterBase);
+}(FilterBase_1.FilterBase));
 exports.BlurYFilter = BlurYFilter;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],105:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../FilterBase":103,"../RenderHelper":107,"../ShaderID":110}],121:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8917,23 +10258,24 @@ var ColorTransformFilter = (function (_super) {
         });
         RenderHelper_1.RenderHelper.copyTargetContent(renderer, this._tempTarget, output, this.flipX, this.flipY, clearOutput);
     };
-    ColorTransformFilter.prototype.__initialize = function () {
+    ColorTransformFilter.prototype._$initialize = function () {
         this._tempTarget = this.filterManager.renderer.createRenderTarget();
     };
-    ColorTransformFilter.prototype.__dispose = function () {
+    ColorTransformFilter.prototype._$dispose = function () {
         this.filterManager.renderer.releaseRenderTarget(this._tempTarget);
         this._tempTarget = null;
     };
     return ColorTransformFilter;
-})(FilterBase_1.FilterBase);
+}(FilterBase_1.FilterBase));
 exports.ColorTransformFilter = ColorTransformFilter;
 
 
 
-},{"../FilterBase":87,"../RenderHelper":91,"../ShaderID":94}],106:[function(require,module,exports){
+},{"../FilterBase":103,"../RenderHelper":107,"../ShaderID":110}],122:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -8943,7 +10285,7 @@ var ColorTransformFilter_1 = require("./ColorTransformFilter");
 var FilterBase_1 = require("../FilterBase");
 var Blur2Filter_1 = require("./Blur2Filter");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var GlowFilter = (function (_super) {
     __extends(GlowFilter, _super);
     function GlowFilter(manager) {
@@ -8959,7 +10301,7 @@ var GlowFilter = (function (_super) {
         ];
         /**
          * Use {@link BlurFilter} for better performance, or {@link Blur2Filter} for better quality.
-         * @type {RenderTarget2D}
+         * @type {FilterBase}
          * @private
          */
         this._blurFilter = null;
@@ -9004,7 +10346,7 @@ var GlowFilter = (function (_super) {
             return this._pass;
         },
         set: function (v) {
-            v = GLUtil_1.GLUtil.limitInto(v, 1, 3) | 0;
+            v = MathUtil_1.MathUtil.clamp(v, 1, 3) | 0;
             this._pass = v;
             if (this._blurFilter !== null) {
                 this._blurFilter.pass = v;
@@ -9025,7 +10367,7 @@ var GlowFilter = (function (_super) {
         this._blurFilter.process(renderer, this._tempColorTransformedTarget, output, false);
         RenderHelper_1.RenderHelper.copyTargetContent(renderer, this._tempOriginalTarget, output, this.flipX, this.flipY, false);
     };
-    GlowFilter.prototype.__initialize = function () {
+    GlowFilter.prototype._$initialize = function () {
         this._blurFilter = new Blur2Filter_1.Blur2Filter(this.filterManager);
         this._colorTransformFilter = new ColorTransformFilter_1.ColorTransformFilter(this.filterManager);
         this._blurFilter.initialize();
@@ -9037,7 +10379,7 @@ var GlowFilter = (function (_super) {
         this._tempOriginalTarget = this.filterManager.renderer.createRenderTarget();
         this._tempColorTransformedTarget = this.filterManager.renderer.createRenderTarget();
     };
-    GlowFilter.prototype.__dispose = function () {
+    GlowFilter.prototype._$dispose = function () {
         this._blurFilter.dispose();
         this._colorTransformFilter.dispose();
         this._blurFilter = this._colorTransformFilter = null;
@@ -9046,15 +10388,16 @@ var GlowFilter = (function (_super) {
         this._tempOriginalTarget = this._tempColorTransformedTarget = null;
     };
     return GlowFilter;
-})(FilterBase_1.FilterBase);
+}(FilterBase_1.FilterBase));
 exports.GlowFilter = GlowFilter;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../FilterBase":87,"../RenderHelper":91,"./Blur2Filter":101,"./ColorTransformFilter":105}],107:[function(require,module,exports){
+},{"../../glantern/MathUtil":95,"../FilterBase":103,"../RenderHelper":107,"./Blur2Filter":117,"./ColorTransformFilter":121}],123:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -9067,10 +10410,11 @@ __export(require("./Blur2Filter"));
 
 
 
-},{"./Blur2Filter":101,"./BlurFilter":102,"./BlurXFilter":103,"./BlurYFilter":104,"./ColorTransformFilter":105,"./GlowFilter":106}],108:[function(require,module,exports){
+},{"./Blur2Filter":117,"./BlurFilter":118,"./BlurXFilter":119,"./BlurYFilter":120,"./ColorTransformFilter":121,"./GlowFilter":122}],124:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 (function (BrushType) {
     BrushType[BrushType["SOLID"] = 0] = "SOLID";
     BrushType[BrushType["GRADIENT"] = 1] = "GRADIENT";
@@ -9081,10 +10425,11 @@ var BrushType = exports.BrushType;
 
 
 
-},{}],109:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9127,7 +10472,7 @@ var FillRendererBase = (function (_super) {
         this._lastPathStartX = x;
         this._lastPathStartY = y;
     };
-    FillRendererBase.prototype.getContourForClosedShapes = function () {
+    FillRendererBase.prototype._$getContourForClosedShapes = function () {
         var currentContour;
         if (this._hasDrawnAnything) {
             currentContour = [];
@@ -9139,7 +10484,7 @@ var FillRendererBase = (function (_super) {
         }
         return currentContour;
     };
-    FillRendererBase.prototype.getContourForLines = function () {
+    FillRendererBase.prototype._$getContourForLines = function () {
         var currentContour;
         if (this._hasDrawnAnything) {
             if (this._startingNewContour) {
@@ -9157,27 +10502,29 @@ var FillRendererBase = (function (_super) {
         return currentContour;
     };
     return FillRendererBase;
-})(GraphicsDataRendererBase_1.GraphicsDataRendererBase);
+}(GraphicsDataRendererBase_1.GraphicsDataRendererBase));
 exports.FillRendererBase = FillRendererBase;
 
 
 
-},{"./GraphicsDataRendererBase":111}],110:[function(require,module,exports){
+},{"./GraphicsDataRendererBase":127}],126:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 exports.CURVE_ACCURACY = 20;
 exports.STD_Z = 0;
 
 
 
-},{}],111:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var PackedArrayBuffer_1 = require("../PackedArrayBuffer");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
-var gl = this.WebGLRenderingContext || window.WebGLRenderingContext;
+var NotImplementedError_1 = require("../../flash/errors/NotImplementedError");
+var gl = window.WebGLRenderingContext;
 var GraphicsDataRendererBase = (function () {
     function GraphicsDataRendererBase(graphics, lastPathStartX, lastPathStartY, currentX, currentY) {
         this._graphics = null;
@@ -9243,7 +10590,7 @@ var GraphicsDataRendererBase = (function () {
     };
     GraphicsDataRendererBase.prototype.update = function () {
         // check whether to update the typed buffer
-        this.__syncBuffers();
+        this._$syncBuffers();
     };
     GraphicsDataRendererBase.prototype.render = function (renderer) {
         console.warn("Do not call GraphicsDataRendererBase.render().");
@@ -9266,15 +10613,7 @@ var GraphicsDataRendererBase = (function () {
         enumerable: true,
         configurable: true
     });
-    GraphicsDataRendererBase.prototype.__initializeBuffers = function () {
-        this._vertices = [];
-        this._colors = [];
-        this._indices = [];
-        this._vertexBuffer = PackedArrayBuffer_1.PackedArrayBuffer.create(this._glc, this._vertices, gl.FLOAT, gl.ARRAY_BUFFER);
-        this._colorBuffer = PackedArrayBuffer_1.PackedArrayBuffer.create(this._glc, this._colors, gl.FLOAT, gl.ARRAY_BUFFER);
-        this._indexBuffer = PackedArrayBuffer_1.PackedArrayBuffer.create(this._glc, this._indices, gl.UNSIGNED_SHORT, gl.ELEMENT_ARRAY_BUFFER);
-    };
-    GraphicsDataRendererBase.prototype.__syncBuffers = function () {
+    GraphicsDataRendererBase.prototype._$syncBuffers = function () {
         if (this._isDirty) {
             // When the array buffers become dirty, their values will be updated automatically
             // at next draw call.
@@ -9287,16 +10626,25 @@ var GraphicsDataRendererBase = (function () {
             this._isDirty = false;
         }
     };
+    GraphicsDataRendererBase.prototype.__initializeBuffers = function () {
+        this._vertices = [];
+        this._colors = [];
+        this._indices = [];
+        this._vertexBuffer = PackedArrayBuffer_1.PackedArrayBuffer.create(this._glc, this._vertices, gl.FLOAT, gl.ARRAY_BUFFER);
+        this._colorBuffer = PackedArrayBuffer_1.PackedArrayBuffer.create(this._glc, this._colors, gl.FLOAT, gl.ARRAY_BUFFER);
+        this._indexBuffer = PackedArrayBuffer_1.PackedArrayBuffer.create(this._glc, this._indices, gl.UNSIGNED_SHORT, gl.ELEMENT_ARRAY_BUFFER);
+    };
     return GraphicsDataRendererBase;
-})();
+}());
 exports.GraphicsDataRendererBase = GraphicsDataRendererBase;
 
 
 
-},{"../../../lib/glantern-utils/src/NotImplementedError":4,"../PackedArrayBuffer":90}],112:[function(require,module,exports){
+},{"../../flash/errors/NotImplementedError":51,"../PackedArrayBuffer":106}],128:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9306,8 +10654,8 @@ var libtess = require("libtess");
 var FillRendererBase_1 = require("./FillRendererBase");
 var GRAPHICS_CONST_1 = require("./GRAPHICS_CONST");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../flash/errors/NotImplementedError");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var SolidFillRenderer = (function (_super) {
     __extends(SolidFillRenderer, _super);
     function SolidFillRenderer(graphics, startX, startY, color, alpha) {
@@ -9316,14 +10664,14 @@ var SolidFillRenderer = (function (_super) {
         this._g = 0;
         this._b = 0;
         this._a = 1;
-        this._a = GLUtil_1.GLUtil.limitInto(alpha, 0, 1);
+        this._a = MathUtil_1.MathUtil.clamp(alpha, 0, 1);
         this._r = ((color >>> 16) & 0xff) / 0xff;
         this._g = ((color >>> 8) & 0xff) / 0xff;
         this._b = (color & 0xff) / 0xff;
     }
     SolidFillRenderer.prototype.bezierCurveTo = function (cx1, cy1, cx2, cy2, x, y) {
         this._isDirty = true;
-        var currentContour = this.getContourForLines();
+        var currentContour = this._$getContourForLines();
         if (!this._hasDrawnAnything || this._startingNewContour) {
             currentContour.push(this._currentX, this._currentY, GRAPHICS_CONST_1.STD_Z);
         }
@@ -9350,7 +10698,7 @@ var SolidFillRenderer = (function (_super) {
     };
     SolidFillRenderer.prototype.curveTo = function (cx, cy, x, y) {
         this._isDirty = true;
-        var currentContour = this.getContourForLines();
+        var currentContour = this._$getContourForLines();
         if (!this._hasDrawnAnything || this._startingNewContour) {
             currentContour.push(this._currentX, this._currentY, GRAPHICS_CONST_1.STD_Z);
         }
@@ -9373,7 +10721,7 @@ var SolidFillRenderer = (function (_super) {
     SolidFillRenderer.prototype.drawCircle = function (x, y, radius) {
         this._isDirty = true;
         this.moveTo(x, y);
-        var currentContour = this.getContourForClosedShapes();
+        var currentContour = this._$getContourForClosedShapes();
         var thetaNext;
         var thetaBegin;
         var x2, y2;
@@ -9400,7 +10748,7 @@ var SolidFillRenderer = (function (_super) {
     SolidFillRenderer.prototype.drawEllipse = function (x, y, width, height) {
         this._isDirty = true;
         this.moveTo(x, y + height / 2);
-        var currentContour = this.getContourForClosedShapes();
+        var currentContour = this._$getContourForClosedShapes();
         var thetaNext;
         var thetaBegin;
         var centerX = x + width / 2, centerY = y + height / 2;
@@ -9430,7 +10778,7 @@ var SolidFillRenderer = (function (_super) {
         this._isDirty = true;
         this.moveTo(x, y);
         // Create a new contour and draw a independent rectangle, should not use lineTo().
-        var currentContour = this.getContourForClosedShapes();
+        var currentContour = this._$getContourForClosedShapes();
         currentContour.push(x, y, GRAPHICS_CONST_1.STD_Z);
         currentContour.push(x + width, y, GRAPHICS_CONST_1.STD_Z);
         currentContour.push(x + width, y + height, GRAPHICS_CONST_1.STD_Z);
@@ -9446,7 +10794,7 @@ var SolidFillRenderer = (function (_super) {
     };
     SolidFillRenderer.prototype.lineTo = function (x, y) {
         this._isDirty = true;
-        var currentContour = this.getContourForLines();
+        var currentContour = this._$getContourForLines();
         if (!this._hasDrawnAnything || this._startingNewContour) {
             currentContour.push(this._currentX, this._currentY, GRAPHICS_CONST_1.STD_Z);
         }
@@ -9508,15 +10856,16 @@ var SolidFillRenderer = (function (_super) {
         }
     };
     return SolidFillRenderer;
-})(FillRendererBase_1.FillRendererBase);
+}(FillRendererBase_1.FillRendererBase));
 exports.SolidFillRenderer = SolidFillRenderer;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../RenderHelper":91,"./FillRendererBase":109,"./GRAPHICS_CONST":110,"libtess":179}],113:[function(require,module,exports){
+},{"../../flash/errors/NotImplementedError":51,"../../glantern/MathUtil":95,"../RenderHelper":107,"./FillRendererBase":125,"./GRAPHICS_CONST":126,"libtess":208}],129:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9525,8 +10874,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 var StrokeRendererBase_1 = require("./StrokeRendererBase");
 var GRAPHICS_CONST_1 = require("./GRAPHICS_CONST");
 var RenderHelper_1 = require("../RenderHelper");
-var GLUtil_1 = require("../../../lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../flash/errors/NotImplementedError");
+var MathUtil_1 = require("../../glantern/MathUtil");
 var SolidStrokeRenderer = (function (_super) {
     __extends(SolidStrokeRenderer, _super);
     function SolidStrokeRenderer(graphics, lastPathStartX, lastPathStartY, currentX, currentY, lineWidth, color, alpha) {
@@ -9536,7 +10885,7 @@ var SolidStrokeRenderer = (function (_super) {
         this._b = 0;
         this._a = 1;
         this._w = 1;
-        this._a = GLUtil_1.GLUtil.limitInto(alpha, 0, 1);
+        this._a = MathUtil_1.MathUtil.clamp(alpha, 0, 1);
         this._r = ((color >>> 16) & 0xff) / 0xff;
         this._g = ((color >>> 8) & 0xff) / 0xff;
         this._b = (color & 0xff) / 0xff;
@@ -9650,7 +10999,7 @@ var SolidStrokeRenderer = (function (_super) {
     SolidStrokeRenderer.prototype.lineTo = function (x, y) {
         if (this._w > 0) {
             this._isDirty = true;
-            var vertices = this.__getSimLineVertices(this._currentX, this._currentY, x, y, GRAPHICS_CONST_1.STD_Z, this._w);
+            var vertices = this._$getSimLineVertices(this._currentX, this._currentY, x, y, GRAPHICS_CONST_1.STD_Z, this._w);
             if (vertices.length > 0) {
                 // Generated 4 vertices, matching with 6 indices (2 triangles)
                 var cur = this._vertices.length / 3;
@@ -9674,15 +11023,16 @@ var SolidStrokeRenderer = (function (_super) {
         }
     };
     return SolidStrokeRenderer;
-})(StrokeRendererBase_1.StrokeRendererBase);
+}(StrokeRendererBase_1.StrokeRendererBase));
 exports.SolidStrokeRenderer = SolidStrokeRenderer;
 
 
 
-},{"../../../lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern-utils/src/NotImplementedError":4,"../RenderHelper":91,"./GRAPHICS_CONST":110,"./StrokeRendererBase":114}],114:[function(require,module,exports){
+},{"../../flash/errors/NotImplementedError":51,"../../glantern/MathUtil":95,"../RenderHelper":107,"./GRAPHICS_CONST":126,"./StrokeRendererBase":130}],130:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9706,7 +11056,7 @@ var StrokeRendererBase = (function (_super) {
         this._lastPathStartX = x;
         this._lastPathStartY = y;
     };
-    StrokeRendererBase.prototype.__getSimLineVertices = function (x1, y1, x2, y2, z, width) {
+    StrokeRendererBase.prototype._$getSimLineVertices = function (x1, y1, x2, y2, z, width) {
         if (width < 0) {
             return [];
         }
@@ -9773,15 +11123,16 @@ var StrokeRendererBase = (function (_super) {
         ];
     };
     return StrokeRendererBase;
-})(GraphicsDataRendererBase_1.GraphicsDataRendererBase);
+}(GraphicsDataRendererBase_1.GraphicsDataRendererBase));
 exports.StrokeRendererBase = StrokeRendererBase;
 
 
 
-},{"./GraphicsDataRendererBase":111}],115:[function(require,module,exports){
+},{"./GraphicsDataRendererBase":127}],131:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -9807,10 +11158,11 @@ exports.shaders = shaders;
 
 
 
-},{"./AttributeCache":86,"./FilterBase":87,"./FilterManager":88,"./FragmentShaders":89,"./PackedArrayBuffer":90,"./RenderHelper":91,"./RenderTarget2D":92,"./ShaderBase":93,"./ShaderID":94,"./ShaderManager":95,"./UniformCache":96,"./VertexShaders":97,"./WebGLDataType":98,"./WebGLRenderer":99,"./WebGLUtils":100,"./filters/index":107,"./shaders/index":126}],116:[function(require,module,exports){
+},{"./AttributeCache":102,"./FilterBase":103,"./FilterManager":104,"./FragmentShaders":105,"./PackedArrayBuffer":106,"./RenderHelper":107,"./RenderTarget2D":108,"./ShaderBase":109,"./ShaderID":110,"./ShaderManager":111,"./UniformCache":112,"./VertexShaders":113,"./WebGLDataType":114,"./WebGLRenderer":115,"./WebGLUtils":116,"./filters/index":123,"./shaders/index":142}],132:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/22.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9844,8 +11196,8 @@ var Blur2Shader = (function (_super) {
     Blur2Shader.prototype.setBlurDirection = function (direction) {
         this._uniforms.get("uBlurDirection").value = [direction[0], direction[1]];
     };
-    Blur2Shader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    Blur2Shader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         u = new UniformCache_1.UniformCache();
         u.name = "uStrength";
@@ -9867,15 +11219,16 @@ var Blur2Shader = (function (_super) {
     Blur2Shader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.blur2;
     Blur2Shader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.blur2;
     return Blur2Shader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.Blur2Shader = Blur2Shader;
 
 
 
-},{"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],117:[function(require,module,exports){
+},{"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],133:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9900,8 +11253,8 @@ var BlurXShader = (function (_super) {
     BlurXShader.prototype.getStrength = function () {
         return this._uniforms.get("uStrength").value;
     };
-    BlurXShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    BlurXShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         u = new UniformCache_1.UniformCache();
         u.name = "uStrength";
@@ -9913,15 +11266,16 @@ var BlurXShader = (function (_super) {
     BlurXShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.blur;
     BlurXShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.blurX;
     return BlurXShader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.BlurXShader = BlurXShader;
 
 
 
-},{"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],118:[function(require,module,exports){
+},{"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],134:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9946,8 +11300,8 @@ var BlurYShader = (function (_super) {
     BlurYShader.prototype.getStrength = function () {
         return this._uniforms.get("uStrength").value;
     };
-    BlurYShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    BlurYShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         u = new UniformCache_1.UniformCache();
         u.name = "uStrength";
@@ -9959,15 +11313,16 @@ var BlurYShader = (function (_super) {
     BlurYShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.blur;
     BlurYShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.blurY;
     return BlurYShader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.BlurYShader = BlurYShader;
 
 
 
-},{"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],119:[function(require,module,exports){
+},{"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],135:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -9988,8 +11343,8 @@ var BufferedShader = (function (_super) {
         // Must contains a "uSampler" uniform.
         this._uniforms.get("uSampler").texture = texture;
     };
-    BufferedShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    BufferedShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         var projectionMatrix = new Matrix3D_1.Matrix3D();
         var w = manager.renderer.view.width;
@@ -10012,15 +11367,16 @@ var BufferedShader = (function (_super) {
     BufferedShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.buffered;
     BufferedShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.buffered;
     return BufferedShader;
-})(ShaderBase_1.ShaderBase);
+}(ShaderBase_1.ShaderBase));
 exports.BufferedShader = BufferedShader;
 
 
 
-},{"../../flash/geom/Matrix3D":60,"../FragmentShaders":89,"../ShaderBase":93,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98}],120:[function(require,module,exports){
+},{"../../flash/geom/Matrix3D":63,"../FragmentShaders":105,"../ShaderBase":109,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114}],136:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10043,8 +11399,8 @@ var ColorTransformShader = (function (_super) {
         }
         this._uniforms.get("uColorMatrix").value = r4c5.slice();
     };
-    ColorTransformShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    ColorTransformShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         var defaultColorMatrix = [
             1, 0, 0, 0, 0,
@@ -10062,15 +11418,16 @@ var ColorTransformShader = (function (_super) {
     ColorTransformShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.colorTransform;
     ColorTransformShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.buffered;
     return ColorTransformShader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.ColorTransformShader = ColorTransformShader;
 
 
 
-},{"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],121:[function(require,module,exports){
+},{"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],137:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/23.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10105,8 +11462,8 @@ var CopyImageShader = (function (_super) {
     CopyImageShader.prototype.setTransform = function (matrix) {
         this._uniforms.get("uTransformMatrix").value = matrix.toArray();
     };
-    CopyImageShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    CopyImageShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         var transformMatrix = new Matrix3D_1.Matrix3D();
         transformMatrix.identity();
@@ -10146,15 +11503,16 @@ var CopyImageShader = (function (_super) {
     CopyImageShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.copyImage;
     CopyImageShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.copyImage;
     return CopyImageShader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.CopyImageShader = CopyImageShader;
 
 
 
-},{"../../flash/geom/Matrix3D":60,"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],122:[function(require,module,exports){
+},{"../../flash/geom/Matrix3D":63,"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],138:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10173,8 +11531,8 @@ var FxaaShader = (function (_super) {
     FxaaShader.prototype.setResolutionXY = function (xy) {
         this._uniforms.get("uResolution").value = xy.slice();
     };
-    FxaaShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    FxaaShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         u = new UniformCache_1.UniformCache();
         u.name = "uResolution";
@@ -10186,15 +11544,16 @@ var FxaaShader = (function (_super) {
     FxaaShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.fxaa;
     FxaaShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.fxaa;
     return FxaaShader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.FxaaShader = FxaaShader;
 
 
 
-},{"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],123:[function(require,module,exports){
+},{"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],139:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10229,8 +11588,8 @@ var Primitive2Shader = (function (_super) {
     Primitive2Shader.prototype.setOriginalSize = function (xy) {
         this._uniforms.get("uOriginalSize").value = xy.slice();
     };
-    Primitive2Shader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    Primitive2Shader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         var transformMatrix = new Matrix3D_1.Matrix3D();
         var projectionMatrix = new Matrix3D_1.Matrix3D();
@@ -10274,15 +11633,16 @@ var Primitive2Shader = (function (_super) {
     Primitive2Shader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.primitive;
     Primitive2Shader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.primitive2;
     return Primitive2Shader;
-})(ShaderBase_1.ShaderBase);
+}(ShaderBase_1.ShaderBase));
 exports.Primitive2Shader = Primitive2Shader;
 
 
 
-},{"../../flash/geom/Matrix3D":60,"../FragmentShaders":89,"../ShaderBase":93,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98}],124:[function(require,module,exports){
+},{"../../flash/geom/Matrix3D":63,"../FragmentShaders":105,"../ShaderBase":109,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114}],140:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10308,8 +11668,8 @@ var PrimitiveShader = (function (_super) {
     PrimitiveShader.prototype.setAlpha = function (alpha) {
         this._uniforms.get("uAlpha").value = alpha;
     };
-    PrimitiveShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    PrimitiveShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         var transformMatrix = new Matrix3D_1.Matrix3D();
         var projectionMatrix = new Matrix3D_1.Matrix3D();
@@ -10338,15 +11698,16 @@ var PrimitiveShader = (function (_super) {
     PrimitiveShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.primitive;
     PrimitiveShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.primitive;
     return PrimitiveShader;
-})(ShaderBase_1.ShaderBase);
+}(ShaderBase_1.ShaderBase));
 exports.PrimitiveShader = PrimitiveShader;
 
 
 
-},{"../../flash/geom/Matrix3D":60,"../FragmentShaders":89,"../ShaderBase":93,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98}],125:[function(require,module,exports){
+},{"../../flash/geom/Matrix3D":63,"../FragmentShaders":105,"../ShaderBase":109,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114}],141:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/18.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10374,8 +11735,8 @@ var ReplicateShader = (function (_super) {
     ReplicateShader.prototype.setFitSize = function (xy) {
         this._uniforms.get("uFitSize").value = xy.slice();
     };
-    ReplicateShader.prototype.__localInit = function (manager, uniforms, attributes) {
-        _super.prototype.__localInit.call(this, manager, uniforms, attributes);
+    ReplicateShader.prototype._$localInit = function (manager, uniforms, attributes) {
+        _super.prototype._$localInit.call(this, manager, uniforms, attributes);
         var u;
         u = new UniformCache_1.UniformCache();
         u.name = "uFlipX";
@@ -10402,15 +11763,16 @@ var ReplicateShader = (function (_super) {
     ReplicateShader.FRAGMENT_SOURCE = FragmentShaders_1.FragmentShaders.buffered;
     ReplicateShader.VERTEX_SOURCE = VertexShaders_1.VertexShaders.replicate;
     return ReplicateShader;
-})(BufferedShader_1.BufferedShader);
+}(BufferedShader_1.BufferedShader));
 exports.ReplicateShader = ReplicateShader;
 
 
 
-},{"../FragmentShaders":89,"../UniformCache":96,"../VertexShaders":97,"../WebGLDataType":98,"./BufferedShader":119}],126:[function(require,module,exports){
+},{"../FragmentShaders":105,"../UniformCache":112,"../VertexShaders":113,"../WebGLDataType":114,"./BufferedShader":135}],142:[function(require,module,exports){
 /**
  * Created by MIC on 2015/11/20.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -10426,282 +11788,11 @@ __export(require("./CopyImageShader"));
 
 
 
-},{"./Blur2Shader":116,"./BlurXShader":117,"./BlurYShader":118,"./BufferedShader":119,"./ColorTransformShader":120,"./CopyImageShader":121,"./FxaaShader":122,"./PrimitiveShader":124,"./ReplicateShader":125}],127:[function(require,module,exports){
-/**
- * Created by MIC on 2015/12/28.
- */
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
-var GLantern_1 = require("../lib/glantern/src/GLantern");
-var DanmakuCoordinator_1 = require("./danmaku/DanmakuCoordinator");
-var ScriptedDanmakuProvider_1 = require("./danmaku/scripted/ScriptedDanmakuProvider");
-var SimpleDanmakuProvider_1 = require("./danmaku/simple/SimpleDanmakuProvider");
-var BulletproofConfig_1 = require("./BulletproofConfig");
-var Html5VideoPlayer_1 = require("./interactive/video/html5/Html5VideoPlayer");
-var GLUtil_1 = require("../lib/glantern/lib/glantern-utils/src/GLUtil");
-/**
- * The root controller for Bulletproof.
- */
-var Bulletproof = (function (_super) {
-    __extends(Bulletproof, _super);
-    /**
-     * Creates a new {@link Bulletproof} instance.
-     */
-    function Bulletproof() {
-        _super.call(this);
-        this._lastUpdatedTime = -1;
-        this._totalElapsedTime = 0;
-        this._fps = 0;
-        this._fpsCounter = 0;
-        this._lastFpsUpdateElapsedTime = 0;
-        this._coordinator = null;
-        this._videoPlayer = null;
-        this._config = null;
-        this._blackCurtainView = null;
-        this._config = GLUtil_1.GLUtil.deepClone(BulletproofConfig_1.BulletproofConfig);
-    }
-    /**
-     * Initialize the {@link Bulletproof} instance with default parameters.
-     * @param width {Number} Width of stage requested, in pixels.
-     * @param height {Number} Height of stage requested, in pixels.
-     */
-    Bulletproof.prototype.initialize = function (width, height) {
-        if (!this._isInitialized) {
-            _super.prototype.initialize.call(this, width, height);
-            var config = this.config;
-            this.attachUpdateFunction(this.__updateComponents.bind(this));
-            var coordinator = new DanmakuCoordinator_1.DanmakuCoordinator(this);
-            this._coordinator = coordinator;
-            // The earlier a provider is added in, the deeper it is in Z axis.
-            var provider;
-            if (config.codeDanmakuEnabled) {
-                provider = new ScriptedDanmakuProvider_1.ScriptedDanmakuProvider(coordinator);
-                coordinator.addDanmakuProvider(provider);
-            }
-            if (config.simpleDanmakuEnabled) {
-                provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(coordinator);
-                coordinator.addDanmakuProvider(provider);
-            }
-            if (config.videoPlayerEnabled) {
-                if (config.useWebChimeraForVideoPlayback) {
-                }
-                else {
-                    this._videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
-                }
-                if (this._videoPlayer !== null) {
-                    this._videoPlayer.initialize(width, height);
-                }
-            }
-            var blackCurtainView = window.document.createElement("div");
-            var blackCurtainStyle = blackCurtainView.style;
-            blackCurtainStyle.width = width + "px";
-            blackCurtainStyle.height = height + "px";
-            blackCurtainStyle.backgroundColor = "black";
-            this._blackCurtainView = blackCurtainView;
-        }
-    };
-    /**
-     * Starts the animation loop. Updating and rendering are automatically handled in the loop.
-     * By default, {@link startAnimation} uses {@link window.requestAnimationFrame} function and relies
-     * on the frame rate adjuster of the browser window.
-     */
-    Bulletproof.prototype.startAnimation = function () {
-        if (!this.isAnimationRunning) {
-            this._lastUpdatedTime = Date.now();
-        }
-        _super.prototype.startAnimation.call(this);
-    };
-    /**
-     * Stops the animation loop. Internal state is preserved, and the next {@link startAnimation} call resumes
-     * from last state.
-     */
-    Bulletproof.prototype.stopAnimation = function () {
-        this.__updateComponents();
-        _super.prototype.stopAnimation.call(this);
-    };
-    /**
-     * Disposes the {@link Bulletproof} instance and release all resources occupied.
-     */
-    Bulletproof.prototype.dispose = function () {
-        this._coordinator.dispose();
-        this._coordinator = null;
-        _super.prototype.dispose.call(this);
-    };
-    Object.defineProperty(Bulletproof.prototype, "danmakuCoordinator", {
-        /**
-         * Gets the {@link DanmakuCoordinator} instance associated with current {@link Bulletproof} instance.
-         * @returns {DanmakuCoordinator}
-         */
-        get: function () {
-            return this._coordinator;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "isAnimationRunning", {
-        /**
-         * Gets a boolean flag indicating whether the animation loop is running.
-         * @returns {Boolean}
-         */
-        get: function () {
-            return this._isRunning;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "timeElapsed", {
-        /**
-         * Gets total time elapsed in handling the animation loop, in milliseconds.
-         * @returns {Number}
-         */
-        get: function () {
-            return this._totalElapsedTime;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "fps", {
-        /**
-         * Gets the average FPS (frame per second) of last second.
-         * @returns {Number}
-         */
-        get: function () {
-            return this._fps;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "videoPlayer", {
-        get: function () {
-            return this._videoPlayer;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "videoView", {
-        get: function () {
-            if (GLUtil_1.GLUtil.isUndefinedOrNull(this._videoPlayer)) {
-                return null;
-            }
-            else {
-                return this._videoPlayer.view;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "config", {
-        get: function () {
-            return this._config;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(Bulletproof.prototype, "blackCurtainView", {
-        get: function () {
-            return this._blackCurtainView;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Bulletproof.prototype.__updateComponents = function () {
-        if (this._lastUpdatedTime > 0) {
-            var now = Date.now();
-            this._totalElapsedTime += now - this._lastUpdatedTime;
-            this._lastUpdatedTime = now;
-        }
-        ++this._fpsCounter;
-        if (this.timeElapsed - this._lastFpsUpdateElapsedTime > 1000) {
-            this._fps = this._fpsCounter / (this.timeElapsed - this._lastFpsUpdateElapsedTime) * 1000;
-            this._fpsCounter = 0;
-            this._lastFpsUpdateElapsedTime = this.timeElapsed;
-        }
-        this._coordinator.update();
-    };
-    return Bulletproof;
-})(GLantern_1.GLantern);
-exports.Bulletproof = Bulletproof;
-
-
-
-},{"../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../lib/glantern/src/GLantern":5,"./BulletproofConfig":128,"./danmaku/DanmakuCoordinator":148,"./danmaku/scripted/ScriptedDanmakuProvider":159,"./danmaku/simple/SimpleDanmakuProvider":170,"./interactive/video/html5/Html5VideoPlayer":176}],128:[function(require,module,exports){
-/**
- * Created by MIC on 2016/2/7.
- */
-var SimpleDanamkuType_1 = require("./danmaku/simple/SimpleDanamkuType");
-exports.BulletproofConfig = Object.create(null);
-/**
- * Gets the default life time for simple (text-only) danmakus, in seconds.
- * @type {Number}
- */
-exports.BulletproofConfig.simpleDanmakuLifeTimeSecs = 10;
-/**
- * Gets the default life time for scripted danmakus, in seconds.
- * @type {Number}
- */
-exports.BulletproofConfig.codeDanmakuLifeTimeSecs = Number.MAX_VALUE;
-/**
- * Default parameters for creation of {@link SimpleDanmaku}.
- * @type {ISimpleDanmakuCreateParams}
- */
-exports.BulletproofConfig.defaultSimpleDanmakuCreateParams = {
-    bornTime: undefined,
-    fontName: "SimHei",
-    fontStyle: "bold",
-    fontSize: 20,
-    type: SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L,
-    border: false,
-    borderColor: 0x000000,
-    borderThickness: 1,
-    background: false,
-    backgroundColor: 0x000000,
-    textColor: 0xffffff,
-    outline: true,
-    outlineColor: 0x2f2f2f,
-    outlineThickness: 1
-};
-/**
- * Global threshold of danmaku count. See {@link DanmakuCoordinator.shouldCreateDanmaku} for how the number is counted.
- * @type {Number}
- */
-exports.BulletproofConfig.globalDanmakuCountThreshold = 3000;
-/**
- * Local threshold of number of each part of {@link SimpleDanmaku}.
- * @type {Number}
- */
-exports.BulletproofConfig.simpleDanmakuPartCountThreshold = 1500;
-/**
- * Whether should enable scripted danmaku support.
- * @type {Boolean}
- */
-exports.BulletproofConfig.codeDanmakuEnabled = true;
-/**
- * Whether should enable simple danmaku support.
- * @type {Boolean}
- */
-exports.BulletproofConfig.simpleDanmakuEnabled = true;
-/**
- * Whether should enable the default video player.
- * @type {Boolean}
- */
-exports.BulletproofConfig.videoPlayerEnabled = true;
-/**
- * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
- * It is used for WebChimera for NW.js or Electron, where the original integrated browser does not support H.264 etc.
- * due to copyright reasons.
- * @type {Boolean}
- */
-exports.BulletproofConfig.useWebChimeraForVideoPlayback = false;
-
-
-
-},{"./danmaku/simple/SimpleDanamkuType":165}],129:[function(require,module,exports){
+},{"./Blur2Shader":132,"./BlurXShader":133,"./BlurYShader":134,"./BufferedShader":135,"./ColorTransformShader":136,"./CopyImageShader":137,"./FxaaShader":138,"./PrimitiveShader":140,"./ReplicateShader":141}],143:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var Display_1 = require("./danmaku_api/Display");
 var Global_1 = require("./danmaku_api/Global");
 var Functions_1 = require("./danmaku_api/Functions");
@@ -10712,17 +11803,17 @@ var ScriptManager_1 = require("./danmaku_api/ScriptManager");
 var Storage_1 = require("./danmaku_api/Storage");
 var Tween_1 = require("./danmaku_api/Tween");
 var BiliBiliDanmakuApiContainer = (function () {
-    function BiliBiliDanmakuApiContainer(codeDanmaku) {
+    function BiliBiliDanmakuApiContainer(scriptedDanmaku) {
         this._codeDanmaku = null;
-        this._bulletproof = null;
+        this._engine = null;
         this._api = null;
-        this._codeDanmaku = codeDanmaku;
-        this._bulletproof = codeDanmaku.layoutManager.danmakuProvider.danmakuCoordinator.bulletproof;
+        this._codeDanmaku = scriptedDanmaku;
+        this._engine = scriptedDanmaku.engine;
         this.__initializeApi();
     }
-    Object.defineProperty(BiliBiliDanmakuApiContainer.prototype, "bulletproof", {
+    Object.defineProperty(BiliBiliDanmakuApiContainer.prototype, "engine", {
         get: function () {
-            return this._bulletproof;
+            return this._engine;
         },
         enumerable: true,
         configurable: true
@@ -10763,15 +11854,16 @@ var BiliBiliDanmakuApiContainer = (function () {
         configurable: true
     });
     return BiliBiliDanmakuApiContainer;
-})();
+}());
 exports.BiliBiliDanmakuApiContainer = BiliBiliDanmakuApiContainer;
 
 
 
-},{"./danmaku_api/Bitmap":131,"./danmaku_api/Display":134,"./danmaku_api/Functions":135,"./danmaku_api/Global":136,"./danmaku_api/Player":138,"./danmaku_api/ScriptManager":140,"./danmaku_api/Storage":141,"./danmaku_api/Tween":142,"./danmaku_api/Utils":144}],130:[function(require,module,exports){
+},{"./danmaku_api/Bitmap":145,"./danmaku_api/Display":148,"./danmaku_api/Functions":149,"./danmaku_api/Global":150,"./danmaku_api/Player":152,"./danmaku_api/ScriptManager":154,"./danmaku_api/Storage":155,"./danmaku_api/Tween":156,"./danmaku_api/Utils":158}],144:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var BiliBiliDamakuApiObject = (function () {
     function BiliBiliDamakuApiObject(apiContainer) {
         this._apiContainer = null;
@@ -10784,31 +11876,33 @@ var BiliBiliDamakuApiObject = (function () {
         enumerable: true,
         configurable: true
     });
-    BiliBiliDamakuApiObject.prototype.__getExtraCreateParams = function () {
+    BiliBiliDamakuApiObject.prototype._$getExtraCreateParams = function () {
+        var api = this.apiContainer;
         var r = Object.create(null);
-        r.bulletproof = this.apiContainer.bulletproof;
-        r.bornTime = this.apiContainer.bulletproof.timeElapsed;
-        r.creator = this.apiContainer.danmaku;
+        r.engine = api.engine;
+        r.bornTime = r.engine.videoMillis;
+        r.creator = api.danmaku;
         return r;
     };
     return BiliBiliDamakuApiObject;
-})();
+}());
 exports.BiliBiliDamakuApiObject = BiliBiliDamakuApiObject;
 
 
 
-},{}],131:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var Rectangle_1 = require("../../../lib/glantern/src/flash/geom/Rectangle");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
+var Rectangle_1 = require("../../../../lib/glantern/src/gl/flash/geom/Rectangle");
 var Bitmap = (function (_super) {
     __extends(Bitmap, _super);
     function Bitmap(apiContainer) {
@@ -10830,42 +11924,44 @@ var Bitmap = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Bitmap;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Bitmap = Bitmap;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/flash/geom/Rectangle":64,"./BiliBiliDamakuApiObject":130}],132:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"../../../../lib/glantern/src/gl/flash/geom/Rectangle":67,"./BiliBiliDamakuApiObject":144}],146:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var CommentBitmap = (function () {
     function CommentBitmap() {
     }
     return CommentBitmap;
-})();
+}());
 exports.CommentBitmap = CommentBitmap;
 
 
 
-},{}],133:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCOHelper_1 = require("../../danmaku/scripted/dco/DCOHelper");
-var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
+var TextField_1 = require("../../../../lib/glantern/src/gl/flash/text/TextField");
 var CommentField = (function (_super) {
     __extends(CommentField, _super);
     function CommentField(root, parent, createParams, extraCreateParams) {
         _super.call(this, root, parent);
         this._extraCreateParams = null;
         this._createParams = null;
-        this._createParams = DCOHelper_1.DCOHelper.fillInCreateParams(extraCreateParams.bulletproof, this, createParams);
+        this._createParams = DCOHelper_1.DCOHelper.fillInCreateParams(extraCreateParams.engine, this, createParams);
         this._extraCreateParams = extraCreateParams;
         DCOHelper_1.DCOHelper.applyGeneralCreateParams(this, this._createParams);
     }
@@ -10891,15 +11987,16 @@ var CommentField = (function (_super) {
         configurable: true
     });
     return CommentField;
-})(TextField_1.TextField);
+}(TextField_1.TextField));
 exports.CommentField = CommentField;
 
 
 
-},{"../../../lib/glantern/src/flash/text/TextField":72,"../../danmaku/scripted/dco/DCOHelper":160}],134:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/text/TextField":77,"../../danmaku/scripted/dco/DCOHelper":180}],148:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -10908,17 +12005,17 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var DCShape_1 = require("../../danmaku/scripted/dco/DCShape");
 var CommentField_1 = require("./CommentField");
-var Matrix_1 = require("../../../lib/glantern/src/flash/geom/Matrix");
-var Point_1 = require("../../../lib/glantern/src/flash/geom/Point");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var BitmapFilterQuality_1 = require("../../../lib/glantern/src/flash/filters/BitmapFilterQuality");
-var GlowFilter_1 = require("../../../lib/glantern/src/flash/filters/GlowFilter");
-var BlurFilter_1 = require("../../../lib/glantern/src/flash/filters/BlurFilter");
-var Vector3D_1 = require("../../../lib/glantern/src/flash/geom/Vector3D");
-var Matrix3D_1 = require("../../../lib/glantern/src/flash/geom/Matrix3D");
-var ColorTransform_1 = require("../../../lib/glantern/src/flash/geom/ColorTransform");
-var TextFormat_1 = require("../../../lib/glantern/src/flash/text/TextFormat");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var Matrix_1 = require("../../../../lib/glantern/src/gl/flash/geom/Matrix");
+var Point_1 = require("../../../../lib/glantern/src/gl/flash/geom/Point");
+var BitmapFilterQuality_1 = require("../../../../lib/glantern/src/gl/flash/filters/BitmapFilterQuality");
+var GlowFilter_1 = require("../../../../lib/glantern/src/gl/flash/filters/GlowFilter");
+var BlurFilter_1 = require("../../../../lib/glantern/src/gl/flash/filters/BlurFilter");
+var Vector3D_1 = require("../../../../lib/glantern/src/gl/flash/geom/Vector3D");
+var Matrix3D_1 = require("../../../../lib/glantern/src/gl/flash/geom/Matrix3D");
+var ColorTransform_1 = require("../../../../lib/glantern/src/gl/flash/geom/ColorTransform");
+var TextFormat_1 = require("../../../../lib/glantern/src/gl/flash/text/TextFormat");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 var Display = (function (_super) {
     __extends(Display, _super);
     function Display(apiContainer) {
@@ -10940,14 +12037,14 @@ var Display = (function (_super) {
     });
     Object.defineProperty(Display.prototype, "width", {
         get: function () {
-            return this.apiContainer.bulletproof.view.width;
+            return this.apiContainer.engine.view.width;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Display.prototype, "height", {
         get: function () {
-            return this.apiContainer.bulletproof.view.height;
+            return this.apiContainer.engine.view.height;
         },
         enumerable: true,
         configurable: true
@@ -10968,7 +12065,7 @@ var Display = (function (_super) {
     };
     Display.prototype.createComment = function (text, params) {
         var danmaku = this.apiContainer.danmaku;
-        var textField = new CommentField_1.CommentField(danmaku.stage, danmaku, params, this.__getExtraCreateParams());
+        var textField = new CommentField_1.CommentField(danmaku.stage, danmaku, params, this._$getExtraCreateParams());
         textField.text = text;
         textField.textColor = 0xffffff;
         // Use "Arial" as default font for users outside China.
@@ -10978,7 +12075,7 @@ var Display = (function (_super) {
     };
     Display.prototype.createShape = function (params) {
         var danmaku = this.apiContainer.danmaku;
-        var shape = new DCShape_1.DCShape(danmaku.stage, danmaku, params, this.__getExtraCreateParams());
+        var shape = new DCShape_1.DCShape(danmaku.stage, danmaku, params, this._$getExtraCreateParams());
         danmaku.addChild(shape);
         return shape;
     };
@@ -11073,23 +12170,24 @@ var Display = (function (_super) {
         }
     };
     return Display;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Display = Display;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/flash/filters/BitmapFilterQuality":54,"../../../lib/glantern/src/flash/filters/BlurFilter":55,"../../../lib/glantern/src/flash/filters/GlowFilter":56,"../../../lib/glantern/src/flash/geom/ColorTransform":58,"../../../lib/glantern/src/flash/geom/Matrix":59,"../../../lib/glantern/src/flash/geom/Matrix3D":60,"../../../lib/glantern/src/flash/geom/Point":63,"../../../lib/glantern/src/flash/geom/Vector3D":66,"../../../lib/glantern/src/flash/text/TextFormat":75,"../../danmaku/scripted/dco/DCShape":161,"./BiliBiliDamakuApiObject":130,"./CommentField":133}],135:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"../../../../lib/glantern/src/gl/flash/filters/BitmapFilterQuality":57,"../../../../lib/glantern/src/gl/flash/filters/BlurFilter":58,"../../../../lib/glantern/src/gl/flash/filters/GlowFilter":59,"../../../../lib/glantern/src/gl/flash/geom/ColorTransform":61,"../../../../lib/glantern/src/gl/flash/geom/Matrix":62,"../../../../lib/glantern/src/gl/flash/geom/Matrix3D":63,"../../../../lib/glantern/src/gl/flash/geom/Point":66,"../../../../lib/glantern/src/gl/flash/geom/Vector3D":69,"../../../../lib/glantern/src/gl/flash/text/TextFormat":80,"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../danmaku/scripted/dco/DCShape":181,"./BiliBiliDamakuApiObject":144,"./CommentField":147}],149:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 var Functions = (function (_super) {
     __extends(Functions, _super);
     function Functions(apiContainer) {
@@ -11101,8 +12199,9 @@ var Functions = (function (_super) {
     Functions.prototype.clear = function () {
         throw new NotImplementedError_1.NotImplementedError();
     };
+    // Well, I lost all descriptions for this function. This is my best guess.
     Functions.prototype.getTimer = function () {
-        return this.apiContainer.bulletproof.timeElapsed;
+        return this.apiContainer.engine.elapsedMillis;
     };
     Functions.prototype.timer = function (obj, delay) {
         return this.apiContainer.api.Utils.delay(obj, delay);
@@ -11112,7 +12211,7 @@ var Functions = (function (_super) {
         return this.apiContainer.api.Utils.interval(obj, delay, times);
     };
     Functions.prototype.foreach = function (loop, f) {
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(loop)) {
+        if (GLUtil_1.GLUtil.ptr(loop)) {
             for (var key in loop) {
                 if (loop.hasOwnProperty(key)) {
                     f(key, loop[key]);
@@ -11125,8 +12224,8 @@ var Functions = (function (_super) {
     };
     Functions.prototype.load = function (libraryName, onComplete) {
         var availableLibraries = [
-            'libBitmap',
-            'libStorage'
+            "libBitmap",
+            "libStorage"
         ];
         var index = availableLibraries.indexOf(libraryName);
         if (index >= 0) {
@@ -11139,17 +12238,19 @@ var Functions = (function (_super) {
                     break;
             }
         }
+        throw new NotImplementedError_1.NotImplementedError();
     };
     return Functions;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Functions = Functions;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"./BiliBiliDamakuApiObject":130}],136:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"./BiliBiliDamakuApiObject":144}],150:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11170,15 +12271,16 @@ var Global = (function (_super) {
         return this._map.get(key);
     };
     return Global;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Global = Global;
 
 
 
-},{"./BiliBiliDamakuApiObject":130}],137:[function(require,module,exports){
+},{"./BiliBiliDamakuApiObject":144}],151:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var MotionEasing = (function () {
     function MotionEasing() {
     }
@@ -11253,15 +12355,16 @@ var MotionEasing = (function () {
         configurable: true
     });
     return MotionEasing;
-})();
+}());
 exports.MotionEasing = MotionEasing;
 
 
 
-},{}],138:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11270,14 +12373,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var VideoPlayerState_1 = require("../../interactive/video/VideoPlayerState");
 var PlayerState_1 = require("./PlayerState");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 var Player = (function (_super) {
     __extends(Player, _super);
     function Player(apiContainer) {
         _super.call(this, apiContainer);
         this._videoPlayer = null;
-        this._videoPlayer = apiContainer.bulletproof.videoPlayer;
+        this._videoPlayer = apiContainer.engine.videoPlayer;
     }
     Player.prototype.play = function () {
         if (this._videoPlayer !== null) {
@@ -11333,7 +12436,7 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "time", {
         get: function () {
-            return this.apiContainer.bulletproof.timeElapsed;
+            return this.apiContainer.engine.videoMillis;
         },
         enumerable: true,
         configurable: true
@@ -11357,7 +12460,7 @@ var Player = (function (_super) {
     Object.defineProperty(Player.prototype, "commentList", {
         get: function () {
             var comments = [];
-            var providers = this.apiContainer.bulletproof.danmakuCoordinator.getDanmakuProviders();
+            var providers = this.apiContainer.engine.danmakuController.getProviders();
             var provider;
             for (var j = 0; j < providers.length; ++j) {
                 provider = providers[j];
@@ -11372,7 +12475,7 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "refreshRate", {
         get: function () {
-            return 1 / this.apiContainer.bulletproof.fps;
+            return 1 / this.apiContainer.engine.fps;
         },
         set: function (v) {
             throw new NotImplementedError_1.NotImplementedError();
@@ -11382,14 +12485,14 @@ var Player = (function (_super) {
     });
     Object.defineProperty(Player.prototype, "width", {
         get: function () {
-            return this.apiContainer.bulletproof.stage.stageWidth;
+            return this.apiContainer.engine.stage.stageWidth;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(Player.prototype, "height", {
         get: function () {
-            return this.apiContainer.bulletproof.stage.stageHeight;
+            return this.apiContainer.engine.stage.stageHeight;
         },
         enumerable: true,
         configurable: true
@@ -11409,15 +12512,16 @@ var Player = (function (_super) {
         configurable: true
     });
     return Player;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Player = Player;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../interactive/video/VideoPlayerState":175,"./BiliBiliDamakuApiObject":130,"./PlayerState":139}],139:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../interactive/video/VideoPlayerState":204,"./BiliBiliDamakuApiObject":144,"./PlayerState":153}],153:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var PlayerState = (function () {
     function PlayerState() {
     }
@@ -11450,22 +12554,23 @@ var PlayerState = (function () {
         configurable: true
     });
     return PlayerState;
-})();
+}());
 exports.PlayerState = PlayerState;
 
 
 
-},{}],140:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 var ScriptManager = (function (_super) {
     __extends(ScriptManager, _super);
     function ScriptManager(apiContainer) {
@@ -11481,22 +12586,23 @@ var ScriptManager = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return ScriptManager;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.ScriptManager = ScriptManager;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"./BiliBiliDamakuApiObject":130}],141:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"./BiliBiliDamakuApiObject":144}],155:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 var Storage = (function (_super) {
     __extends(Storage, _super);
     function Storage(apiContainer) {
@@ -11523,22 +12629,23 @@ var Storage = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Storage;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Storage = Storage;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"./BiliBiliDamakuApiObject":130}],142:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"./BiliBiliDamakuApiObject":144}],156:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 var Tween = (function (_super) {
     __extends(Tween, _super);
     function Tween(apiContainer) {
@@ -11583,22 +12690,23 @@ var Tween = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return Tween;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Tween = Tween;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"./BiliBiliDamakuApiObject":130}],143:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"./BiliBiliDamakuApiObject":144}],157:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Tween_1 = require("../../../lib/glantern/src/fl/transitions/Tween");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var Tween_1 = require("../../../../lib/glantern/src/gl/fl/transitions/Tween");
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 var TweenImpl = (function (_super) {
     __extends(TweenImpl, _super);
     function TweenImpl(obj, prop, func, begin, finish, duration, useSeconds) {
@@ -11622,15 +12730,16 @@ var TweenImpl = (function (_super) {
         throw new NotImplementedError_1.NotImplementedError();
     };
     return TweenImpl;
-})(Tween_1.Tween);
+}(Tween_1.Tween));
 exports.TweenImpl = TweenImpl;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"../../../lib/glantern/src/fl/transitions/Tween":7}],144:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/fl/transitions/Tween":2,"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51}],158:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -11638,32 +12747,29 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var BiliBiliDamakuApiObject_1 = require("./BiliBiliDamakuApiObject");
 var FiniteTimer_1 = require("../../danmaku/scripted/dco/FiniteTimer");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var MathUtil_1 = require("../../../../lib/glantern/src/gl/glantern/MathUtil");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
+var date = new Date();
 var Utils = (function (_super) {
     __extends(Utils, _super);
     function Utils(apiContainer) {
         _super.call(this, apiContainer);
-        this._date = null;
-        this._date = new Date();
     }
     Utils.prototype.hue = function (v) {
         v = v % 360;
         // http://blog.sina.com.cn/s/blog_5de73d0b0101baxq.html
         var lambda = v / 60 * 255;
-        var r = GLUtil_1.GLUtil.limitInto(510 - lambda, 0, 255);
-        var g = GLUtil_1.GLUtil.limitInto(v < 180 ? lambda : lambda - 510, 0, 255);
-        var b = GLUtil_1.GLUtil.limitInto(v < 180 ? lambda - 510 : lambda, 0, 255);
+        var r = MathUtil_1.MathUtil.clamp(510 - lambda, 0, 255);
+        var g = MathUtil_1.MathUtil.clamp(v < 180 ? lambda : lambda - 510, 0, 255);
+        var b = MathUtil_1.MathUtil.clamp(v < 180 ? lambda - 510 : lambda, 0, 255);
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     };
     Utils.prototype.rgb = function (r, g, b) {
-        r = GLUtil_1.GLUtil.limitInto(r, 0, 255);
-        g = GLUtil_1.GLUtil.limitInto(g, 0, 255);
-        b = GLUtil_1.GLUtil.limitInto(b, 0, 255);
-        return (0xff << 24) | (r << 16) | (g << 8) | b;
+        return GLUtil_1.GLUtil.rgb(r, g, b);
     };
     Utils.prototype.formatTimes = function (time) {
-        this._date.setTime(time * 1000);
-        return this._date.toLocaleString();
+        date.setTime(time * 1000);
+        return date.toLocaleString();
     };
     Utils.prototype.delay = function (obj, delay) {
         return window.setTimeout(obj, delay);
@@ -11679,15 +12785,16 @@ var Utils = (function (_super) {
         return Math.random() * (max - min) + min;
     };
     return Utils;
-})(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject);
+}(BiliBiliDamakuApiObject_1.BiliBiliDamakuApiObject));
 exports.Utils = Utils;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../danmaku/scripted/dco/FiniteTimer":162,"./BiliBiliDamakuApiObject":130}],145:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../../../lib/glantern/src/gl/glantern/MathUtil":95,"../../danmaku/scripted/dco/FiniteTimer":182,"./BiliBiliDamakuApiObject":144}],159:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -11709,10 +12816,11 @@ __export(require("./CommentField"));
 
 
 
-},{"./BiliBiliDamakuApiObject":130,"./Bitmap":131,"./CommentBitmap":132,"./CommentField":133,"./Display":134,"./Functions":135,"./Global":136,"./MotionEasing":137,"./Player":138,"./PlayerState":139,"./ScriptManager":140,"./Storage":141,"./Tween":142,"./TweenImpl":143,"./Utils":144}],146:[function(require,module,exports){
+},{"./BiliBiliDamakuApiObject":144,"./Bitmap":145,"./CommentBitmap":146,"./CommentField":147,"./Display":148,"./Functions":149,"./Global":150,"./MotionEasing":151,"./Player":152,"./PlayerState":153,"./ScriptManager":154,"./Storage":155,"./Tween":156,"./TweenImpl":157,"./Utils":158}],160:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -11722,49 +12830,459 @@ exports.danmaku_api = danmaku_api;
 
 
 
-},{"./BiliBiliDanmakuApiContainer":129,"./danmaku_api/index":145}],147:[function(require,module,exports){
-(function (global){
+},{"./BiliBiliDanmakuApiContainer":143,"./danmaku_api/index":159}],161:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/4.
  */
+"use strict";
+var Bulletproof = require("./index");
 /*
  Prepare to run in browsers.
  In browsers, we must find the "window" object as global object in highest priority,
  instead of Node's "global" object.
  */
 (function ($global) {
-    ($global).Bulletproof = require("./index");
-})(window || self || global || {});
+    ($global).Bulletproof = Bulletproof;
+})(window || {});
 
 
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./index":200}],162:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/28.
+ */
+"use strict";
+var OutOfRangeError_1 = require("../flash/errors/OutOfRangeError");
+var BPUtil = (function () {
+    function BPUtil() {
+    }
+    BPUtil.createNumberArray = function (length, zeroFill) {
+        if (zeroFill === void 0) { zeroFill = true; }
+        length |= 0;
+        var result;
+        if (zeroFill) {
+            result = [];
+            while (length > 0) {
+                result.push(0);
+                --length;
+            }
+        }
+        else {
+            result = (new Array(length));
+        }
+        return result;
+    };
+    BPUtil.insertAt = function (array, item, index) {
+        array.splice(index, 0, item);
+    };
+    /**
+     * Binary insertion. If the two
+     * @template T
+     * @param array {T[]} The array to insert into.
+     * @param item {T} The new item to insert.
+     * @param comparison {function (T, T): Number} The compare function. It should return a positive number when the first
+     * argument is greater than the second one, a negative when less, and 0 when they are equal.
+     * @returns {Number} The inserted index of the item.
+     */
+    BPUtil.binaryInsert = function (array, item, comparison) {
+        if (array.length <= 0) {
+            array.push(item);
+            return 0;
+        }
+        var arrayLength = array.length;
+        if (comparison(item, array[0]) <= 0) {
+            array.unshift(item);
+            return 0;
+        }
+        else if (comparison(item, array[arrayLength - 1]) > 0) {
+            array.push(item);
+            return arrayLength - 1;
+        }
+        var newIndex = getBSIndex(array, item, comparison);
+        if (newIndex < 0) {
+            throw new OutOfRangeError_1.OutOfRangeError("Unexpected sorting result.");
+        }
+        BPUtil.insertAt(array, item, newIndex);
+        return newIndex;
+    };
+    return BPUtil;
+}());
+exports.BPUtil = BPUtil;
+/**
+ * Returns the proposed insertion index for binary insertion. The index fulfills that, if there are equal items in the
+ * array, the new item will be inserted before the first one; if there is not, the new item will be inserted to the place
+ * where the array is still in order after insertion.
+ * @template T
+ * @param array {T[]}
+ * @param item {T}
+ * @param comparison {function (T, T): Number}
+ */
+function getBSIndex(array, item, comparison) {
+    var arrayLength = array.length;
+    var low = 0, high = arrayLength - 1;
+    var middle = -1;
+    while (low < high) {
+        middle = ((low + high) / 2) | 0;
+        var compareResult = comparison(item, array[middle]);
+        if (compareResult > 0) {
+            // item > array[middle]
+            low = middle + 1;
+            if (low > high) {
+                middle = low;
+                break;
+            }
+        }
+        else if (compareResult < 0) {
+            // item < array[middle]
+            high = middle - 1;
+            if (high < low) {
+                middle = low;
+                break;
+            }
+        }
+        else {
+            //middle = middle;
+            break;
+        }
+    }
+    if (middle > 0) {
+        do {
+            if (comparison(item, array[middle]) >= 0) {
+                --middle;
+            }
+            else {
+                break;
+            }
+        } while (middle > 0);
+    }
+    return middle;
+}
 
-},{"./index":172}],148:[function(require,module,exports){
+
+
+},{"../flash/errors/OutOfRangeError":197}],163:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/7.
+ */
+"use strict";
+var SimpleDanamkuType_1 = require("../danmaku/simple/SimpleDanamkuType");
+exports.DefaultEngineOptions = Object.create(null);
+/**
+ * Gets the default life time for simple (text-only) danmakus, in seconds.
+ * @type {Number}
+ */
+exports.DefaultEngineOptions.simpleDanmakuLifeTimeSecs = 8;
+/**
+ * Gets the default life time for scripted danmakus, in seconds.
+ * @type {Number}
+ */
+exports.DefaultEngineOptions.codeDanmakuLifeTimeSecs = Number.MAX_VALUE;
+/**
+ * Default parameters for creation of {@link SimpleDanmaku}.
+ * @type {ISimpleDanmakuCreateParams}
+ */
+exports.DefaultEngineOptions.defaultSimpleDanmakuCreateParams = {
+    bornTime: void (0),
+    fontName: "SimHei",
+    fontStyle: "bold",
+    fontSize: 20,
+    type: SimpleDanamkuType_1.SimpleDanmakuType.R2L,
+    border: false,
+    borderColor: 0x000000,
+    borderThickness: 1,
+    background: false,
+    backgroundColor: 0x000000,
+    textColor: 0xffffff,
+    outline: true,
+    outlineColor: 0x2f2f2f,
+    outlineThickness: 1
+};
+/**
+ * Global threshold of danmaku count. See {@link DanmakuController.shouldCreateDanmaku} for how the number is counted.
+ * @type {Number}
+ */
+exports.DefaultEngineOptions.globalDanmakuCountThreshold = 3000;
+/**
+ * Local threshold of number of each part of {@link SimpleDanmaku}.
+ * @type {Number}
+ */
+exports.DefaultEngineOptions.simpleDanmakuPartCountThreshold = 1500;
+/**
+ * Whether should enable scripted danmaku support.
+ * @type {Boolean}
+ */
+exports.DefaultEngineOptions.codeDanmakuEnabled = true;
+/**
+ * Whether should enable simple danmaku support.
+ * @type {Boolean}
+ */
+exports.DefaultEngineOptions.simpleDanmakuEnabled = true;
+/**
+ * Whether should enable the default video player.
+ * @type {Boolean}
+ */
+exports.DefaultEngineOptions.videoPlayerEnabled = true;
+/**
+ * In an environment with WebChimera, this can set to true to use the WebChimera player rather than HTML5 video element.
+ * It is used for WebChimera for NW.js or Electron, where the original integrated browser does not support H.264 etc.
+ * due to copyright reasons.
+ * @type {Boolean}
+ */
+exports.DefaultEngineOptions.useWebChimeraForVideoPlayback = false;
+
+
+
+},{"../danmaku/simple/SimpleDanamkuType":185}],164:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/12/28.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var DanmakuController_1 = require("../danmaku/DanmakuController");
+var ScriptedDanmakuProvider_1 = require("../danmaku/scripted/ScriptedDanmakuProvider");
+var SimpleDanmakuProvider_1 = require("../danmaku/simple/SimpleDanmakuProvider");
+var DefaultEngineOptions_1 = require("./DefaultEngineOptions");
+var Html5VideoPlayer_1 = require("../interactive/video/html5/Html5VideoPlayer");
+var EngineBase_1 = require("../../../lib/glantern/src/gl/glantern/EngineBase");
+var GLUtil_1 = require("../../../lib/glantern/src/gl/glantern/GLUtil");
+var VideoPlayerEvent_1 = require("../interactive/video/VideoPlayerEvent");
+var VideoPlayerState_1 = require("../interactive/video/VideoPlayerState");
+/**
+ * The root controller for Bulletproof.
+ */
+var Engine = (function (_super) {
+    __extends(Engine, _super);
+    /**
+     * Creates a new {@link Engine} instance.
+     */
+    function Engine() {
+        _super.call(this);
+        this._videoMillis = 0;
+        this._playerReportedVideoMillis = 0;
+        this._lastTimeVideoUpdated = -1;
+        this._danmakuController = null;
+        this._videoPlayer = null;
+        this._options = null;
+        this._blackCurtainView = null;
+        this._options = GLUtil_1.GLUtil.deepClone(DefaultEngineOptions_1.DefaultEngineOptions);
+    }
+    /**
+     * Initialize the {@link Engine} instance with default parameters.
+     * @param width {Number} Width of stage requested, in pixels.
+     * @param height {Number} Height of stage requested, in pixels.
+     */
+    Engine.prototype.initialize = function (width, height) {
+        if (this.isInitialized) {
+            return;
+        }
+        _super.prototype.initialize.call(this, width, height);
+        var options = this.options;
+        var controller = new DanmakuController_1.DanmakuController(this);
+        this._danmakuController = controller;
+        // The earlier a provider is added in, the deeper it is in Z axis.
+        var provider;
+        if (options.codeDanmakuEnabled) {
+            provider = new ScriptedDanmakuProvider_1.ScriptedDanmakuProvider(controller);
+            controller.addProvider(provider);
+        }
+        if (options.simpleDanmakuEnabled) {
+            provider = new SimpleDanmakuProvider_1.SimpleDanmakuProvider(controller);
+            controller.addProvider(provider);
+        }
+        if (options.videoPlayerEnabled) {
+            var videoPlayer = null;
+            if (options.useWebChimeraForVideoPlayback) {
+                console.warn("WebChimera integration is not implemented yet.");
+            }
+            else {
+                videoPlayer = new Html5VideoPlayer_1.Html5VideoPlayer();
+            }
+            this._videoPlayer = videoPlayer;
+            if (videoPlayer !== null) {
+                videoPlayer.initialize(width, height);
+                videoPlayer.addEventListener(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_TIME_UPDATE, this.__onVideoTimeUpdate.bind(this));
+                videoPlayer.addEventListener(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_PLAY, this.__onVideoPlay.bind(this));
+                this.attachUpdateFunction(this.__updateVideoTime.bind(this));
+            }
+        }
+        this.attachUpdateFunction(this.__updateDanmakus.bind(this));
+        var blackCurtainView = window.document.createElement("div");
+        var blackCurtainStyle = blackCurtainView.style;
+        blackCurtainStyle.width = width + "px";
+        blackCurtainStyle.height = height + "px";
+        blackCurtainStyle.backgroundColor = "black";
+        this._blackCurtainView = blackCurtainView;
+    };
+    /**
+     * Disposes the {@link Engine} instance and release all resources occupied.
+     */
+    Engine.prototype.dispose = function () {
+        this._danmakuController.dispose();
+        this._danmakuController = null;
+        _super.prototype.dispose.call(this);
+    };
+    Object.defineProperty(Engine.prototype, "danmakuController", {
+        /**
+         * Gets the {@link DanmakuController} instance associated with current {@link Engine} instance.
+         * @returns {DanmakuController}
+         */
+        get: function () {
+            return this._danmakuController;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Engine.prototype, "videoMillis", {
+        /**
+         * Gets current video playback time, in milliseconds.
+         * @returns {Number}
+         */
+        get: function () {
+            return this._videoMillis;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Engine.prototype, "videoPlayer", {
+        get: function () {
+            return this._videoPlayer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Engine.prototype, "videoView", {
+        get: function () {
+            return GLUtil_1.GLUtil.ptr(this.videoPlayer) ? this.videoPlayer.view : null;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Engine.prototype, "options", {
+        get: function () {
+            return this._options;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Engine.prototype, "blackCurtainView", {
+        get: function () {
+            return this._blackCurtainView;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Engine.prototype.__updateVideoTime = function (timeInfo) {
+        if (this.videoPlayer.state === VideoPlayerState_1.VideoPlayerState.Playing) {
+            this._videoMillis += this.elapsedMillis - this._lastTimeVideoUpdated;
+            this._lastTimeVideoUpdated = this.elapsedMillis;
+        }
+        timeInfo.millisOfVideo = this._videoMillis;
+    };
+    Engine.prototype.__updateDanmakus = function (timeInfo) {
+        this.danmakuController.update(timeInfo);
+    };
+    Engine.prototype.__onVideoTimeUpdate = function () {
+        this._playerReportedVideoMillis = this.videoPlayer.currentTime * 1000;
+    };
+    Engine.prototype.__onVideoPlay = function () {
+        this._lastTimeVideoUpdated = this.elapsedMillis;
+    };
+    return Engine;
+}(EngineBase_1.EngineBase));
+exports.Engine = Engine;
+
+
+
+},{"../../../lib/glantern/src/gl/glantern/EngineBase":91,"../../../lib/glantern/src/gl/glantern/GLUtil":94,"../danmaku/DanmakuController":168,"../danmaku/scripted/ScriptedDanmakuProvider":179,"../danmaku/simple/SimpleDanmakuProvider":190,"../interactive/video/VideoPlayerEvent":203,"../interactive/video/VideoPlayerState":204,"../interactive/video/html5/Html5VideoPlayer":205,"./DefaultEngineOptions":163}],165:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/2/7.
+ */
+"use strict";
+var StageResizedEventArgs = (function () {
+    function StageResizedEventArgs(width, height) {
+        this._width = 0;
+        this._height = 0;
+        this._width = width;
+        this._height = height;
+    }
+    Object.defineProperty(StageResizedEventArgs.prototype, "width", {
+        get: function () {
+            return this._width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(StageResizedEventArgs.prototype, "height", {
+        get: function () {
+            return this._height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return StageResizedEventArgs;
+}());
+exports.StageResizedEventArgs = StageResizedEventArgs;
+
+
+
+},{}],166:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/13.
+ */
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./StageResizedEventArgs"));
+
+
+
+},{"./StageResizedEventArgs":165}],167:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/13.
+ */
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./BPUtil"));
+__export(require("./DefaultEngineOptions"));
+__export(require("./Engine"));
+var events = require("./events/index");
+exports.events = events;
+
+
+
+},{"./BPUtil":162,"./DefaultEngineOptions":163,"./Engine":164,"./events/index":166}],168:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
-var GLUtil_1 = require("../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../lib/glantern/src/gl/glantern/GLUtil");
 /**
- * The coordinator of all danmakus.
+ * The controller of all danmakus.
  * This class is a factory and manager of danmaku providers.
  */
-var DanmakuCoordinator = (function () {
+var DanmakuController = (function () {
     /**
-     * Creates a new {@Link DanmakuCoordinator} instance.
-     * @param bulletproof {Bulletproof} The {@link Bulletproof} instance that will be attached to.
+     * Creates a new {@Link DanmakuController} instance.
+     * @param bulletproof {Engine} The {@link Engine} instance that will be attached to.
      */
-    function DanmakuCoordinator(bulletproof) {
+    function DanmakuController(bulletproof) {
         this._danmakuProviders = null;
-        this._bulletproof = null;
-        this._bulletproof = bulletproof;
+        this._engine = null;
+        this._engine = bulletproof;
         this._danmakuProviders = new Map();
     }
     /**
-     * Disposes the {@link DanmakuCoordinator} instance and release all resources occupied.
+     * Disposes the {@link DanmakuController} instance and release all resources occupied.
      */
-    DanmakuCoordinator.prototype.dispose = function () {
+    DanmakuController.prototype.dispose = function () {
         this._danmakuProviders.forEach(function (provider) {
             provider.dispose();
         });
@@ -11778,10 +13296,10 @@ var DanmakuCoordinator = (function () {
      * Danmaku providers should check via this function before actually creating a danmaku.
      * @param requestingProvider {DanmakuProviderBase} The danmaku provider requesting the check.
      */
-    DanmakuCoordinator.prototype.shouldCreateDanmaku = function (requestingProvider) {
+    DanmakuController.prototype.shouldCreateDanmaku = function (requestingProvider) {
         var canCreate = true;
         var totalDanmakuCount = 0;
-        var globalThreshold = this.bulletproof.config.globalDanmakuCountThreshold;
+        var globalThreshold = this.engine.options.globalDanmakuCountThreshold;
         this._danmakuProviders.forEach(function (provider) {
             // If a danmaku provider has no number limit, it contributes 0 to the total count.
             if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag_1.DanmakuProviderFlag.UnlimitedCreation) !== 0) {
@@ -11799,8 +13317,8 @@ var DanmakuCoordinator = (function () {
      * already exists, the new one will not be added.
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be added.
      */
-    DanmakuCoordinator.prototype.addDanmakuProvider = function (provider) {
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
+    DanmakuController.prototype.addProvider = function (provider) {
+        if (GLUtil_1.GLUtil.ptr(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
             provider.initialize();
         }
@@ -11809,8 +13327,8 @@ var DanmakuCoordinator = (function () {
      * Removes a new kind of danmaku provider from provider instance list.
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be removed.
      */
-    DanmakuCoordinator.prototype.removeDanmakuProvider = function (provider) {
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
+    DanmakuController.prototype.removeProvider = function (provider) {
+        if (GLUtil_1.GLUtil.ptr(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.delete(provider.danmakuKind);
         }
     };
@@ -11820,16 +13338,11 @@ var DanmakuCoordinator = (function () {
      * @param kind {DanmakuKind} The danmaku kind of requested danmaku provider.
      * @returns {DanmakuProviderBase}
      */
-    DanmakuCoordinator.prototype.getDanmakuProvider = function (kind) {
+    DanmakuController.prototype.getProvider = function (kind) {
         var provider = this._danmakuProviders.get(kind);
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(provider)) {
-            return null;
-        }
-        else {
-            return provider;
-        }
+        return GLUtil_1.GLUtil.ptr(provider) ? provider : null;
     };
-    DanmakuCoordinator.prototype.getDanmakuProviders = function () {
+    DanmakuController.prototype.getProviders = function () {
         var providers = [];
         this._danmakuProviders.forEach(function (provider) {
             providers.push(provider);
@@ -11839,39 +13352,43 @@ var DanmakuCoordinator = (function () {
     /**
      * Updates the status of all danmaku providers.
      */
-    DanmakuCoordinator.prototype.update = function () {
+    DanmakuController.prototype.update = function (timeInfo) {
         this._danmakuProviders.forEach(function (provider) {
-            provider.update();
+            provider.update(timeInfo);
         });
     };
     /**
      * Perform extra rendering if needed.
      * @param renderer {WebGLRenderer} The renderer used.
      */
-    DanmakuCoordinator.prototype.render = function (renderer) {
+    DanmakuController.prototype.render = function (renderer) {
         // Do nothing.
     };
-    Object.defineProperty(DanmakuCoordinator.prototype, "bulletproof", {
+    Object.defineProperty(DanmakuController.prototype, "engine", {
         /**
-         * Gets the {@link Bulletproof} instance that controls this {@link DanmakuCoordinator}.
-         * @returns {Bulletproof}
+         * Gets the {@link Engine} instance that controls this {@link DanmakuController}.
+         * @returns {Engine}
          */
         get: function () {
-            return this._bulletproof;
+            return this._engine;
         },
         enumerable: true,
         configurable: true
     });
-    return DanmakuCoordinator;
-})();
-exports.DanmakuCoordinator = DanmakuCoordinator;
+    DanmakuController.prototype.getNextAvailablePool = function () {
+        return this._danmakuProviders.size;
+    };
+    return DanmakuController;
+}());
+exports.DanmakuController = DanmakuController;
 
 
 
-},{"../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"./DanmakuProviderFlag":152}],149:[function(require,module,exports){
+},{"../../../lib/glantern/src/gl/glantern/GLUtil":94,"./DanmakuProviderFlag":172}],169:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 (function (DanmakuKind) {
     /**
      * Note: This type handles all types (0: flying, 1: fixed on top, 2: fixed on bottom) of danmaku
@@ -11884,11 +13401,12 @@ var DanmakuKind = exports.DanmakuKind;
 
 
 
-},{}],150:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
-var NotImplementedError_1 = require("../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+"use strict";
+var NotImplementedError_1 = require("../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 /**
  * Base class exposing common service of a danmaku layout manager.
  * A danmaku layout manager does layout calculation and performs optimized layout for danmakus of its kind.
@@ -11903,10 +13421,20 @@ var DanmakuLayoutManagerBase = (function () {
      */
     function DanmakuLayoutManagerBase(provider) {
         this._danmakuProvider = null;
-        this._bulletproof = null;
+        this._engine = null;
         this._danmakuProvider = provider;
-        this._bulletproof = provider.bulletproof;
+        this._engine = provider.engine;
     }
+    /**
+     * Initialize the layout manager.
+     */
+    DanmakuLayoutManagerBase.prototype.initialize = function () {
+    };
+    /**
+     * Disposes the danmaku layout manager and release all resources occupied.
+     */
+    DanmakuLayoutManagerBase.prototype.dispose = function () {
+    };
     Object.defineProperty(DanmakuLayoutManagerBase.prototype, "danmakuKind", {
         /**
          * Gets the kind of danmaku that this danmaku layout manager handles.
@@ -11929,29 +13457,30 @@ var DanmakuLayoutManagerBase = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DanmakuLayoutManagerBase.prototype, "bulletproof", {
+    Object.defineProperty(DanmakuLayoutManagerBase.prototype, "engine", {
         /**
-         * Gets the {@link Bulletproof} instance that controls this {@link DanmakuLayoutManagerBase}.
-         * @returns {Bulletproof}
+         * Gets the {@link Engine} instance that controls this {@link DanmakuLayoutManagerBase}.
+         * @returns {Engine}
          */
         get: function () {
-            return this._bulletproof;
+            return this._engine;
         },
         enumerable: true,
         configurable: true
     });
     return DanmakuLayoutManagerBase;
-})();
+}());
 exports.DanmakuLayoutManagerBase = DanmakuLayoutManagerBase;
 
 
 
-},{"../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4}],151:[function(require,module,exports){
+},{"../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51}],171:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 var DanmakuProviderFlag_1 = require("./DanmakuProviderFlag");
-var NotImplementedError_1 = require("../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
+var NotImplementedError_1 = require("../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
 /**
  * Base class exposing common service of a danmaku provider.
  * This class must be inherited.
@@ -11959,17 +13488,19 @@ var NotImplementedError_1 = require("../../lib/glantern/lib/glantern-utils/src/N
 var DanmakuProviderBase = (function () {
     /**
      * Creates a new danmaku provider.
-     * @param coordinator {DanmakuCoordinator} The {@link DanmakuCoordinator} that will be used for reversed queries.
+     * @param controller {DanmakuController} The {@link DanmakuController} that will be used for reversed queries.
      */
-    function DanmakuProviderBase(coordinator) {
+    function DanmakuProviderBase(controller) {
         this._displayingDanmakuList = null;
-        this._coordinator = null;
+        this._controller = null;
         this._layoutManager = null;
-        this._danmakuLayer = null;
-        this._bulletproof = null;
-        this._coordinator = coordinator;
+        this._layer = null;
+        this._engine = null;
+        this._pool = -1;
+        this._controller = controller;
         this._displayingDanmakuList = [];
-        this._bulletproof = coordinator.bulletproof;
+        this._engine = controller.engine;
+        this._pool = controller.getNextAvailablePool();
     }
     Object.defineProperty(DanmakuProviderBase.prototype, "danmakuKind", {
         /**
@@ -11984,11 +13515,17 @@ var DanmakuProviderBase = (function () {
         configurable: true
     });
     /**
+     * Perform extra initialization after created.
+     */
+    DanmakuProviderBase.prototype.initialize = function () {
+        this.layoutManager.initialize();
+    };
+    /**
      * Updates the state of this instance.
      */
-    DanmakuProviderBase.prototype.update = function () {
-        this.updateDisplayDanmakuList();
-        this.layoutManager.performLayout();
+    DanmakuProviderBase.prototype.update = function (timeInfo) {
+        this.updateDisplayingDanmakuList(timeInfo);
+        this.layoutManager.performLayout(timeInfo);
     };
     /**
      * Adds a danmaku with the given content and adds it into internal danmaku list.
@@ -12000,8 +13537,8 @@ var DanmakuProviderBase = (function () {
      * @returns {IDanmaku} The created danmaku.
      */
     DanmakuProviderBase.prototype.addDanmaku = function (content, args) {
-        if ((true || this.canCreateDanmaku(args)) && this.danmakuCoordinator.shouldCreateDanmaku(this)) {
-            return this.__addDanmaku(content, args);
+        if ((true || this.canCreateDanmaku(args)) && this.controller.shouldCreateDanmaku(this)) {
+            return this._$addDanmaku(content, args);
         }
         else {
             return null;
@@ -12040,35 +13577,35 @@ var DanmakuProviderBase = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DanmakuProviderBase.prototype, "danmakuLayer", {
+    Object.defineProperty(DanmakuProviderBase.prototype, "layer", {
         /**
          * Gets the {@link DisplayObject} that contains danmakus of this {@link DanmakuProviderBase} as a layer.
          * @returns {DisplayObject}
          */
         get: function () {
-            return this._danmakuLayer;
+            return this._layer;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DanmakuProviderBase.prototype, "danmakuCoordinator", {
+    Object.defineProperty(DanmakuProviderBase.prototype, "controller", {
         /**
-         * Gets the danmaku coordinator specified at the time of creation.
-         * @returns {DanmakuCoordinator}
+         * Gets the danmaku controller specified at the time of creation.
+         * @returns {DanmakuController}
          */
         get: function () {
-            return this._coordinator;
+            return this._controller;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(DanmakuProviderBase.prototype, "bulletproof", {
+    Object.defineProperty(DanmakuProviderBase.prototype, "engine", {
         /**
-         * Gets the {@link Bulletproof} instance that controls this {@link DanmakuProviderBase}.
-         * @returns {Bulletproof}
+         * Gets the {@link Engine} instance that controls this {@link DanmakuProviderBase}.
+         * @returns {Engine}
          */
         get: function () {
-            return this._bulletproof;
+            return this._engine;
         },
         enumerable: true,
         configurable: true
@@ -12076,7 +13613,7 @@ var DanmakuProviderBase = (function () {
     Object.defineProperty(DanmakuProviderBase.prototype, "flags", {
         /**
          * Gets the flags of this danmaku provider. The flags may influence how this danmaku provider is treated,
-         * for example, in {@link DanmakuCoordinator.shouldCreateDanmaku}.
+         * for example, in {@link DanmakuController#shouldCreateDanmaku}.
          * The default value is {@link DanmakuProviderFlag.None}, indicating no special flag is set.
          * @returns {DanmakuProviderFlag}
          */
@@ -12086,16 +13623,28 @@ var DanmakuProviderBase = (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(DanmakuProviderBase.prototype, "pool", {
+        /**
+         * Pool number of this danmaku provider.
+         * @returns {Number}
+         */
+        get: function () {
+            return this._pool;
+        },
+        enumerable: true,
+        configurable: true
+    });
     return DanmakuProviderBase;
-})();
+}());
 exports.DanmakuProviderBase = DanmakuProviderBase;
 
 
 
-},{"../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"./DanmakuProviderFlag":152}],152:[function(require,module,exports){
+},{"../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"./DanmakuProviderFlag":172}],172:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/10.
  */
+"use strict";
 (function (DanmakuProviderFlag) {
     DanmakuProviderFlag[DanmakuProviderFlag["None"] = 0] = "None";
     DanmakuProviderFlag[DanmakuProviderFlag["UnlimitedCreation"] = 1] = "UnlimitedCreation";
@@ -12104,49 +13653,152 @@ var DanmakuProviderFlag = exports.DanmakuProviderFlag;
 
 
 
-},{}],153:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 /**
- * Created by MIC on 2016/2/7.
+ * Created by MIC on 2016/6/11.
  */
-var StageResizedEventArgs = (function () {
-    function StageResizedEventArgs(width, height) {
-        this._width = 0;
-        this._height = 0;
-        this._width = width;
-        this._height = height;
+"use strict";
+var NotImplementedError_1 = require("../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
+var TextDanmakuBase = (function () {
+    function TextDanmakuBase(layoutManager) {
+        this._engine = null;
+        this._layoutManager = null;
+        this._danmakuProvider = null;
+        this._visible = true;
+        this._x = 0;
+        this._y = 0;
+        this._layer = null;
+        this._layoutManager = layoutManager;
+        this._danmakuProvider = layoutManager.danmakuProvider;
+        this._engine = layoutManager.engine;
     }
-    Object.defineProperty(StageResizedEventArgs.prototype, "width", {
+    TextDanmakuBase.prototype.dispose = function () {
+    };
+    Object.defineProperty(TextDanmakuBase.prototype, "engine", {
         get: function () {
-            return this._width;
+            return this._engine;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(StageResizedEventArgs.prototype, "height", {
+    Object.defineProperty(TextDanmakuBase.prototype, "danmakuKind", {
         get: function () {
-            return this._height;
+            throw new NotImplementedError_1.NotImplementedError();
         },
         enumerable: true,
         configurable: true
     });
-    return StageResizedEventArgs;
-})();
-exports.StageResizedEventArgs = StageResizedEventArgs;
+    Object.defineProperty(TextDanmakuBase.prototype, "bornTime", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "lifeTime", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "layoutManager", {
+        get: function () {
+            return this._layoutManager;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "danmakuProvider", {
+        get: function () {
+            return this._danmakuProvider;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "visible", {
+        get: function () {
+            return this._visible;
+        },
+        set: function (v) {
+            this._visible = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "layer", {
+        get: function () {
+            return this._layer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "x", {
+        get: function () {
+            return this._x;
+        },
+        set: function (v) {
+            this._x = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "y", {
+        get: function () {
+            return this._y;
+        },
+        set: function (v) {
+            this._y = v;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "width", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "height", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "right", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TextDanmakuBase.prototype, "bottom", {
+        get: function () {
+            throw new NotImplementedError_1.NotImplementedError();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return TextDanmakuBase;
+}());
+exports.TextDanmakuBase = TextDanmakuBase;
 
 
 
-},{}],154:[function(require,module,exports){
+},{"../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51}],174:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-__export(require("./DanmakuCoordinator"));
+__export(require("./DanmakuController"));
 __export(require("./DanmakuKind"));
 __export(require("./DanmakuLayoutManagerBase"));
 __export(require("./DanmakuProviderBase"));
-__export(require("./StageResizedEventArgs"));
 var scripted = require("./scripted/index");
 exports.scripted = scripted;
 var simple = require("./simple/index");
@@ -12154,10 +13806,11 @@ exports.simple = simple;
 
 
 
-},{"./DanmakuCoordinator":148,"./DanmakuKind":149,"./DanmakuLayoutManagerBase":150,"./DanmakuProviderBase":151,"./StageResizedEventArgs":153,"./scripted/index":164,"./simple/index":171}],155:[function(require,module,exports){
+},{"./DanmakuController":168,"./DanmakuKind":169,"./DanmakuLayoutManagerBase":170,"./DanmakuProviderBase":171,"./scripted/index":184,"./simple/index":191}],175:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12165,8 +13818,8 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var DanmakuKind_1 = require("../DanmakuKind");
 var BiliBiliDanmakuApiContainer_1 = require("../../bilibili/BiliBiliDanmakuApiContainer");
-var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var DisplayObjectContainer_1 = require("../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 var ScriptedDanmaku = (function (_super) {
     __extends(ScriptedDanmaku, _super);
     function ScriptedDanmaku(root, parent, layoutManager, createParams) {
@@ -12176,15 +13829,17 @@ var ScriptedDanmaku = (function (_super) {
         this._lambda = null;
         this._content = null;
         this._bornTime = 0;
-        this._bulletproof = null;
+        this._engine = null;
         this._layoutManager = null;
         this._danmakuProvider = null;
+        this._layer = null;
         this._createParams = null;
         this._executed = false;
         this._layoutManager = layoutManager;
         this._danmakuProvider = layoutManager.danmakuProvider;
-        this._bulletproof = layoutManager.bulletproof;
+        this._engine = layoutManager.engine;
         this._createParams = createParams;
+        this._layer = this.danmakuProvider.layer;
     }
     ScriptedDanmaku.prototype.dispose = function () {
         this.parent.removeChild(this);
@@ -12218,6 +13873,13 @@ var ScriptedDanmaku = (function (_super) {
         // No readable text.
         return "";
     };
+    Object.defineProperty(ScriptedDanmaku.prototype, "layer", {
+        get: function () {
+            return this._layer;
+        },
+        enumerable: true,
+        configurable: true
+    });
     ScriptedDanmaku.prototype.initialize = function (content, time) {
         this._content = content;
         this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
@@ -12246,9 +13908,9 @@ var ScriptedDanmaku = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ScriptedDanmaku.prototype, "bulletproof", {
+    Object.defineProperty(ScriptedDanmaku.prototype, "engine", {
         get: function () {
-            return this._bulletproof;
+            return this._engine;
         },
         enumerable: true,
         configurable: true
@@ -12262,7 +13924,7 @@ var ScriptedDanmaku = (function (_super) {
     });
     Object.defineProperty(ScriptedDanmaku.prototype, "lifeTime", {
         get: function () {
-            return this.bulletproof.config.codeDanmakuLifeTimeSecs;
+            return this.engine.options.codeDanmakuLifeTimeSecs;
         },
         enumerable: true,
         configurable: true
@@ -12272,20 +13934,94 @@ var ScriptedDanmaku = (function (_super) {
             txt: this.getContent(),
             time: this.bornTime.toString(),
             color: 0x000000,
-            pool: 0,
+            pool: this.danmakuProvider.pool,
             mode: 8,
             fontSize: 0
         };
     };
-    ScriptedDanmaku.prototype.__censor = function () {
-        return true;
-    };
-    ScriptedDanmaku.prototype.__update = function () {
+    Object.defineProperty(ScriptedDanmaku.prototype, "right", {
+        get: function () {
+            return this.x + this.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(ScriptedDanmaku.prototype, "bottom", {
+        get: function () {
+            return this.y + this.height;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ScriptedDanmaku.prototype._$update = function (timeInfo) {
         this.__removeDeadDCObjects();
         this.__applyMotionGroups();
     };
-    ScriptedDanmaku.prototype.__render = function (renderer) {
+    ScriptedDanmaku.prototype._$render = function (renderer) {
         // Do nothing, let children render themselves.
+    };
+    ScriptedDanmaku.prototype.__applyMotionGroups = function () {
+        var child;
+        var now = this.engine.videoMillis;
+        for (var i = 0; i < this._children.length; ++i) {
+            child = this._children[i];
+            if (child.isCreatedByDanmaku) {
+                if (GLUtil_1.GLUtil.ptr(child.createParams.motion)) {
+                    ScriptedDanmaku.__applyMotion(child.createParams.motion, now);
+                }
+                else if (GLUtil_1.GLUtil.ptr(child.createParams.motionGroup)) {
+                    ScriptedDanmaku.__applyMotionGroup(child.createParams.motionGroup, now);
+                }
+            }
+        }
+    };
+    ScriptedDanmaku.__applyMotionGroup = function (motionGroup, now) {
+        var motion;
+        if (GLUtil_1.GLUtil.ptr(motionGroup)) {
+            //console.log("Calculating: ", obj, " on ", now);
+            for (var i = 0; i < motionGroup.length; ++i) {
+                motion = motionGroup[i];
+                ScriptedDanmaku.__applyMotion(motion, now);
+            }
+        }
+    };
+    ScriptedDanmaku.__applyMotion = function (motion, now) {
+        var propertyNames = ["x", "y", "alpha", "rotationZ", "rotationY"];
+        var motionAnimation;
+        var relativeTime;
+        var value;
+        if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
+            for (var j = 0; j < propertyNames.length; ++j) {
+                motionAnimation = motion[propertyNames[j]];
+                if (GLUtil_1.GLUtil.ptr(motionAnimation)) {
+                    relativeTime = now - motion.createdTime;
+                    if (!GLUtil_1.GLUtil.isUndefined(motionAnimation.startDelay)) {
+                        relativeTime -= motionAnimation.startDelay;
+                    }
+                    if (relativeTime <= motionAnimation.lifeTime * 1000) {
+                        // TODO: property 'repeat' is ignored here.
+                        // TODO: easing usage is always interpreted as linear here.
+                        value = motionAnimation.fromValue +
+                            (motionAnimation.toValue - motionAnimation.fromValue) / (motionAnimation.lifeTime * 1000) * relativeTime;
+                        motion.sourceObject[propertyNames[j]] = value;
+                    }
+                }
+            }
+        }
+    };
+    ScriptedDanmaku.prototype.__removeDeadDCObjects = function () {
+        var bulletproof = this._engine;
+        var child;
+        for (var i = 0; i < this._children.length; ++i) {
+            child = this._children[i];
+            if (child.isCreatedByDanmaku) {
+                if (child.extraCreateParams.bornTime + child.createParams.lifeTime * 1000 < bulletproof.videoMillis) {
+                    this.removeChild(child);
+                    child.dispose();
+                    --i;
+                }
+            }
+        }
     };
     ScriptedDanmaku.prototype.__buildFunction = function () {
         // Weak defense is better than none.
@@ -12306,79 +14042,20 @@ var ScriptedDanmaku = (function (_super) {
         }
         this._lambda.apply(null, apiValues);
     };
-    ScriptedDanmaku.prototype.__applyMotionGroups = function () {
-        var child;
-        var time = this.bulletproof.timeElapsed;
-        for (var i = 0; i < this._children.length; ++i) {
-            child = this._children[i];
-            if (child.isCreatedByDanmaku) {
-                if (!GLUtil_1.GLUtil.isUndefinedOrNull(child.createParams.motion)) {
-                    ScriptedDanmaku.__applyMotion(child.createParams.motion, time);
-                }
-                else if (!GLUtil_1.GLUtil.isUndefinedOrNull(child.createParams.motionGroup)) {
-                    ScriptedDanmaku.__applyMotionGroup(child.createParams.motionGroup, time);
-                }
-            }
-        }
-    };
-    ScriptedDanmaku.__applyMotionGroup = function (motionGroup, now) {
-        var motion;
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionGroup)) {
-            //console.log("Calculating: ", obj, " on ", now);
-            for (var i = 0; i < motionGroup.length; ++i) {
-                motion = motionGroup[i];
-                ScriptedDanmaku.__applyMotion(motion, now);
-            }
-        }
-    };
-    ScriptedDanmaku.__applyMotion = function (motion, now) {
-        var propertyNames = ["x", "y", "alpha", "rotationZ", "rotationY"];
-        var motionAnimation;
-        var relativeTime;
-        var value;
-        if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
-            for (var j = 0; j < propertyNames.length; ++j) {
-                motionAnimation = motion[propertyNames[j]];
-                if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation)) {
-                    relativeTime = now - motion.createdTime;
-                    if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation.startDelay)) {
-                        relativeTime -= motionAnimation.startDelay;
-                    }
-                    if (relativeTime <= motionAnimation.lifeTime * 1000) {
-                        // TODO: property 'repeat' is ignored here.
-                        // TODO: easing usage is always interpreted as linear here.
-                        value = motionAnimation.fromValue +
-                            (motionAnimation.toValue - motionAnimation.fromValue) / (motionAnimation.lifeTime * 1000) * relativeTime;
-                        motion.sourceObject[propertyNames[j]] = value;
-                    }
-                }
-            }
-        }
-    };
-    ScriptedDanmaku.prototype.__removeDeadDCObjects = function () {
-        var bulletproof = this._bulletproof;
-        var child;
-        for (var i = 0; i < this._children.length; ++i) {
-            child = this._children[i];
-            if (child.isCreatedByDanmaku) {
-                if (child.extraCreateParams.bornTime + child.createParams.lifeTime * 1000 < bulletproof.timeElapsed) {
-                    this.removeChild(child);
-                    child.dispose();
-                    --i;
-                }
-            }
-        }
+    ScriptedDanmaku.prototype.__censor = function () {
+        return true;
     };
     return ScriptedDanmaku;
-})(DisplayObjectContainer_1.DisplayObjectContainer);
+}(DisplayObjectContainer_1.DisplayObjectContainer));
 exports.ScriptedDanmaku = ScriptedDanmaku;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/flash/display/DisplayObjectContainer":31,"../../bilibili/BiliBiliDanmakuApiContainer":129,"../DanmakuKind":149}],156:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer":27,"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../bilibili/BiliBiliDanmakuApiContainer":143,"../DanmakuKind":169}],176:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/11.
  */
+"use strict";
 var ScriptedDanmakuHelper = (function () {
     function ScriptedDanmakuHelper() {
     }
@@ -12386,40 +14063,42 @@ var ScriptedDanmakuHelper = (function () {
         return {};
     };
     return ScriptedDanmakuHelper;
-})();
+}());
 exports.ScriptedDanmakuHelper = ScriptedDanmakuHelper;
 
 
 
-},{}],157:[function(require,module,exports){
+},{}],177:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var DisplayObjectContainer_1 = require("../../../lib/glantern/src/flash/display/DisplayObjectContainer");
+var DisplayObjectContainer_1 = require("../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer");
 var ScriptedDanmakuLayer = (function (_super) {
     __extends(ScriptedDanmakuLayer, _super);
     function ScriptedDanmakuLayer(root, parent) {
         _super.call(this, root, parent);
     }
-    ScriptedDanmakuLayer.prototype.__update = function () {
+    ScriptedDanmakuLayer.prototype._$update = function (timeInfo) {
     };
-    ScriptedDanmakuLayer.prototype.__render = function (renderer) {
+    ScriptedDanmakuLayer.prototype._$render = function (renderer) {
     };
     return ScriptedDanmakuLayer;
-})(DisplayObjectContainer_1.DisplayObjectContainer);
+}(DisplayObjectContainer_1.DisplayObjectContainer));
 exports.ScriptedDanmakuLayer = ScriptedDanmakuLayer;
 
 
 
-},{"../../../lib/glantern/src/flash/display/DisplayObjectContainer":31}],158:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer":27}],178:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12431,11 +14110,8 @@ var ScriptedDanmakuLayoutManager = (function (_super) {
     __extends(ScriptedDanmakuLayoutManager, _super);
     function ScriptedDanmakuLayoutManager(provider) {
         _super.call(this, provider);
-        this._danmakuProvider = provider;
     }
-    ScriptedDanmakuLayoutManager.prototype.dispose = function () {
-    };
-    ScriptedDanmakuLayoutManager.prototype.performLayout = function () {
+    ScriptedDanmakuLayoutManager.prototype.performLayout = function (timeInfo) {
         // Do nothing.
     };
     ScriptedDanmakuLayoutManager.prototype.onStageResize = function (sender, e) {
@@ -12455,15 +14131,16 @@ var ScriptedDanmakuLayoutManager = (function (_super) {
         configurable: true
     });
     return ScriptedDanmakuLayoutManager;
-})(DanmakuLayoutManagerBase_1.DanmakuLayoutManagerBase);
+}(DanmakuLayoutManagerBase_1.DanmakuLayoutManagerBase));
 exports.ScriptedDanmakuLayoutManager = ScriptedDanmakuLayoutManager;
 
 
 
-},{"../DanmakuKind":149,"../DanmakuLayoutManagerBase":150}],159:[function(require,module,exports){
+},{"../DanmakuKind":169,"../DanmakuLayoutManagerBase":170}],179:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -12476,14 +14153,14 @@ var ScriptedDanmaku_1 = require("./ScriptedDanmaku");
 var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
 var ScriptedDanmakuLayer_1 = require("./ScriptedDanmakuLayer");
 var ScriptedDanmakuHelper_1 = require("./ScriptedDanmakuHelper");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
 var ScriptedDanmakuProvider = (function (_super) {
     __extends(ScriptedDanmakuProvider, _super);
-    function ScriptedDanmakuProvider(coordinator) {
-        _super.call(this, coordinator);
+    function ScriptedDanmakuProvider(controller) {
+        _super.call(this, controller);
         this._layoutManager = new ScriptedDanmakuLayoutManager_1.ScriptedDanmakuLayoutManager(this);
     }
     Object.defineProperty(ScriptedDanmakuProvider.prototype, "danmakuKind", {
@@ -12497,8 +14174,8 @@ var ScriptedDanmakuProvider = (function (_super) {
         return _super.prototype.addDanmaku.call(this, content, args);
     };
     ScriptedDanmakuProvider.prototype.dispose = function () {
-        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
-        this._danmakuLayer.dispose();
+        this.layer.parent.removeChild(this.layer);
+        this.layer.dispose();
         this._layoutManager.dispose();
         this._layoutManager = null;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
@@ -12507,13 +14184,14 @@ var ScriptedDanmakuProvider = (function (_super) {
         while (this.displayingDanmakuList.length > 0) {
             this.displayingDanmakuList.pop();
         }
-        this._danmakuLayer = null;
+        this._layer = null;
         this._displayingDanmakuList = null;
     };
     ScriptedDanmakuProvider.prototype.initialize = function () {
-        var stage = this.bulletproof.stage;
-        this._danmakuLayer = new ScriptedDanmakuLayer_1.ScriptedDanmakuLayer(stage, stage);
-        stage.addChild(this._danmakuLayer);
+        _super.prototype.initialize.call(this);
+        var stage = this.engine.stage;
+        this._layer = new ScriptedDanmakuLayer_1.ScriptedDanmakuLayer(stage, stage);
+        stage.addChild(this.layer);
     };
     ScriptedDanmakuProvider.prototype.canCreateDanmaku = function (args) {
         return true;
@@ -12524,37 +14202,37 @@ var ScriptedDanmakuProvider = (function (_super) {
             return false;
         }
         else {
-            this.bulletproof.stage.removeChild(danmaku);
-            this.displayingDanmakuList.splice(index, 1);
+            this.engine.stage.removeChild(danmaku);
+            GLUtil_1.GLUtil.removeAt(this.displayingDanmakuList, index);
             danmaku.dispose();
             return true;
         }
     };
-    ScriptedDanmakuProvider.prototype.isDanmakuDead = function (danmaku) {
-        var timeElapsed = this.bulletproof.timeElapsed;
-        if (timeElapsed < danmaku.bornTime) {
+    ScriptedDanmakuProvider.prototype.isDanmakuDead = function (timeInfo, danmaku) {
+        var now = timeInfo.millisOfVideo;
+        if (now < danmaku.bornTime) {
             return danmaku.executed;
         }
         else {
-            return danmaku.bornTime + danmaku.lifeTime * 1000 < timeElapsed;
+            return danmaku.bornTime + danmaku.lifeTime * 1000 < now;
         }
     };
-    ScriptedDanmakuProvider.prototype.update = function () {
-        _super.prototype.update.call(this);
+    ScriptedDanmakuProvider.prototype.update = function (timeInfo) {
+        _super.prototype.update.call(this, timeInfo);
         var danmaku;
-        var timeElapsed = this.bulletproof.timeElapsed;
+        var now = timeInfo.millisOfVideo;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
             danmaku = this.displayingDanmakuList[i];
-            if (!danmaku.executed && timeElapsed >= danmaku.bornTime) {
+            if (!danmaku.executed && now >= danmaku.bornTime) {
                 danmaku.execute();
             }
         }
     };
-    ScriptedDanmakuProvider.prototype.updateDisplayDanmakuList = function () {
+    ScriptedDanmakuProvider.prototype.updateDisplayingDanmakuList = function (timeInfo) {
         var danmaku;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
             danmaku = this.displayingDanmakuList[i];
-            if (this.isDanmakuDead(danmaku)) {
+            if (this.isDanmakuDead(timeInfo, danmaku)) {
                 this.removeDanmaku(danmaku);
                 --i;
             }
@@ -12581,9 +14259,9 @@ var ScriptedDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(ScriptedDanmakuProvider.prototype, "danmakuLayer", {
+    Object.defineProperty(ScriptedDanmakuProvider.prototype, "layer", {
         get: function () {
-            return this._danmakuLayer;
+            return this._layer;
         },
         enumerable: true,
         configurable: true
@@ -12595,32 +14273,33 @@ var ScriptedDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    ScriptedDanmakuProvider.prototype.__addDanmaku = function (content, args) {
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(args)) {
-            args = ScriptedDanmakuHelper_1.ScriptedDanmakuHelper.getDefaultParams(this.bulletproof.config);
+    ScriptedDanmakuProvider.prototype._$addDanmaku = function (content, args) {
+        if (!GLUtil_1.GLUtil.ptr(args)) {
+            args = ScriptedDanmakuHelper_1.ScriptedDanmakuHelper.getDefaultParams(this.engine.options);
         }
-        var danmaku = new ScriptedDanmaku_1.ScriptedDanmaku(this.bulletproof.stage, this.danmakuLayer, this.layoutManager, args);
+        var danmaku = new ScriptedDanmaku_1.ScriptedDanmaku(this.engine.stage, this.layer, this.layoutManager, args);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.
-        this.danmakuLayer.addChild(danmaku);
-        danmaku.initialize(content, this.bulletproof.timeElapsed);
+        this.layer.addChild(danmaku);
+        danmaku.initialize(content, this.engine.videoMillis);
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     };
     return ScriptedDanmakuProvider;
-})(DanmakuProviderBase_1.DanmakuProviderBase);
+}(DanmakuProviderBase_1.DanmakuProviderBase));
 exports.ScriptedDanmakuProvider = ScriptedDanmakuProvider;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../DanmakuKind":149,"../DanmakuProviderBase":151,"../DanmakuProviderFlag":152,"./ScriptedDanmaku":155,"./ScriptedDanmakuHelper":156,"./ScriptedDanmakuLayer":157,"./ScriptedDanmakuLayoutManager":158}],160:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../DanmakuKind":169,"../DanmakuProviderBase":171,"../DanmakuProviderFlag":172,"./ScriptedDanmaku":175,"./ScriptedDanmakuHelper":176,"./ScriptedDanmakuLayer":177,"./ScriptedDanmakuLayoutManager":178}],180:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
-var GLUtil_1 = require("../../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+"use strict";
+var GLUtil_1 = require("../../../../../lib/glantern/src/gl/glantern/GLUtil");
 var DCOHelper = (function () {
     function DCOHelper() {
     }
-    DCOHelper.fillInCreateParams = function (bulletproof, requestingObject, createParams) {
+    DCOHelper.fillInCreateParams = function (engine, requestingObject, createParams) {
         var r = Object.create(null);
         r.color = createParams.color;
         r.alpha = createParams.alpha;
@@ -12636,11 +14315,11 @@ var DCOHelper = (function () {
             var literalMaxLife = 0;
             for (var j = 0; j < propertyNames.length; ++j) {
                 motionAnimation = motion[propertyNames[j]];
-                if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation)) {
-                    if (GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation.lifeTime)) {
+                if (GLUtil_1.GLUtil.ptr(motionAnimation)) {
+                    if (GLUtil_1.GLUtil.isUndefined(motionAnimation.lifeTime)) {
                         motionAnimation.lifeTime = requestingObject.extraCreateParams.creator.lifeTime;
                     }
-                    if (!GLUtil_1.GLUtil.isUndefinedOrNull(motionAnimation.startDelay)) {
+                    if (typeof motionAnimation.startDelay === "number") {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
                     }
                     else {
@@ -12654,20 +14333,20 @@ var DCOHelper = (function () {
                 literalMaxLife: literalMaxLife
             };
         }
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motion) && !GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motionGroup)) {
+        if (GLUtil_1.GLUtil.ptr(createParams.motion) && GLUtil_1.GLUtil.ptr(createParams.motionGroup)) {
             console.warn("'motion' and 'motionGroup' are both set!");
         }
-        var now = bulletproof.timeElapsed;
+        var now = engine.videoMillis;
         var life;
         var motion;
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motion)) {
+        if (GLUtil_1.GLUtil.ptr(createParams.motion)) {
             motion = createParams.motion;
             motion.sourceObject = requestingObject;
             motion.createdTime = now;
             life = __getMaximumLifeTime(motion);
             motion.maximumLifeTime = life.maxLife;
         }
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.motionGroup)) {
+        if (GLUtil_1.GLUtil.ptr(createParams.motionGroup)) {
             for (var i = 0; i < createParams.motionGroup.length; ++i) {
                 motion = createParams.motionGroup[i];
                 motion.sourceObject = requestingObject;
@@ -12683,13 +14362,13 @@ var DCOHelper = (function () {
         return r;
     };
     DCOHelper.applyGeneralCreateParams = function (displayObject, createParams) {
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.alpha)) {
+        if (!GLUtil_1.GLUtil.isUndefined(createParams.alpha)) {
             displayObject.alpha = createParams.alpha;
         }
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.x)) {
+        if (!GLUtil_1.GLUtil.isUndefined(createParams.x)) {
             displayObject.x = createParams.x;
         }
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(createParams.y)) {
+        if (!GLUtil_1.GLUtil.isUndefined(createParams.y)) {
             displayObject.y = createParams.y;
         }
     };
@@ -12697,29 +14376,30 @@ var DCOHelper = (function () {
         DCOHelper.applyGeneralCreateParams(displayObject, createParams);
     };
     return DCOHelper;
-})();
+}());
 exports.DCOHelper = DCOHelper;
 
 
 
-},{"../../../../lib/glantern/lib/glantern-utils/src/GLUtil":3}],161:[function(require,module,exports){
+},{"../../../../../lib/glantern/src/gl/glantern/GLUtil":94}],181:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var DCOHelper_1 = require("./DCOHelper");
-var Shape_1 = require("../../../../lib/glantern/src/flash/display/Shape");
+var Shape_1 = require("../../../../../lib/glantern/src/gl/flash/display/Shape");
 var DCShape = (function (_super) {
     __extends(DCShape, _super);
     function DCShape(root, parent, createParams, extraCreateParams) {
         _super.call(this, root, parent);
         this._extraCreateParams = null;
         this._createParams = null;
-        this._createParams = DCOHelper_1.DCOHelper.fillInCreateParams(extraCreateParams.bulletproof, this, createParams);
+        this._createParams = DCOHelper_1.DCOHelper.fillInCreateParams(extraCreateParams.engine, this, createParams);
         this._extraCreateParams = extraCreateParams;
         DCOHelper_1.DCOHelper.applyGeneralCreateParams(this, this._createParams);
     }
@@ -12745,22 +14425,23 @@ var DCShape = (function (_super) {
         configurable: true
     });
     return DCShape;
-})(Shape_1.Shape);
+}(Shape_1.Shape));
 exports.DCShape = DCShape;
 
 
 
-},{"../../../../lib/glantern/src/flash/display/Shape":41,"./DCOHelper":160}],162:[function(require,module,exports){
+},{"../../../../../lib/glantern/src/gl/flash/display/Shape":38,"./DCOHelper":180}],182:[function(require,module,exports){
 /**
  * Created by MIC on 2016/1/7.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var Timer_1 = require("../../../../lib/glantern/src/flash/utils/Timer");
-var TimerEvent_1 = require("../../../../lib/glantern/src/flash/events/TimerEvent");
+var Timer_1 = require("../../../../../lib/glantern/src/gl/flash/utils/Timer");
+var TimerEvent_1 = require("../../../../../lib/glantern/src/gl/flash/events/TimerEvent");
 var FiniteTimer = (function (_super) {
     __extends(FiniteTimer, _super);
     function FiniteTimer(obj, delay, repeatCount) {
@@ -12787,15 +14468,16 @@ var FiniteTimer = (function (_super) {
     FiniteTimer.prototype.__closureTimerCompleteHandler = function () {
     };
     return FiniteTimer;
-})(Timer_1.Timer);
+}(Timer_1.Timer));
 exports.FiniteTimer = FiniteTimer;
 
 
 
-},{"../../../../lib/glantern/src/flash/events/TimerEvent":52,"../../../../lib/glantern/src/flash/utils/Timer":80}],163:[function(require,module,exports){
+},{"../../../../../lib/glantern/src/gl/flash/events/TimerEvent":55,"../../../../../lib/glantern/src/gl/flash/utils/Timer":88}],183:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -12804,10 +14486,11 @@ __export(require("./DCShape"));
 
 
 
-},{"./DCOHelper":160,"./DCShape":161}],164:[function(require,module,exports){
+},{"./DCOHelper":180,"./DCShape":181}],184:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -12821,30 +14504,44 @@ exports.dco = dco;
 
 
 
-},{"./ScriptedDanmaku":155,"./ScriptedDanmakuHelper":156,"./ScriptedDanmakuLayer":157,"./ScriptedDanmakuLayoutManager":158,"./ScriptedDanmakuProvider":159,"./dco/index":163}],165:[function(require,module,exports){
+},{"./ScriptedDanmaku":175,"./ScriptedDanmakuHelper":176,"./ScriptedDanmakuLayer":177,"./ScriptedDanmakuLayoutManager":178,"./ScriptedDanmakuProvider":179,"./dco/index":183}],185:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/2.
  */
+"use strict";
 (function (SimpleDanmakuType) {
-    SimpleDanmakuType[SimpleDanmakuType["FlyingR2L"] = 0] = "FlyingR2L";
-    SimpleDanmakuType[SimpleDanmakuType["AnchoredTop"] = 1] = "AnchoredTop";
-    SimpleDanmakuType[SimpleDanmakuType["AnchoredBottom"] = 2] = "AnchoredBottom";
-    SimpleDanmakuType[SimpleDanmakuType["AnchoredTopLeft"] = 3] = "AnchoredTopLeft";
-    SimpleDanmakuType[SimpleDanmakuType["AnchoredTopRight"] = 4] = "AnchoredTopRight";
-    SimpleDanmakuType[SimpleDanmakuType["AnchoredBottomLeft"] = 5] = "AnchoredBottomLeft";
-    SimpleDanmakuType[SimpleDanmakuType["AnchoredBottomRight"] = 6] = "AnchoredBottomRight";
+    SimpleDanmakuType[SimpleDanmakuType["None"] = 0] = "None";
+    SimpleDanmakuType[SimpleDanmakuType["R2L"] = 1] = "R2L";
+    SimpleDanmakuType[SimpleDanmakuType["L2R"] = 2] = "L2R";
+    SimpleDanmakuType[SimpleDanmakuType["Top"] = 3] = "Top";
+    SimpleDanmakuType[SimpleDanmakuType["Bottom"] = 4] = "Bottom";
+    SimpleDanmakuType[SimpleDanmakuType["TopLeft"] = 5] = "TopLeft";
+    SimpleDanmakuType[SimpleDanmakuType["TopRight"] = 6] = "TopRight";
+    SimpleDanmakuType[SimpleDanmakuType["BottomLeft"] = 7] = "BottomLeft";
+    SimpleDanmakuType[SimpleDanmakuType["BottomRight"] = 8] = "BottomRight";
+    SimpleDanmakuType[SimpleDanmakuType["Max"] = 8] = "Max";
 })(exports.SimpleDanmakuType || (exports.SimpleDanmakuType = {}));
 var SimpleDanmakuType = exports.SimpleDanmakuType;
 
 
 
-},{}],166:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var DanmakuKind_1 = require("../DanmakuKind");
-var SimpleDanmaku = (function () {
+var TextDanmakuBase_1 = require("../TextDanmakuBase");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
+var SimpleDanmaku = (function (_super) {
+    __extends(SimpleDanmaku, _super);
     function SimpleDanmaku(layoutManager, createParams) {
+        _super.call(this, layoutManager);
         /**
          * Gets/sets whether the Y position of this {@link SimpleDanmaku} is set. If the it is set, the {@link SimpleDanmakuLayoutManager}
          * should only change the value of X position since sudden modification to Y position will confuse audiences.
@@ -12852,40 +14549,22 @@ var SimpleDanmaku = (function () {
          * bottom right) should recalculate their Y positions to fit in the change.
          * @type {Boolean}
          */
-        this.ySet = false;
+        this.isYSet = false;
         /**
          * Gets/sets whether the X position of this {@link SimpleDanmaku} is set. Common languages are horizontally displayed,
          * that means the X position changes much less frequently than the Y position.
-         * @type {boolean}
+         * @type {Boolean}
          */
-        this.xSet = false;
-        /**
-         * X coordinate of the top left point of this {@link SimpleDanmaku}.
-         * @type {Number}
-         */
-        this.x = 0;
-        /**
-         * Y coordinate of the top left point of this {@link SimpleDanmaku}.
-         * @type {Number}
-         */
-        this.y = 0;
-        this.visible = false;
+        this.isXSet = false;
         this.displaying = false;
         this._content = null;
         this._bornTime = 0;
-        this._bulletproof = null;
-        this._layoutManager = null;
-        this._danmakuProvider = null;
-        this._createParams = null;
         this._textWidth = -1;
         this._textHeight = -1;
-        this._layoutManager = layoutManager;
-        this._danmakuProvider = layoutManager.danmakuProvider;
-        this._bulletproof = layoutManager.bulletproof;
+        this._metrics = null;
         this._createParams = createParams;
+        this._layer = this.danmakuProvider.layer;
     }
-    SimpleDanmaku.prototype.dispose = function () {
-    };
     Object.defineProperty(SimpleDanmaku.prototype, "danmakuKind", {
         get: function () {
             return DanmakuKind_1.DanmakuKind.Simple;
@@ -12917,13 +14596,6 @@ var SimpleDanmaku = (function () {
         this._content = content;
         this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
     };
-    Object.defineProperty(SimpleDanmaku.prototype, "bulletproof", {
-        get: function () {
-            return this._bulletproof;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SimpleDanmaku.prototype, "bornTime", {
         get: function () {
             return this._bornTime;
@@ -12933,7 +14605,14 @@ var SimpleDanmaku = (function () {
     });
     Object.defineProperty(SimpleDanmaku.prototype, "lifeTime", {
         get: function () {
-            return this.bulletproof.config.simpleDanmakuLifeTimeSecs;
+            return this.engine.options.simpleDanmakuLifeTimeSecs;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SimpleDanmaku.prototype, "layer", {
+        get: function () {
+            return this._layer;
         },
         enumerable: true,
         configurable: true
@@ -12945,24 +14624,44 @@ var SimpleDanmaku = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SimpleDanmaku.prototype, "textHeight", {
+    SimpleDanmaku.prototype.getTextHeight = function () {
+        if (this._textHeight < 0) {
+            this._textHeight = this.createParams.fontSize * 1.5;
+        }
+        return this._textHeight;
+    };
+    SimpleDanmaku.prototype.getTextWidth = function () {
+        if (this._textWidth < 0) {
+            var context2D = this.layer.context2D;
+            context2D.font = this.createParams.fontSize + "pt \"" + this.createParams.fontName + "\"";
+            this._textWidth = context2D.measureText(this.getText()).width;
+        }
+        return this._textWidth;
+    };
+    Object.defineProperty(SimpleDanmaku.prototype, "width", {
         get: function () {
-            if (this._textHeight < 0) {
-                this._textHeight = this.createParams.fontSize * 1.5;
-            }
-            return this._textHeight;
+            return this.metrics.borderWidth;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SimpleDanmaku.prototype, "textWidth", {
+    Object.defineProperty(SimpleDanmaku.prototype, "height", {
         get: function () {
-            if (this._textWidth < 0) {
-                var context2D = this.danmakuProvider.danmakuLayer.context2D;
-                context2D.font = this.createParams.fontSize.toString() + "pt \"" + this.createParams.fontName + "\"";
-                this._textWidth = context2D.measureText(this.getText()).width;
-            }
-            return this._textWidth;
+            return this.metrics.borderHeight;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SimpleDanmaku.prototype, "right", {
+        get: function () {
+            return this.x + this.width;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SimpleDanmaku.prototype, "bottom", {
+        get: function () {
+            return this.y + this.height;
         },
         enumerable: true,
         configurable: true
@@ -12972,7 +14671,7 @@ var SimpleDanmaku = (function () {
             txt: this.getContent(),
             time: this.bornTime.toString(),
             color: this.createParams.textColor,
-            pool: 0,
+            pool: this.danmakuProvider.pool,
             mode: this.createParams.type,
             fontSize: this.createParams.fontSize
         };
@@ -12980,17 +14679,55 @@ var SimpleDanmaku = (function () {
     SimpleDanmaku.prototype.isType = function (type) {
         return this.createParams.type === type;
     };
+    Object.defineProperty(SimpleDanmaku.prototype, "metrics", {
+        get: function () {
+            if (!GLUtil_1.GLUtil.ptr(this._metrics)) {
+                this._metrics = this.__calcMetrics();
+            }
+            return this._metrics;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SimpleDanmaku.prototype.__calcMetrics = function () {
+        var cp = this.createParams;
+        var outlineThickness = cp.outline && cp.outlineThickness > 0 ? cp.outlineThickness : 0;
+        var borderThickness = cp.border && cp.borderThickness > 0 ? cp.borderThickness : 0;
+        var textWidth = this.getTextWidth(), textHeight = this.getTextHeight();
+        var metrics = Object.create(null);
+        /* Background */
+        metrics.bgBaseX = metrics.bgBaseY = 0;
+        metrics.bgWidth = textWidth + borderThickness * 2 + outlineThickness * 2 + 2;
+        metrics.bgHeight = textHeight + borderThickness * 2 + outlineThickness * 2;
+        /* Text */
+        metrics.textWidth = textWidth;
+        metrics.textHeight = textHeight;
+        // textBase is the bottom left point.
+        metrics.textBaseX = outlineThickness + borderThickness;
+        metrics.textBaseY = textHeight * 0.75 + borderThickness;
+        /* Outline */
+        metrics.outlineBaseX = outlineThickness + borderThickness;
+        metrics.outlineBaseY = textHeight * 0.75 + borderThickness;
+        metrics.outlineWidth = textWidth + 2 * outlineThickness;
+        metrics.outlineHeight = textHeight + 2 * outlineThickness;
+        /* Border */
+        metrics.borderWidth = textWidth + borderThickness * 2 + outlineThickness * 2 + 2;
+        metrics.borderHeight = textHeight + borderThickness * 2 + outlineThickness * 2;
+        metrics.borderBaseX = metrics.borderBaseY = 0;
+        return metrics;
+    };
     return SimpleDanmaku;
-})();
+}(TextDanmakuBase_1.TextDanmakuBase));
 exports.SimpleDanmaku = SimpleDanmaku;
 
 
 
-},{"../DanmakuKind":149}],167:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../DanmakuKind":169,"../TextDanmakuBase":173}],187:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/7.
  */
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+"use strict";
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 var SimpleDanmakuHelper = (function () {
     function SimpleDanmakuHelper() {
     }
@@ -12999,7 +14736,7 @@ var SimpleDanmakuHelper = (function () {
     };
     SimpleDanmakuHelper.fillInCreateParams = function (config, params) {
         function applyValue(name) {
-            if (GLUtil_1.GLUtil.isUndefinedOrNull(params[name])) {
+            if (!GLUtil_1.GLUtil.ptr(params[name])) {
                 params[name] = config.defaultSimpleDanmakuCreateParams[name];
             }
         }
@@ -13009,44 +14746,41 @@ var SimpleDanmakuHelper = (function () {
             }
         }
         // Field bornTime is ignored. See SimpleDanmaku.initialize() for more information.
-        applyValue("fontName");
-        applyValue("fontStyle");
-        applyValue("fontSize");
-        applyValue("type");
-        applyValue("border");
-        applyValue("borderColor");
-        applyValue("borderThickness");
-        applyValue("background");
-        applyValue("backgroundColor");
-        applyValue("textColor");
-        applyValue("outline");
-        applyValue("outlineColor");
-        applyValue("outlineThickness");
+        var optionNames = [
+            "fontName", "fontStyle", "fontSize", "type", "border", "borderColor", "borderThickness", "background",
+            "backgroundColor", "textColor", "outline", "outlineColor", "outlineThickness"
+        ];
+        for (var i = 0; i < optionNames.length; ++i) {
+            applyValue(optionNames[i]);
+        }
     };
     return SimpleDanmakuHelper;
-})();
+}());
 exports.SimpleDanmakuHelper = SimpleDanmakuHelper;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3}],168:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/glantern/GLUtil":94}],188:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/2.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var TextField_1 = require("../../../lib/glantern/src/flash/text/TextField");
-var RenderHelper_1 = require("../../../lib/glantern/src/webgl/RenderHelper");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var TextField_1 = require("../../../../lib/glantern/src/gl/flash/text/TextField");
+var RenderHelper_1 = require("../../../../lib/glantern/src/gl/webgl/RenderHelper");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 var SimpleDanmakuLayer = (function (_super) {
     __extends(SimpleDanmakuLayer, _super);
     function SimpleDanmakuLayer(root, parent, provider) {
         _super.call(this, root, parent);
         this._provider = null;
+        this._engine = null;
         this._provider = provider;
+        this._engine = provider.engine;
     }
     Object.defineProperty(SimpleDanmakuLayer.prototype, "danmakuProvider", {
         get: function () {
@@ -13062,71 +14796,76 @@ var SimpleDanmakuLayer = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    SimpleDanmakuLayer.prototype.__update = function () {
+    Object.defineProperty(SimpleDanmakuLayer.prototype, "engine", {
+        get: function () {
+            return this._engine;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SimpleDanmakuLayer.prototype._$update = function (timeInfo) {
         if (this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageSize();
-            this.__drawTextElements(this.context2D);
+            this._$drawTextElements(this.context2D);
         }
     };
-    SimpleDanmakuLayer.prototype.__render = function (renderer) {
+    SimpleDanmakuLayer.prototype._$render = function (renderer) {
         if (this.visible && this.alpha > 0 && this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageContent();
             RenderHelper_1.RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, renderer.currentRenderTarget.isRoot, this.transform.matrix3D, this.alpha, false);
         }
     };
-    SimpleDanmakuLayer.prototype.__drawTextElements = function (context2D) {
+    SimpleDanmakuLayer.prototype._$drawTextElements = function (context2D) {
         var danmaku;
         var lastDanmaku = null;
         var danmakuList = this.danmakuProvider.displayingDanmakuList;
         context2D.clearRect(0, 0, context2D.canvas.width, context2D.canvas.height);
         for (var i = 0; i < danmakuList.length; ++i) {
             danmaku = danmakuList[i];
-            this.__drawSimpleDanmaku(context2D, danmaku, lastDanmaku);
+            SimpleDanmakuLayer.__drawSimpleDanmaku(context2D, danmaku, lastDanmaku);
             lastDanmaku = danmaku;
         }
     };
-    SimpleDanmakuLayer.prototype.__drawSimpleDanmaku = function (context2D, danmaku, last) {
+    SimpleDanmakuLayer.__drawSimpleDanmaku = function (context2D, danmaku, last) {
         if (!danmaku.visible) {
             return;
         }
         var x = danmaku.x, y = danmaku.y;
         var cp = danmaku.createParams;
-        var baseX = cp.outline && cp.outlineThickness > 0 ? cp.outlineThickness : 0;
-        var baseY = baseX;
-        var borderThickness = cp.border && cp.borderThickness > 0 ? cp.borderThickness : 0;
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(last) || cp.fontName !== last.createParams.fontName || cp.fontSize !== last.createParams.fontSize) {
-            context2D.font = cp.fontStyle.toString() + " " + cp.fontSize.toString() + "pt \"" + cp.fontName + "\"";
+        var lastCP = last ? last.createParams : null;
+        var metrics = danmaku.metrics;
+        if (!GLUtil_1.GLUtil.ptr(last) || cp.fontName !== lastCP.fontName ||
+            cp.fontSize !== lastCP.fontSize || cp.fontStyle !== lastCP.fontStyle) {
+            context2D.font = cp.fontStyle + " " + cp.fontSize + "pt \"" + cp.fontName + "\"";
         }
-        var textWidth = danmaku.textWidth;
-        // See TextField.ts.
-        var textHeight = danmaku.textHeight;
         if (cp.background) {
             context2D.fillStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.backgroundColor);
-            context2D.fillRect(x, y, textWidth + borderThickness * 2, textHeight + borderThickness * 2);
+            context2D.fillRect(x + metrics.bgBaseX, y + metrics.bgBaseY, metrics.bgWidth, metrics.bgHeight);
         }
         context2D.fillStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.textColor);
-        context2D.fillText(danmaku.getText(), x + baseX + borderThickness, y + textHeight * 0.75 + borderThickness);
+        context2D.fillText(danmaku.getText(), x + metrics.textBaseX, y + metrics.textBaseY);
         if (cp.outline && cp.outlineThickness > 0) {
             context2D.lineWidth = cp.outlineThickness;
             context2D.strokeStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.outlineColor);
-            context2D.strokeText(danmaku.getText(), x + baseX + borderThickness, y + textHeight * 0.75 + borderThickness);
+            context2D.strokeText(danmaku.getText(), x + metrics.outlineBaseX, y + metrics.outlineBaseY);
         }
         if (cp.border && cp.borderThickness > 0) {
             context2D.lineWidth = cp.borderThickness;
             context2D.strokeStyle = GLUtil_1.GLUtil.colorToCssSharp(cp.borderColor);
-            context2D.strokeRect(x + borderThickness, y + borderThickness, textWidth + borderThickness * 2, this.textHeight + borderThickness * 2);
+            context2D.strokeRect(x + metrics.borderBaseX, y + metrics.borderBaseY, metrics.borderWidth, metrics.borderHeight);
         }
     };
     return SimpleDanmakuLayer;
-})(TextField_1.TextField);
+}(TextField_1.TextField));
 exports.SimpleDanmakuLayer = SimpleDanmakuLayer;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/flash/text/TextField":72,"../../../lib/glantern/src/webgl/RenderHelper":91}],169:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/text/TextField":77,"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../../../lib/glantern/src/gl/webgl/RenderHelper":107}],189:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13135,61 +14874,55 @@ var __extends = (this && this.__extends) || function (d, b) {
 var DanmakuLayoutManagerBase_1 = require("../DanmakuLayoutManagerBase");
 var DanmakuKind_1 = require("../DanmakuKind");
 var SimpleDanamkuType_1 = require("./SimpleDanamkuType");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var ArgumentError_1 = require("../../../../lib/glantern/src/gl/flash/errors/ArgumentError");
+var HorizontalR2LLayout_1 = require("./layout/HorizontalR2LLayout");
+var HorizontalL2RLayout_1 = require("./layout/HorizontalL2RLayout");
 var SimpleDanmakuLayoutManager = (function (_super) {
     __extends(SimpleDanmakuLayoutManager, _super);
     function SimpleDanmakuLayoutManager(provider) {
         _super.call(this, provider);
         this._stageWidth = 0;
         this._stageHeight = 0;
-        this._danmakuProvider = provider;
-    }
-    SimpleDanmakuLayoutManager.prototype.dispose = function () {
-    };
-    SimpleDanmakuLayoutManager.prototype.performLayout = function () {
-        // Please notice that coordinates in this method are in <canvas> coordinate system, the same as Flash
-        // coordinate system.
-        var measureParams = {
-            currentTime: this.bulletproof.timeElapsed,
-            stage: this.bulletproof.stage,
-            displayingList: this.danmakuProvider.displayingDanmakuList
-        };
-        function isInPlayingRange(danmaku) {
-            return danmaku.bornTime <= measureParams.currentTime && measureParams.currentTime <= danmaku.bornTime + danmaku.lifeTime * 1000;
+        this._layouts = null;
+        var layouts = [];
+        for (var i = 0; i <= SimpleDanamkuType_1.SimpleDanmakuType.Max; ++i) {
+            layouts.push(null);
         }
+        this._layouts = layouts;
+    }
+    SimpleDanmakuLayoutManager.prototype.initialize = function () {
+        _super.prototype.initialize.call(this);
+        var layouts = this._layouts;
+        layouts[SimpleDanamkuType_1.SimpleDanmakuType.R2L] = new HorizontalR2LLayout_1.HorizontalR2LLayout();
+        layouts[SimpleDanamkuType_1.SimpleDanmakuType.L2R] = new HorizontalL2RLayout_1.HorizontalL2RLayout();
+    };
+    SimpleDanmakuLayoutManager.prototype.dispose = function () {
+        var layouts = this._layouts;
+        while (layouts.length > 0) {
+            layouts.pop();
+        }
+        this._layouts = null;
+        _super.prototype.dispose.call(this);
+    };
+    SimpleDanmakuLayoutManager.prototype.performLayout = function (timeInfo) {
+        // Please notice that coordinates in this method are in <canvas> coordinate system, the same as Flash & GDI
+        // coordinate system (origin at top-left).
+        var measureParams = this.__getMeasureParams(timeInfo.millisOfVideo);
         var displayingList = measureParams.displayingList;
         if (displayingList.length > 0) {
             for (var i = 0; i < displayingList.length; ++i) {
                 var danmaku = displayingList[i];
-                if (isInPlayingRange(danmaku)) {
+                if (isInPlayingRange(danmaku, measureParams)) {
                     if (!danmaku.visible) {
                         danmaku.visible = true;
                     }
-                    switch (danmaku.createParams.type) {
-                        case SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L:
-                            positionFlying(danmaku, measureParams);
-                            break;
-                        case SimpleDanamkuType_1.SimpleDanmakuType.AnchoredTop:
-                            positionTop(danmaku, measureParams);
-                            break;
-                        case SimpleDanamkuType_1.SimpleDanmakuType.AnchoredBottom:
-                            positionBottom(danmaku, measureParams);
-                            break;
-                        case SimpleDanamkuType_1.SimpleDanmakuType.AnchoredTopLeft:
-                            positionTopLeft(danmaku, measureParams);
-                            break;
-                        case SimpleDanamkuType_1.SimpleDanmakuType.AnchoredTopRight:
-                            positionTopRight(danmaku, measureParams);
-                            break;
-                        case SimpleDanamkuType_1.SimpleDanmakuType.AnchoredBottomLeft:
-                            positionBottomLeft(danmaku, measureParams);
-                            break;
-                        case SimpleDanamkuType_1.SimpleDanmakuType.AnchoredBottomRight:
-                            positionBottomRight(danmaku, measureParams);
-                            break;
-                        default:
-                            console.warn("What type is this?");
-                            break;
+                    var layout = this.getLayout(danmaku.createParams.type);
+                    if (layout !== null) {
+                        layout.positionX(danmaku, measureParams);
+                        layout.positionY(danmaku, measureParams);
+                    }
+                    else {
+                        throw new ArgumentError_1.ArgumentError("Unknown danmaku type: " + danmaku.createParams.type);
                     }
                 }
                 else {
@@ -13197,6 +14930,18 @@ var SimpleDanmakuLayoutManager = (function (_super) {
                     danmaku.visible = false;
                 }
             }
+        }
+    };
+    SimpleDanmakuLayoutManager.prototype.addDanmaku = function (danmaku) {
+        var layout = this.getLayout(danmaku.createParams.type);
+        if (layout !== null) {
+            layout.add(danmaku);
+        }
+    };
+    SimpleDanmakuLayoutManager.prototype.removeDanmaku = function (danmaku) {
+        var layout = this.getLayout(danmaku.createParams.type);
+        if (layout !== null) {
+            layout.remove(danmaku);
         }
     };
     Object.defineProperty(SimpleDanmakuLayoutManager.prototype, "danmakuProvider", {
@@ -13217,133 +14962,38 @@ var SimpleDanmakuLayoutManager = (function (_super) {
         this._stageWidth = e.width;
         this._stageHeight = e.height;
     };
-    return SimpleDanmakuLayoutManager;
-})(DanmakuLayoutManagerBase_1.DanmakuLayoutManagerBase);
-exports.SimpleDanmakuLayoutManager = SimpleDanmakuLayoutManager;
-function positionFlying(danmaku, measureParams) {
-    var stageWidth = measureParams.stage.stageWidth;
-    var stageHeight = measureParams.stage.stageHeight;
-    // T_0: At position (STAGE_WIDTH, Y)
-    // T_final: At position (-DANMAKU_WIDTH, Y)
-    // Add 5 extra pixels to ensure the danmaku is entirely out of the stage when its life should end.
-    var elapsedLifeRatio = (measureParams.currentTime - danmaku.bornTime) / (danmaku.lifeTime * 1000);
-    danmaku.x = stageWidth - elapsedLifeRatio * (stageWidth + danmaku.textWidth + 5);
-    var displayingList = measureParams.displayingList;
-    if (!danmaku.ySet) {
-        if (displayingList.length > 0) {
-            var currentY = 0;
-            var bottommostThereIs = 0;
-            for (var i = 0; i < displayingList.length; ++i) {
-                if (displayingList[i].isType(SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L) && displayingList[i].ySet) {
-                    // Bottom of current displaying danmaku which is being scanned
-                    var currentDDBottom = displayingList[i].y + displayingList[i].textHeight;
-                    // Estimated value of the bottom of the danmaku being positioned
-                    var estimatedCDPBottom = currentY + danmaku.textHeight;
-                    // The danmaku being scanned has (just) left the right edge of the stage.
-                    if (displayingList[i].x < stageWidth - displayingList[i].textWidth) {
-                        // The danmaku being scanned "embraces" the danmaku being positioned.
-                        if (displayingList[i].y <= currentY && estimatedCDPBottom <= currentDDBottom) {
-                            currentY = displayingList[i].y;
-                        }
-                    }
-                    else {
-                        // The danmaku being scanned "crashes" with the danmaku being positioned.
-                        if (displayingList[i].y <= estimatedCDPBottom || currentDDBottom <= currentY) {
-                            currentY = currentDDBottom;
-                        }
-                    }
-                    if (currentY > stageHeight - danmaku.textHeight) {
-                        // Wrapping in a function is used for the optimizers to detect that variable 'i' is not
-                        // modified in the whole array accessing procedure. Sure it can be expanded into normal
-                        // form, but I think it will slightly affect performance.
-                        currentY = handleOverflow(displayingList, i, SimpleDanamkuType_1.SimpleDanmakuType.FlyingR2L);
-                        if (currentY > stageHeight - danmaku.textHeight) {
-                            currentY = 0;
-                        }
-                        break;
-                    }
-                    if (currentDDBottom > bottommostThereIs) {
-                        bottommostThereIs = currentDDBottom;
-                    }
-                }
-            }
-            // If the space in the bottom is enough, we do not have to care about the complicated layout algorithm.
-            if (bottommostThereIs <= stageHeight - danmaku.textHeight) {
-                danmaku.y = bottommostThereIs;
-            }
-            else {
-                danmaku.y = currentY;
-            }
+    SimpleDanmakuLayoutManager.prototype.getLayout = function (type) {
+        if (0 <= type && type < this._layouts.length) {
+            return this._layouts[type];
         }
         else {
-            danmaku.y = 0;
+            return null;
         }
-        danmaku.ySet = true;
-    }
-}
-function handleOverflow(displayingList, currentIndex, type) {
-    // The stage is full of flying (now all types of) danmakus. Now follow the last positioned danmaku.
-    // If overflow happens again, reset Y position to the top of the stage.
-    // newY will definitely be assigned.
-    var newY;
-    do {
-        if (displayingList[currentIndex].isType(type) && displayingList[currentIndex].ySet) {
-            newY = displayingList[currentIndex].y + displayingList[currentIndex].textHeight;
-        }
-        ++currentIndex;
-    } while (currentIndex < displayingList.length);
-    return newY;
-}
-function positionTop(danmaku, measureParams) {
-    if (!danmaku.xSet) {
-        danmaku.x = (measureParams.stage.stageWidth - danmaku.textWidth) / 2;
-        danmaku.xSet = true;
-    }
-    var stageHeight = measureParams.stage.stageHeight;
-    var displayingList = measureParams.displayingList;
-    if (!danmaku.ySet) {
-        var currentY = 0;
-        if (displayingList.length > 0) {
-            for (var i = 0; i < displayingList.length; ++i) {
-                if (displayingList[i].isType(SimpleDanamkuType_1.SimpleDanmakuType.AnchoredTop) && displayingList[i].ySet) {
-                    var currentDDBottom = displayingList[i].y + displayingList[i].textHeight;
-                    var estimatedCDPBottom = currentY + danmaku.textHeight;
-                    // The displaying danmaku being measured "contains" the danmaku being positioned.
-                    if (GLUtil_1.GLUtil.isValueBetweenEquals(estimatedCDPBottom, displayingList[i].y, currentDDBottom) ||
-                        GLUtil_1.GLUtil.isValueBetweenEquals(currentY, displayingList[i].y, currentDDBottom)) {
-                        currentY = currentDDBottom;
-                    }
-                    if (currentY > stageHeight - danmaku.textHeight) {
-                        currentY = handleOverflow(displayingList, i, SimpleDanamkuType_1.SimpleDanmakuType.AnchoredTop);
-                        if (currentY > stageHeight - danmaku.textHeight) {
-                            currentY = 0;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        danmaku.y = currentY;
-        danmaku.ySet = true;
-    }
-}
-function positionBottom(danmaku, measureParams) {
-}
-function positionTopLeft(danmaku, measureParams) {
-}
-function positionTopRight(danmaku, measureParams) {
-}
-function positionBottomLeft(danmaku, measureParams) {
-}
-function positionBottomRight(danmaku, measureParams) {
+    };
+    SimpleDanmakuLayoutManager.prototype.__getMeasureParams = function (currenTime) {
+        var stage = this.engine.stage;
+        return {
+            currentTime: currenTime,
+            stage: stage,
+            displayingList: this.danmakuProvider.displayingDanmakuList,
+            stageWidth: stage.width,
+            stageHeight: stage.height
+        };
+    };
+    return SimpleDanmakuLayoutManager;
+}(DanmakuLayoutManagerBase_1.DanmakuLayoutManagerBase));
+exports.SimpleDanmakuLayoutManager = SimpleDanmakuLayoutManager;
+function isInPlayingRange(danmaku, measureParams) {
+    return danmaku.bornTime <= measureParams.currentTime && measureParams.currentTime <= danmaku.bornTime + danmaku.lifeTime * 1000;
 }
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../DanmakuKind":149,"../DanmakuLayoutManagerBase":150,"./SimpleDanamkuType":165}],170:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/ArgumentError":48,"../DanmakuKind":169,"../DanmakuLayoutManagerBase":170,"./SimpleDanamkuType":185,"./layout/HorizontalL2RLayout":192,"./layout/HorizontalR2LLayout":194}],190:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/28.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13354,27 +15004,32 @@ var DanmakuKind_1 = require("../DanmakuKind");
 var SimpleDanmakuLayoutManager_1 = require("./SimpleDanmakuLayoutManager");
 var SimpleDanmaku_1 = require("./SimpleDanmaku");
 var DanmakuProviderFlag_1 = require("../DanmakuProviderFlag");
+var SimpleDanamkuType_1 = require("./SimpleDanamkuType");
 var SimpleDanmakuLayer_1 = require("./SimpleDanmakuLayer");
 var SimpleDanmakuHelper_1 = require("./SimpleDanmakuHelper");
-var StageResizedEventArgs_1 = require("../StageResizedEventArgs");
-var GLUtil_1 = require("../../../lib/glantern/lib/glantern-utils/src/GLUtil");
-var GlowFilter_1 = require("../../../lib/glantern/src/flash/filters/GlowFilter");
+var StageResizedEventArgs_1 = require("../../bulletproof/events/StageResizedEventArgs");
+var GlowFilter_1 = require("../../../../lib/glantern/src/gl/flash/filters/GlowFilter");
+var GLUtil_1 = require("../../../../lib/glantern/src/gl/glantern/GLUtil");
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
 var SimpleDanmakuProvider = (function (_super) {
     __extends(SimpleDanmakuProvider, _super);
-    function SimpleDanmakuProvider(coordinator) {
-        _super.call(this, coordinator);
+    function SimpleDanmakuProvider(controller) {
+        _super.call(this, controller);
         this._shouldSortDanmakuList = false;
         this._fullDanmakuList = null;
         this._partialDanmakuCounts = null;
         this._partialDisplayingDanmakuCounts = null;
         this._layoutManager = new SimpleDanmakuLayoutManager_1.SimpleDanmakuLayoutManager(this);
-        // Mode: 0, 1, 2, 3, 4, 5, 6
-        this._partialDanmakuCounts = [0, 0, 0, 0, 0, 0, 0];
-        this._partialDisplayingDanmakuCounts = [0, 0, 0, 0, 0, 0, 0];
         this._fullDanmakuList = [];
+        var partialCounts = [], partialDisplayingCounts = [];
+        for (var i = 0; i <= SimpleDanamkuType_1.SimpleDanmakuType.Max; ++i) {
+            partialCounts.push(0);
+            partialDisplayingCounts.push(0);
+        }
+        this._partialDanmakuCounts = partialCounts;
+        this._partialDisplayingDanmakuCounts = partialDisplayingCounts;
     }
     Object.defineProperty(SimpleDanmakuProvider.prototype, "danmakuKind", {
         get: function () {
@@ -13384,19 +15039,20 @@ var SimpleDanmakuProvider = (function (_super) {
         configurable: true
     });
     SimpleDanmakuProvider.prototype.initialize = function () {
-        var stage = this.bulletproof.stage;
+        _super.prototype.initialize.call(this);
+        var stage = this.engine.stage;
         var danmakuLayer = new SimpleDanmakuLayer_1.SimpleDanmakuLayer(stage, stage, this);
-        this._danmakuLayer = danmakuLayer;
-        stage.addChild(this.danmakuLayer);
-        var glowFilter = new GlowFilter_1.GlowFilter(this.bulletproof.renderer.filterManager, 0x2f2f2f, 0.8, 3.0, 3.0);
+        this._layer = danmakuLayer;
+        stage.addChild(this.layer);
+        var glowFilter = new GlowFilter_1.GlowFilter(this.engine.renderer.filterManager, 0x2f2f2f, 0.8, 3.0, 3.0);
         danmakuLayer.filters = [glowFilter];
         danmakuLayer.alpha = 0.75;
         this.layoutManager.onStageResize(this, new StageResizedEventArgs_1.StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     };
     SimpleDanmakuProvider.prototype.dispose = function () {
-        this._danmakuLayer.parent.removeChild(this._danmakuLayer);
-        this._danmakuLayer.dispose();
-        this._danmakuLayer = null;
+        this.layer.parent.removeChild(this.layer);
+        this.layer.dispose();
+        this._layer = null;
         this._layoutManager.dispose();
         this._layoutManager = null;
         for (var i = 0; i < this.fullDanmakuList.length; ++i) {
@@ -13414,8 +15070,8 @@ var SimpleDanmakuProvider = (function (_super) {
         this._displayingDanmakuList = null;
     };
     SimpleDanmakuProvider.prototype.canCreateDanmaku = function (args) {
-        var config = this.bulletproof.config;
-        var type = GLUtil_1.GLUtil.isUndefinedOrNull(args) ? config.defaultSimpleDanmakuCreateParams.type : args.type;
+        var config = this.engine.options;
+        var type = GLUtil_1.GLUtil.ptr(args) ? args.type : config.defaultSimpleDanmakuCreateParams.type;
         var count = this.partialDanmakuCounts[type];
         return GLUtil_1.GLUtil.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
     };
@@ -13427,25 +15083,26 @@ var SimpleDanmakuProvider = (function (_super) {
         var b = false;
         index = this.fullDanmakuList.indexOf(danmaku);
         if (index >= 0) {
-            this.fullDanmakuList.splice(index, 1);
+            GLUtil_1.GLUtil.removeAt(this.fullDanmakuList, index);
             --this.partialDanmakuCounts[danmaku.createParams.type];
             b = true;
         }
         index = this.displayingDanmakuList.indexOf(danmaku);
         if (index >= 0) {
-            this.displayingDanmakuList.splice(index, 1);
+            GLUtil_1.GLUtil.removeAt(this.displayingDanmakuList, index);
             --this.partialDisplayingDanmakuCounts[danmaku.createParams.type];
         }
         return b;
     };
-    SimpleDanmakuProvider.prototype.updateDisplayDanmakuList = function () {
+    SimpleDanmakuProvider.prototype.updateDisplayingDanmakuList = function (timeInfo) {
         var partialDisplayingCounts = this.partialDisplayingDanmakuCounts;
         var fullList = this.fullDanmakuList;
         var displayingList = this.displayingDanmakuList;
         // TODO: The algorithm can be optimized!
-        var timeElapsed = this.bulletproof.timeElapsed;
-        var config = this.bulletproof.config;
+        var now = timeInfo.millisOfVideo;
+        var config = this.engine.options;
         var danmaku;
+        var layoutManager = this.layoutManager;
         // We don't handle the situation where cursor is at 00:20, and a danmaku born at 00:15 with life 10s is added.
         // In this situation, the new danmaku is just ignored.
         if (displayingList.length > 0) {
@@ -13456,11 +15113,12 @@ var SimpleDanmakuProvider = (function (_super) {
             var lastDisplayingDanmaku = null;
             for (var i = 0; i < displayingList.length; ++i) {
                 danmaku = displayingList[i];
-                if (this.isDanmakuDead(danmaku)) {
+                if (this.isDanmakuDead(timeInfo, danmaku)) {
                     lastDisplayingDanmaku = danmaku;
                     var type = danmaku.createParams.type;
                     --partialDisplayingCounts[type];
-                    displayingList.splice(i, 1);
+                    layoutManager.removeDanmaku(danmaku);
+                    GLUtil_1.GLUtil.removeAt(displayingList, i);
                     --i;
                 }
                 else {
@@ -13470,17 +15128,18 @@ var SimpleDanmakuProvider = (function (_super) {
             // If we removed the last available danmaku in displaying list, we have to use the last removed one as reference.
             var referenceDanmaku = displayingList.length > 0 ? displayingList[displayingList.length - 1] : lastDisplayingDanmaku;
             // Skip danmakus in the front. Beware that the whole list may be skipped.
-            i = fullList.indexOf(referenceDanmaku) + 1;
+            var i = fullList.indexOf(referenceDanmaku) + 1;
             if (i < fullList.length) {
                 for (; i < fullList.length; ++i) {
                     danmaku = fullList[i];
-                    if (danmaku.bornTime > timeElapsed) {
+                    if (danmaku.bornTime > now) {
                         break;
                     }
                     else {
                         var type = danmaku.createParams.type;
                         if (partialDisplayingCounts[type] < config.simpleDanmakuPartCountThreshold) {
                             displayingList.push(danmaku);
+                            layoutManager.addDanmaku(danmaku);
                             ++partialDisplayingCounts[type];
                         }
                     }
@@ -13491,22 +15150,23 @@ var SimpleDanmakuProvider = (function (_super) {
             // If there is no displaying danmakus, we have to search a little more...
             for (var i = 0; i < fullList.length; ++i) {
                 danmaku = fullList[i];
-                if (danmaku.bornTime > timeElapsed) {
+                if (danmaku.bornTime > now) {
                     break;
                 }
-                if (!this.isDanmakuDead(danmaku)) {
+                if (!this.isDanmakuDead(timeInfo, danmaku)) {
                     var type = danmaku.createParams.type;
                     if (partialDisplayingCounts[type] < config.simpleDanmakuPartCountThreshold) {
                         displayingList.push(fullList[i]);
+                        layoutManager.addDanmaku(fullList[i]);
                         ++partialDisplayingCounts[type];
                     }
                 }
             }
         }
     };
-    SimpleDanmakuProvider.prototype.isDanmakuDead = function (danmaku) {
-        var timeElapsed = this.bulletproof.timeElapsed;
-        return timeElapsed < danmaku.bornTime || danmaku.bornTime + danmaku.lifeTime * 1000 < timeElapsed;
+    SimpleDanmakuProvider.prototype.isDanmakuDead = function (timeInfo, danmaku) {
+        var now = timeInfo.millisOfVideo;
+        return now < danmaku.bornTime || danmaku.bornTime + danmaku.lifeTime * 1000 < now;
     };
     Object.defineProperty(SimpleDanmakuProvider.prototype, "layoutManager", {
         get: function () {
@@ -13550,47 +15210,48 @@ var SimpleDanmakuProvider = (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SimpleDanmakuProvider.prototype, "danmakuLayer", {
+    Object.defineProperty(SimpleDanmakuProvider.prototype, "layer", {
         get: function () {
-            return this._danmakuLayer;
+            return this._layer;
         },
         enumerable: true,
         configurable: true
     });
-    SimpleDanmakuProvider.prototype.update = function () {
+    SimpleDanmakuProvider.prototype.update = function (timeInfo) {
         if (this._shouldSortDanmakuList) {
             this.fullDanmakuList.sort(function (d1, d2) {
                 return d1.bornTime - d2.bornTime;
             });
             this._shouldSortDanmakuList = false;
         }
-        _super.prototype.update.call(this);
+        _super.prototype.update.call(this, timeInfo);
     };
-    SimpleDanmakuProvider.prototype.__addDanmaku = function (content, args) {
-        var config = this.bulletproof.config;
-        if (GLUtil_1.GLUtil.isUndefinedOrNull(args)) {
-            args = SimpleDanmakuHelper_1.SimpleDanmakuHelper.getDefaultParams(config);
+    SimpleDanmakuProvider.prototype._$addDanmaku = function (content, args) {
+        var options = this.engine.options;
+        if (GLUtil_1.GLUtil.ptr(args)) {
+            SimpleDanmakuHelper_1.SimpleDanmakuHelper.fillInCreateParams(options, args);
         }
         else {
-            SimpleDanmakuHelper_1.SimpleDanmakuHelper.fillInCreateParams(config, args);
+            args = SimpleDanmakuHelper_1.SimpleDanmakuHelper.getDefaultParams(options);
         }
         var danmaku = new SimpleDanmaku_1.SimpleDanmaku(this.layoutManager, args);
-        danmaku.initialize(content, this.bulletproof.timeElapsed);
+        danmaku.initialize(content, this.engine.videoMillis);
         this.fullDanmakuList.push(danmaku);
         ++this.partialDanmakuCounts[args.type];
         this._shouldSortDanmakuList = true;
         return danmaku;
     };
     return SimpleDanmakuProvider;
-})(DanmakuProviderBase_1.DanmakuProviderBase);
+}(DanmakuProviderBase_1.DanmakuProviderBase));
 exports.SimpleDanmakuProvider = SimpleDanmakuProvider;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../../../lib/glantern/src/flash/filters/GlowFilter":56,"../DanmakuKind":149,"../DanmakuProviderBase":151,"../DanmakuProviderFlag":152,"../StageResizedEventArgs":153,"./SimpleDanmaku":166,"./SimpleDanmakuHelper":167,"./SimpleDanmakuLayer":168,"./SimpleDanmakuLayoutManager":169}],171:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/filters/GlowFilter":59,"../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../bulletproof/events/StageResizedEventArgs":165,"../DanmakuKind":169,"../DanmakuProviderBase":171,"../DanmakuProviderFlag":172,"./SimpleDanamkuType":185,"./SimpleDanmaku":186,"./SimpleDanmakuHelper":187,"./SimpleDanmakuLayer":188,"./SimpleDanmakuLayoutManager":189}],191:[function(require,module,exports){
 /**
  * Created by MIC on 2015/12/29.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -13600,48 +15261,401 @@ __export(require("./SimpleDanmakuProvider"));
 __export(require("./SimpleDanamkuType"));
 __export(require("./SimpleDanmakuHelper"));
 __export(require("./SimpleDanmakuLayer"));
+var layout = require("./layout/index");
+exports.layout = layout;
 
 
 
-},{"./SimpleDanamkuType":165,"./SimpleDanmaku":166,"./SimpleDanmakuHelper":167,"./SimpleDanmakuLayer":168,"./SimpleDanmakuLayoutManager":169,"./SimpleDanmakuProvider":170}],172:[function(require,module,exports){
+},{"./SimpleDanamkuType":185,"./SimpleDanmaku":186,"./SimpleDanmakuHelper":187,"./SimpleDanmakuLayer":188,"./SimpleDanmakuLayoutManager":189,"./SimpleDanmakuProvider":190,"./layout/index":196}],192:[function(require,module,exports){
 /**
- * Created by MIC on 2015/12/28.
+ * Created by MIC on 2016/7/2.
  */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var HorizontalLayout_1 = require("./HorizontalLayout");
+var HorizontalL2RLayout = (function (_super) {
+    __extends(HorizontalL2RLayout, _super);
+    function HorizontalL2RLayout() {
+        _super.apply(this, arguments);
+    }
+    HorizontalL2RLayout.prototype._$getNewX = function (danmaku, stageWidth, lifeRatio) {
+        return -(danmaku.width + 5) + lifeRatio * (stageWidth + danmaku.width + 5);
+    };
+    HorizontalL2RLayout.prototype._$isDanmakuFullyOnStage = function (danmaku, stageWidth) {
+        return danmaku.x >= 0;
+    };
+    HorizontalL2RLayout.prototype._$getDefaultX = function (danmaku, stageWidth) {
+        return -(danmaku.width + 5);
+    };
+    return HorizontalL2RLayout;
+}(HorizontalLayout_1.HorizontalLayout));
+exports.HorizontalL2RLayout = HorizontalL2RLayout;
+
+
+
+},{"./HorizontalLayout":193}],193:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/7/2.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var SimpleLayoutBase_1 = require("./SimpleLayoutBase");
+var SimpleDanamkuType_1 = require("../SimpleDanamkuType");
+var GLUtil_1 = require("../../../../../lib/glantern/src/gl/glantern/GLUtil");
+var BPUtil_1 = require("../../../bulletproof/BPUtil");
+var Rectangle_1 = require("../../../../../lib/glantern/src/gl/flash/geom/Rectangle");
+var HorizontalLayout = (function (_super) {
+    __extends(HorizontalLayout, _super);
+    function HorizontalLayout() {
+        _super.call(this);
+        this._ySortedList = null;
+        this._ySortedList = [];
+    }
+    HorizontalLayout.prototype.positionX = function (danmaku, measureParams) {
+        var elapsedLifeRatio = (measureParams.currentTime - danmaku.bornTime) / (danmaku.lifeTime * 1000);
+        danmaku.x = this._$getNewX(danmaku, measureParams.stageWidth, elapsedLifeRatio);
+    };
+    HorizontalLayout.prototype.positionY = function (danmaku, measureParams) {
+        if (danmaku.isYSet) {
+            return;
+        }
+        var ySortedList = this._ySortedList;
+        var ySortedListLength = ySortedList.length;
+        var currentHost;
+        var stageWidth = measureParams.stageWidth;
+        var stageHeight = measureParams.stageHeight;
+        // if (ySortedListLength > 0) {
+        //     var lastHostBottom = 0;
+        //     for (var i = 0; i < ySortedListLength; ++i) {
+        //         currentHost = ySortedList[i];
+        //         if (currentHost.y - lastHostBottom > danmaku.height) {
+        //             // If there is enough vertical space for current danmaku to insert into, just place it there.
+        //             danmaku.y = lastHostBottom;
+        //             danmaku.isYSet = true;
+        //             break;
+        //         }
+        //         lastHostBottom = currentHost.bottom + 1;
+        //     }
+        // } else {
+        //     danmaku.y = 0;
+        //     danmaku.isYSet = true;
+        // }
+        if (ySortedListLength <= 0) {
+            danmaku.y = 0;
+            danmaku.isYSet = true;
+        }
+        if (!danmaku.isYSet) {
+            // Scan to stage's top to bottom, and find a place which is able to fill in the new danmaku.
+            // The host is fully on stage, and the host is able to "contain" the new danmaku
+            // vertically, so the new danmaku should horizontally follow the host.
+            var xForNewDanmaku = this._$getDefaultX(danmaku, stageWidth);
+            var yForNewDanmaku = 0;
+            for (var i = 0; i < ySortedListLength; ++i) {
+                var danmakuRect = new Rectangle_1.Rectangle(xForNewDanmaku, yForNewDanmaku, danmaku.width, danmaku.height);
+                var intersectionTestPassed = false;
+                var testResultChanged = false;
+                // Start the scan for space.
+                // TODO: Lower the iteration cost.
+                console.log("Outer loop: i = " + i);
+                for (var j = i; j < ySortedListLength; ++j) {
+                    var testHost = ySortedList[j];
+                    console.log("Inner loop: j = " + j);
+                    if (testHost.y > yForNewDanmaku + danmaku.height) {
+                        // The test host is vertically too far from our test subject.
+                        // TODO: Can we use 'i = j;' here to accelerate our search?
+                        console.log("Inner loop: break - vertical");
+                        intersectionTestPassed = true;
+                        testResultChanged = true;
+                        break;
+                    }
+                    var testHostRect = new Rectangle_1.Rectangle(testHost.x, testHost.y, testHost.width, testHost.height);
+                    var intersects = Rectangle_1.Rectangle.testIntersection(testHostRect, danmakuRect);
+                    console.log("Comparing: v1{" + testHost.x + "," + testHost.y + "," + testHost.width + "," + testHost.height + "}v2{" + xForNewDanmaku + "," + yForNewDanmaku + "," + danmaku.width + "," + danmaku.height + "},i:" + intersects);
+                    if (intersects) {
+                        //intersectionTestPassed = false;
+                        console.log("Inner loop: break - test failed");
+                        testResultChanged = true;
+                        break;
+                    }
+                }
+                if (!intersectionTestPassed && !testResultChanged && i >= ySortedListLength) {
+                    if (yForNewDanmaku + danmaku.height < stageHeight) {
+                        intersectionTestPassed = true;
+                        console.log("Outer loop: extra passed");
+                    }
+                }
+                if (intersectionTestPassed) {
+                    danmaku.y = yForNewDanmaku;
+                    danmaku.isYSet = true;
+                    break;
+                }
+                else {
+                    // Skip redundant iterations.
+                    var oi = i;
+                    do {
+                        if (ySortedList[i].y <= yForNewDanmaku) {
+                            ++i;
+                        }
+                        else {
+                            break;
+                        }
+                    } while (i < ySortedListLength);
+                    if (i < ySortedListLength) {
+                        --i;
+                        console.log("Outer loop: skipped from " + oi + " to " + i);
+                        yForNewDanmaku = ySortedList[i].bottom + 1;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
+        if (!danmaku.isYSet) {
+            // If the new danmaku's Y coordinate is still unset, it should vertically follow the latest danmaku in the
+            // displaying list. If there is an overflow, set the new danmaku's Y coordinate to 0.
+            // The displaying list is sorted by birth time.
+            // BTW, the case when the length of the displaying list is 0 is handled in `ySortedListLength > 0`.
+            var displayingList = measureParams.displayingList;
+            var displayingListLength = displayingList.length;
+            var latestHorizontalDanmakuInDL = null;
+            for (var i = displayingListLength - 1; i >= 0; --i) {
+                var dan = displayingList[i];
+                if (isDanmakuHorizontal(dan) && dan.isYSet) {
+                    latestHorizontalDanmakuInDL = displayingList[i];
+                    break;
+                }
+            }
+            if (latestHorizontalDanmakuInDL !== null && latestHorizontalDanmakuInDL.bottom + danmaku.height <= stageHeight) {
+                danmaku.y = latestHorizontalDanmakuInDL.bottom + 1;
+            }
+            else {
+                danmaku.y = 0;
+            }
+            danmaku.isYSet = true;
+        }
+        console.info("Y coord: " + danmaku.y + ", yList:", ySortedList);
+        this.__updateYSortedList(danmaku);
+    };
+    HorizontalLayout.prototype.add = function (danmaku) {
+    };
+    HorizontalLayout.prototype.remove = function (danmaku) {
+        GLUtil_1.GLUtil.remove(this._ySortedList, danmaku);
+    };
+    HorizontalLayout.prototype.__updateYSortedList = function (danmaku) {
+        BPUtil_1.BPUtil.binaryInsert(this._ySortedList, danmaku, function (toInsert, standard) {
+            var yDiff = toInsert.y - standard.y;
+            return yDiff !== 0 ? toInsert.x - standard.x : yDiff;
+        });
+    };
+    return HorizontalLayout;
+}(SimpleLayoutBase_1.SimpleLayoutBase));
+exports.HorizontalLayout = HorizontalLayout;
+function isDanmakuHorizontal(danmaku) {
+    return danmaku.isType(SimpleDanamkuType_1.SimpleDanmakuType.R2L) || danmaku.isType(SimpleDanamkuType_1.SimpleDanmakuType.L2R);
+}
+
+
+
+},{"../../../../../lib/glantern/src/gl/flash/geom/Rectangle":67,"../../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../../bulletproof/BPUtil":162,"../SimpleDanamkuType":185,"./SimpleLayoutBase":195}],194:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/7/2.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var HorizontalLayout_1 = require("./HorizontalLayout");
+var HorizontalR2LLayout = (function (_super) {
+    __extends(HorizontalR2LLayout, _super);
+    function HorizontalR2LLayout() {
+        _super.apply(this, arguments);
+    }
+    HorizontalR2LLayout.prototype._$getNewX = function (danmaku, stageWidth, lifeRatio) {
+        return stageWidth - lifeRatio * (stageWidth + danmaku.width + 5);
+    };
+    HorizontalR2LLayout.prototype._$isDanmakuFullyOnStage = function (danmaku, stageWidth) {
+        return danmaku.x < stageWidth - danmaku.width;
+    };
+    HorizontalR2LLayout.prototype._$getDefaultX = function (danmaku, stageWidth) {
+        return stageWidth;
+    };
+    return HorizontalR2LLayout;
+}(HorizontalLayout_1.HorizontalLayout));
+exports.HorizontalR2LLayout = HorizontalR2LLayout;
+
+
+
+},{"./HorizontalLayout":193}],195:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/7/2.
+ */
+"use strict";
+var SimpleLayoutBase = (function () {
+    function SimpleLayoutBase() {
+    }
+    return SimpleLayoutBase;
+}());
+exports.SimpleLayoutBase = SimpleLayoutBase;
+
+
+
+},{}],196:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/13.
+ */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-var VERSION = "Bulletproof/0.6.0-alpha (BiliBili, like BSE, like CCL, like Flash) HTML5/*";
+__export(require("./SimpleLayoutBase"));
+__export(require("./HorizontalLayout"));
+__export(require("./HorizontalR2LLayout"));
+__export(require("./HorizontalL2RLayout"));
+
+
+
+},{"./HorizontalL2RLayout":192,"./HorizontalLayout":193,"./HorizontalR2LLayout":194,"./SimpleLayoutBase":195}],197:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/7/15.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var ErrorBase_1 = require("../../../../lib/glantern/src/gl/glantern/ErrorBase");
+var OutOfRangeError = (function (_super) {
+    __extends(OutOfRangeError, _super);
+    function OutOfRangeError() {
+        _super.apply(this, arguments);
+    }
+    Object.defineProperty(OutOfRangeError.prototype, "name", {
+        get: function () {
+            return "OutOfRangeError";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return OutOfRangeError;
+}(ErrorBase_1.ErrorBase));
+exports.OutOfRangeError = OutOfRangeError;
+
+
+
+},{"../../../../lib/glantern/src/gl/glantern/ErrorBase":92}],198:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/7/15.
+ */
+"use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+__export(require("./OutOfRangeError"));
+
+
+
+},{"./OutOfRangeError":197}],199:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/7/15.
+ */
+"use strict";
+var errors = require("./errors/index");
+exports.errors = errors;
+
+
+
+},{"./errors/index":198}],200:[function(require,module,exports){
+/**
+ * Created by MIC on 2015/12/28.
+ */
+"use strict";
+var VERSION = "0.6.0-alpha";
 exports.version = VERSION;
-__export(require("./Bulletproof"));
+var USER_AGENT = "Bulletproof/" + VERSION + " (BiliBili, like BSE, like CCL, like Flash)";
+exports.userAgent = USER_AGENT;
+// Bulletproof
 var bilibili = require("./bilibili/index");
 exports.bilibili = bilibili;
 var danmaku = require("./danmaku/index");
 exports.danmaku = danmaku;
 var interactive = require("./interactive/index");
 exports.interactive = interactive;
-var BulletproofConfig_1 = require("./BulletproofConfig");
-exports.configuration = BulletproofConfig_1.BulletproofConfig;
-__export(require("../lib/glantern/src/index"));
+var DefaultEngineOptions_1 = require("./bulletproof/DefaultEngineOptions");
+exports.defaultOptions = DefaultEngineOptions_1.DefaultEngineOptions;
+var bulletproof = require("./bulletproof/index");
+exports.bulletproof = bulletproof;
+var Engine = bulletproof.Engine;
+exports.Engine = Engine;
+// GLantern
+var gl_root = require("../../lib/glantern/src/gl/index");
+var flash = gl_root.flash;
+exports.flash = flash;
+var fl = gl_root.fl;
+exports.fl = fl;
+var mx = gl_root.mx;
+exports.mx = mx;
+var glantern = gl_root.glantern;
+exports.glantern = glantern;
+var webgl = gl_root.webgl;
+exports.webgl = webgl;
+var injectToGlobal = gl_root.injectToGlobal;
+exports.injectToGlobal = injectToGlobal;
+var isSupported = gl_root.isSupported;
+exports.isSupported = isSupported;
+var flash_fix = require("./flash/index");
+fuse(flash, flash_fix);
+function fuse(baseObject, attachment) {
+    for (var propName in attachment) {
+        if (baseObject.hasOwnProperty(propName)) {
+            fuse(baseObject[propName], attachment[propName]);
+        }
+        else {
+            baseObject[propName] = attachment[propName];
+        }
+    }
+}
 
 
 
-},{"../lib/glantern/src/index":82,"./Bulletproof":127,"./BulletproofConfig":128,"./bilibili/index":146,"./danmaku/index":154,"./interactive/index":173}],173:[function(require,module,exports){
+},{"../../lib/glantern/src/gl/index":98,"./bilibili/index":160,"./bulletproof/DefaultEngineOptions":163,"./bulletproof/index":167,"./danmaku/index":174,"./flash/index":199,"./interactive/index":201}],201:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
 var video = require("./video/index");
 exports.video = video;
 
 
 
-},{"./video/index":178}],174:[function(require,module,exports){
+},{"./video/index":207}],202:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var VideoPlayerState_1 = require("./VideoPlayerState");
-var NotImplementedError_1 = require("../../../lib/glantern/lib/glantern-utils/src/NotImplementedError");
-var VideoPlayerBase = (function () {
+var NotImplementedError_1 = require("../../../../lib/glantern/src/gl/flash/errors/NotImplementedError");
+var EventDispatcher_1 = require("../../../../lib/glantern/src/gl/flash/events/EventDispatcher");
+var VideoPlayerBase = (function (_super) {
+    __extends(VideoPlayerBase, _super);
     function VideoPlayerBase() {
+        _super.call(this);
     }
     Object.defineProperty(VideoPlayerBase.prototype, "currentTime", {
         /**
@@ -13844,15 +15858,94 @@ var VideoPlayerBase = (function () {
         configurable: true
     });
     return VideoPlayerBase;
-})();
+}(EventDispatcher_1.EventDispatcher));
 exports.VideoPlayerBase = VideoPlayerBase;
 
 
 
-},{"../../../lib/glantern/lib/glantern-utils/src/NotImplementedError":4,"./VideoPlayerState":175}],175:[function(require,module,exports){
+},{"../../../../lib/glantern/src/gl/flash/errors/NotImplementedError":51,"../../../../lib/glantern/src/gl/flash/events/EventDispatcher":53,"./VideoPlayerState":204}],203:[function(require,module,exports){
+/**
+ * Created by MIC on 2016/6/13.
+ */
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var EventBase_1 = require("../../../../lib/glantern/src/gl/glantern/EventBase");
+var VideoPlayerEvent = (function (_super) {
+    __extends(VideoPlayerEvent, _super);
+    function VideoPlayerEvent() {
+        _super.apply(this, arguments);
+    }
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_ENDED", {
+        get: function () {
+            return "videoEnded";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_PLAY", {
+        get: function () {
+            return "videoPlay";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_PAUSE", {
+        get: function () {
+            return "videoPause";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_PLAYING", {
+        get: function () {
+            return "videoPlaying";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_SEEKED", {
+        get: function () {
+            return "videoSeeked";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_SEEKING", {
+        get: function () {
+            return "videoSeeking";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_LOADED_DATA", {
+        get: function () {
+            return "videoLoadedData";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(VideoPlayerEvent, "VIDEO_TIME_UPDATE", {
+        get: function () {
+            return "videoTimeUpdate";
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return VideoPlayerEvent;
+}(EventBase_1.EventBase));
+exports.VideoPlayerEvent = VideoPlayerEvent;
+
+
+
+},{"../../../../lib/glantern/src/gl/glantern/EventBase":93}],204:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
 (function (VideoPlayerState) {
     VideoPlayerState[VideoPlayerState["Invalid"] = -1] = "Invalid";
     VideoPlayerState[VideoPlayerState["Created"] = 0] = "Created";
@@ -13867,10 +15960,11 @@ var VideoPlayerState = exports.VideoPlayerState;
 
 
 
-},{}],176:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13878,16 +15972,23 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var VideoPlayerBase_1 = require("../VideoPlayerBase");
 var VideoPlayerState_1 = require("../VideoPlayerState");
-var GLUtil_1 = require("../../../../lib/glantern/lib/glantern-utils/src/GLUtil");
+var GLUtil_1 = require("../../../../../lib/glantern/src/gl/glantern/GLUtil");
+var MathUtil_1 = require("../../../../../lib/glantern/src/gl/glantern/MathUtil");
+var VideoPlayerEvent_1 = require("../VideoPlayerEvent");
+var EventBase_1 = require("../../../../../lib/glantern/src/gl/glantern/EventBase");
 var Html5VideoPlayer = (function (_super) {
     __extends(Html5VideoPlayer, _super);
-    function Html5VideoPlayer() {
+    function Html5VideoPlayer(videoElement) {
+        if (videoElement === void 0) { videoElement = null; }
         _super.call(this);
         this._videoElement = null;
         this._state = VideoPlayerState_1.VideoPlayerState.Invalid;
         this._originalStateBeforeSeeking = VideoPlayerState_1.VideoPlayerState.Invalid;
         this._eventHandlers = null;
-        this._videoElement = window.document.createElement("video");
+        if (!GLUtil_1.GLUtil.ptr(videoElement) || !(videoElement instanceof HTMLVideoElement)) {
+            videoElement = window.document.createElement("video");
+        }
+        this._videoElement = videoElement;
         this._eventHandlers = [];
         this._state = VideoPlayerState_1.VideoPlayerState.Created;
     }
@@ -13896,8 +15997,9 @@ var Html5VideoPlayer = (function (_super) {
         var handlers = this._eventHandlers;
         vid.width = width;
         vid.height = height;
+        var $this = this;
         function addListener(name, listener) {
-            var f = listener.bind(this);
+            var f = listener.bind($this);
             handlers.push({ name: name, handler: f });
             vid.addEventListener(name, f);
         }
@@ -13906,8 +16008,10 @@ var Html5VideoPlayer = (function (_super) {
         addListener("playing", this.__onPlaying);
         addListener("pause", this.__onPause);
         addListener("loadeddata", this.__onLoadedData);
+        // This is not a spelling mistake.
         addListener("seeked", this.__onSeeked);
         addListener("seeking", this.__onSeeking);
+        addListener("timeupdate", this.__onTimeUpdate);
     };
     Html5VideoPlayer.prototype.dispose = function () {
         var video = this._videoElement;
@@ -13916,7 +16020,7 @@ var Html5VideoPlayer = (function (_super) {
         for (var i = 0; i < handlers.length; ++i) {
             video.removeEventListener(handlers[i].name, handlers[i].handler);
         }
-        if (!GLUtil_1.GLUtil.isUndefinedOrNull(videoParent)) {
+        if (GLUtil_1.GLUtil.ptr(videoParent)) {
             videoParent.removeChild(video);
         }
         while (handlers.length > 0) {
@@ -13925,6 +16029,7 @@ var Html5VideoPlayer = (function (_super) {
         this._state = VideoPlayerState_1.VideoPlayerState.Invalid;
         this._videoElement = null;
         this._eventHandlers = null;
+        _super.prototype.dispose.call(this);
     };
     Html5VideoPlayer.prototype.load = function (url) {
         if (this._state !== VideoPlayerState_1.VideoPlayerState.Invalid) {
@@ -13990,7 +16095,7 @@ var Html5VideoPlayer = (function (_super) {
         },
         set: function (v) {
             if (this.hasVideo) {
-                v = GLUtil_1.GLUtil.limitInto(v, 0, 1);
+                v = MathUtil_1.MathUtil.clamp(v, 0, 1);
                 this.currentTime = v * this.duration;
             }
         },
@@ -14082,7 +16187,7 @@ var Html5VideoPlayer = (function (_super) {
         },
         set: function (v) {
             if (this._videoElement !== null) {
-                v = GLUtil_1.GLUtil.limitInto(v, 0, 1);
+                v = MathUtil_1.MathUtil.clamp(v, 0, 1);
                 this._videoElement.volume = v * 200;
             }
         },
@@ -14154,38 +16259,49 @@ var Html5VideoPlayer = (function (_super) {
     });
     Html5VideoPlayer.prototype.__onEnded = function (ev) {
         this._state = VideoPlayerState_1.VideoPlayerState.Stopped;
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_ENDED));
     };
     Html5VideoPlayer.prototype.__onPlay = function (ev) {
         this._state = VideoPlayerState_1.VideoPlayerState.Playing;
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_PLAY));
     };
     Html5VideoPlayer.prototype.__onPause = function (ev) {
         this._state = VideoPlayerState_1.VideoPlayerState.Paused;
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_PAUSE));
     };
     Html5VideoPlayer.prototype.__onPlaying = function (ev) {
         this._state = VideoPlayerState_1.VideoPlayerState.Playing;
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_PLAYING));
     };
     Html5VideoPlayer.prototype.__onSeeked = function (ev) {
         this._state = this._originalStateBeforeSeeking;
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_SEEKED));
     };
     Html5VideoPlayer.prototype.__onSeeking = function (ev) {
         this._originalStateBeforeSeeking = this._state;
         this._state = VideoPlayerState_1.VideoPlayerState.Seeking;
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_SEEKING));
     };
     Html5VideoPlayer.prototype.__onLoadedData = function (ev) {
         if (this._state === VideoPlayerState_1.VideoPlayerState.Initialized) {
             this._state = VideoPlayerState_1.VideoPlayerState.Loaded;
         }
+        this.dispatchEvent(EventBase_1.EventBase.create(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_LOADED_DATA));
+    };
+    Html5VideoPlayer.prototype.__onTimeUpdate = function (ev) {
+        this.dispatchEvent(new VideoPlayerEvent_1.VideoPlayerEvent(VideoPlayerEvent_1.VideoPlayerEvent.VIDEO_TIME_UPDATE));
     };
     return Html5VideoPlayer;
-})(VideoPlayerBase_1.VideoPlayerBase);
+}(VideoPlayerBase_1.VideoPlayerBase));
 exports.Html5VideoPlayer = Html5VideoPlayer;
 
 
 
-},{"../../../../lib/glantern/lib/glantern-utils/src/GLUtil":3,"../VideoPlayerBase":174,"../VideoPlayerState":175}],177:[function(require,module,exports){
+},{"../../../../../lib/glantern/src/gl/glantern/EventBase":93,"../../../../../lib/glantern/src/gl/glantern/GLUtil":94,"../../../../../lib/glantern/src/gl/glantern/MathUtil":95,"../VideoPlayerBase":202,"../VideoPlayerEvent":203,"../VideoPlayerState":204}],206:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
@@ -14193,21 +16309,23 @@ __export(require("./Html5VideoPlayer"));
 
 
 
-},{"./Html5VideoPlayer":176}],178:[function(require,module,exports){
+},{"./Html5VideoPlayer":205}],207:[function(require,module,exports){
 /**
  * Created by MIC on 2016/2/8.
  */
+"use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 __export(require("./VideoPlayerBase"));
 __export(require("./VideoPlayerState"));
+__export(require("./VideoPlayerEvent"));
 var html5 = require("./html5/index");
 exports.html5 = html5;
 
 
 
-},{"./VideoPlayerBase":174,"./VideoPlayerState":175,"./html5/index":177}],179:[function(require,module,exports){
+},{"./VideoPlayerBase":202,"./VideoPlayerEvent":203,"./VideoPlayerState":204,"./html5/index":206}],208:[function(require,module,exports){
 /*
 
  Copyright 2000, Silicon Graphics, Inc. All Rights Reserved.
@@ -14267,7 +16385,7 @@ function W(a,b){for(var c=a.d,d=a.e,e=a.c,f=b,g=c[f];;){var h=f<<1;h<a.a&&u(d[c[
 gluEnum:{GLU_TESS_MESH:100112,GLU_TESS_TOLERANCE:100142,GLU_TESS_WINDING_RULE:100140,GLU_TESS_BOUNDARY_ONLY:100141,GLU_INVALID_ENUM:100900,GLU_INVALID_VALUE:100901,GLU_TESS_BEGIN:100100,GLU_TESS_VERTEX:100101,GLU_TESS_END:100102,GLU_TESS_ERROR:100103,GLU_TESS_EDGE_FLAG:100104,GLU_TESS_COMBINE:100105,GLU_TESS_BEGIN_DATA:100106,GLU_TESS_VERTEX_DATA:100107,GLU_TESS_END_DATA:100108,GLU_TESS_ERROR_DATA:100109,GLU_TESS_EDGE_FLAG_DATA:100110,GLU_TESS_COMBINE_DATA:100111}};X.prototype.gluDeleteTess=X.prototype.x;
 X.prototype.gluTessProperty=X.prototype.B;X.prototype.gluGetTessProperty=X.prototype.y;X.prototype.gluTessNormal=X.prototype.A;X.prototype.gluTessCallback=X.prototype.z;X.prototype.gluTessVertex=X.prototype.C;X.prototype.gluTessBeginPolygon=X.prototype.u;X.prototype.gluTessBeginContour=X.prototype.t;X.prototype.gluTessEndContour=X.prototype.v;X.prototype.gluTessEndPolygon=X.prototype.w; if (typeof module !== 'undefined') { module.exports = this.libtess; }
 
-},{}],180:[function(require,module,exports){
+},{}],209:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -14314,5 +16432,6436 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}]},{},[147])
+},{}],210:[function(require,module,exports){
+// Top level file is just a mixin of submodules & constants
+'use strict';
+
+var assign    = require('./lib/utils/common').assign;
+
+var deflate   = require('./lib/deflate');
+var inflate   = require('./lib/inflate');
+var constants = require('./lib/zlib/constants');
+
+var pako = {};
+
+assign(pako, deflate, inflate, constants);
+
+module.exports = pako;
+
+},{"./lib/deflate":211,"./lib/inflate":212,"./lib/utils/common":213,"./lib/zlib/constants":216}],211:[function(require,module,exports){
+'use strict';
+
+
+var zlib_deflate = require('./zlib/deflate.js');
+var utils = require('./utils/common');
+var strings = require('./utils/strings');
+var msg = require('./zlib/messages');
+var zstream = require('./zlib/zstream');
+
+var toString = Object.prototype.toString;
+
+/* Public constants ==========================================================*/
+/* ===========================================================================*/
+
+var Z_NO_FLUSH      = 0;
+var Z_FINISH        = 4;
+
+var Z_OK            = 0;
+var Z_STREAM_END    = 1;
+var Z_SYNC_FLUSH    = 2;
+
+var Z_DEFAULT_COMPRESSION = -1;
+
+var Z_DEFAULT_STRATEGY    = 0;
+
+var Z_DEFLATED  = 8;
+
+/* ===========================================================================*/
+
+
+/**
+ * class Deflate
+ *
+ * Generic JS-style wrapper for zlib calls. If you don't need
+ * streaming behaviour - use more simple functions: [[deflate]],
+ * [[deflateRaw]] and [[gzip]].
+ **/
+
+/* internal
+ * Deflate.chunks -> Array
+ *
+ * Chunks of output data, if [[Deflate#onData]] not overriden.
+ **/
+
+/**
+ * Deflate.result -> Uint8Array|Array
+ *
+ * Compressed result, generated by default [[Deflate#onData]]
+ * and [[Deflate#onEnd]] handlers. Filled after you push last chunk
+ * (call [[Deflate#push]] with `Z_FINISH` / `true` param)  or if you
+ * push a chunk with explicit flush (call [[Deflate#push]] with
+ * `Z_SYNC_FLUSH` param).
+ **/
+
+/**
+ * Deflate.err -> Number
+ *
+ * Error code after deflate finished. 0 (Z_OK) on success.
+ * You will not need it in real life, because deflate errors
+ * are possible only on wrong options or bad `onData` / `onEnd`
+ * custom handlers.
+ **/
+
+/**
+ * Deflate.msg -> String
+ *
+ * Error message, if [[Deflate.err]] != 0
+ **/
+
+
+/**
+ * new Deflate(options)
+ * - options (Object): zlib deflate options.
+ *
+ * Creates new deflator instance with specified params. Throws exception
+ * on bad params. Supported options:
+ *
+ * - `level`
+ * - `windowBits`
+ * - `memLevel`
+ * - `strategy`
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information on these.
+ *
+ * Additional options, for internal needs:
+ *
+ * - `chunkSize` - size of generated data chunks (16K by default)
+ * - `raw` (Boolean) - do raw deflate
+ * - `gzip` (Boolean) - create gzip wrapper
+ * - `to` (String) - if equal to 'string', then result will be "binary string"
+ *    (each char code [0..255])
+ * - `header` (Object) - custom header for gzip
+ *   - `text` (Boolean) - true if compressed data believed to be text
+ *   - `time` (Number) - modification time, unix timestamp
+ *   - `os` (Number) - operation system code
+ *   - `extra` (Array) - array of bytes with extra data (max 65536)
+ *   - `name` (String) - file name (binary string)
+ *   - `comment` (String) - comment (binary string)
+ *   - `hcrc` (Boolean) - true if header crc should be added
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , chunk1 = Uint8Array([1,2,3,4,5,6,7,8,9])
+ *   , chunk2 = Uint8Array([10,11,12,13,14,15,16,17,18,19]);
+ *
+ * var deflate = new pako.Deflate({ level: 3});
+ *
+ * deflate.push(chunk1, false);
+ * deflate.push(chunk2, true);  // true -> last chunk
+ *
+ * if (deflate.err) { throw new Error(deflate.err); }
+ *
+ * console.log(deflate.result);
+ * ```
+ **/
+var Deflate = function(options) {
+
+  this.options = utils.assign({
+    level: Z_DEFAULT_COMPRESSION,
+    method: Z_DEFLATED,
+    chunkSize: 16384,
+    windowBits: 15,
+    memLevel: 8,
+    strategy: Z_DEFAULT_STRATEGY,
+    to: ''
+  }, options || {});
+
+  var opt = this.options;
+
+  if (opt.raw && (opt.windowBits > 0)) {
+    opt.windowBits = -opt.windowBits;
+  }
+
+  else if (opt.gzip && (opt.windowBits > 0) && (opt.windowBits < 16)) {
+    opt.windowBits += 16;
+  }
+
+  this.err    = 0;      // error code, if happens (0 = Z_OK)
+  this.msg    = '';     // error message
+  this.ended  = false;  // used to avoid multiple onEnd() calls
+  this.chunks = [];     // chunks of compressed data
+
+  this.strm = new zstream();
+  this.strm.avail_out = 0;
+
+  var status = zlib_deflate.deflateInit2(
+    this.strm,
+    opt.level,
+    opt.method,
+    opt.windowBits,
+    opt.memLevel,
+    opt.strategy
+  );
+
+  if (status !== Z_OK) {
+    throw new Error(msg[status]);
+  }
+
+  if (opt.header) {
+    zlib_deflate.deflateSetHeader(this.strm, opt.header);
+  }
+};
+
+/**
+ * Deflate#push(data[, mode]) -> Boolean
+ * - data (Uint8Array|Array|ArrayBuffer|String): input data. Strings will be
+ *   converted to utf8 byte sequence.
+ * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` meansh Z_FINISH.
+ *
+ * Sends input data to deflate pipe, generating [[Deflate#onData]] calls with
+ * new compressed chunks. Returns `true` on success. The last data block must have
+ * mode Z_FINISH (or `true`). That will flush internal pending buffers and call
+ * [[Deflate#onEnd]]. For interim explicit flushes (without ending the stream) you
+ * can use mode Z_SYNC_FLUSH, keeping the compression context.
+ *
+ * On fail call [[Deflate#onEnd]] with error code and return false.
+ *
+ * We strongly recommend to use `Uint8Array` on input for best speed (output
+ * array format is detected automatically). Also, don't skip last param and always
+ * use the same type in your code (boolean or number). That will improve JS speed.
+ *
+ * For regular `Array`-s make sure all elements are [0..255].
+ *
+ * ##### Example
+ *
+ * ```javascript
+ * push(chunk, false); // push one of data chunks
+ * ...
+ * push(chunk, true);  // push last chunk
+ * ```
+ **/
+Deflate.prototype.push = function(data, mode) {
+  var strm = this.strm;
+  var chunkSize = this.options.chunkSize;
+  var status, _mode;
+
+  if (this.ended) { return false; }
+
+  _mode = (mode === ~~mode) ? mode : ((mode === true) ? Z_FINISH : Z_NO_FLUSH);
+
+  // Convert data if needed
+  if (typeof data === 'string') {
+    // If we need to compress text, change encoding to utf8.
+    strm.input = strings.string2buf(data);
+  } else if (toString.call(data) === '[object ArrayBuffer]') {
+    strm.input = new Uint8Array(data);
+  } else {
+    strm.input = data;
+  }
+
+  strm.next_in = 0;
+  strm.avail_in = strm.input.length;
+
+  do {
+    if (strm.avail_out === 0) {
+      strm.output = new utils.Buf8(chunkSize);
+      strm.next_out = 0;
+      strm.avail_out = chunkSize;
+    }
+    status = zlib_deflate.deflate(strm, _mode);    /* no bad return value */
+
+    if (status !== Z_STREAM_END && status !== Z_OK) {
+      this.onEnd(status);
+      this.ended = true;
+      return false;
+    }
+    if (strm.avail_out === 0 || (strm.avail_in === 0 && (_mode === Z_FINISH || _mode === Z_SYNC_FLUSH))) {
+      if (this.options.to === 'string') {
+        this.onData(strings.buf2binstring(utils.shrinkBuf(strm.output, strm.next_out)));
+      } else {
+        this.onData(utils.shrinkBuf(strm.output, strm.next_out));
+      }
+    }
+  } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== Z_STREAM_END);
+
+  // Finalize on the last chunk.
+  if (_mode === Z_FINISH) {
+    status = zlib_deflate.deflateEnd(this.strm);
+    this.onEnd(status);
+    this.ended = true;
+    return status === Z_OK;
+  }
+
+  // callback interim results if Z_SYNC_FLUSH.
+  if (_mode === Z_SYNC_FLUSH) {
+    this.onEnd(Z_OK);
+    strm.avail_out = 0;
+    return true;
+  }
+
+  return true;
+};
+
+
+/**
+ * Deflate#onData(chunk) -> Void
+ * - chunk (Uint8Array|Array|String): ouput data. Type of array depends
+ *   on js engine support. When string output requested, each chunk
+ *   will be string.
+ *
+ * By default, stores data blocks in `chunks[]` property and glue
+ * those in `onEnd`. Override this handler, if you need another behaviour.
+ **/
+Deflate.prototype.onData = function(chunk) {
+  this.chunks.push(chunk);
+};
+
+
+/**
+ * Deflate#onEnd(status) -> Void
+ * - status (Number): deflate status. 0 (Z_OK) on success,
+ *   other if not.
+ *
+ * Called once after you tell deflate that the input stream is
+ * complete (Z_FINISH) or should be flushed (Z_SYNC_FLUSH)
+ * or if an error happened. By default - join collected chunks,
+ * free memory and fill `results` / `err` properties.
+ **/
+Deflate.prototype.onEnd = function(status) {
+  // On success - join
+  if (status === Z_OK) {
+    if (this.options.to === 'string') {
+      this.result = this.chunks.join('');
+    } else {
+      this.result = utils.flattenChunks(this.chunks);
+    }
+  }
+  this.chunks = [];
+  this.err = status;
+  this.msg = this.strm.msg;
+};
+
+
+/**
+ * deflate(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to compress.
+ * - options (Object): zlib deflate options.
+ *
+ * Compress `data` with deflate alrorythm and `options`.
+ *
+ * Supported options are:
+ *
+ * - level
+ * - windowBits
+ * - memLevel
+ * - strategy
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information on these.
+ *
+ * Sugar (options):
+ *
+ * - `raw` (Boolean) - say that we work with raw stream, if you don't wish to specify
+ *   negative windowBits implicitly.
+ * - `to` (String) - if equal to 'string', then result will be "binary string"
+ *    (each char code [0..255])
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , data = Uint8Array([1,2,3,4,5,6,7,8,9]);
+ *
+ * console.log(pako.deflate(data));
+ * ```
+ **/
+function deflate(input, options) {
+  var deflator = new Deflate(options);
+
+  deflator.push(input, true);
+
+  // That will never happens, if you don't cheat with options :)
+  if (deflator.err) { throw deflator.msg; }
+
+  return deflator.result;
+}
+
+
+/**
+ * deflateRaw(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to compress.
+ * - options (Object): zlib deflate options.
+ *
+ * The same as [[deflate]], but creates raw data, without wrapper
+ * (header and adler32 crc).
+ **/
+function deflateRaw(input, options) {
+  options = options || {};
+  options.raw = true;
+  return deflate(input, options);
+}
+
+
+/**
+ * gzip(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to compress.
+ * - options (Object): zlib deflate options.
+ *
+ * The same as [[deflate]], but create gzip wrapper instead of
+ * deflate one.
+ **/
+function gzip(input, options) {
+  options = options || {};
+  options.gzip = true;
+  return deflate(input, options);
+}
+
+
+exports.Deflate = Deflate;
+exports.deflate = deflate;
+exports.deflateRaw = deflateRaw;
+exports.gzip = gzip;
+
+},{"./utils/common":213,"./utils/strings":214,"./zlib/deflate.js":218,"./zlib/messages":223,"./zlib/zstream":225}],212:[function(require,module,exports){
+'use strict';
+
+
+var zlib_inflate = require('./zlib/inflate.js');
+var utils = require('./utils/common');
+var strings = require('./utils/strings');
+var c = require('./zlib/constants');
+var msg = require('./zlib/messages');
+var zstream = require('./zlib/zstream');
+var gzheader = require('./zlib/gzheader');
+
+var toString = Object.prototype.toString;
+
+/**
+ * class Inflate
+ *
+ * Generic JS-style wrapper for zlib calls. If you don't need
+ * streaming behaviour - use more simple functions: [[inflate]]
+ * and [[inflateRaw]].
+ **/
+
+/* internal
+ * inflate.chunks -> Array
+ *
+ * Chunks of output data, if [[Inflate#onData]] not overriden.
+ **/
+
+/**
+ * Inflate.result -> Uint8Array|Array|String
+ *
+ * Uncompressed result, generated by default [[Inflate#onData]]
+ * and [[Inflate#onEnd]] handlers. Filled after you push last chunk
+ * (call [[Inflate#push]] with `Z_FINISH` / `true` param) or if you
+ * push a chunk with explicit flush (call [[Inflate#push]] with
+ * `Z_SYNC_FLUSH` param).
+ **/
+
+/**
+ * Inflate.err -> Number
+ *
+ * Error code after inflate finished. 0 (Z_OK) on success.
+ * Should be checked if broken data possible.
+ **/
+
+/**
+ * Inflate.msg -> String
+ *
+ * Error message, if [[Inflate.err]] != 0
+ **/
+
+
+/**
+ * new Inflate(options)
+ * - options (Object): zlib inflate options.
+ *
+ * Creates new inflator instance with specified params. Throws exception
+ * on bad params. Supported options:
+ *
+ * - `windowBits`
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information on these.
+ *
+ * Additional options, for internal needs:
+ *
+ * - `chunkSize` - size of generated data chunks (16K by default)
+ * - `raw` (Boolean) - do raw inflate
+ * - `to` (String) - if equal to 'string', then result will be converted
+ *   from utf8 to utf16 (javascript) string. When string output requested,
+ *   chunk length can differ from `chunkSize`, depending on content.
+ *
+ * By default, when no options set, autodetect deflate/gzip data format via
+ * wrapper header.
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , chunk1 = Uint8Array([1,2,3,4,5,6,7,8,9])
+ *   , chunk2 = Uint8Array([10,11,12,13,14,15,16,17,18,19]);
+ *
+ * var inflate = new pako.Inflate({ level: 3});
+ *
+ * inflate.push(chunk1, false);
+ * inflate.push(chunk2, true);  // true -> last chunk
+ *
+ * if (inflate.err) { throw new Error(inflate.err); }
+ *
+ * console.log(inflate.result);
+ * ```
+ **/
+var Inflate = function(options) {
+
+  this.options = utils.assign({
+    chunkSize: 16384,
+    windowBits: 0,
+    to: ''
+  }, options || {});
+
+  var opt = this.options;
+
+  // Force window size for `raw` data, if not set directly,
+  // because we have no header for autodetect.
+  if (opt.raw && (opt.windowBits >= 0) && (opt.windowBits < 16)) {
+    opt.windowBits = -opt.windowBits;
+    if (opt.windowBits === 0) { opt.windowBits = -15; }
+  }
+
+  // If `windowBits` not defined (and mode not raw) - set autodetect flag for gzip/deflate
+  if ((opt.windowBits >= 0) && (opt.windowBits < 16) &&
+      !(options && options.windowBits)) {
+    opt.windowBits += 32;
+  }
+
+  // Gzip header has no info about windows size, we can do autodetect only
+  // for deflate. So, if window size not set, force it to max when gzip possible
+  if ((opt.windowBits > 15) && (opt.windowBits < 48)) {
+    // bit 3 (16) -> gzipped data
+    // bit 4 (32) -> autodetect gzip/deflate
+    if ((opt.windowBits & 15) === 0) {
+      opt.windowBits |= 15;
+    }
+  }
+
+  this.err    = 0;      // error code, if happens (0 = Z_OK)
+  this.msg    = '';     // error message
+  this.ended  = false;  // used to avoid multiple onEnd() calls
+  this.chunks = [];     // chunks of compressed data
+
+  this.strm   = new zstream();
+  this.strm.avail_out = 0;
+
+  var status  = zlib_inflate.inflateInit2(
+    this.strm,
+    opt.windowBits
+  );
+
+  if (status !== c.Z_OK) {
+    throw new Error(msg[status]);
+  }
+
+  this.header = new gzheader();
+
+  zlib_inflate.inflateGetHeader(this.strm, this.header);
+};
+
+/**
+ * Inflate#push(data[, mode]) -> Boolean
+ * - data (Uint8Array|Array|ArrayBuffer|String): input data
+ * - mode (Number|Boolean): 0..6 for corresponding Z_NO_FLUSH..Z_TREE modes.
+ *   See constants. Skipped or `false` means Z_NO_FLUSH, `true` meansh Z_FINISH.
+ *
+ * Sends input data to inflate pipe, generating [[Inflate#onData]] calls with
+ * new output chunks. Returns `true` on success. The last data block must have
+ * mode Z_FINISH (or `true`). That will flush internal pending buffers and call
+ * [[Inflate#onEnd]]. For interim explicit flushes (without ending the stream) you
+ * can use mode Z_SYNC_FLUSH, keeping the decompression context.
+ *
+ * On fail call [[Inflate#onEnd]] with error code and return false.
+ *
+ * We strongly recommend to use `Uint8Array` on input for best speed (output
+ * format is detected automatically). Also, don't skip last param and always
+ * use the same type in your code (boolean or number). That will improve JS speed.
+ *
+ * For regular `Array`-s make sure all elements are [0..255].
+ *
+ * ##### Example
+ *
+ * ```javascript
+ * push(chunk, false); // push one of data chunks
+ * ...
+ * push(chunk, true);  // push last chunk
+ * ```
+ **/
+Inflate.prototype.push = function(data, mode) {
+  var strm = this.strm;
+  var chunkSize = this.options.chunkSize;
+  var status, _mode;
+  var next_out_utf8, tail, utf8str;
+
+  // Flag to properly process Z_BUF_ERROR on testing inflate call
+  // when we check that all output data was flushed.
+  var allowBufError = false;
+
+  if (this.ended) { return false; }
+  _mode = (mode === ~~mode) ? mode : ((mode === true) ? c.Z_FINISH : c.Z_NO_FLUSH);
+
+  // Convert data if needed
+  if (typeof data === 'string') {
+    // Only binary strings can be decompressed on practice
+    strm.input = strings.binstring2buf(data);
+  } else if (toString.call(data) === '[object ArrayBuffer]') {
+    strm.input = new Uint8Array(data);
+  } else {
+    strm.input = data;
+  }
+
+  strm.next_in = 0;
+  strm.avail_in = strm.input.length;
+
+  do {
+    if (strm.avail_out === 0) {
+      strm.output = new utils.Buf8(chunkSize);
+      strm.next_out = 0;
+      strm.avail_out = chunkSize;
+    }
+
+    status = zlib_inflate.inflate(strm, c.Z_NO_FLUSH);    /* no bad return value */
+
+    if (status === c.Z_BUF_ERROR && allowBufError === true) {
+      status = c.Z_OK;
+      allowBufError = false;
+    }
+
+    if (status !== c.Z_STREAM_END && status !== c.Z_OK) {
+      this.onEnd(status);
+      this.ended = true;
+      return false;
+    }
+
+    if (strm.next_out) {
+      if (strm.avail_out === 0 || status === c.Z_STREAM_END || (strm.avail_in === 0 && (_mode === c.Z_FINISH || _mode === c.Z_SYNC_FLUSH))) {
+
+        if (this.options.to === 'string') {
+
+          next_out_utf8 = strings.utf8border(strm.output, strm.next_out);
+
+          tail = strm.next_out - next_out_utf8;
+          utf8str = strings.buf2string(strm.output, next_out_utf8);
+
+          // move tail
+          strm.next_out = tail;
+          strm.avail_out = chunkSize - tail;
+          if (tail) { utils.arraySet(strm.output, strm.output, next_out_utf8, tail, 0); }
+
+          this.onData(utf8str);
+
+        } else {
+          this.onData(utils.shrinkBuf(strm.output, strm.next_out));
+        }
+      }
+    }
+
+    // When no more input data, we should check that internal inflate buffers
+    // are flushed. The only way to do it when avail_out = 0 - run one more
+    // inflate pass. But if output data not exists, inflate return Z_BUF_ERROR.
+    // Here we set flag to process this error properly.
+    //
+    // NOTE. Deflate does not return error in this case and does not needs such
+    // logic.
+    if (strm.avail_in === 0 && strm.avail_out === 0) {
+      allowBufError = true;
+    }
+
+  } while ((strm.avail_in > 0 || strm.avail_out === 0) && status !== c.Z_STREAM_END);
+
+  if (status === c.Z_STREAM_END) {
+    _mode = c.Z_FINISH;
+  }
+
+  // Finalize on the last chunk.
+  if (_mode === c.Z_FINISH) {
+    status = zlib_inflate.inflateEnd(this.strm);
+    this.onEnd(status);
+    this.ended = true;
+    return status === c.Z_OK;
+  }
+
+  // callback interim results if Z_SYNC_FLUSH.
+  if (_mode === c.Z_SYNC_FLUSH) {
+    this.onEnd(c.Z_OK);
+    strm.avail_out = 0;
+    return true;
+  }
+
+  return true;
+};
+
+
+/**
+ * Inflate#onData(chunk) -> Void
+ * - chunk (Uint8Array|Array|String): ouput data. Type of array depends
+ *   on js engine support. When string output requested, each chunk
+ *   will be string.
+ *
+ * By default, stores data blocks in `chunks[]` property and glue
+ * those in `onEnd`. Override this handler, if you need another behaviour.
+ **/
+Inflate.prototype.onData = function(chunk) {
+  this.chunks.push(chunk);
+};
+
+
+/**
+ * Inflate#onEnd(status) -> Void
+ * - status (Number): inflate status. 0 (Z_OK) on success,
+ *   other if not.
+ *
+ * Called either after you tell inflate that the input stream is
+ * complete (Z_FINISH) or should be flushed (Z_SYNC_FLUSH)
+ * or if an error happened. By default - join collected chunks,
+ * free memory and fill `results` / `err` properties.
+ **/
+Inflate.prototype.onEnd = function(status) {
+  // On success - join
+  if (status === c.Z_OK) {
+    if (this.options.to === 'string') {
+      // Glue & convert here, until we teach pako to send
+      // utf8 alligned strings to onData
+      this.result = this.chunks.join('');
+    } else {
+      this.result = utils.flattenChunks(this.chunks);
+    }
+  }
+  this.chunks = [];
+  this.err = status;
+  this.msg = this.strm.msg;
+};
+
+
+/**
+ * inflate(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to decompress.
+ * - options (Object): zlib inflate options.
+ *
+ * Decompress `data` with inflate/ungzip and `options`. Autodetect
+ * format via wrapper header by default. That's why we don't provide
+ * separate `ungzip` method.
+ *
+ * Supported options are:
+ *
+ * - windowBits
+ *
+ * [http://zlib.net/manual.html#Advanced](http://zlib.net/manual.html#Advanced)
+ * for more information.
+ *
+ * Sugar (options):
+ *
+ * - `raw` (Boolean) - say that we work with raw stream, if you don't wish to specify
+ *   negative windowBits implicitly.
+ * - `to` (String) - if equal to 'string', then result will be converted
+ *   from utf8 to utf16 (javascript) string. When string output requested,
+ *   chunk length can differ from `chunkSize`, depending on content.
+ *
+ *
+ * ##### Example:
+ *
+ * ```javascript
+ * var pako = require('pako')
+ *   , input = pako.deflate([1,2,3,4,5,6,7,8,9])
+ *   , output;
+ *
+ * try {
+ *   output = pako.inflate(input);
+ * } catch (err)
+ *   console.log(err);
+ * }
+ * ```
+ **/
+function inflate(input, options) {
+  var inflator = new Inflate(options);
+
+  inflator.push(input, true);
+
+  // That will never happens, if you don't cheat with options :)
+  if (inflator.err) { throw inflator.msg; }
+
+  return inflator.result;
+}
+
+
+/**
+ * inflateRaw(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to decompress.
+ * - options (Object): zlib inflate options.
+ *
+ * The same as [[inflate]], but creates raw data, without wrapper
+ * (header and adler32 crc).
+ **/
+function inflateRaw(input, options) {
+  options = options || {};
+  options.raw = true;
+  return inflate(input, options);
+}
+
+
+/**
+ * ungzip(data[, options]) -> Uint8Array|Array|String
+ * - data (Uint8Array|Array|String): input data to decompress.
+ * - options (Object): zlib inflate options.
+ *
+ * Just shortcut to [[inflate]], because it autodetects format
+ * by header.content. Done for convenience.
+ **/
+
+
+exports.Inflate = Inflate;
+exports.inflate = inflate;
+exports.inflateRaw = inflateRaw;
+exports.ungzip  = inflate;
+
+},{"./utils/common":213,"./utils/strings":214,"./zlib/constants":216,"./zlib/gzheader":219,"./zlib/inflate.js":221,"./zlib/messages":223,"./zlib/zstream":225}],213:[function(require,module,exports){
+'use strict';
+
+
+var TYPED_OK =  (typeof Uint8Array !== 'undefined') &&
+                (typeof Uint16Array !== 'undefined') &&
+                (typeof Int32Array !== 'undefined');
+
+
+exports.assign = function (obj /*from1, from2, from3, ...*/) {
+  var sources = Array.prototype.slice.call(arguments, 1);
+  while (sources.length) {
+    var source = sources.shift();
+    if (!source) { continue; }
+
+    if (typeof source !== 'object') {
+      throw new TypeError(source + 'must be non-object');
+    }
+
+    for (var p in source) {
+      if (source.hasOwnProperty(p)) {
+        obj[p] = source[p];
+      }
+    }
+  }
+
+  return obj;
+};
+
+
+// reduce buffer size, avoiding mem copy
+exports.shrinkBuf = function (buf, size) {
+  if (buf.length === size) { return buf; }
+  if (buf.subarray) { return buf.subarray(0, size); }
+  buf.length = size;
+  return buf;
+};
+
+
+var fnTyped = {
+  arraySet: function (dest, src, src_offs, len, dest_offs) {
+    if (src.subarray && dest.subarray) {
+      dest.set(src.subarray(src_offs, src_offs+len), dest_offs);
+      return;
+    }
+    // Fallback to ordinary array
+    for (var i=0; i<len; i++) {
+      dest[dest_offs + i] = src[src_offs + i];
+    }
+  },
+  // Join array of chunks to single array.
+  flattenChunks: function(chunks) {
+    var i, l, len, pos, chunk, result;
+
+    // calculate data length
+    len = 0;
+    for (i=0, l=chunks.length; i<l; i++) {
+      len += chunks[i].length;
+    }
+
+    // join chunks
+    result = new Uint8Array(len);
+    pos = 0;
+    for (i=0, l=chunks.length; i<l; i++) {
+      chunk = chunks[i];
+      result.set(chunk, pos);
+      pos += chunk.length;
+    }
+
+    return result;
+  }
+};
+
+var fnUntyped = {
+  arraySet: function (dest, src, src_offs, len, dest_offs) {
+    for (var i=0; i<len; i++) {
+      dest[dest_offs + i] = src[src_offs + i];
+    }
+  },
+  // Join array of chunks to single array.
+  flattenChunks: function(chunks) {
+    return [].concat.apply([], chunks);
+  }
+};
+
+
+// Enable/Disable typed arrays use, for testing
+//
+exports.setTyped = function (on) {
+  if (on) {
+    exports.Buf8  = Uint8Array;
+    exports.Buf16 = Uint16Array;
+    exports.Buf32 = Int32Array;
+    exports.assign(exports, fnTyped);
+  } else {
+    exports.Buf8  = Array;
+    exports.Buf16 = Array;
+    exports.Buf32 = Array;
+    exports.assign(exports, fnUntyped);
+  }
+};
+
+exports.setTyped(TYPED_OK);
+
+},{}],214:[function(require,module,exports){
+// String encode/decode helpers
+'use strict';
+
+
+var utils = require('./common');
+
+
+// Quick check if we can use fast array to bin string conversion
+//
+// - apply(Array) can fail on Android 2.2
+// - apply(Uint8Array) can fail on iOS 5.1 Safary
+//
+var STR_APPLY_OK = true;
+var STR_APPLY_UIA_OK = true;
+
+try { String.fromCharCode.apply(null, [0]); } catch(__) { STR_APPLY_OK = false; }
+try { String.fromCharCode.apply(null, new Uint8Array(1)); } catch(__) { STR_APPLY_UIA_OK = false; }
+
+
+// Table with utf8 lengths (calculated by first byte of sequence)
+// Note, that 5 & 6-byte values and some 4-byte values can not be represented in JS,
+// because max possible codepoint is 0x10ffff
+var _utf8len = new utils.Buf8(256);
+for (var q=0; q<256; q++) {
+  _utf8len[q] = (q >= 252 ? 6 : q >= 248 ? 5 : q >= 240 ? 4 : q >= 224 ? 3 : q >= 192 ? 2 : 1);
+}
+_utf8len[254]=_utf8len[254]=1; // Invalid sequence start
+
+
+// convert string to array (typed, when possible)
+exports.string2buf = function (str) {
+  var buf, c, c2, m_pos, i, str_len = str.length, buf_len = 0;
+
+  // count binary size
+  for (m_pos = 0; m_pos < str_len; m_pos++) {
+    c = str.charCodeAt(m_pos);
+    if ((c & 0xfc00) === 0xd800 && (m_pos+1 < str_len)) {
+      c2 = str.charCodeAt(m_pos+1);
+      if ((c2 & 0xfc00) === 0xdc00) {
+        c = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
+        m_pos++;
+      }
+    }
+    buf_len += c < 0x80 ? 1 : c < 0x800 ? 2 : c < 0x10000 ? 3 : 4;
+  }
+
+  // allocate buffer
+  buf = new utils.Buf8(buf_len);
+
+  // convert
+  for (i=0, m_pos = 0; i < buf_len; m_pos++) {
+    c = str.charCodeAt(m_pos);
+    if ((c & 0xfc00) === 0xd800 && (m_pos+1 < str_len)) {
+      c2 = str.charCodeAt(m_pos+1);
+      if ((c2 & 0xfc00) === 0xdc00) {
+        c = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
+        m_pos++;
+      }
+    }
+    if (c < 0x80) {
+      /* one byte */
+      buf[i++] = c;
+    } else if (c < 0x800) {
+      /* two bytes */
+      buf[i++] = 0xC0 | (c >>> 6);
+      buf[i++] = 0x80 | (c & 0x3f);
+    } else if (c < 0x10000) {
+      /* three bytes */
+      buf[i++] = 0xE0 | (c >>> 12);
+      buf[i++] = 0x80 | (c >>> 6 & 0x3f);
+      buf[i++] = 0x80 | (c & 0x3f);
+    } else {
+      /* four bytes */
+      buf[i++] = 0xf0 | (c >>> 18);
+      buf[i++] = 0x80 | (c >>> 12 & 0x3f);
+      buf[i++] = 0x80 | (c >>> 6 & 0x3f);
+      buf[i++] = 0x80 | (c & 0x3f);
+    }
+  }
+
+  return buf;
+};
+
+// Helper (used in 2 places)
+function buf2binstring(buf, len) {
+  // use fallback for big arrays to avoid stack overflow
+  if (len < 65537) {
+    if ((buf.subarray && STR_APPLY_UIA_OK) || (!buf.subarray && STR_APPLY_OK)) {
+      return String.fromCharCode.apply(null, utils.shrinkBuf(buf, len));
+    }
+  }
+
+  var result = '';
+  for (var i=0; i < len; i++) {
+    result += String.fromCharCode(buf[i]);
+  }
+  return result;
+}
+
+
+// Convert byte array to binary string
+exports.buf2binstring = function(buf) {
+  return buf2binstring(buf, buf.length);
+};
+
+
+// Convert binary string (typed, when possible)
+exports.binstring2buf = function(str) {
+  var buf = new utils.Buf8(str.length);
+  for (var i=0, len=buf.length; i < len; i++) {
+    buf[i] = str.charCodeAt(i);
+  }
+  return buf;
+};
+
+
+// convert array to string
+exports.buf2string = function (buf, max) {
+  var i, out, c, c_len;
+  var len = max || buf.length;
+
+  // Reserve max possible length (2 words per char)
+  // NB: by unknown reasons, Array is significantly faster for
+  //     String.fromCharCode.apply than Uint16Array.
+  var utf16buf = new Array(len*2);
+
+  for (out=0, i=0; i<len;) {
+    c = buf[i++];
+    // quick process ascii
+    if (c < 0x80) { utf16buf[out++] = c; continue; }
+
+    c_len = _utf8len[c];
+    // skip 5 & 6 byte codes
+    if (c_len > 4) { utf16buf[out++] = 0xfffd; i += c_len-1; continue; }
+
+    // apply mask on first byte
+    c &= c_len === 2 ? 0x1f : c_len === 3 ? 0x0f : 0x07;
+    // join the rest
+    while (c_len > 1 && i < len) {
+      c = (c << 6) | (buf[i++] & 0x3f);
+      c_len--;
+    }
+
+    // terminated by end of string?
+    if (c_len > 1) { utf16buf[out++] = 0xfffd; continue; }
+
+    if (c < 0x10000) {
+      utf16buf[out++] = c;
+    } else {
+      c -= 0x10000;
+      utf16buf[out++] = 0xd800 | ((c >> 10) & 0x3ff);
+      utf16buf[out++] = 0xdc00 | (c & 0x3ff);
+    }
+  }
+
+  return buf2binstring(utf16buf, out);
+};
+
+
+// Calculate max possible position in utf8 buffer,
+// that will not break sequence. If that's not possible
+// - (very small limits) return max size as is.
+//
+// buf[] - utf8 bytes array
+// max   - length limit (mandatory);
+exports.utf8border = function(buf, max) {
+  var pos;
+
+  max = max || buf.length;
+  if (max > buf.length) { max = buf.length; }
+
+  // go back from last position, until start of sequence found
+  pos = max-1;
+  while (pos >= 0 && (buf[pos] & 0xC0) === 0x80) { pos--; }
+
+  // Fuckup - very small and broken sequence,
+  // return max, because we should return something anyway.
+  if (pos < 0) { return max; }
+
+  // If we came to start of buffer - that means vuffer is too small,
+  // return max too.
+  if (pos === 0) { return max; }
+
+  return (pos + _utf8len[buf[pos]] > max) ? pos : max;
+};
+
+},{"./common":213}],215:[function(require,module,exports){
+'use strict';
+
+// Note: adler32 takes 12% for level 0 and 2% for level 6.
+// It doesn't worth to make additional optimizationa as in original.
+// Small size is preferable.
+
+function adler32(adler, buf, len, pos) {
+  var s1 = (adler & 0xffff) |0,
+      s2 = ((adler >>> 16) & 0xffff) |0,
+      n = 0;
+
+  while (len !== 0) {
+    // Set limit ~ twice less than 5552, to keep
+    // s2 in 31-bits, because we force signed ints.
+    // in other case %= will fail.
+    n = len > 2000 ? 2000 : len;
+    len -= n;
+
+    do {
+      s1 = (s1 + buf[pos++]) |0;
+      s2 = (s2 + s1) |0;
+    } while (--n);
+
+    s1 %= 65521;
+    s2 %= 65521;
+  }
+
+  return (s1 | (s2 << 16)) |0;
+}
+
+
+module.exports = adler32;
+
+},{}],216:[function(require,module,exports){
+module.exports = {
+
+  /* Allowed flush values; see deflate() and inflate() below for details */
+  Z_NO_FLUSH:         0,
+  Z_PARTIAL_FLUSH:    1,
+  Z_SYNC_FLUSH:       2,
+  Z_FULL_FLUSH:       3,
+  Z_FINISH:           4,
+  Z_BLOCK:            5,
+  Z_TREES:            6,
+
+  /* Return codes for the compression/decompression functions. Negative values
+  * are errors, positive values are used for special but normal events.
+  */
+  Z_OK:               0,
+  Z_STREAM_END:       1,
+  Z_NEED_DICT:        2,
+  Z_ERRNO:           -1,
+  Z_STREAM_ERROR:    -2,
+  Z_DATA_ERROR:      -3,
+  //Z_MEM_ERROR:     -4,
+  Z_BUF_ERROR:       -5,
+  //Z_VERSION_ERROR: -6,
+
+  /* compression levels */
+  Z_NO_COMPRESSION:         0,
+  Z_BEST_SPEED:             1,
+  Z_BEST_COMPRESSION:       9,
+  Z_DEFAULT_COMPRESSION:   -1,
+
+
+  Z_FILTERED:               1,
+  Z_HUFFMAN_ONLY:           2,
+  Z_RLE:                    3,
+  Z_FIXED:                  4,
+  Z_DEFAULT_STRATEGY:       0,
+
+  /* Possible values of the data_type field (though see inflate()) */
+  Z_BINARY:                 0,
+  Z_TEXT:                   1,
+  //Z_ASCII:                1, // = Z_TEXT (deprecated)
+  Z_UNKNOWN:                2,
+
+  /* The deflate compression method */
+  Z_DEFLATED:               8
+  //Z_NULL:                 null // Use -1 or null inline, depending on var type
+};
+
+},{}],217:[function(require,module,exports){
+'use strict';
+
+// Note: we can't get significant speed boost here.
+// So write code to minimize size - no pregenerated tables
+// and array tools dependencies.
+
+
+// Use ordinary array, since untyped makes no boost here
+function makeTable() {
+  var c, table = [];
+
+  for (var n =0; n < 256; n++) {
+    c = n;
+    for (var k =0; k < 8; k++) {
+      c = ((c&1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+    }
+    table[n] = c;
+  }
+
+  return table;
+}
+
+// Create table on load. Just 255 signed longs. Not a problem.
+var crcTable = makeTable();
+
+
+function crc32(crc, buf, len, pos) {
+  var t = crcTable,
+      end = pos + len;
+
+  crc = crc ^ (-1);
+
+  for (var i = pos; i < end; i++) {
+    crc = (crc >>> 8) ^ t[(crc ^ buf[i]) & 0xFF];
+  }
+
+  return (crc ^ (-1)); // >>> 0;
+}
+
+
+module.exports = crc32;
+
+},{}],218:[function(require,module,exports){
+'use strict';
+
+var utils   = require('../utils/common');
+var trees   = require('./trees');
+var adler32 = require('./adler32');
+var crc32   = require('./crc32');
+var msg   = require('./messages');
+
+/* Public constants ==========================================================*/
+/* ===========================================================================*/
+
+
+/* Allowed flush values; see deflate() and inflate() below for details */
+var Z_NO_FLUSH      = 0;
+var Z_PARTIAL_FLUSH = 1;
+//var Z_SYNC_FLUSH    = 2;
+var Z_FULL_FLUSH    = 3;
+var Z_FINISH        = 4;
+var Z_BLOCK         = 5;
+//var Z_TREES         = 6;
+
+
+/* Return codes for the compression/decompression functions. Negative values
+ * are errors, positive values are used for special but normal events.
+ */
+var Z_OK            = 0;
+var Z_STREAM_END    = 1;
+//var Z_NEED_DICT     = 2;
+//var Z_ERRNO         = -1;
+var Z_STREAM_ERROR  = -2;
+var Z_DATA_ERROR    = -3;
+//var Z_MEM_ERROR     = -4;
+var Z_BUF_ERROR     = -5;
+//var Z_VERSION_ERROR = -6;
+
+
+/* compression levels */
+//var Z_NO_COMPRESSION      = 0;
+//var Z_BEST_SPEED          = 1;
+//var Z_BEST_COMPRESSION    = 9;
+var Z_DEFAULT_COMPRESSION = -1;
+
+
+var Z_FILTERED            = 1;
+var Z_HUFFMAN_ONLY        = 2;
+var Z_RLE                 = 3;
+var Z_FIXED               = 4;
+var Z_DEFAULT_STRATEGY    = 0;
+
+/* Possible values of the data_type field (though see inflate()) */
+//var Z_BINARY              = 0;
+//var Z_TEXT                = 1;
+//var Z_ASCII               = 1; // = Z_TEXT
+var Z_UNKNOWN             = 2;
+
+
+/* The deflate compression method */
+var Z_DEFLATED  = 8;
+
+/*============================================================================*/
+
+
+var MAX_MEM_LEVEL = 9;
+/* Maximum value for memLevel in deflateInit2 */
+var MAX_WBITS = 15;
+/* 32K LZ77 window */
+var DEF_MEM_LEVEL = 8;
+
+
+var LENGTH_CODES  = 29;
+/* number of length codes, not counting the special END_BLOCK code */
+var LITERALS      = 256;
+/* number of literal bytes 0..255 */
+var L_CODES       = LITERALS + 1 + LENGTH_CODES;
+/* number of Literal or Length codes, including the END_BLOCK code */
+var D_CODES       = 30;
+/* number of distance codes */
+var BL_CODES      = 19;
+/* number of codes used to transfer the bit lengths */
+var HEAP_SIZE     = 2*L_CODES + 1;
+/* maximum heap size */
+var MAX_BITS  = 15;
+/* All codes must not exceed MAX_BITS bits */
+
+var MIN_MATCH = 3;
+var MAX_MATCH = 258;
+var MIN_LOOKAHEAD = (MAX_MATCH + MIN_MATCH + 1);
+
+var PRESET_DICT = 0x20;
+
+var INIT_STATE = 42;
+var EXTRA_STATE = 69;
+var NAME_STATE = 73;
+var COMMENT_STATE = 91;
+var HCRC_STATE = 103;
+var BUSY_STATE = 113;
+var FINISH_STATE = 666;
+
+var BS_NEED_MORE      = 1; /* block not completed, need more input or more output */
+var BS_BLOCK_DONE     = 2; /* block flush performed */
+var BS_FINISH_STARTED = 3; /* finish started, need only more output at next deflate */
+var BS_FINISH_DONE    = 4; /* finish done, accept no more input or output */
+
+var OS_CODE = 0x03; // Unix :) . Don't detect, use this default.
+
+function err(strm, errorCode) {
+  strm.msg = msg[errorCode];
+  return errorCode;
+}
+
+function rank(f) {
+  return ((f) << 1) - ((f) > 4 ? 9 : 0);
+}
+
+function zero(buf) { var len = buf.length; while (--len >= 0) { buf[len] = 0; } }
+
+
+/* =========================================================================
+ * Flush as much pending output as possible. All deflate() output goes
+ * through this function so some applications may wish to modify it
+ * to avoid allocating a large strm->output buffer and copying into it.
+ * (See also read_buf()).
+ */
+function flush_pending(strm) {
+  var s = strm.state;
+
+  //_tr_flush_bits(s);
+  var len = s.pending;
+  if (len > strm.avail_out) {
+    len = strm.avail_out;
+  }
+  if (len === 0) { return; }
+
+  utils.arraySet(strm.output, s.pending_buf, s.pending_out, len, strm.next_out);
+  strm.next_out += len;
+  s.pending_out += len;
+  strm.total_out += len;
+  strm.avail_out -= len;
+  s.pending -= len;
+  if (s.pending === 0) {
+    s.pending_out = 0;
+  }
+}
+
+
+function flush_block_only (s, last) {
+  trees._tr_flush_block(s, (s.block_start >= 0 ? s.block_start : -1), s.strstart - s.block_start, last);
+  s.block_start = s.strstart;
+  flush_pending(s.strm);
+}
+
+
+function put_byte(s, b) {
+  s.pending_buf[s.pending++] = b;
+}
+
+
+/* =========================================================================
+ * Put a short in the pending buffer. The 16-bit value is put in MSB order.
+ * IN assertion: the stream state is correct and there is enough room in
+ * pending_buf.
+ */
+function putShortMSB(s, b) {
+//  put_byte(s, (Byte)(b >> 8));
+//  put_byte(s, (Byte)(b & 0xff));
+  s.pending_buf[s.pending++] = (b >>> 8) & 0xff;
+  s.pending_buf[s.pending++] = b & 0xff;
+}
+
+
+/* ===========================================================================
+ * Read a new buffer from the current input stream, update the adler32
+ * and total number of bytes read.  All deflate() input goes through
+ * this function so some applications may wish to modify it to avoid
+ * allocating a large strm->input buffer and copying from it.
+ * (See also flush_pending()).
+ */
+function read_buf(strm, buf, start, size) {
+  var len = strm.avail_in;
+
+  if (len > size) { len = size; }
+  if (len === 0) { return 0; }
+
+  strm.avail_in -= len;
+
+  utils.arraySet(buf, strm.input, strm.next_in, len, start);
+  if (strm.state.wrap === 1) {
+    strm.adler = adler32(strm.adler, buf, len, start);
+  }
+
+  else if (strm.state.wrap === 2) {
+    strm.adler = crc32(strm.adler, buf, len, start);
+  }
+
+  strm.next_in += len;
+  strm.total_in += len;
+
+  return len;
+}
+
+
+/* ===========================================================================
+ * Set match_start to the longest match starting at the given string and
+ * return its length. Matches shorter or equal to prev_length are discarded,
+ * in which case the result is equal to prev_length and match_start is
+ * garbage.
+ * IN assertions: cur_match is the head of the hash chain for the current
+ *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
+ * OUT assertion: the match length is not greater than s->lookahead.
+ */
+function longest_match(s, cur_match) {
+  var chain_length = s.max_chain_length;      /* max hash chain length */
+  var scan = s.strstart; /* current string */
+  var match;                       /* matched string */
+  var len;                           /* length of current match */
+  var best_len = s.prev_length;              /* best match length so far */
+  var nice_match = s.nice_match;             /* stop if match long enough */
+  var limit = (s.strstart > (s.w_size - MIN_LOOKAHEAD)) ?
+      s.strstart - (s.w_size - MIN_LOOKAHEAD) : 0/*NIL*/;
+
+  var _win = s.window; // shortcut
+
+  var wmask = s.w_mask;
+  var prev  = s.prev;
+
+  /* Stop when cur_match becomes <= limit. To simplify the code,
+   * we prevent matches with the string of window index 0.
+   */
+
+  var strend = s.strstart + MAX_MATCH;
+  var scan_end1  = _win[scan + best_len - 1];
+  var scan_end   = _win[scan + best_len];
+
+  /* The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
+   * It is easy to get rid of this optimization if necessary.
+   */
+  // Assert(s->hash_bits >= 8 && MAX_MATCH == 258, "Code too clever");
+
+  /* Do not waste too much time if we already have a good match: */
+  if (s.prev_length >= s.good_match) {
+    chain_length >>= 2;
+  }
+  /* Do not look for matches beyond the end of the input. This is necessary
+   * to make deflate deterministic.
+   */
+  if (nice_match > s.lookahead) { nice_match = s.lookahead; }
+
+  // Assert((ulg)s->strstart <= s->window_size-MIN_LOOKAHEAD, "need lookahead");
+
+  do {
+    // Assert(cur_match < s->strstart, "no future");
+    match = cur_match;
+
+    /* Skip to next match if the match length cannot increase
+     * or if the match length is less than 2.  Note that the checks below
+     * for insufficient lookahead only occur occasionally for performance
+     * reasons.  Therefore uninitialized memory will be accessed, and
+     * conditional jumps will be made that depend on those values.
+     * However the length of the match is limited to the lookahead, so
+     * the output of deflate is not affected by the uninitialized values.
+     */
+
+    if (_win[match + best_len]     !== scan_end  ||
+        _win[match + best_len - 1] !== scan_end1 ||
+        _win[match]                !== _win[scan] ||
+        _win[++match]              !== _win[scan + 1]) {
+      continue;
+    }
+
+    /* The check at best_len-1 can be removed because it will be made
+     * again later. (This heuristic is not always a win.)
+     * It is not necessary to compare scan[2] and match[2] since they
+     * are always equal when the other bytes match, given that
+     * the hash keys are equal and that HASH_BITS >= 8.
+     */
+    scan += 2;
+    match++;
+    // Assert(*scan == *match, "match[2]?");
+
+    /* We check for insufficient lookahead only every 8th comparison;
+     * the 256th check will be made at strstart+258.
+     */
+    do {
+      /*jshint noempty:false*/
+    } while (_win[++scan] === _win[++match] && _win[++scan] === _win[++match] &&
+             _win[++scan] === _win[++match] && _win[++scan] === _win[++match] &&
+             _win[++scan] === _win[++match] && _win[++scan] === _win[++match] &&
+             _win[++scan] === _win[++match] && _win[++scan] === _win[++match] &&
+             scan < strend);
+
+    // Assert(scan <= s->window+(unsigned)(s->window_size-1), "wild scan");
+
+    len = MAX_MATCH - (strend - scan);
+    scan = strend - MAX_MATCH;
+
+    if (len > best_len) {
+      s.match_start = cur_match;
+      best_len = len;
+      if (len >= nice_match) {
+        break;
+      }
+      scan_end1  = _win[scan + best_len - 1];
+      scan_end   = _win[scan + best_len];
+    }
+  } while ((cur_match = prev[cur_match & wmask]) > limit && --chain_length !== 0);
+
+  if (best_len <= s.lookahead) {
+    return best_len;
+  }
+  return s.lookahead;
+}
+
+
+/* ===========================================================================
+ * Fill the window when the lookahead becomes insufficient.
+ * Updates strstart and lookahead.
+ *
+ * IN assertion: lookahead < MIN_LOOKAHEAD
+ * OUT assertions: strstart <= window_size-MIN_LOOKAHEAD
+ *    At least one byte has been read, or avail_in == 0; reads are
+ *    performed for at least two bytes (required for the zip translate_eol
+ *    option -- not supported here).
+ */
+function fill_window(s) {
+  var _w_size = s.w_size;
+  var p, n, m, more, str;
+
+  //Assert(s->lookahead < MIN_LOOKAHEAD, "already enough lookahead");
+
+  do {
+    more = s.window_size - s.lookahead - s.strstart;
+
+    // JS ints have 32 bit, block below not needed
+    /* Deal with !@#$% 64K limit: */
+    //if (sizeof(int) <= 2) {
+    //    if (more == 0 && s->strstart == 0 && s->lookahead == 0) {
+    //        more = wsize;
+    //
+    //  } else if (more == (unsigned)(-1)) {
+    //        /* Very unlikely, but possible on 16 bit machine if
+    //         * strstart == 0 && lookahead == 1 (input done a byte at time)
+    //         */
+    //        more--;
+    //    }
+    //}
+
+
+    /* If the window is almost full and there is insufficient lookahead,
+     * move the upper half to the lower one to make room in the upper half.
+     */
+    if (s.strstart >= _w_size + (_w_size - MIN_LOOKAHEAD)) {
+
+      utils.arraySet(s.window, s.window, _w_size, _w_size, 0);
+      s.match_start -= _w_size;
+      s.strstart -= _w_size;
+      /* we now have strstart >= MAX_DIST */
+      s.block_start -= _w_size;
+
+      /* Slide the hash table (could be avoided with 32 bit values
+       at the expense of memory usage). We slide even when level == 0
+       to keep the hash table consistent if we switch back to level > 0
+       later. (Using level 0 permanently is not an optimal usage of
+       zlib, so we don't care about this pathological case.)
+       */
+
+      n = s.hash_size;
+      p = n;
+      do {
+        m = s.head[--p];
+        s.head[p] = (m >= _w_size ? m - _w_size : 0);
+      } while (--n);
+
+      n = _w_size;
+      p = n;
+      do {
+        m = s.prev[--p];
+        s.prev[p] = (m >= _w_size ? m - _w_size : 0);
+        /* If n is not on any hash chain, prev[n] is garbage but
+         * its value will never be used.
+         */
+      } while (--n);
+
+      more += _w_size;
+    }
+    if (s.strm.avail_in === 0) {
+      break;
+    }
+
+    /* If there was no sliding:
+     *    strstart <= WSIZE+MAX_DIST-1 && lookahead <= MIN_LOOKAHEAD - 1 &&
+     *    more == window_size - lookahead - strstart
+     * => more >= window_size - (MIN_LOOKAHEAD-1 + WSIZE + MAX_DIST-1)
+     * => more >= window_size - 2*WSIZE + 2
+     * In the BIG_MEM or MMAP case (not yet supported),
+     *   window_size == input_size + MIN_LOOKAHEAD  &&
+     *   strstart + s->lookahead <= input_size => more >= MIN_LOOKAHEAD.
+     * Otherwise, window_size == 2*WSIZE so more >= 2.
+     * If there was sliding, more >= WSIZE. So in all cases, more >= 2.
+     */
+    //Assert(more >= 2, "more < 2");
+    n = read_buf(s.strm, s.window, s.strstart + s.lookahead, more);
+    s.lookahead += n;
+
+    /* Initialize the hash value now that we have some input: */
+    if (s.lookahead + s.insert >= MIN_MATCH) {
+      str = s.strstart - s.insert;
+      s.ins_h = s.window[str];
+
+      /* UPDATE_HASH(s, s->ins_h, s->window[str + 1]); */
+      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[str + 1]) & s.hash_mask;
+//#if MIN_MATCH != 3
+//        Call update_hash() MIN_MATCH-3 more times
+//#endif
+      while (s.insert) {
+        /* UPDATE_HASH(s, s->ins_h, s->window[str + MIN_MATCH-1]); */
+        s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[str + MIN_MATCH-1]) & s.hash_mask;
+
+        s.prev[str & s.w_mask] = s.head[s.ins_h];
+        s.head[s.ins_h] = str;
+        str++;
+        s.insert--;
+        if (s.lookahead + s.insert < MIN_MATCH) {
+          break;
+        }
+      }
+    }
+    /* If the whole input has less than MIN_MATCH bytes, ins_h is garbage,
+     * but this is not important since only literal bytes will be emitted.
+     */
+
+  } while (s.lookahead < MIN_LOOKAHEAD && s.strm.avail_in !== 0);
+
+  /* If the WIN_INIT bytes after the end of the current data have never been
+   * written, then zero those bytes in order to avoid memory check reports of
+   * the use of uninitialized (or uninitialised as Julian writes) bytes by
+   * the longest match routines.  Update the high water mark for the next
+   * time through here.  WIN_INIT is set to MAX_MATCH since the longest match
+   * routines allow scanning to strstart + MAX_MATCH, ignoring lookahead.
+   */
+//  if (s.high_water < s.window_size) {
+//    var curr = s.strstart + s.lookahead;
+//    var init = 0;
+//
+//    if (s.high_water < curr) {
+//      /* Previous high water mark below current data -- zero WIN_INIT
+//       * bytes or up to end of window, whichever is less.
+//       */
+//      init = s.window_size - curr;
+//      if (init > WIN_INIT)
+//        init = WIN_INIT;
+//      zmemzero(s->window + curr, (unsigned)init);
+//      s->high_water = curr + init;
+//    }
+//    else if (s->high_water < (ulg)curr + WIN_INIT) {
+//      /* High water mark at or above current data, but below current data
+//       * plus WIN_INIT -- zero out to current data plus WIN_INIT, or up
+//       * to end of window, whichever is less.
+//       */
+//      init = (ulg)curr + WIN_INIT - s->high_water;
+//      if (init > s->window_size - s->high_water)
+//        init = s->window_size - s->high_water;
+//      zmemzero(s->window + s->high_water, (unsigned)init);
+//      s->high_water += init;
+//    }
+//  }
+//
+//  Assert((ulg)s->strstart <= s->window_size - MIN_LOOKAHEAD,
+//    "not enough room for search");
+}
+
+/* ===========================================================================
+ * Copy without compression as much as possible from the input stream, return
+ * the current block state.
+ * This function does not insert new strings in the dictionary since
+ * uncompressible data is probably not useful. This function is used
+ * only for the level=0 compression option.
+ * NOTE: this function should be optimized to avoid extra copying from
+ * window to pending_buf.
+ */
+function deflate_stored(s, flush) {
+  /* Stored blocks are limited to 0xffff bytes, pending_buf is limited
+   * to pending_buf_size, and each stored block has a 5 byte header:
+   */
+  var max_block_size = 0xffff;
+
+  if (max_block_size > s.pending_buf_size - 5) {
+    max_block_size = s.pending_buf_size - 5;
+  }
+
+  /* Copy as much as possible from input to output: */
+  for (;;) {
+    /* Fill the window as much as possible: */
+    if (s.lookahead <= 1) {
+
+      //Assert(s->strstart < s->w_size+MAX_DIST(s) ||
+      //  s->block_start >= (long)s->w_size, "slide too late");
+//      if (!(s.strstart < s.w_size + (s.w_size - MIN_LOOKAHEAD) ||
+//        s.block_start >= s.w_size)) {
+//        throw  new Error("slide too late");
+//      }
+
+      fill_window(s);
+      if (s.lookahead === 0 && flush === Z_NO_FLUSH) {
+        return BS_NEED_MORE;
+      }
+
+      if (s.lookahead === 0) {
+        break;
+      }
+      /* flush the current block */
+    }
+    //Assert(s->block_start >= 0L, "block gone");
+//    if (s.block_start < 0) throw new Error("block gone");
+
+    s.strstart += s.lookahead;
+    s.lookahead = 0;
+
+    /* Emit a stored block if pending_buf will be full: */
+    var max_start = s.block_start + max_block_size;
+
+    if (s.strstart === 0 || s.strstart >= max_start) {
+      /* strstart == 0 is possible when wraparound on 16-bit machine */
+      s.lookahead = s.strstart - max_start;
+      s.strstart = max_start;
+      /*** FLUSH_BLOCK(s, 0); ***/
+      flush_block_only(s, false);
+      if (s.strm.avail_out === 0) {
+        return BS_NEED_MORE;
+      }
+      /***/
+
+
+    }
+    /* Flush if we may have to slide, otherwise block_start may become
+     * negative and the data will be gone:
+     */
+    if (s.strstart - s.block_start >= (s.w_size - MIN_LOOKAHEAD)) {
+      /*** FLUSH_BLOCK(s, 0); ***/
+      flush_block_only(s, false);
+      if (s.strm.avail_out === 0) {
+        return BS_NEED_MORE;
+      }
+      /***/
+    }
+  }
+
+  s.insert = 0;
+
+  if (flush === Z_FINISH) {
+    /*** FLUSH_BLOCK(s, 1); ***/
+    flush_block_only(s, true);
+    if (s.strm.avail_out === 0) {
+      return BS_FINISH_STARTED;
+    }
+    /***/
+    return BS_FINISH_DONE;
+  }
+
+  if (s.strstart > s.block_start) {
+    /*** FLUSH_BLOCK(s, 0); ***/
+    flush_block_only(s, false);
+    if (s.strm.avail_out === 0) {
+      return BS_NEED_MORE;
+    }
+    /***/
+  }
+
+  return BS_NEED_MORE;
+}
+
+/* ===========================================================================
+ * Compress as much as possible from the input stream, return the current
+ * block state.
+ * This function does not perform lazy evaluation of matches and inserts
+ * new strings in the dictionary only for unmatched strings or for short
+ * matches. It is used only for the fast compression options.
+ */
+function deflate_fast(s, flush) {
+  var hash_head;        /* head of the hash chain */
+  var bflush;           /* set if current block must be flushed */
+
+  for (;;) {
+    /* Make sure that we always have enough lookahead, except
+     * at the end of the input file. We need MAX_MATCH bytes
+     * for the next match, plus MIN_MATCH bytes to insert the
+     * string following the next match.
+     */
+    if (s.lookahead < MIN_LOOKAHEAD) {
+      fill_window(s);
+      if (s.lookahead < MIN_LOOKAHEAD && flush === Z_NO_FLUSH) {
+        return BS_NEED_MORE;
+      }
+      if (s.lookahead === 0) {
+        break; /* flush the current block */
+      }
+    }
+
+    /* Insert the string window[strstart .. strstart+2] in the
+     * dictionary, and set hash_head to the head of the hash chain:
+     */
+    hash_head = 0/*NIL*/;
+    if (s.lookahead >= MIN_MATCH) {
+      /*** INSERT_STRING(s, s.strstart, hash_head); ***/
+      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+      hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
+      s.head[s.ins_h] = s.strstart;
+      /***/
+    }
+
+    /* Find the longest match, discarding those <= prev_length.
+     * At this point we have always match_length < MIN_MATCH
+     */
+    if (hash_head !== 0/*NIL*/ && ((s.strstart - hash_head) <= (s.w_size - MIN_LOOKAHEAD))) {
+      /* To simplify the code, we prevent matches with the string
+       * of window index 0 (in particular we have to avoid a match
+       * of the string with itself at the start of the input file).
+       */
+      s.match_length = longest_match(s, hash_head);
+      /* longest_match() sets match_start */
+    }
+    if (s.match_length >= MIN_MATCH) {
+      // check_match(s, s.strstart, s.match_start, s.match_length); // for debug only
+
+      /*** _tr_tally_dist(s, s.strstart - s.match_start,
+                     s.match_length - MIN_MATCH, bflush); ***/
+      bflush = trees._tr_tally(s, s.strstart - s.match_start, s.match_length - MIN_MATCH);
+
+      s.lookahead -= s.match_length;
+
+      /* Insert new strings in the hash table only if the match length
+       * is not too large. This saves time but degrades compression.
+       */
+      if (s.match_length <= s.max_lazy_match/*max_insert_length*/ && s.lookahead >= MIN_MATCH) {
+        s.match_length--; /* string at strstart already in table */
+        do {
+          s.strstart++;
+          /*** INSERT_STRING(s, s.strstart, hash_head); ***/
+          s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+          hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
+          s.head[s.ins_h] = s.strstart;
+          /***/
+          /* strstart never exceeds WSIZE-MAX_MATCH, so there are
+           * always MIN_MATCH bytes ahead.
+           */
+        } while (--s.match_length !== 0);
+        s.strstart++;
+      } else
+      {
+        s.strstart += s.match_length;
+        s.match_length = 0;
+        s.ins_h = s.window[s.strstart];
+        /* UPDATE_HASH(s, s.ins_h, s.window[s.strstart+1]); */
+        s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + 1]) & s.hash_mask;
+
+//#if MIN_MATCH != 3
+//                Call UPDATE_HASH() MIN_MATCH-3 more times
+//#endif
+        /* If lookahead < MIN_MATCH, ins_h is garbage, but it does not
+         * matter since it will be recomputed at next deflate call.
+         */
+      }
+    } else {
+      /* No match, output a literal byte */
+      //Tracevv((stderr,"%c", s.window[s.strstart]));
+      /*** _tr_tally_lit(s, s.window[s.strstart], bflush); ***/
+      bflush = trees._tr_tally(s, 0, s.window[s.strstart]);
+
+      s.lookahead--;
+      s.strstart++;
+    }
+    if (bflush) {
+      /*** FLUSH_BLOCK(s, 0); ***/
+      flush_block_only(s, false);
+      if (s.strm.avail_out === 0) {
+        return BS_NEED_MORE;
+      }
+      /***/
+    }
+  }
+  s.insert = ((s.strstart < (MIN_MATCH-1)) ? s.strstart : MIN_MATCH-1);
+  if (flush === Z_FINISH) {
+    /*** FLUSH_BLOCK(s, 1); ***/
+    flush_block_only(s, true);
+    if (s.strm.avail_out === 0) {
+      return BS_FINISH_STARTED;
+    }
+    /***/
+    return BS_FINISH_DONE;
+  }
+  if (s.last_lit) {
+    /*** FLUSH_BLOCK(s, 0); ***/
+    flush_block_only(s, false);
+    if (s.strm.avail_out === 0) {
+      return BS_NEED_MORE;
+    }
+    /***/
+  }
+  return BS_BLOCK_DONE;
+}
+
+/* ===========================================================================
+ * Same as above, but achieves better compression. We use a lazy
+ * evaluation for matches: a match is finally adopted only if there is
+ * no better match at the next window position.
+ */
+function deflate_slow(s, flush) {
+  var hash_head;          /* head of hash chain */
+  var bflush;              /* set if current block must be flushed */
+
+  var max_insert;
+
+  /* Process the input block. */
+  for (;;) {
+    /* Make sure that we always have enough lookahead, except
+     * at the end of the input file. We need MAX_MATCH bytes
+     * for the next match, plus MIN_MATCH bytes to insert the
+     * string following the next match.
+     */
+    if (s.lookahead < MIN_LOOKAHEAD) {
+      fill_window(s);
+      if (s.lookahead < MIN_LOOKAHEAD && flush === Z_NO_FLUSH) {
+        return BS_NEED_MORE;
+      }
+      if (s.lookahead === 0) { break; } /* flush the current block */
+    }
+
+    /* Insert the string window[strstart .. strstart+2] in the
+     * dictionary, and set hash_head to the head of the hash chain:
+     */
+    hash_head = 0/*NIL*/;
+    if (s.lookahead >= MIN_MATCH) {
+      /*** INSERT_STRING(s, s.strstart, hash_head); ***/
+      s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+      hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
+      s.head[s.ins_h] = s.strstart;
+      /***/
+    }
+
+    /* Find the longest match, discarding those <= prev_length.
+     */
+    s.prev_length = s.match_length;
+    s.prev_match = s.match_start;
+    s.match_length = MIN_MATCH-1;
+
+    if (hash_head !== 0/*NIL*/ && s.prev_length < s.max_lazy_match &&
+        s.strstart - hash_head <= (s.w_size-MIN_LOOKAHEAD)/*MAX_DIST(s)*/) {
+      /* To simplify the code, we prevent matches with the string
+       * of window index 0 (in particular we have to avoid a match
+       * of the string with itself at the start of the input file).
+       */
+      s.match_length = longest_match(s, hash_head);
+      /* longest_match() sets match_start */
+
+      if (s.match_length <= 5 &&
+         (s.strategy === Z_FILTERED || (s.match_length === MIN_MATCH && s.strstart - s.match_start > 4096/*TOO_FAR*/))) {
+
+        /* If prev_match is also MIN_MATCH, match_start is garbage
+         * but we will ignore the current match anyway.
+         */
+        s.match_length = MIN_MATCH-1;
+      }
+    }
+    /* If there was a match at the previous step and the current
+     * match is not better, output the previous match:
+     */
+    if (s.prev_length >= MIN_MATCH && s.match_length <= s.prev_length) {
+      max_insert = s.strstart + s.lookahead - MIN_MATCH;
+      /* Do not insert strings in hash table beyond this. */
+
+      //check_match(s, s.strstart-1, s.prev_match, s.prev_length);
+
+      /***_tr_tally_dist(s, s.strstart - 1 - s.prev_match,
+                     s.prev_length - MIN_MATCH, bflush);***/
+      bflush = trees._tr_tally(s, s.strstart - 1- s.prev_match, s.prev_length - MIN_MATCH);
+      /* Insert in hash table all strings up to the end of the match.
+       * strstart-1 and strstart are already inserted. If there is not
+       * enough lookahead, the last two strings are not inserted in
+       * the hash table.
+       */
+      s.lookahead -= s.prev_length-1;
+      s.prev_length -= 2;
+      do {
+        if (++s.strstart <= max_insert) {
+          /*** INSERT_STRING(s, s.strstart, hash_head); ***/
+          s.ins_h = ((s.ins_h << s.hash_shift) ^ s.window[s.strstart + MIN_MATCH - 1]) & s.hash_mask;
+          hash_head = s.prev[s.strstart & s.w_mask] = s.head[s.ins_h];
+          s.head[s.ins_h] = s.strstart;
+          /***/
+        }
+      } while (--s.prev_length !== 0);
+      s.match_available = 0;
+      s.match_length = MIN_MATCH-1;
+      s.strstart++;
+
+      if (bflush) {
+        /*** FLUSH_BLOCK(s, 0); ***/
+        flush_block_only(s, false);
+        if (s.strm.avail_out === 0) {
+          return BS_NEED_MORE;
+        }
+        /***/
+      }
+
+    } else if (s.match_available) {
+      /* If there was no match at the previous position, output a
+       * single literal. If there was a match but the current match
+       * is longer, truncate the previous match to a single literal.
+       */
+      //Tracevv((stderr,"%c", s->window[s->strstart-1]));
+      /*** _tr_tally_lit(s, s.window[s.strstart-1], bflush); ***/
+      bflush = trees._tr_tally(s, 0, s.window[s.strstart-1]);
+
+      if (bflush) {
+        /*** FLUSH_BLOCK_ONLY(s, 0) ***/
+        flush_block_only(s, false);
+        /***/
+      }
+      s.strstart++;
+      s.lookahead--;
+      if (s.strm.avail_out === 0) {
+        return BS_NEED_MORE;
+      }
+    } else {
+      /* There is no previous match to compare with, wait for
+       * the next step to decide.
+       */
+      s.match_available = 1;
+      s.strstart++;
+      s.lookahead--;
+    }
+  }
+  //Assert (flush != Z_NO_FLUSH, "no flush?");
+  if (s.match_available) {
+    //Tracevv((stderr,"%c", s->window[s->strstart-1]));
+    /*** _tr_tally_lit(s, s.window[s.strstart-1], bflush); ***/
+    bflush = trees._tr_tally(s, 0, s.window[s.strstart-1]);
+
+    s.match_available = 0;
+  }
+  s.insert = s.strstart < MIN_MATCH-1 ? s.strstart : MIN_MATCH-1;
+  if (flush === Z_FINISH) {
+    /*** FLUSH_BLOCK(s, 1); ***/
+    flush_block_only(s, true);
+    if (s.strm.avail_out === 0) {
+      return BS_FINISH_STARTED;
+    }
+    /***/
+    return BS_FINISH_DONE;
+  }
+  if (s.last_lit) {
+    /*** FLUSH_BLOCK(s, 0); ***/
+    flush_block_only(s, false);
+    if (s.strm.avail_out === 0) {
+      return BS_NEED_MORE;
+    }
+    /***/
+  }
+
+  return BS_BLOCK_DONE;
+}
+
+
+/* ===========================================================================
+ * For Z_RLE, simply look for runs of bytes, generate matches only of distance
+ * one.  Do not maintain a hash table.  (It will be regenerated if this run of
+ * deflate switches away from Z_RLE.)
+ */
+function deflate_rle(s, flush) {
+  var bflush;            /* set if current block must be flushed */
+  var prev;              /* byte at distance one to match */
+  var scan, strend;      /* scan goes up to strend for length of run */
+
+  var _win = s.window;
+
+  for (;;) {
+    /* Make sure that we always have enough lookahead, except
+     * at the end of the input file. We need MAX_MATCH bytes
+     * for the longest run, plus one for the unrolled loop.
+     */
+    if (s.lookahead <= MAX_MATCH) {
+      fill_window(s);
+      if (s.lookahead <= MAX_MATCH && flush === Z_NO_FLUSH) {
+        return BS_NEED_MORE;
+      }
+      if (s.lookahead === 0) { break; } /* flush the current block */
+    }
+
+    /* See how many times the previous byte repeats */
+    s.match_length = 0;
+    if (s.lookahead >= MIN_MATCH && s.strstart > 0) {
+      scan = s.strstart - 1;
+      prev = _win[scan];
+      if (prev === _win[++scan] && prev === _win[++scan] && prev === _win[++scan]) {
+        strend = s.strstart + MAX_MATCH;
+        do {
+          /*jshint noempty:false*/
+        } while (prev === _win[++scan] && prev === _win[++scan] &&
+                 prev === _win[++scan] && prev === _win[++scan] &&
+                 prev === _win[++scan] && prev === _win[++scan] &&
+                 prev === _win[++scan] && prev === _win[++scan] &&
+                 scan < strend);
+        s.match_length = MAX_MATCH - (strend - scan);
+        if (s.match_length > s.lookahead) {
+          s.match_length = s.lookahead;
+        }
+      }
+      //Assert(scan <= s->window+(uInt)(s->window_size-1), "wild scan");
+    }
+
+    /* Emit match if have run of MIN_MATCH or longer, else emit literal */
+    if (s.match_length >= MIN_MATCH) {
+      //check_match(s, s.strstart, s.strstart - 1, s.match_length);
+
+      /*** _tr_tally_dist(s, 1, s.match_length - MIN_MATCH, bflush); ***/
+      bflush = trees._tr_tally(s, 1, s.match_length - MIN_MATCH);
+
+      s.lookahead -= s.match_length;
+      s.strstart += s.match_length;
+      s.match_length = 0;
+    } else {
+      /* No match, output a literal byte */
+      //Tracevv((stderr,"%c", s->window[s->strstart]));
+      /*** _tr_tally_lit(s, s.window[s.strstart], bflush); ***/
+      bflush = trees._tr_tally(s, 0, s.window[s.strstart]);
+
+      s.lookahead--;
+      s.strstart++;
+    }
+    if (bflush) {
+      /*** FLUSH_BLOCK(s, 0); ***/
+      flush_block_only(s, false);
+      if (s.strm.avail_out === 0) {
+        return BS_NEED_MORE;
+      }
+      /***/
+    }
+  }
+  s.insert = 0;
+  if (flush === Z_FINISH) {
+    /*** FLUSH_BLOCK(s, 1); ***/
+    flush_block_only(s, true);
+    if (s.strm.avail_out === 0) {
+      return BS_FINISH_STARTED;
+    }
+    /***/
+    return BS_FINISH_DONE;
+  }
+  if (s.last_lit) {
+    /*** FLUSH_BLOCK(s, 0); ***/
+    flush_block_only(s, false);
+    if (s.strm.avail_out === 0) {
+      return BS_NEED_MORE;
+    }
+    /***/
+  }
+  return BS_BLOCK_DONE;
+}
+
+/* ===========================================================================
+ * For Z_HUFFMAN_ONLY, do not look for matches.  Do not maintain a hash table.
+ * (It will be regenerated if this run of deflate switches away from Huffman.)
+ */
+function deflate_huff(s, flush) {
+  var bflush;             /* set if current block must be flushed */
+
+  for (;;) {
+    /* Make sure that we have a literal to write. */
+    if (s.lookahead === 0) {
+      fill_window(s);
+      if (s.lookahead === 0) {
+        if (flush === Z_NO_FLUSH) {
+          return BS_NEED_MORE;
+        }
+        break;      /* flush the current block */
+      }
+    }
+
+    /* Output a literal byte */
+    s.match_length = 0;
+    //Tracevv((stderr,"%c", s->window[s->strstart]));
+    /*** _tr_tally_lit(s, s.window[s.strstart], bflush); ***/
+    bflush = trees._tr_tally(s, 0, s.window[s.strstart]);
+    s.lookahead--;
+    s.strstart++;
+    if (bflush) {
+      /*** FLUSH_BLOCK(s, 0); ***/
+      flush_block_only(s, false);
+      if (s.strm.avail_out === 0) {
+        return BS_NEED_MORE;
+      }
+      /***/
+    }
+  }
+  s.insert = 0;
+  if (flush === Z_FINISH) {
+    /*** FLUSH_BLOCK(s, 1); ***/
+    flush_block_only(s, true);
+    if (s.strm.avail_out === 0) {
+      return BS_FINISH_STARTED;
+    }
+    /***/
+    return BS_FINISH_DONE;
+  }
+  if (s.last_lit) {
+    /*** FLUSH_BLOCK(s, 0); ***/
+    flush_block_only(s, false);
+    if (s.strm.avail_out === 0) {
+      return BS_NEED_MORE;
+    }
+    /***/
+  }
+  return BS_BLOCK_DONE;
+}
+
+/* Values for max_lazy_match, good_match and max_chain_length, depending on
+ * the desired pack level (0..9). The values given below have been tuned to
+ * exclude worst case performance for pathological files. Better values may be
+ * found for specific files.
+ */
+var Config = function (good_length, max_lazy, nice_length, max_chain, func) {
+  this.good_length = good_length;
+  this.max_lazy = max_lazy;
+  this.nice_length = nice_length;
+  this.max_chain = max_chain;
+  this.func = func;
+};
+
+var configuration_table;
+
+configuration_table = [
+  /*      good lazy nice chain */
+  new Config(0, 0, 0, 0, deflate_stored),          /* 0 store only */
+  new Config(4, 4, 8, 4, deflate_fast),            /* 1 max speed, no lazy matches */
+  new Config(4, 5, 16, 8, deflate_fast),           /* 2 */
+  new Config(4, 6, 32, 32, deflate_fast),          /* 3 */
+
+  new Config(4, 4, 16, 16, deflate_slow),          /* 4 lazy matches */
+  new Config(8, 16, 32, 32, deflate_slow),         /* 5 */
+  new Config(8, 16, 128, 128, deflate_slow),       /* 6 */
+  new Config(8, 32, 128, 256, deflate_slow),       /* 7 */
+  new Config(32, 128, 258, 1024, deflate_slow),    /* 8 */
+  new Config(32, 258, 258, 4096, deflate_slow)     /* 9 max compression */
+];
+
+
+/* ===========================================================================
+ * Initialize the "longest match" routines for a new zlib stream
+ */
+function lm_init(s) {
+  s.window_size = 2 * s.w_size;
+
+  /*** CLEAR_HASH(s); ***/
+  zero(s.head); // Fill with NIL (= 0);
+
+  /* Set the default configuration parameters:
+   */
+  s.max_lazy_match = configuration_table[s.level].max_lazy;
+  s.good_match = configuration_table[s.level].good_length;
+  s.nice_match = configuration_table[s.level].nice_length;
+  s.max_chain_length = configuration_table[s.level].max_chain;
+
+  s.strstart = 0;
+  s.block_start = 0;
+  s.lookahead = 0;
+  s.insert = 0;
+  s.match_length = s.prev_length = MIN_MATCH - 1;
+  s.match_available = 0;
+  s.ins_h = 0;
+}
+
+
+function DeflateState() {
+  this.strm = null;            /* pointer back to this zlib stream */
+  this.status = 0;            /* as the name implies */
+  this.pending_buf = null;      /* output still pending */
+  this.pending_buf_size = 0;  /* size of pending_buf */
+  this.pending_out = 0;       /* next pending byte to output to the stream */
+  this.pending = 0;           /* nb of bytes in the pending buffer */
+  this.wrap = 0;              /* bit 0 true for zlib, bit 1 true for gzip */
+  this.gzhead = null;         /* gzip header information to write */
+  this.gzindex = 0;           /* where in extra, name, or comment */
+  this.method = Z_DEFLATED; /* can only be DEFLATED */
+  this.last_flush = -1;   /* value of flush param for previous deflate call */
+
+  this.w_size = 0;  /* LZ77 window size (32K by default) */
+  this.w_bits = 0;  /* log2(w_size)  (8..16) */
+  this.w_mask = 0;  /* w_size - 1 */
+
+  this.window = null;
+  /* Sliding window. Input bytes are read into the second half of the window,
+   * and move to the first half later to keep a dictionary of at least wSize
+   * bytes. With this organization, matches are limited to a distance of
+   * wSize-MAX_MATCH bytes, but this ensures that IO is always
+   * performed with a length multiple of the block size.
+   */
+
+  this.window_size = 0;
+  /* Actual size of window: 2*wSize, except when the user input buffer
+   * is directly used as sliding window.
+   */
+
+  this.prev = null;
+  /* Link to older string with same hash index. To limit the size of this
+   * array to 64K, this link is maintained only for the last 32K strings.
+   * An index in this array is thus a window index modulo 32K.
+   */
+
+  this.head = null;   /* Heads of the hash chains or NIL. */
+
+  this.ins_h = 0;       /* hash index of string to be inserted */
+  this.hash_size = 0;   /* number of elements in hash table */
+  this.hash_bits = 0;   /* log2(hash_size) */
+  this.hash_mask = 0;   /* hash_size-1 */
+
+  this.hash_shift = 0;
+  /* Number of bits by which ins_h must be shifted at each input
+   * step. It must be such that after MIN_MATCH steps, the oldest
+   * byte no longer takes part in the hash key, that is:
+   *   hash_shift * MIN_MATCH >= hash_bits
+   */
+
+  this.block_start = 0;
+  /* Window position at the beginning of the current output block. Gets
+   * negative when the window is moved backwards.
+   */
+
+  this.match_length = 0;      /* length of best match */
+  this.prev_match = 0;        /* previous match */
+  this.match_available = 0;   /* set if previous match exists */
+  this.strstart = 0;          /* start of string to insert */
+  this.match_start = 0;       /* start of matching string */
+  this.lookahead = 0;         /* number of valid bytes ahead in window */
+
+  this.prev_length = 0;
+  /* Length of the best match at previous step. Matches not greater than this
+   * are discarded. This is used in the lazy match evaluation.
+   */
+
+  this.max_chain_length = 0;
+  /* To speed up deflation, hash chains are never searched beyond this
+   * length.  A higher limit improves compression ratio but degrades the
+   * speed.
+   */
+
+  this.max_lazy_match = 0;
+  /* Attempt to find a better match only when the current match is strictly
+   * smaller than this value. This mechanism is used only for compression
+   * levels >= 4.
+   */
+  // That's alias to max_lazy_match, don't use directly
+  //this.max_insert_length = 0;
+  /* Insert new strings in the hash table only if the match length is not
+   * greater than this length. This saves time but degrades compression.
+   * max_insert_length is used only for compression levels <= 3.
+   */
+
+  this.level = 0;     /* compression level (1..9) */
+  this.strategy = 0;  /* favor or force Huffman coding*/
+
+  this.good_match = 0;
+  /* Use a faster search when the previous match is longer than this */
+
+  this.nice_match = 0; /* Stop searching when current match exceeds this */
+
+              /* used by trees.c: */
+
+  /* Didn't use ct_data typedef below to suppress compiler warning */
+
+  // struct ct_data_s dyn_ltree[HEAP_SIZE];   /* literal and length tree */
+  // struct ct_data_s dyn_dtree[2*D_CODES+1]; /* distance tree */
+  // struct ct_data_s bl_tree[2*BL_CODES+1];  /* Huffman tree for bit lengths */
+
+  // Use flat array of DOUBLE size, with interleaved fata,
+  // because JS does not support effective
+  this.dyn_ltree  = new utils.Buf16(HEAP_SIZE * 2);
+  this.dyn_dtree  = new utils.Buf16((2*D_CODES+1) * 2);
+  this.bl_tree    = new utils.Buf16((2*BL_CODES+1) * 2);
+  zero(this.dyn_ltree);
+  zero(this.dyn_dtree);
+  zero(this.bl_tree);
+
+  this.l_desc   = null;         /* desc. for literal tree */
+  this.d_desc   = null;         /* desc. for distance tree */
+  this.bl_desc  = null;         /* desc. for bit length tree */
+
+  //ush bl_count[MAX_BITS+1];
+  this.bl_count = new utils.Buf16(MAX_BITS+1);
+  /* number of codes at each bit length for an optimal tree */
+
+  //int heap[2*L_CODES+1];      /* heap used to build the Huffman trees */
+  this.heap = new utils.Buf16(2*L_CODES+1);  /* heap used to build the Huffman trees */
+  zero(this.heap);
+
+  this.heap_len = 0;               /* number of elements in the heap */
+  this.heap_max = 0;               /* element of largest frequency */
+  /* The sons of heap[n] are heap[2*n] and heap[2*n+1]. heap[0] is not used.
+   * The same heap array is used to build all trees.
+   */
+
+  this.depth = new utils.Buf16(2*L_CODES+1); //uch depth[2*L_CODES+1];
+  zero(this.depth);
+  /* Depth of each subtree used as tie breaker for trees of equal frequency
+   */
+
+  this.l_buf = 0;          /* buffer index for literals or lengths */
+
+  this.lit_bufsize = 0;
+  /* Size of match buffer for literals/lengths.  There are 4 reasons for
+   * limiting lit_bufsize to 64K:
+   *   - frequencies can be kept in 16 bit counters
+   *   - if compression is not successful for the first block, all input
+   *     data is still in the window so we can still emit a stored block even
+   *     when input comes from standard input.  (This can also be done for
+   *     all blocks if lit_bufsize is not greater than 32K.)
+   *   - if compression is not successful for a file smaller than 64K, we can
+   *     even emit a stored file instead of a stored block (saving 5 bytes).
+   *     This is applicable only for zip (not gzip or zlib).
+   *   - creating new Huffman trees less frequently may not provide fast
+   *     adaptation to changes in the input data statistics. (Take for
+   *     example a binary file with poorly compressible code followed by
+   *     a highly compressible string table.) Smaller buffer sizes give
+   *     fast adaptation but have of course the overhead of transmitting
+   *     trees more frequently.
+   *   - I can't count above 4
+   */
+
+  this.last_lit = 0;      /* running index in l_buf */
+
+  this.d_buf = 0;
+  /* Buffer index for distances. To simplify the code, d_buf and l_buf have
+   * the same number of elements. To use different lengths, an extra flag
+   * array would be necessary.
+   */
+
+  this.opt_len = 0;       /* bit length of current block with optimal trees */
+  this.static_len = 0;    /* bit length of current block with static trees */
+  this.matches = 0;       /* number of string matches in current block */
+  this.insert = 0;        /* bytes at end of window left to insert */
+
+
+  this.bi_buf = 0;
+  /* Output buffer. bits are inserted starting at the bottom (least
+   * significant bits).
+   */
+  this.bi_valid = 0;
+  /* Number of valid bits in bi_buf.  All bits above the last valid bit
+   * are always zero.
+   */
+
+  // Used for window memory init. We safely ignore it for JS. That makes
+  // sense only for pointers and memory check tools.
+  //this.high_water = 0;
+  /* High water mark offset in window for initialized bytes -- bytes above
+   * this are set to zero in order to avoid memory check warnings when
+   * longest match routines access bytes past the input.  This is then
+   * updated to the new high water mark.
+   */
+}
+
+
+function deflateResetKeep(strm) {
+  var s;
+
+  if (!strm || !strm.state) {
+    return err(strm, Z_STREAM_ERROR);
+  }
+
+  strm.total_in = strm.total_out = 0;
+  strm.data_type = Z_UNKNOWN;
+
+  s = strm.state;
+  s.pending = 0;
+  s.pending_out = 0;
+
+  if (s.wrap < 0) {
+    s.wrap = -s.wrap;
+    /* was made negative by deflate(..., Z_FINISH); */
+  }
+  s.status = (s.wrap ? INIT_STATE : BUSY_STATE);
+  strm.adler = (s.wrap === 2) ?
+    0  // crc32(0, Z_NULL, 0)
+  :
+    1; // adler32(0, Z_NULL, 0)
+  s.last_flush = Z_NO_FLUSH;
+  trees._tr_init(s);
+  return Z_OK;
+}
+
+
+function deflateReset(strm) {
+  var ret = deflateResetKeep(strm);
+  if (ret === Z_OK) {
+    lm_init(strm.state);
+  }
+  return ret;
+}
+
+
+function deflateSetHeader(strm, head) {
+  if (!strm || !strm.state) { return Z_STREAM_ERROR; }
+  if (strm.state.wrap !== 2) { return Z_STREAM_ERROR; }
+  strm.state.gzhead = head;
+  return Z_OK;
+}
+
+
+function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
+  if (!strm) { // === Z_NULL
+    return Z_STREAM_ERROR;
+  }
+  var wrap = 1;
+
+  if (level === Z_DEFAULT_COMPRESSION) {
+    level = 6;
+  }
+
+  if (windowBits < 0) { /* suppress zlib wrapper */
+    wrap = 0;
+    windowBits = -windowBits;
+  }
+
+  else if (windowBits > 15) {
+    wrap = 2;           /* write gzip wrapper instead */
+    windowBits -= 16;
+  }
+
+
+  if (memLevel < 1 || memLevel > MAX_MEM_LEVEL || method !== Z_DEFLATED ||
+    windowBits < 8 || windowBits > 15 || level < 0 || level > 9 ||
+    strategy < 0 || strategy > Z_FIXED) {
+    return err(strm, Z_STREAM_ERROR);
+  }
+
+
+  if (windowBits === 8) {
+    windowBits = 9;
+  }
+  /* until 256-byte window bug fixed */
+
+  var s = new DeflateState();
+
+  strm.state = s;
+  s.strm = strm;
+
+  s.wrap = wrap;
+  s.gzhead = null;
+  s.w_bits = windowBits;
+  s.w_size = 1 << s.w_bits;
+  s.w_mask = s.w_size - 1;
+
+  s.hash_bits = memLevel + 7;
+  s.hash_size = 1 << s.hash_bits;
+  s.hash_mask = s.hash_size - 1;
+  s.hash_shift = ~~((s.hash_bits + MIN_MATCH - 1) / MIN_MATCH);
+
+  s.window = new utils.Buf8(s.w_size * 2);
+  s.head = new utils.Buf16(s.hash_size);
+  s.prev = new utils.Buf16(s.w_size);
+
+  // Don't need mem init magic for JS.
+  //s.high_water = 0;  /* nothing written to s->window yet */
+
+  s.lit_bufsize = 1 << (memLevel + 6); /* 16K elements by default */
+
+  s.pending_buf_size = s.lit_bufsize * 4;
+  s.pending_buf = new utils.Buf8(s.pending_buf_size);
+
+  s.d_buf = s.lit_bufsize >> 1;
+  s.l_buf = (1 + 2) * s.lit_bufsize;
+
+  s.level = level;
+  s.strategy = strategy;
+  s.method = method;
+
+  return deflateReset(strm);
+}
+
+function deflateInit(strm, level) {
+  return deflateInit2(strm, level, Z_DEFLATED, MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+}
+
+
+function deflate(strm, flush) {
+  var old_flush, s;
+  var beg, val; // for gzip header write only
+
+  if (!strm || !strm.state ||
+    flush > Z_BLOCK || flush < 0) {
+    return strm ? err(strm, Z_STREAM_ERROR) : Z_STREAM_ERROR;
+  }
+
+  s = strm.state;
+
+  if (!strm.output ||
+      (!strm.input && strm.avail_in !== 0) ||
+      (s.status === FINISH_STATE && flush !== Z_FINISH)) {
+    return err(strm, (strm.avail_out === 0) ? Z_BUF_ERROR : Z_STREAM_ERROR);
+  }
+
+  s.strm = strm; /* just in case */
+  old_flush = s.last_flush;
+  s.last_flush = flush;
+
+  /* Write the header */
+  if (s.status === INIT_STATE) {
+
+    if (s.wrap === 2) { // GZIP header
+      strm.adler = 0;  //crc32(0L, Z_NULL, 0);
+      put_byte(s, 31);
+      put_byte(s, 139);
+      put_byte(s, 8);
+      if (!s.gzhead) { // s->gzhead == Z_NULL
+        put_byte(s, 0);
+        put_byte(s, 0);
+        put_byte(s, 0);
+        put_byte(s, 0);
+        put_byte(s, 0);
+        put_byte(s, s.level === 9 ? 2 :
+                    (s.strategy >= Z_HUFFMAN_ONLY || s.level < 2 ?
+                     4 : 0));
+        put_byte(s, OS_CODE);
+        s.status = BUSY_STATE;
+      }
+      else {
+        put_byte(s, (s.gzhead.text ? 1 : 0) +
+                    (s.gzhead.hcrc ? 2 : 0) +
+                    (!s.gzhead.extra ? 0 : 4) +
+                    (!s.gzhead.name ? 0 : 8) +
+                    (!s.gzhead.comment ? 0 : 16)
+                );
+        put_byte(s, s.gzhead.time & 0xff);
+        put_byte(s, (s.gzhead.time >> 8) & 0xff);
+        put_byte(s, (s.gzhead.time >> 16) & 0xff);
+        put_byte(s, (s.gzhead.time >> 24) & 0xff);
+        put_byte(s, s.level === 9 ? 2 :
+                    (s.strategy >= Z_HUFFMAN_ONLY || s.level < 2 ?
+                     4 : 0));
+        put_byte(s, s.gzhead.os & 0xff);
+        if (s.gzhead.extra && s.gzhead.extra.length) {
+          put_byte(s, s.gzhead.extra.length & 0xff);
+          put_byte(s, (s.gzhead.extra.length >> 8) & 0xff);
+        }
+        if (s.gzhead.hcrc) {
+          strm.adler = crc32(strm.adler, s.pending_buf, s.pending, 0);
+        }
+        s.gzindex = 0;
+        s.status = EXTRA_STATE;
+      }
+    }
+    else // DEFLATE header
+    {
+      var header = (Z_DEFLATED + ((s.w_bits - 8) << 4)) << 8;
+      var level_flags = -1;
+
+      if (s.strategy >= Z_HUFFMAN_ONLY || s.level < 2) {
+        level_flags = 0;
+      } else if (s.level < 6) {
+        level_flags = 1;
+      } else if (s.level === 6) {
+        level_flags = 2;
+      } else {
+        level_flags = 3;
+      }
+      header |= (level_flags << 6);
+      if (s.strstart !== 0) { header |= PRESET_DICT; }
+      header += 31 - (header % 31);
+
+      s.status = BUSY_STATE;
+      putShortMSB(s, header);
+
+      /* Save the adler32 of the preset dictionary: */
+      if (s.strstart !== 0) {
+        putShortMSB(s, strm.adler >>> 16);
+        putShortMSB(s, strm.adler & 0xffff);
+      }
+      strm.adler = 1; // adler32(0L, Z_NULL, 0);
+    }
+  }
+
+//#ifdef GZIP
+  if (s.status === EXTRA_STATE) {
+    if (s.gzhead.extra/* != Z_NULL*/) {
+      beg = s.pending;  /* start of bytes to update crc */
+
+      while (s.gzindex < (s.gzhead.extra.length & 0xffff)) {
+        if (s.pending === s.pending_buf_size) {
+          if (s.gzhead.hcrc && s.pending > beg) {
+            strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
+          }
+          flush_pending(strm);
+          beg = s.pending;
+          if (s.pending === s.pending_buf_size) {
+            break;
+          }
+        }
+        put_byte(s, s.gzhead.extra[s.gzindex] & 0xff);
+        s.gzindex++;
+      }
+      if (s.gzhead.hcrc && s.pending > beg) {
+        strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
+      }
+      if (s.gzindex === s.gzhead.extra.length) {
+        s.gzindex = 0;
+        s.status = NAME_STATE;
+      }
+    }
+    else {
+      s.status = NAME_STATE;
+    }
+  }
+  if (s.status === NAME_STATE) {
+    if (s.gzhead.name/* != Z_NULL*/) {
+      beg = s.pending;  /* start of bytes to update crc */
+      //int val;
+
+      do {
+        if (s.pending === s.pending_buf_size) {
+          if (s.gzhead.hcrc && s.pending > beg) {
+            strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
+          }
+          flush_pending(strm);
+          beg = s.pending;
+          if (s.pending === s.pending_buf_size) {
+            val = 1;
+            break;
+          }
+        }
+        // JS specific: little magic to add zero terminator to end of string
+        if (s.gzindex < s.gzhead.name.length) {
+          val = s.gzhead.name.charCodeAt(s.gzindex++) & 0xff;
+        } else {
+          val = 0;
+        }
+        put_byte(s, val);
+      } while (val !== 0);
+
+      if (s.gzhead.hcrc && s.pending > beg) {
+        strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
+      }
+      if (val === 0) {
+        s.gzindex = 0;
+        s.status = COMMENT_STATE;
+      }
+    }
+    else {
+      s.status = COMMENT_STATE;
+    }
+  }
+  if (s.status === COMMENT_STATE) {
+    if (s.gzhead.comment/* != Z_NULL*/) {
+      beg = s.pending;  /* start of bytes to update crc */
+      //int val;
+
+      do {
+        if (s.pending === s.pending_buf_size) {
+          if (s.gzhead.hcrc && s.pending > beg) {
+            strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
+          }
+          flush_pending(strm);
+          beg = s.pending;
+          if (s.pending === s.pending_buf_size) {
+            val = 1;
+            break;
+          }
+        }
+        // JS specific: little magic to add zero terminator to end of string
+        if (s.gzindex < s.gzhead.comment.length) {
+          val = s.gzhead.comment.charCodeAt(s.gzindex++) & 0xff;
+        } else {
+          val = 0;
+        }
+        put_byte(s, val);
+      } while (val !== 0);
+
+      if (s.gzhead.hcrc && s.pending > beg) {
+        strm.adler = crc32(strm.adler, s.pending_buf, s.pending - beg, beg);
+      }
+      if (val === 0) {
+        s.status = HCRC_STATE;
+      }
+    }
+    else {
+      s.status = HCRC_STATE;
+    }
+  }
+  if (s.status === HCRC_STATE) {
+    if (s.gzhead.hcrc) {
+      if (s.pending + 2 > s.pending_buf_size) {
+        flush_pending(strm);
+      }
+      if (s.pending + 2 <= s.pending_buf_size) {
+        put_byte(s, strm.adler & 0xff);
+        put_byte(s, (strm.adler >> 8) & 0xff);
+        strm.adler = 0; //crc32(0L, Z_NULL, 0);
+        s.status = BUSY_STATE;
+      }
+    }
+    else {
+      s.status = BUSY_STATE;
+    }
+  }
+//#endif
+
+  /* Flush as much pending output as possible */
+  if (s.pending !== 0) {
+    flush_pending(strm);
+    if (strm.avail_out === 0) {
+      /* Since avail_out is 0, deflate will be called again with
+       * more output space, but possibly with both pending and
+       * avail_in equal to zero. There won't be anything to do,
+       * but this is not an error situation so make sure we
+       * return OK instead of BUF_ERROR at next call of deflate:
+       */
+      s.last_flush = -1;
+      return Z_OK;
+    }
+
+    /* Make sure there is something to do and avoid duplicate consecutive
+     * flushes. For repeated and useless calls with Z_FINISH, we keep
+     * returning Z_STREAM_END instead of Z_BUF_ERROR.
+     */
+  } else if (strm.avail_in === 0 && rank(flush) <= rank(old_flush) &&
+    flush !== Z_FINISH) {
+    return err(strm, Z_BUF_ERROR);
+  }
+
+  /* User must not provide more input after the first FINISH: */
+  if (s.status === FINISH_STATE && strm.avail_in !== 0) {
+    return err(strm, Z_BUF_ERROR);
+  }
+
+  /* Start a new block or continue the current one.
+   */
+  if (strm.avail_in !== 0 || s.lookahead !== 0 ||
+    (flush !== Z_NO_FLUSH && s.status !== FINISH_STATE)) {
+    var bstate = (s.strategy === Z_HUFFMAN_ONLY) ? deflate_huff(s, flush) :
+      (s.strategy === Z_RLE ? deflate_rle(s, flush) :
+        configuration_table[s.level].func(s, flush));
+
+    if (bstate === BS_FINISH_STARTED || bstate === BS_FINISH_DONE) {
+      s.status = FINISH_STATE;
+    }
+    if (bstate === BS_NEED_MORE || bstate === BS_FINISH_STARTED) {
+      if (strm.avail_out === 0) {
+        s.last_flush = -1;
+        /* avoid BUF_ERROR next call, see above */
+      }
+      return Z_OK;
+      /* If flush != Z_NO_FLUSH && avail_out == 0, the next call
+       * of deflate should use the same flush parameter to make sure
+       * that the flush is complete. So we don't have to output an
+       * empty block here, this will be done at next call. This also
+       * ensures that for a very small output buffer, we emit at most
+       * one empty block.
+       */
+    }
+    if (bstate === BS_BLOCK_DONE) {
+      if (flush === Z_PARTIAL_FLUSH) {
+        trees._tr_align(s);
+      }
+      else if (flush !== Z_BLOCK) { /* FULL_FLUSH or SYNC_FLUSH */
+
+        trees._tr_stored_block(s, 0, 0, false);
+        /* For a full flush, this empty block will be recognized
+         * as a special marker by inflate_sync().
+         */
+        if (flush === Z_FULL_FLUSH) {
+          /*** CLEAR_HASH(s); ***/             /* forget history */
+          zero(s.head); // Fill with NIL (= 0);
+
+          if (s.lookahead === 0) {
+            s.strstart = 0;
+            s.block_start = 0;
+            s.insert = 0;
+          }
+        }
+      }
+      flush_pending(strm);
+      if (strm.avail_out === 0) {
+        s.last_flush = -1; /* avoid BUF_ERROR at next call, see above */
+        return Z_OK;
+      }
+    }
+  }
+  //Assert(strm->avail_out > 0, "bug2");
+  //if (strm.avail_out <= 0) { throw new Error("bug2");}
+
+  if (flush !== Z_FINISH) { return Z_OK; }
+  if (s.wrap <= 0) { return Z_STREAM_END; }
+
+  /* Write the trailer */
+  if (s.wrap === 2) {
+    put_byte(s, strm.adler & 0xff);
+    put_byte(s, (strm.adler >> 8) & 0xff);
+    put_byte(s, (strm.adler >> 16) & 0xff);
+    put_byte(s, (strm.adler >> 24) & 0xff);
+    put_byte(s, strm.total_in & 0xff);
+    put_byte(s, (strm.total_in >> 8) & 0xff);
+    put_byte(s, (strm.total_in >> 16) & 0xff);
+    put_byte(s, (strm.total_in >> 24) & 0xff);
+  }
+  else
+  {
+    putShortMSB(s, strm.adler >>> 16);
+    putShortMSB(s, strm.adler & 0xffff);
+  }
+
+  flush_pending(strm);
+  /* If avail_out is zero, the application will call deflate again
+   * to flush the rest.
+   */
+  if (s.wrap > 0) { s.wrap = -s.wrap; }
+  /* write the trailer only once! */
+  return s.pending !== 0 ? Z_OK : Z_STREAM_END;
+}
+
+function deflateEnd(strm) {
+  var status;
+
+  if (!strm/*== Z_NULL*/ || !strm.state/*== Z_NULL*/) {
+    return Z_STREAM_ERROR;
+  }
+
+  status = strm.state.status;
+  if (status !== INIT_STATE &&
+    status !== EXTRA_STATE &&
+    status !== NAME_STATE &&
+    status !== COMMENT_STATE &&
+    status !== HCRC_STATE &&
+    status !== BUSY_STATE &&
+    status !== FINISH_STATE
+  ) {
+    return err(strm, Z_STREAM_ERROR);
+  }
+
+  strm.state = null;
+
+  return status === BUSY_STATE ? err(strm, Z_DATA_ERROR) : Z_OK;
+}
+
+/* =========================================================================
+ * Copy the source state to the destination state
+ */
+//function deflateCopy(dest, source) {
+//
+//}
+
+exports.deflateInit = deflateInit;
+exports.deflateInit2 = deflateInit2;
+exports.deflateReset = deflateReset;
+exports.deflateResetKeep = deflateResetKeep;
+exports.deflateSetHeader = deflateSetHeader;
+exports.deflate = deflate;
+exports.deflateEnd = deflateEnd;
+exports.deflateInfo = 'pako deflate (from Nodeca project)';
+
+/* Not implemented
+exports.deflateBound = deflateBound;
+exports.deflateCopy = deflateCopy;
+exports.deflateSetDictionary = deflateSetDictionary;
+exports.deflateParams = deflateParams;
+exports.deflatePending = deflatePending;
+exports.deflatePrime = deflatePrime;
+exports.deflateTune = deflateTune;
+*/
+
+},{"../utils/common":213,"./adler32":215,"./crc32":217,"./messages":223,"./trees":224}],219:[function(require,module,exports){
+'use strict';
+
+
+function GZheader() {
+  /* true if compressed data believed to be text */
+  this.text       = 0;
+  /* modification time */
+  this.time       = 0;
+  /* extra flags (not used when writing a gzip file) */
+  this.xflags     = 0;
+  /* operating system */
+  this.os         = 0;
+  /* pointer to extra field or Z_NULL if none */
+  this.extra      = null;
+  /* extra field length (valid if extra != Z_NULL) */
+  this.extra_len  = 0; // Actually, we don't need it in JS,
+                       // but leave for few code modifications
+
+  //
+  // Setup limits is not necessary because in js we should not preallocate memory
+  // for inflate use constant limit in 65536 bytes
+  //
+
+  /* space at extra (only when reading header) */
+  // this.extra_max  = 0;
+  /* pointer to zero-terminated file name or Z_NULL */
+  this.name       = '';
+  /* space at name (only when reading header) */
+  // this.name_max   = 0;
+  /* pointer to zero-terminated comment or Z_NULL */
+  this.comment    = '';
+  /* space at comment (only when reading header) */
+  // this.comm_max   = 0;
+  /* true if there was or will be a header crc */
+  this.hcrc       = 0;
+  /* true when done reading gzip header (not used when writing a gzip file) */
+  this.done       = false;
+}
+
+module.exports = GZheader;
+
+},{}],220:[function(require,module,exports){
+'use strict';
+
+// See state defs from inflate.js
+var BAD = 30;       /* got a data error -- remain here until reset */
+var TYPE = 12;      /* i: waiting for type bits, including last-flag bit */
+
+/*
+   Decode literal, length, and distance codes and write out the resulting
+   literal and match bytes until either not enough input or output is
+   available, an end-of-block is encountered, or a data error is encountered.
+   When large enough input and output buffers are supplied to inflate(), for
+   example, a 16K input buffer and a 64K output buffer, more than 95% of the
+   inflate execution time is spent in this routine.
+
+   Entry assumptions:
+
+        state.mode === LEN
+        strm.avail_in >= 6
+        strm.avail_out >= 258
+        start >= strm.avail_out
+        state.bits < 8
+
+   On return, state.mode is one of:
+
+        LEN -- ran out of enough output space or enough available input
+        TYPE -- reached end of block code, inflate() to interpret next block
+        BAD -- error in block data
+
+   Notes:
+
+    - The maximum input bits used by a length/distance pair is 15 bits for the
+      length code, 5 bits for the length extra, 15 bits for the distance code,
+      and 13 bits for the distance extra.  This totals 48 bits, or six bytes.
+      Therefore if strm.avail_in >= 6, then there is enough input to avoid
+      checking for available input while decoding.
+
+    - The maximum bytes that a single length/distance pair can output is 258
+      bytes, which is the maximum length that can be coded.  inflate_fast()
+      requires strm.avail_out >= 258 for each loop to avoid checking for
+      output space.
+ */
+module.exports = function inflate_fast(strm, start) {
+  var state;
+  var _in;                    /* local strm.input */
+  var last;                   /* have enough input while in < last */
+  var _out;                   /* local strm.output */
+  var beg;                    /* inflate()'s initial strm.output */
+  var end;                    /* while out < end, enough space available */
+//#ifdef INFLATE_STRICT
+  var dmax;                   /* maximum distance from zlib header */
+//#endif
+  var wsize;                  /* window size or zero if not using window */
+  var whave;                  /* valid bytes in the window */
+  var wnext;                  /* window write index */
+  // Use `s_window` instead `window`, avoid conflict with instrumentation tools
+  var s_window;               /* allocated sliding window, if wsize != 0 */
+  var hold;                   /* local strm.hold */
+  var bits;                   /* local strm.bits */
+  var lcode;                  /* local strm.lencode */
+  var dcode;                  /* local strm.distcode */
+  var lmask;                  /* mask for first level of length codes */
+  var dmask;                  /* mask for first level of distance codes */
+  var here;                   /* retrieved table entry */
+  var op;                     /* code bits, operation, extra bits, or */
+                              /*  window position, window bytes to copy */
+  var len;                    /* match length, unused bytes */
+  var dist;                   /* match distance */
+  var from;                   /* where to copy match from */
+  var from_source;
+
+
+  var input, output; // JS specific, because we have no pointers
+
+  /* copy state to local variables */
+  state = strm.state;
+  //here = state.here;
+  _in = strm.next_in;
+  input = strm.input;
+  last = _in + (strm.avail_in - 5);
+  _out = strm.next_out;
+  output = strm.output;
+  beg = _out - (start - strm.avail_out);
+  end = _out + (strm.avail_out - 257);
+//#ifdef INFLATE_STRICT
+  dmax = state.dmax;
+//#endif
+  wsize = state.wsize;
+  whave = state.whave;
+  wnext = state.wnext;
+  s_window = state.window;
+  hold = state.hold;
+  bits = state.bits;
+  lcode = state.lencode;
+  dcode = state.distcode;
+  lmask = (1 << state.lenbits) - 1;
+  dmask = (1 << state.distbits) - 1;
+
+
+  /* decode literals and length/distances until end-of-block or not enough
+     input data or output space */
+
+  top:
+  do {
+    if (bits < 15) {
+      hold += input[_in++] << bits;
+      bits += 8;
+      hold += input[_in++] << bits;
+      bits += 8;
+    }
+
+    here = lcode[hold & lmask];
+
+    dolen:
+    for (;;) { // Goto emulation
+      op = here >>> 24/*here.bits*/;
+      hold >>>= op;
+      bits -= op;
+      op = (here >>> 16) & 0xff/*here.op*/;
+      if (op === 0) {                          /* literal */
+        //Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
+        //        "inflate:         literal '%c'\n" :
+        //        "inflate:         literal 0x%02x\n", here.val));
+        output[_out++] = here & 0xffff/*here.val*/;
+      }
+      else if (op & 16) {                     /* length base */
+        len = here & 0xffff/*here.val*/;
+        op &= 15;                           /* number of extra bits */
+        if (op) {
+          if (bits < op) {
+            hold += input[_in++] << bits;
+            bits += 8;
+          }
+          len += hold & ((1 << op) - 1);
+          hold >>>= op;
+          bits -= op;
+        }
+        //Tracevv((stderr, "inflate:         length %u\n", len));
+        if (bits < 15) {
+          hold += input[_in++] << bits;
+          bits += 8;
+          hold += input[_in++] << bits;
+          bits += 8;
+        }
+        here = dcode[hold & dmask];
+
+        dodist:
+        for (;;) { // goto emulation
+          op = here >>> 24/*here.bits*/;
+          hold >>>= op;
+          bits -= op;
+          op = (here >>> 16) & 0xff/*here.op*/;
+
+          if (op & 16) {                      /* distance base */
+            dist = here & 0xffff/*here.val*/;
+            op &= 15;                       /* number of extra bits */
+            if (bits < op) {
+              hold += input[_in++] << bits;
+              bits += 8;
+              if (bits < op) {
+                hold += input[_in++] << bits;
+                bits += 8;
+              }
+            }
+            dist += hold & ((1 << op) - 1);
+//#ifdef INFLATE_STRICT
+            if (dist > dmax) {
+              strm.msg = 'invalid distance too far back';
+              state.mode = BAD;
+              break top;
+            }
+//#endif
+            hold >>>= op;
+            bits -= op;
+            //Tracevv((stderr, "inflate:         distance %u\n", dist));
+            op = _out - beg;                /* max distance in output */
+            if (dist > op) {                /* see if copy from window */
+              op = dist - op;               /* distance back in window */
+              if (op > whave) {
+                if (state.sane) {
+                  strm.msg = 'invalid distance too far back';
+                  state.mode = BAD;
+                  break top;
+                }
+
+// (!) This block is disabled in zlib defailts,
+// don't enable it for binary compatibility
+//#ifdef INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
+//                if (len <= op - whave) {
+//                  do {
+//                    output[_out++] = 0;
+//                  } while (--len);
+//                  continue top;
+//                }
+//                len -= op - whave;
+//                do {
+//                  output[_out++] = 0;
+//                } while (--op > whave);
+//                if (op === 0) {
+//                  from = _out - dist;
+//                  do {
+//                    output[_out++] = output[from++];
+//                  } while (--len);
+//                  continue top;
+//                }
+//#endif
+              }
+              from = 0; // window index
+              from_source = s_window;
+              if (wnext === 0) {           /* very common case */
+                from += wsize - op;
+                if (op < len) {         /* some from window */
+                  len -= op;
+                  do {
+                    output[_out++] = s_window[from++];
+                  } while (--op);
+                  from = _out - dist;  /* rest from output */
+                  from_source = output;
+                }
+              }
+              else if (wnext < op) {      /* wrap around window */
+                from += wsize + wnext - op;
+                op -= wnext;
+                if (op < len) {         /* some from end of window */
+                  len -= op;
+                  do {
+                    output[_out++] = s_window[from++];
+                  } while (--op);
+                  from = 0;
+                  if (wnext < len) {  /* some from start of window */
+                    op = wnext;
+                    len -= op;
+                    do {
+                      output[_out++] = s_window[from++];
+                    } while (--op);
+                    from = _out - dist;      /* rest from output */
+                    from_source = output;
+                  }
+                }
+              }
+              else {                      /* contiguous in window */
+                from += wnext - op;
+                if (op < len) {         /* some from window */
+                  len -= op;
+                  do {
+                    output[_out++] = s_window[from++];
+                  } while (--op);
+                  from = _out - dist;  /* rest from output */
+                  from_source = output;
+                }
+              }
+              while (len > 2) {
+                output[_out++] = from_source[from++];
+                output[_out++] = from_source[from++];
+                output[_out++] = from_source[from++];
+                len -= 3;
+              }
+              if (len) {
+                output[_out++] = from_source[from++];
+                if (len > 1) {
+                  output[_out++] = from_source[from++];
+                }
+              }
+            }
+            else {
+              from = _out - dist;          /* copy direct from output */
+              do {                        /* minimum length is three */
+                output[_out++] = output[from++];
+                output[_out++] = output[from++];
+                output[_out++] = output[from++];
+                len -= 3;
+              } while (len > 2);
+              if (len) {
+                output[_out++] = output[from++];
+                if (len > 1) {
+                  output[_out++] = output[from++];
+                }
+              }
+            }
+          }
+          else if ((op & 64) === 0) {          /* 2nd level distance code */
+            here = dcode[(here & 0xffff)/*here.val*/ + (hold & ((1 << op) - 1))];
+            continue dodist;
+          }
+          else {
+            strm.msg = 'invalid distance code';
+            state.mode = BAD;
+            break top;
+          }
+
+          break; // need to emulate goto via "continue"
+        }
+      }
+      else if ((op & 64) === 0) {              /* 2nd level length code */
+        here = lcode[(here & 0xffff)/*here.val*/ + (hold & ((1 << op) - 1))];
+        continue dolen;
+      }
+      else if (op & 32) {                     /* end-of-block */
+        //Tracevv((stderr, "inflate:         end of block\n"));
+        state.mode = TYPE;
+        break top;
+      }
+      else {
+        strm.msg = 'invalid literal/length code';
+        state.mode = BAD;
+        break top;
+      }
+
+      break; // need to emulate goto via "continue"
+    }
+  } while (_in < last && _out < end);
+
+  /* return unused bytes (on entry, bits < 8, so in won't go too far back) */
+  len = bits >> 3;
+  _in -= len;
+  bits -= len << 3;
+  hold &= (1 << bits) - 1;
+
+  /* update state and return */
+  strm.next_in = _in;
+  strm.next_out = _out;
+  strm.avail_in = (_in < last ? 5 + (last - _in) : 5 - (_in - last));
+  strm.avail_out = (_out < end ? 257 + (end - _out) : 257 - (_out - end));
+  state.hold = hold;
+  state.bits = bits;
+  return;
+};
+
+},{}],221:[function(require,module,exports){
+'use strict';
+
+
+var utils = require('../utils/common');
+var adler32 = require('./adler32');
+var crc32   = require('./crc32');
+var inflate_fast = require('./inffast');
+var inflate_table = require('./inftrees');
+
+var CODES = 0;
+var LENS = 1;
+var DISTS = 2;
+
+/* Public constants ==========================================================*/
+/* ===========================================================================*/
+
+
+/* Allowed flush values; see deflate() and inflate() below for details */
+//var Z_NO_FLUSH      = 0;
+//var Z_PARTIAL_FLUSH = 1;
+//var Z_SYNC_FLUSH    = 2;
+//var Z_FULL_FLUSH    = 3;
+var Z_FINISH        = 4;
+var Z_BLOCK         = 5;
+var Z_TREES         = 6;
+
+
+/* Return codes for the compression/decompression functions. Negative values
+ * are errors, positive values are used for special but normal events.
+ */
+var Z_OK            = 0;
+var Z_STREAM_END    = 1;
+var Z_NEED_DICT     = 2;
+//var Z_ERRNO         = -1;
+var Z_STREAM_ERROR  = -2;
+var Z_DATA_ERROR    = -3;
+var Z_MEM_ERROR     = -4;
+var Z_BUF_ERROR     = -5;
+//var Z_VERSION_ERROR = -6;
+
+/* The deflate compression method */
+var Z_DEFLATED  = 8;
+
+
+/* STATES ====================================================================*/
+/* ===========================================================================*/
+
+
+var    HEAD = 1;       /* i: waiting for magic header */
+var    FLAGS = 2;      /* i: waiting for method and flags (gzip) */
+var    TIME = 3;       /* i: waiting for modification time (gzip) */
+var    OS = 4;         /* i: waiting for extra flags and operating system (gzip) */
+var    EXLEN = 5;      /* i: waiting for extra length (gzip) */
+var    EXTRA = 6;      /* i: waiting for extra bytes (gzip) */
+var    NAME = 7;       /* i: waiting for end of file name (gzip) */
+var    COMMENT = 8;    /* i: waiting for end of comment (gzip) */
+var    HCRC = 9;       /* i: waiting for header crc (gzip) */
+var    DICTID = 10;    /* i: waiting for dictionary check value */
+var    DICT = 11;      /* waiting for inflateSetDictionary() call */
+var        TYPE = 12;      /* i: waiting for type bits, including last-flag bit */
+var        TYPEDO = 13;    /* i: same, but skip check to exit inflate on new block */
+var        STORED = 14;    /* i: waiting for stored size (length and complement) */
+var        COPY_ = 15;     /* i/o: same as COPY below, but only first time in */
+var        COPY = 16;      /* i/o: waiting for input or output to copy stored block */
+var        TABLE = 17;     /* i: waiting for dynamic block table lengths */
+var        LENLENS = 18;   /* i: waiting for code length code lengths */
+var        CODELENS = 19;  /* i: waiting for length/lit and distance code lengths */
+var            LEN_ = 20;      /* i: same as LEN below, but only first time in */
+var            LEN = 21;       /* i: waiting for length/lit/eob code */
+var            LENEXT = 22;    /* i: waiting for length extra bits */
+var            DIST = 23;      /* i: waiting for distance code */
+var            DISTEXT = 24;   /* i: waiting for distance extra bits */
+var            MATCH = 25;     /* o: waiting for output space to copy string */
+var            LIT = 26;       /* o: waiting for output space to write literal */
+var    CHECK = 27;     /* i: waiting for 32-bit check value */
+var    LENGTH = 28;    /* i: waiting for 32-bit length (gzip) */
+var    DONE = 29;      /* finished check, done -- remain here until reset */
+var    BAD = 30;       /* got a data error -- remain here until reset */
+var    MEM = 31;       /* got an inflate() memory error -- remain here until reset */
+var    SYNC = 32;      /* looking for synchronization bytes to restart inflate() */
+
+/* ===========================================================================*/
+
+
+
+var ENOUGH_LENS = 852;
+var ENOUGH_DISTS = 592;
+//var ENOUGH =  (ENOUGH_LENS+ENOUGH_DISTS);
+
+var MAX_WBITS = 15;
+/* 32K LZ77 window */
+var DEF_WBITS = MAX_WBITS;
+
+
+function ZSWAP32(q) {
+  return  (((q >>> 24) & 0xff) +
+          ((q >>> 8) & 0xff00) +
+          ((q & 0xff00) << 8) +
+          ((q & 0xff) << 24));
+}
+
+
+function InflateState() {
+  this.mode = 0;             /* current inflate mode */
+  this.last = false;          /* true if processing last block */
+  this.wrap = 0;              /* bit 0 true for zlib, bit 1 true for gzip */
+  this.havedict = false;      /* true if dictionary provided */
+  this.flags = 0;             /* gzip header method and flags (0 if zlib) */
+  this.dmax = 0;              /* zlib header max distance (INFLATE_STRICT) */
+  this.check = 0;             /* protected copy of check value */
+  this.total = 0;             /* protected copy of output count */
+  // TODO: may be {}
+  this.head = null;           /* where to save gzip header information */
+
+  /* sliding window */
+  this.wbits = 0;             /* log base 2 of requested window size */
+  this.wsize = 0;             /* window size or zero if not using window */
+  this.whave = 0;             /* valid bytes in the window */
+  this.wnext = 0;             /* window write index */
+  this.window = null;         /* allocated sliding window, if needed */
+
+  /* bit accumulator */
+  this.hold = 0;              /* input bit accumulator */
+  this.bits = 0;              /* number of bits in "in" */
+
+  /* for string and stored block copying */
+  this.length = 0;            /* literal or length of data to copy */
+  this.offset = 0;            /* distance back to copy string from */
+
+  /* for table and code decoding */
+  this.extra = 0;             /* extra bits needed */
+
+  /* fixed and dynamic code tables */
+  this.lencode = null;          /* starting table for length/literal codes */
+  this.distcode = null;         /* starting table for distance codes */
+  this.lenbits = 0;           /* index bits for lencode */
+  this.distbits = 0;          /* index bits for distcode */
+
+  /* dynamic table building */
+  this.ncode = 0;             /* number of code length code lengths */
+  this.nlen = 0;              /* number of length code lengths */
+  this.ndist = 0;             /* number of distance code lengths */
+  this.have = 0;              /* number of code lengths in lens[] */
+  this.next = null;              /* next available space in codes[] */
+
+  this.lens = new utils.Buf16(320); /* temporary storage for code lengths */
+  this.work = new utils.Buf16(288); /* work area for code table building */
+
+  /*
+   because we don't have pointers in js, we use lencode and distcode directly
+   as buffers so we don't need codes
+  */
+  //this.codes = new utils.Buf32(ENOUGH);       /* space for code tables */
+  this.lendyn = null;              /* dynamic table for length/literal codes (JS specific) */
+  this.distdyn = null;             /* dynamic table for distance codes (JS specific) */
+  this.sane = 0;                   /* if false, allow invalid distance too far */
+  this.back = 0;                   /* bits back of last unprocessed length/lit */
+  this.was = 0;                    /* initial length of match */
+}
+
+function inflateResetKeep(strm) {
+  var state;
+
+  if (!strm || !strm.state) { return Z_STREAM_ERROR; }
+  state = strm.state;
+  strm.total_in = strm.total_out = state.total = 0;
+  strm.msg = ''; /*Z_NULL*/
+  if (state.wrap) {       /* to support ill-conceived Java test suite */
+    strm.adler = state.wrap & 1;
+  }
+  state.mode = HEAD;
+  state.last = 0;
+  state.havedict = 0;
+  state.dmax = 32768;
+  state.head = null/*Z_NULL*/;
+  state.hold = 0;
+  state.bits = 0;
+  //state.lencode = state.distcode = state.next = state.codes;
+  state.lencode = state.lendyn = new utils.Buf32(ENOUGH_LENS);
+  state.distcode = state.distdyn = new utils.Buf32(ENOUGH_DISTS);
+
+  state.sane = 1;
+  state.back = -1;
+  //Tracev((stderr, "inflate: reset\n"));
+  return Z_OK;
+}
+
+function inflateReset(strm) {
+  var state;
+
+  if (!strm || !strm.state) { return Z_STREAM_ERROR; }
+  state = strm.state;
+  state.wsize = 0;
+  state.whave = 0;
+  state.wnext = 0;
+  return inflateResetKeep(strm);
+
+}
+
+function inflateReset2(strm, windowBits) {
+  var wrap;
+  var state;
+
+  /* get the state */
+  if (!strm || !strm.state) { return Z_STREAM_ERROR; }
+  state = strm.state;
+
+  /* extract wrap request from windowBits parameter */
+  if (windowBits < 0) {
+    wrap = 0;
+    windowBits = -windowBits;
+  }
+  else {
+    wrap = (windowBits >> 4) + 1;
+    if (windowBits < 48) {
+      windowBits &= 15;
+    }
+  }
+
+  /* set number of window bits, free window if different */
+  if (windowBits && (windowBits < 8 || windowBits > 15)) {
+    return Z_STREAM_ERROR;
+  }
+  if (state.window !== null && state.wbits !== windowBits) {
+    state.window = null;
+  }
+
+  /* update state and reset the rest of it */
+  state.wrap = wrap;
+  state.wbits = windowBits;
+  return inflateReset(strm);
+}
+
+function inflateInit2(strm, windowBits) {
+  var ret;
+  var state;
+
+  if (!strm) { return Z_STREAM_ERROR; }
+  //strm.msg = Z_NULL;                 /* in case we return an error */
+
+  state = new InflateState();
+
+  //if (state === Z_NULL) return Z_MEM_ERROR;
+  //Tracev((stderr, "inflate: allocated\n"));
+  strm.state = state;
+  state.window = null/*Z_NULL*/;
+  ret = inflateReset2(strm, windowBits);
+  if (ret !== Z_OK) {
+    strm.state = null/*Z_NULL*/;
+  }
+  return ret;
+}
+
+function inflateInit(strm) {
+  return inflateInit2(strm, DEF_WBITS);
+}
+
+
+/*
+ Return state with length and distance decoding tables and index sizes set to
+ fixed code decoding.  Normally this returns fixed tables from inffixed.h.
+ If BUILDFIXED is defined, then instead this routine builds the tables the
+ first time it's called, and returns those tables the first time and
+ thereafter.  This reduces the size of the code by about 2K bytes, in
+ exchange for a little execution time.  However, BUILDFIXED should not be
+ used for threaded applications, since the rewriting of the tables and virgin
+ may not be thread-safe.
+ */
+var virgin = true;
+
+var lenfix, distfix; // We have no pointers in JS, so keep tables separate
+
+function fixedtables(state) {
+  /* build fixed huffman tables if first call (may not be thread safe) */
+  if (virgin) {
+    var sym;
+
+    lenfix = new utils.Buf32(512);
+    distfix = new utils.Buf32(32);
+
+    /* literal/length table */
+    sym = 0;
+    while (sym < 144) { state.lens[sym++] = 8; }
+    while (sym < 256) { state.lens[sym++] = 9; }
+    while (sym < 280) { state.lens[sym++] = 7; }
+    while (sym < 288) { state.lens[sym++] = 8; }
+
+    inflate_table(LENS,  state.lens, 0, 288, lenfix,   0, state.work, {bits: 9});
+
+    /* distance table */
+    sym = 0;
+    while (sym < 32) { state.lens[sym++] = 5; }
+
+    inflate_table(DISTS, state.lens, 0, 32,   distfix, 0, state.work, {bits: 5});
+
+    /* do this just once */
+    virgin = false;
+  }
+
+  state.lencode = lenfix;
+  state.lenbits = 9;
+  state.distcode = distfix;
+  state.distbits = 5;
+}
+
+
+/*
+ Update the window with the last wsize (normally 32K) bytes written before
+ returning.  If window does not exist yet, create it.  This is only called
+ when a window is already in use, or when output has been written during this
+ inflate call, but the end of the deflate stream has not been reached yet.
+ It is also called to create a window for dictionary data when a dictionary
+ is loaded.
+
+ Providing output buffers larger than 32K to inflate() should provide a speed
+ advantage, since only the last 32K of output is copied to the sliding window
+ upon return from inflate(), and since all distances after the first 32K of
+ output will fall in the output data, making match copies simpler and faster.
+ The advantage may be dependent on the size of the processor's data caches.
+ */
+function updatewindow(strm, src, end, copy) {
+  var dist;
+  var state = strm.state;
+
+  /* if it hasn't been done already, allocate space for the window */
+  if (state.window === null) {
+    state.wsize = 1 << state.wbits;
+    state.wnext = 0;
+    state.whave = 0;
+
+    state.window = new utils.Buf8(state.wsize);
+  }
+
+  /* copy state->wsize or less output bytes into the circular window */
+  if (copy >= state.wsize) {
+    utils.arraySet(state.window,src, end - state.wsize, state.wsize, 0);
+    state.wnext = 0;
+    state.whave = state.wsize;
+  }
+  else {
+    dist = state.wsize - state.wnext;
+    if (dist > copy) {
+      dist = copy;
+    }
+    //zmemcpy(state->window + state->wnext, end - copy, dist);
+    utils.arraySet(state.window,src, end - copy, dist, state.wnext);
+    copy -= dist;
+    if (copy) {
+      //zmemcpy(state->window, end - copy, copy);
+      utils.arraySet(state.window,src, end - copy, copy, 0);
+      state.wnext = copy;
+      state.whave = state.wsize;
+    }
+    else {
+      state.wnext += dist;
+      if (state.wnext === state.wsize) { state.wnext = 0; }
+      if (state.whave < state.wsize) { state.whave += dist; }
+    }
+  }
+  return 0;
+}
+
+function inflate(strm, flush) {
+  var state;
+  var input, output;          // input/output buffers
+  var next;                   /* next input INDEX */
+  var put;                    /* next output INDEX */
+  var have, left;             /* available input and output */
+  var hold;                   /* bit buffer */
+  var bits;                   /* bits in bit buffer */
+  var _in, _out;              /* save starting available input and output */
+  var copy;                   /* number of stored or match bytes to copy */
+  var from;                   /* where to copy match bytes from */
+  var from_source;
+  var here = 0;               /* current decoding table entry */
+  var here_bits, here_op, here_val; // paked "here" denormalized (JS specific)
+  //var last;                   /* parent table entry */
+  var last_bits, last_op, last_val; // paked "last" denormalized (JS specific)
+  var len;                    /* length to copy for repeats, bits to drop */
+  var ret;                    /* return code */
+  var hbuf = new utils.Buf8(4);    /* buffer for gzip header crc calculation */
+  var opts;
+
+  var n; // temporary var for NEED_BITS
+
+  var order = /* permutation of code lengths */
+    [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+
+
+  if (!strm || !strm.state || !strm.output ||
+      (!strm.input && strm.avail_in !== 0)) {
+    return Z_STREAM_ERROR;
+  }
+
+  state = strm.state;
+  if (state.mode === TYPE) { state.mode = TYPEDO; }    /* skip check */
+
+
+  //--- LOAD() ---
+  put = strm.next_out;
+  output = strm.output;
+  left = strm.avail_out;
+  next = strm.next_in;
+  input = strm.input;
+  have = strm.avail_in;
+  hold = state.hold;
+  bits = state.bits;
+  //---
+
+  _in = have;
+  _out = left;
+  ret = Z_OK;
+
+  inf_leave: // goto emulation
+  for (;;) {
+    switch (state.mode) {
+    case HEAD:
+      if (state.wrap === 0) {
+        state.mode = TYPEDO;
+        break;
+      }
+      //=== NEEDBITS(16);
+      while (bits < 16) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      if ((state.wrap & 2) && hold === 0x8b1f) {  /* gzip header */
+        state.check = 0/*crc32(0L, Z_NULL, 0)*/;
+        //=== CRC2(state.check, hold);
+        hbuf[0] = hold & 0xff;
+        hbuf[1] = (hold >>> 8) & 0xff;
+        state.check = crc32(state.check, hbuf, 2, 0);
+        //===//
+
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+        state.mode = FLAGS;
+        break;
+      }
+      state.flags = 0;           /* expect zlib header */
+      if (state.head) {
+        state.head.done = false;
+      }
+      if (!(state.wrap & 1) ||   /* check if zlib header allowed */
+        (((hold & 0xff)/*BITS(8)*/ << 8) + (hold >> 8)) % 31) {
+        strm.msg = 'incorrect header check';
+        state.mode = BAD;
+        break;
+      }
+      if ((hold & 0x0f)/*BITS(4)*/ !== Z_DEFLATED) {
+        strm.msg = 'unknown compression method';
+        state.mode = BAD;
+        break;
+      }
+      //--- DROPBITS(4) ---//
+      hold >>>= 4;
+      bits -= 4;
+      //---//
+      len = (hold & 0x0f)/*BITS(4)*/ + 8;
+      if (state.wbits === 0) {
+        state.wbits = len;
+      }
+      else if (len > state.wbits) {
+        strm.msg = 'invalid window size';
+        state.mode = BAD;
+        break;
+      }
+      state.dmax = 1 << len;
+      //Tracev((stderr, "inflate:   zlib header ok\n"));
+      strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
+      state.mode = hold & 0x200 ? DICTID : TYPE;
+      //=== INITBITS();
+      hold = 0;
+      bits = 0;
+      //===//
+      break;
+    case FLAGS:
+      //=== NEEDBITS(16); */
+      while (bits < 16) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      state.flags = hold;
+      if ((state.flags & 0xff) !== Z_DEFLATED) {
+        strm.msg = 'unknown compression method';
+        state.mode = BAD;
+        break;
+      }
+      if (state.flags & 0xe000) {
+        strm.msg = 'unknown header flags set';
+        state.mode = BAD;
+        break;
+      }
+      if (state.head) {
+        state.head.text = ((hold >> 8) & 1);
+      }
+      if (state.flags & 0x0200) {
+        //=== CRC2(state.check, hold);
+        hbuf[0] = hold & 0xff;
+        hbuf[1] = (hold >>> 8) & 0xff;
+        state.check = crc32(state.check, hbuf, 2, 0);
+        //===//
+      }
+      //=== INITBITS();
+      hold = 0;
+      bits = 0;
+      //===//
+      state.mode = TIME;
+      /* falls through */
+    case TIME:
+      //=== NEEDBITS(32); */
+      while (bits < 32) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      if (state.head) {
+        state.head.time = hold;
+      }
+      if (state.flags & 0x0200) {
+        //=== CRC4(state.check, hold)
+        hbuf[0] = hold & 0xff;
+        hbuf[1] = (hold >>> 8) & 0xff;
+        hbuf[2] = (hold >>> 16) & 0xff;
+        hbuf[3] = (hold >>> 24) & 0xff;
+        state.check = crc32(state.check, hbuf, 4, 0);
+        //===
+      }
+      //=== INITBITS();
+      hold = 0;
+      bits = 0;
+      //===//
+      state.mode = OS;
+      /* falls through */
+    case OS:
+      //=== NEEDBITS(16); */
+      while (bits < 16) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      if (state.head) {
+        state.head.xflags = (hold & 0xff);
+        state.head.os = (hold >> 8);
+      }
+      if (state.flags & 0x0200) {
+        //=== CRC2(state.check, hold);
+        hbuf[0] = hold & 0xff;
+        hbuf[1] = (hold >>> 8) & 0xff;
+        state.check = crc32(state.check, hbuf, 2, 0);
+        //===//
+      }
+      //=== INITBITS();
+      hold = 0;
+      bits = 0;
+      //===//
+      state.mode = EXLEN;
+      /* falls through */
+    case EXLEN:
+      if (state.flags & 0x0400) {
+        //=== NEEDBITS(16); */
+        while (bits < 16) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        state.length = hold;
+        if (state.head) {
+          state.head.extra_len = hold;
+        }
+        if (state.flags & 0x0200) {
+          //=== CRC2(state.check, hold);
+          hbuf[0] = hold & 0xff;
+          hbuf[1] = (hold >>> 8) & 0xff;
+          state.check = crc32(state.check, hbuf, 2, 0);
+          //===//
+        }
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+      }
+      else if (state.head) {
+        state.head.extra = null/*Z_NULL*/;
+      }
+      state.mode = EXTRA;
+      /* falls through */
+    case EXTRA:
+      if (state.flags & 0x0400) {
+        copy = state.length;
+        if (copy > have) { copy = have; }
+        if (copy) {
+          if (state.head) {
+            len = state.head.extra_len - state.length;
+            if (!state.head.extra) {
+              // Use untyped array for more conveniend processing later
+              state.head.extra = new Array(state.head.extra_len);
+            }
+            utils.arraySet(
+              state.head.extra,
+              input,
+              next,
+              // extra field is limited to 65536 bytes
+              // - no need for additional size check
+              copy,
+              /*len + copy > state.head.extra_max - len ? state.head.extra_max : copy,*/
+              len
+            );
+            //zmemcpy(state.head.extra + len, next,
+            //        len + copy > state.head.extra_max ?
+            //        state.head.extra_max - len : copy);
+          }
+          if (state.flags & 0x0200) {
+            state.check = crc32(state.check, input, copy, next);
+          }
+          have -= copy;
+          next += copy;
+          state.length -= copy;
+        }
+        if (state.length) { break inf_leave; }
+      }
+      state.length = 0;
+      state.mode = NAME;
+      /* falls through */
+    case NAME:
+      if (state.flags & 0x0800) {
+        if (have === 0) { break inf_leave; }
+        copy = 0;
+        do {
+          // TODO: 2 or 1 bytes?
+          len = input[next + copy++];
+          /* use constant limit because in js we should not preallocate memory */
+          if (state.head && len &&
+              (state.length < 65536 /*state.head.name_max*/)) {
+            state.head.name += String.fromCharCode(len);
+          }
+        } while (len && copy < have);
+
+        if (state.flags & 0x0200) {
+          state.check = crc32(state.check, input, copy, next);
+        }
+        have -= copy;
+        next += copy;
+        if (len) { break inf_leave; }
+      }
+      else if (state.head) {
+        state.head.name = null;
+      }
+      state.length = 0;
+      state.mode = COMMENT;
+      /* falls through */
+    case COMMENT:
+      if (state.flags & 0x1000) {
+        if (have === 0) { break inf_leave; }
+        copy = 0;
+        do {
+          len = input[next + copy++];
+          /* use constant limit because in js we should not preallocate memory */
+          if (state.head && len &&
+              (state.length < 65536 /*state.head.comm_max*/)) {
+            state.head.comment += String.fromCharCode(len);
+          }
+        } while (len && copy < have);
+        if (state.flags & 0x0200) {
+          state.check = crc32(state.check, input, copy, next);
+        }
+        have -= copy;
+        next += copy;
+        if (len) { break inf_leave; }
+      }
+      else if (state.head) {
+        state.head.comment = null;
+      }
+      state.mode = HCRC;
+      /* falls through */
+    case HCRC:
+      if (state.flags & 0x0200) {
+        //=== NEEDBITS(16); */
+        while (bits < 16) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        if (hold !== (state.check & 0xffff)) {
+          strm.msg = 'header crc mismatch';
+          state.mode = BAD;
+          break;
+        }
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+      }
+      if (state.head) {
+        state.head.hcrc = ((state.flags >> 9) & 1);
+        state.head.done = true;
+      }
+      strm.adler = state.check = 0 /*crc32(0L, Z_NULL, 0)*/;
+      state.mode = TYPE;
+      break;
+    case DICTID:
+      //=== NEEDBITS(32); */
+      while (bits < 32) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      strm.adler = state.check = ZSWAP32(hold);
+      //=== INITBITS();
+      hold = 0;
+      bits = 0;
+      //===//
+      state.mode = DICT;
+      /* falls through */
+    case DICT:
+      if (state.havedict === 0) {
+        //--- RESTORE() ---
+        strm.next_out = put;
+        strm.avail_out = left;
+        strm.next_in = next;
+        strm.avail_in = have;
+        state.hold = hold;
+        state.bits = bits;
+        //---
+        return Z_NEED_DICT;
+      }
+      strm.adler = state.check = 1/*adler32(0L, Z_NULL, 0)*/;
+      state.mode = TYPE;
+      /* falls through */
+    case TYPE:
+      if (flush === Z_BLOCK || flush === Z_TREES) { break inf_leave; }
+      /* falls through */
+    case TYPEDO:
+      if (state.last) {
+        //--- BYTEBITS() ---//
+        hold >>>= bits & 7;
+        bits -= bits & 7;
+        //---//
+        state.mode = CHECK;
+        break;
+      }
+      //=== NEEDBITS(3); */
+      while (bits < 3) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      state.last = (hold & 0x01)/*BITS(1)*/;
+      //--- DROPBITS(1) ---//
+      hold >>>= 1;
+      bits -= 1;
+      //---//
+
+      switch ((hold & 0x03)/*BITS(2)*/) {
+      case 0:                             /* stored block */
+        //Tracev((stderr, "inflate:     stored block%s\n",
+        //        state.last ? " (last)" : ""));
+        state.mode = STORED;
+        break;
+      case 1:                             /* fixed block */
+        fixedtables(state);
+        //Tracev((stderr, "inflate:     fixed codes block%s\n",
+        //        state.last ? " (last)" : ""));
+        state.mode = LEN_;             /* decode codes */
+        if (flush === Z_TREES) {
+          //--- DROPBITS(2) ---//
+          hold >>>= 2;
+          bits -= 2;
+          //---//
+          break inf_leave;
+        }
+        break;
+      case 2:                             /* dynamic block */
+        //Tracev((stderr, "inflate:     dynamic codes block%s\n",
+        //        state.last ? " (last)" : ""));
+        state.mode = TABLE;
+        break;
+      case 3:
+        strm.msg = 'invalid block type';
+        state.mode = BAD;
+      }
+      //--- DROPBITS(2) ---//
+      hold >>>= 2;
+      bits -= 2;
+      //---//
+      break;
+    case STORED:
+      //--- BYTEBITS() ---// /* go to byte boundary */
+      hold >>>= bits & 7;
+      bits -= bits & 7;
+      //---//
+      //=== NEEDBITS(32); */
+      while (bits < 32) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      if ((hold & 0xffff) !== ((hold >>> 16) ^ 0xffff)) {
+        strm.msg = 'invalid stored block lengths';
+        state.mode = BAD;
+        break;
+      }
+      state.length = hold & 0xffff;
+      //Tracev((stderr, "inflate:       stored length %u\n",
+      //        state.length));
+      //=== INITBITS();
+      hold = 0;
+      bits = 0;
+      //===//
+      state.mode = COPY_;
+      if (flush === Z_TREES) { break inf_leave; }
+      /* falls through */
+    case COPY_:
+      state.mode = COPY;
+      /* falls through */
+    case COPY:
+      copy = state.length;
+      if (copy) {
+        if (copy > have) { copy = have; }
+        if (copy > left) { copy = left; }
+        if (copy === 0) { break inf_leave; }
+        //--- zmemcpy(put, next, copy); ---
+        utils.arraySet(output, input, next, copy, put);
+        //---//
+        have -= copy;
+        next += copy;
+        left -= copy;
+        put += copy;
+        state.length -= copy;
+        break;
+      }
+      //Tracev((stderr, "inflate:       stored end\n"));
+      state.mode = TYPE;
+      break;
+    case TABLE:
+      //=== NEEDBITS(14); */
+      while (bits < 14) {
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+      }
+      //===//
+      state.nlen = (hold & 0x1f)/*BITS(5)*/ + 257;
+      //--- DROPBITS(5) ---//
+      hold >>>= 5;
+      bits -= 5;
+      //---//
+      state.ndist = (hold & 0x1f)/*BITS(5)*/ + 1;
+      //--- DROPBITS(5) ---//
+      hold >>>= 5;
+      bits -= 5;
+      //---//
+      state.ncode = (hold & 0x0f)/*BITS(4)*/ + 4;
+      //--- DROPBITS(4) ---//
+      hold >>>= 4;
+      bits -= 4;
+      //---//
+//#ifndef PKZIP_BUG_WORKAROUND
+      if (state.nlen > 286 || state.ndist > 30) {
+        strm.msg = 'too many length or distance symbols';
+        state.mode = BAD;
+        break;
+      }
+//#endif
+      //Tracev((stderr, "inflate:       table sizes ok\n"));
+      state.have = 0;
+      state.mode = LENLENS;
+      /* falls through */
+    case LENLENS:
+      while (state.have < state.ncode) {
+        //=== NEEDBITS(3);
+        while (bits < 3) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        state.lens[order[state.have++]] = (hold & 0x07);//BITS(3);
+        //--- DROPBITS(3) ---//
+        hold >>>= 3;
+        bits -= 3;
+        //---//
+      }
+      while (state.have < 19) {
+        state.lens[order[state.have++]] = 0;
+      }
+      // We have separate tables & no pointers. 2 commented lines below not needed.
+      //state.next = state.codes;
+      //state.lencode = state.next;
+      // Switch to use dynamic table
+      state.lencode = state.lendyn;
+      state.lenbits = 7;
+
+      opts = {bits: state.lenbits};
+      ret = inflate_table(CODES, state.lens, 0, 19, state.lencode, 0, state.work, opts);
+      state.lenbits = opts.bits;
+
+      if (ret) {
+        strm.msg = 'invalid code lengths set';
+        state.mode = BAD;
+        break;
+      }
+      //Tracev((stderr, "inflate:       code lengths ok\n"));
+      state.have = 0;
+      state.mode = CODELENS;
+      /* falls through */
+    case CODELENS:
+      while (state.have < state.nlen + state.ndist) {
+        for (;;) {
+          here = state.lencode[hold & ((1 << state.lenbits) - 1)];/*BITS(state.lenbits)*/
+          here_bits = here >>> 24;
+          here_op = (here >>> 16) & 0xff;
+          here_val = here & 0xffff;
+
+          if ((here_bits) <= bits) { break; }
+          //--- PULLBYTE() ---//
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+          //---//
+        }
+        if (here_val < 16) {
+          //--- DROPBITS(here.bits) ---//
+          hold >>>= here_bits;
+          bits -= here_bits;
+          //---//
+          state.lens[state.have++] = here_val;
+        }
+        else {
+          if (here_val === 16) {
+            //=== NEEDBITS(here.bits + 2);
+            n = here_bits + 2;
+            while (bits < n) {
+              if (have === 0) { break inf_leave; }
+              have--;
+              hold += input[next++] << bits;
+              bits += 8;
+            }
+            //===//
+            //--- DROPBITS(here.bits) ---//
+            hold >>>= here_bits;
+            bits -= here_bits;
+            //---//
+            if (state.have === 0) {
+              strm.msg = 'invalid bit length repeat';
+              state.mode = BAD;
+              break;
+            }
+            len = state.lens[state.have - 1];
+            copy = 3 + (hold & 0x03);//BITS(2);
+            //--- DROPBITS(2) ---//
+            hold >>>= 2;
+            bits -= 2;
+            //---//
+          }
+          else if (here_val === 17) {
+            //=== NEEDBITS(here.bits + 3);
+            n = here_bits + 3;
+            while (bits < n) {
+              if (have === 0) { break inf_leave; }
+              have--;
+              hold += input[next++] << bits;
+              bits += 8;
+            }
+            //===//
+            //--- DROPBITS(here.bits) ---//
+            hold >>>= here_bits;
+            bits -= here_bits;
+            //---//
+            len = 0;
+            copy = 3 + (hold & 0x07);//BITS(3);
+            //--- DROPBITS(3) ---//
+            hold >>>= 3;
+            bits -= 3;
+            //---//
+          }
+          else {
+            //=== NEEDBITS(here.bits + 7);
+            n = here_bits + 7;
+            while (bits < n) {
+              if (have === 0) { break inf_leave; }
+              have--;
+              hold += input[next++] << bits;
+              bits += 8;
+            }
+            //===//
+            //--- DROPBITS(here.bits) ---//
+            hold >>>= here_bits;
+            bits -= here_bits;
+            //---//
+            len = 0;
+            copy = 11 + (hold & 0x7f);//BITS(7);
+            //--- DROPBITS(7) ---//
+            hold >>>= 7;
+            bits -= 7;
+            //---//
+          }
+          if (state.have + copy > state.nlen + state.ndist) {
+            strm.msg = 'invalid bit length repeat';
+            state.mode = BAD;
+            break;
+          }
+          while (copy--) {
+            state.lens[state.have++] = len;
+          }
+        }
+      }
+
+      /* handle error breaks in while */
+      if (state.mode === BAD) { break; }
+
+      /* check for end-of-block code (better have one) */
+      if (state.lens[256] === 0) {
+        strm.msg = 'invalid code -- missing end-of-block';
+        state.mode = BAD;
+        break;
+      }
+
+      /* build code tables -- note: do not change the lenbits or distbits
+         values here (9 and 6) without reading the comments in inftrees.h
+         concerning the ENOUGH constants, which depend on those values */
+      state.lenbits = 9;
+
+      opts = {bits: state.lenbits};
+      ret = inflate_table(LENS, state.lens, 0, state.nlen, state.lencode, 0, state.work, opts);
+      // We have separate tables & no pointers. 2 commented lines below not needed.
+      // state.next_index = opts.table_index;
+      state.lenbits = opts.bits;
+      // state.lencode = state.next;
+
+      if (ret) {
+        strm.msg = 'invalid literal/lengths set';
+        state.mode = BAD;
+        break;
+      }
+
+      state.distbits = 6;
+      //state.distcode.copy(state.codes);
+      // Switch to use dynamic table
+      state.distcode = state.distdyn;
+      opts = {bits: state.distbits};
+      ret = inflate_table(DISTS, state.lens, state.nlen, state.ndist, state.distcode, 0, state.work, opts);
+      // We have separate tables & no pointers. 2 commented lines below not needed.
+      // state.next_index = opts.table_index;
+      state.distbits = opts.bits;
+      // state.distcode = state.next;
+
+      if (ret) {
+        strm.msg = 'invalid distances set';
+        state.mode = BAD;
+        break;
+      }
+      //Tracev((stderr, 'inflate:       codes ok\n'));
+      state.mode = LEN_;
+      if (flush === Z_TREES) { break inf_leave; }
+      /* falls through */
+    case LEN_:
+      state.mode = LEN;
+      /* falls through */
+    case LEN:
+      if (have >= 6 && left >= 258) {
+        //--- RESTORE() ---
+        strm.next_out = put;
+        strm.avail_out = left;
+        strm.next_in = next;
+        strm.avail_in = have;
+        state.hold = hold;
+        state.bits = bits;
+        //---
+        inflate_fast(strm, _out);
+        //--- LOAD() ---
+        put = strm.next_out;
+        output = strm.output;
+        left = strm.avail_out;
+        next = strm.next_in;
+        input = strm.input;
+        have = strm.avail_in;
+        hold = state.hold;
+        bits = state.bits;
+        //---
+
+        if (state.mode === TYPE) {
+          state.back = -1;
+        }
+        break;
+      }
+      state.back = 0;
+      for (;;) {
+        here = state.lencode[hold & ((1 << state.lenbits) -1)];  /*BITS(state.lenbits)*/
+        here_bits = here >>> 24;
+        here_op = (here >>> 16) & 0xff;
+        here_val = here & 0xffff;
+
+        if (here_bits <= bits) { break; }
+        //--- PULLBYTE() ---//
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+        //---//
+      }
+      if (here_op && (here_op & 0xf0) === 0) {
+        last_bits = here_bits;
+        last_op = here_op;
+        last_val = here_val;
+        for (;;) {
+          here = state.lencode[last_val +
+                  ((hold & ((1 << (last_bits + last_op)) -1))/*BITS(last.bits + last.op)*/ >> last_bits)];
+          here_bits = here >>> 24;
+          here_op = (here >>> 16) & 0xff;
+          here_val = here & 0xffff;
+
+          if ((last_bits + here_bits) <= bits) { break; }
+          //--- PULLBYTE() ---//
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+          //---//
+        }
+        //--- DROPBITS(last.bits) ---//
+        hold >>>= last_bits;
+        bits -= last_bits;
+        //---//
+        state.back += last_bits;
+      }
+      //--- DROPBITS(here.bits) ---//
+      hold >>>= here_bits;
+      bits -= here_bits;
+      //---//
+      state.back += here_bits;
+      state.length = here_val;
+      if (here_op === 0) {
+        //Tracevv((stderr, here.val >= 0x20 && here.val < 0x7f ?
+        //        "inflate:         literal '%c'\n" :
+        //        "inflate:         literal 0x%02x\n", here.val));
+        state.mode = LIT;
+        break;
+      }
+      if (here_op & 32) {
+        //Tracevv((stderr, "inflate:         end of block\n"));
+        state.back = -1;
+        state.mode = TYPE;
+        break;
+      }
+      if (here_op & 64) {
+        strm.msg = 'invalid literal/length code';
+        state.mode = BAD;
+        break;
+      }
+      state.extra = here_op & 15;
+      state.mode = LENEXT;
+      /* falls through */
+    case LENEXT:
+      if (state.extra) {
+        //=== NEEDBITS(state.extra);
+        n = state.extra;
+        while (bits < n) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        state.length += hold & ((1 << state.extra) -1)/*BITS(state.extra)*/;
+        //--- DROPBITS(state.extra) ---//
+        hold >>>= state.extra;
+        bits -= state.extra;
+        //---//
+        state.back += state.extra;
+      }
+      //Tracevv((stderr, "inflate:         length %u\n", state.length));
+      state.was = state.length;
+      state.mode = DIST;
+      /* falls through */
+    case DIST:
+      for (;;) {
+        here = state.distcode[hold & ((1 << state.distbits) -1)];/*BITS(state.distbits)*/
+        here_bits = here >>> 24;
+        here_op = (here >>> 16) & 0xff;
+        here_val = here & 0xffff;
+
+        if ((here_bits) <= bits) { break; }
+        //--- PULLBYTE() ---//
+        if (have === 0) { break inf_leave; }
+        have--;
+        hold += input[next++] << bits;
+        bits += 8;
+        //---//
+      }
+      if ((here_op & 0xf0) === 0) {
+        last_bits = here_bits;
+        last_op = here_op;
+        last_val = here_val;
+        for (;;) {
+          here = state.distcode[last_val +
+                  ((hold & ((1 << (last_bits + last_op)) -1))/*BITS(last.bits + last.op)*/ >> last_bits)];
+          here_bits = here >>> 24;
+          here_op = (here >>> 16) & 0xff;
+          here_val = here & 0xffff;
+
+          if ((last_bits + here_bits) <= bits) { break; }
+          //--- PULLBYTE() ---//
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+          //---//
+        }
+        //--- DROPBITS(last.bits) ---//
+        hold >>>= last_bits;
+        bits -= last_bits;
+        //---//
+        state.back += last_bits;
+      }
+      //--- DROPBITS(here.bits) ---//
+      hold >>>= here_bits;
+      bits -= here_bits;
+      //---//
+      state.back += here_bits;
+      if (here_op & 64) {
+        strm.msg = 'invalid distance code';
+        state.mode = BAD;
+        break;
+      }
+      state.offset = here_val;
+      state.extra = (here_op) & 15;
+      state.mode = DISTEXT;
+      /* falls through */
+    case DISTEXT:
+      if (state.extra) {
+        //=== NEEDBITS(state.extra);
+        n = state.extra;
+        while (bits < n) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        state.offset += hold & ((1 << state.extra) -1)/*BITS(state.extra)*/;
+        //--- DROPBITS(state.extra) ---//
+        hold >>>= state.extra;
+        bits -= state.extra;
+        //---//
+        state.back += state.extra;
+      }
+//#ifdef INFLATE_STRICT
+      if (state.offset > state.dmax) {
+        strm.msg = 'invalid distance too far back';
+        state.mode = BAD;
+        break;
+      }
+//#endif
+      //Tracevv((stderr, "inflate:         distance %u\n", state.offset));
+      state.mode = MATCH;
+      /* falls through */
+    case MATCH:
+      if (left === 0) { break inf_leave; }
+      copy = _out - left;
+      if (state.offset > copy) {         /* copy from window */
+        copy = state.offset - copy;
+        if (copy > state.whave) {
+          if (state.sane) {
+            strm.msg = 'invalid distance too far back';
+            state.mode = BAD;
+            break;
+          }
+// (!) This block is disabled in zlib defailts,
+// don't enable it for binary compatibility
+//#ifdef INFLATE_ALLOW_INVALID_DISTANCE_TOOFAR_ARRR
+//          Trace((stderr, "inflate.c too far\n"));
+//          copy -= state.whave;
+//          if (copy > state.length) { copy = state.length; }
+//          if (copy > left) { copy = left; }
+//          left -= copy;
+//          state.length -= copy;
+//          do {
+//            output[put++] = 0;
+//          } while (--copy);
+//          if (state.length === 0) { state.mode = LEN; }
+//          break;
+//#endif
+        }
+        if (copy > state.wnext) {
+          copy -= state.wnext;
+          from = state.wsize - copy;
+        }
+        else {
+          from = state.wnext - copy;
+        }
+        if (copy > state.length) { copy = state.length; }
+        from_source = state.window;
+      }
+      else {                              /* copy from output */
+        from_source = output;
+        from = put - state.offset;
+        copy = state.length;
+      }
+      if (copy > left) { copy = left; }
+      left -= copy;
+      state.length -= copy;
+      do {
+        output[put++] = from_source[from++];
+      } while (--copy);
+      if (state.length === 0) { state.mode = LEN; }
+      break;
+    case LIT:
+      if (left === 0) { break inf_leave; }
+      output[put++] = state.length;
+      left--;
+      state.mode = LEN;
+      break;
+    case CHECK:
+      if (state.wrap) {
+        //=== NEEDBITS(32);
+        while (bits < 32) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          // Use '|' insdead of '+' to make sure that result is signed
+          hold |= input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        _out -= left;
+        strm.total_out += _out;
+        state.total += _out;
+        if (_out) {
+          strm.adler = state.check =
+              /*UPDATE(state.check, put - _out, _out);*/
+              (state.flags ? crc32(state.check, output, _out, put - _out) : adler32(state.check, output, _out, put - _out));
+
+        }
+        _out = left;
+        // NB: crc32 stored as signed 32-bit int, ZSWAP32 returns signed too
+        if ((state.flags ? hold : ZSWAP32(hold)) !== state.check) {
+          strm.msg = 'incorrect data check';
+          state.mode = BAD;
+          break;
+        }
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+        //Tracev((stderr, "inflate:   check matches trailer\n"));
+      }
+      state.mode = LENGTH;
+      /* falls through */
+    case LENGTH:
+      if (state.wrap && state.flags) {
+        //=== NEEDBITS(32);
+        while (bits < 32) {
+          if (have === 0) { break inf_leave; }
+          have--;
+          hold += input[next++] << bits;
+          bits += 8;
+        }
+        //===//
+        if (hold !== (state.total & 0xffffffff)) {
+          strm.msg = 'incorrect length check';
+          state.mode = BAD;
+          break;
+        }
+        //=== INITBITS();
+        hold = 0;
+        bits = 0;
+        //===//
+        //Tracev((stderr, "inflate:   length matches trailer\n"));
+      }
+      state.mode = DONE;
+      /* falls through */
+    case DONE:
+      ret = Z_STREAM_END;
+      break inf_leave;
+    case BAD:
+      ret = Z_DATA_ERROR;
+      break inf_leave;
+    case MEM:
+      return Z_MEM_ERROR;
+    case SYNC:
+      /* falls through */
+    default:
+      return Z_STREAM_ERROR;
+    }
+  }
+
+  // inf_leave <- here is real place for "goto inf_leave", emulated via "break inf_leave"
+
+  /*
+     Return from inflate(), updating the total counts and the check value.
+     If there was no progress during the inflate() call, return a buffer
+     error.  Call updatewindow() to create and/or update the window state.
+     Note: a memory error from inflate() is non-recoverable.
+   */
+
+  //--- RESTORE() ---
+  strm.next_out = put;
+  strm.avail_out = left;
+  strm.next_in = next;
+  strm.avail_in = have;
+  state.hold = hold;
+  state.bits = bits;
+  //---
+
+  if (state.wsize || (_out !== strm.avail_out && state.mode < BAD &&
+                      (state.mode < CHECK || flush !== Z_FINISH))) {
+    if (updatewindow(strm, strm.output, strm.next_out, _out - strm.avail_out)) {
+      state.mode = MEM;
+      return Z_MEM_ERROR;
+    }
+  }
+  _in -= strm.avail_in;
+  _out -= strm.avail_out;
+  strm.total_in += _in;
+  strm.total_out += _out;
+  state.total += _out;
+  if (state.wrap && _out) {
+    strm.adler = state.check = /*UPDATE(state.check, strm.next_out - _out, _out);*/
+      (state.flags ? crc32(state.check, output, _out, strm.next_out - _out) : adler32(state.check, output, _out, strm.next_out - _out));
+  }
+  strm.data_type = state.bits + (state.last ? 64 : 0) +
+                    (state.mode === TYPE ? 128 : 0) +
+                    (state.mode === LEN_ || state.mode === COPY_ ? 256 : 0);
+  if (((_in === 0 && _out === 0) || flush === Z_FINISH) && ret === Z_OK) {
+    ret = Z_BUF_ERROR;
+  }
+  return ret;
+}
+
+function inflateEnd(strm) {
+
+  if (!strm || !strm.state /*|| strm->zfree == (free_func)0*/) {
+    return Z_STREAM_ERROR;
+  }
+
+  var state = strm.state;
+  if (state.window) {
+    state.window = null;
+  }
+  strm.state = null;
+  return Z_OK;
+}
+
+function inflateGetHeader(strm, head) {
+  var state;
+
+  /* check state */
+  if (!strm || !strm.state) { return Z_STREAM_ERROR; }
+  state = strm.state;
+  if ((state.wrap & 2) === 0) { return Z_STREAM_ERROR; }
+
+  /* save header structure */
+  state.head = head;
+  head.done = false;
+  return Z_OK;
+}
+
+
+exports.inflateReset = inflateReset;
+exports.inflateReset2 = inflateReset2;
+exports.inflateResetKeep = inflateResetKeep;
+exports.inflateInit = inflateInit;
+exports.inflateInit2 = inflateInit2;
+exports.inflate = inflate;
+exports.inflateEnd = inflateEnd;
+exports.inflateGetHeader = inflateGetHeader;
+exports.inflateInfo = 'pako inflate (from Nodeca project)';
+
+/* Not implemented
+exports.inflateCopy = inflateCopy;
+exports.inflateGetDictionary = inflateGetDictionary;
+exports.inflateMark = inflateMark;
+exports.inflatePrime = inflatePrime;
+exports.inflateSetDictionary = inflateSetDictionary;
+exports.inflateSync = inflateSync;
+exports.inflateSyncPoint = inflateSyncPoint;
+exports.inflateUndermine = inflateUndermine;
+*/
+
+},{"../utils/common":213,"./adler32":215,"./crc32":217,"./inffast":220,"./inftrees":222}],222:[function(require,module,exports){
+'use strict';
+
+
+var utils = require('../utils/common');
+
+var MAXBITS = 15;
+var ENOUGH_LENS = 852;
+var ENOUGH_DISTS = 592;
+//var ENOUGH = (ENOUGH_LENS+ENOUGH_DISTS);
+
+var CODES = 0;
+var LENS = 1;
+var DISTS = 2;
+
+var lbase = [ /* Length codes 257..285 base */
+  3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
+  35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0
+];
+
+var lext = [ /* Length codes 257..285 extra */
+  16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18,
+  19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 72, 78
+];
+
+var dbase = [ /* Distance codes 0..29 base */
+  1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
+  257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
+  8193, 12289, 16385, 24577, 0, 0
+];
+
+var dext = [ /* Distance codes 0..29 extra */
+  16, 16, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22,
+  23, 23, 24, 24, 25, 25, 26, 26, 27, 27,
+  28, 28, 29, 29, 64, 64
+];
+
+module.exports = function inflate_table(type, lens, lens_index, codes, table, table_index, work, opts)
+{
+  var bits = opts.bits;
+      //here = opts.here; /* table entry for duplication */
+
+  var len = 0;               /* a code's length in bits */
+  var sym = 0;               /* index of code symbols */
+  var min = 0, max = 0;          /* minimum and maximum code lengths */
+  var root = 0;              /* number of index bits for root table */
+  var curr = 0;              /* number of index bits for current table */
+  var drop = 0;              /* code bits to drop for sub-table */
+  var left = 0;                   /* number of prefix codes available */
+  var used = 0;              /* code entries in table used */
+  var huff = 0;              /* Huffman code */
+  var incr;              /* for incrementing code, index */
+  var fill;              /* index for replicating entries */
+  var low;               /* low bits for current root entry */
+  var mask;              /* mask for low root bits */
+  var next;             /* next available space in table */
+  var base = null;     /* base value table to use */
+  var base_index = 0;
+//  var shoextra;    /* extra bits table to use */
+  var end;                    /* use base and extra for symbol > end */
+  var count = new utils.Buf16(MAXBITS+1); //[MAXBITS+1];    /* number of codes of each length */
+  var offs = new utils.Buf16(MAXBITS+1); //[MAXBITS+1];     /* offsets in table for each length */
+  var extra = null;
+  var extra_index = 0;
+
+  var here_bits, here_op, here_val;
+
+  /*
+   Process a set of code lengths to create a canonical Huffman code.  The
+   code lengths are lens[0..codes-1].  Each length corresponds to the
+   symbols 0..codes-1.  The Huffman code is generated by first sorting the
+   symbols by length from short to long, and retaining the symbol order
+   for codes with equal lengths.  Then the code starts with all zero bits
+   for the first code of the shortest length, and the codes are integer
+   increments for the same length, and zeros are appended as the length
+   increases.  For the deflate format, these bits are stored backwards
+   from their more natural integer increment ordering, and so when the
+   decoding tables are built in the large loop below, the integer codes
+   are incremented backwards.
+
+   This routine assumes, but does not check, that all of the entries in
+   lens[] are in the range 0..MAXBITS.  The caller must assure this.
+   1..MAXBITS is interpreted as that code length.  zero means that that
+   symbol does not occur in this code.
+
+   The codes are sorted by computing a count of codes for each length,
+   creating from that a table of starting indices for each length in the
+   sorted table, and then entering the symbols in order in the sorted
+   table.  The sorted table is work[], with that space being provided by
+   the caller.
+
+   The length counts are used for other purposes as well, i.e. finding
+   the minimum and maximum length codes, determining if there are any
+   codes at all, checking for a valid set of lengths, and looking ahead
+   at length counts to determine sub-table sizes when building the
+   decoding tables.
+   */
+
+  /* accumulate lengths for codes (assumes lens[] all in 0..MAXBITS) */
+  for (len = 0; len <= MAXBITS; len++) {
+    count[len] = 0;
+  }
+  for (sym = 0; sym < codes; sym++) {
+    count[lens[lens_index + sym]]++;
+  }
+
+  /* bound code lengths, force root to be within code lengths */
+  root = bits;
+  for (max = MAXBITS; max >= 1; max--) {
+    if (count[max] !== 0) { break; }
+  }
+  if (root > max) {
+    root = max;
+  }
+  if (max === 0) {                     /* no symbols to code at all */
+    //table.op[opts.table_index] = 64;  //here.op = (var char)64;    /* invalid code marker */
+    //table.bits[opts.table_index] = 1;   //here.bits = (var char)1;
+    //table.val[opts.table_index++] = 0;   //here.val = (var short)0;
+    table[table_index++] = (1 << 24) | (64 << 16) | 0;
+
+
+    //table.op[opts.table_index] = 64;
+    //table.bits[opts.table_index] = 1;
+    //table.val[opts.table_index++] = 0;
+    table[table_index++] = (1 << 24) | (64 << 16) | 0;
+
+    opts.bits = 1;
+    return 0;     /* no symbols, but wait for decoding to report error */
+  }
+  for (min = 1; min < max; min++) {
+    if (count[min] !== 0) { break; }
+  }
+  if (root < min) {
+    root = min;
+  }
+
+  /* check for an over-subscribed or incomplete set of lengths */
+  left = 1;
+  for (len = 1; len <= MAXBITS; len++) {
+    left <<= 1;
+    left -= count[len];
+    if (left < 0) {
+      return -1;
+    }        /* over-subscribed */
+  }
+  if (left > 0 && (type === CODES || max !== 1)) {
+    return -1;                      /* incomplete set */
+  }
+
+  /* generate offsets into symbol table for each length for sorting */
+  offs[1] = 0;
+  for (len = 1; len < MAXBITS; len++) {
+    offs[len + 1] = offs[len] + count[len];
+  }
+
+  /* sort symbols by length, by symbol order within each length */
+  for (sym = 0; sym < codes; sym++) {
+    if (lens[lens_index + sym] !== 0) {
+      work[offs[lens[lens_index + sym]]++] = sym;
+    }
+  }
+
+  /*
+   Create and fill in decoding tables.  In this loop, the table being
+   filled is at next and has curr index bits.  The code being used is huff
+   with length len.  That code is converted to an index by dropping drop
+   bits off of the bottom.  For codes where len is less than drop + curr,
+   those top drop + curr - len bits are incremented through all values to
+   fill the table with replicated entries.
+
+   root is the number of index bits for the root table.  When len exceeds
+   root, sub-tables are created pointed to by the root entry with an index
+   of the low root bits of huff.  This is saved in low to check for when a
+   new sub-table should be started.  drop is zero when the root table is
+   being filled, and drop is root when sub-tables are being filled.
+
+   When a new sub-table is needed, it is necessary to look ahead in the
+   code lengths to determine what size sub-table is needed.  The length
+   counts are used for this, and so count[] is decremented as codes are
+   entered in the tables.
+
+   used keeps track of how many table entries have been allocated from the
+   provided *table space.  It is checked for LENS and DIST tables against
+   the constants ENOUGH_LENS and ENOUGH_DISTS to guard against changes in
+   the initial root table size constants.  See the comments in inftrees.h
+   for more information.
+
+   sym increments through all symbols, and the loop terminates when
+   all codes of length max, i.e. all codes, have been processed.  This
+   routine permits incomplete codes, so another loop after this one fills
+   in the rest of the decoding tables with invalid code markers.
+   */
+
+  /* set up for code type */
+  // poor man optimization - use if-else instead of switch,
+  // to avoid deopts in old v8
+  if (type === CODES) {
+    base = extra = work;    /* dummy value--not used */
+    end = 19;
+
+  } else if (type === LENS) {
+    base = lbase;
+    base_index -= 257;
+    extra = lext;
+    extra_index -= 257;
+    end = 256;
+
+  } else {                    /* DISTS */
+    base = dbase;
+    extra = dext;
+    end = -1;
+  }
+
+  /* initialize opts for loop */
+  huff = 0;                   /* starting code */
+  sym = 0;                    /* starting code symbol */
+  len = min;                  /* starting code length */
+  next = table_index;              /* current table to fill in */
+  curr = root;                /* current table index bits */
+  drop = 0;                   /* current bits to drop from code for index */
+  low = -1;                   /* trigger new sub-table when len > root */
+  used = 1 << root;          /* use root table entries */
+  mask = used - 1;            /* mask for comparing low */
+
+  /* check available table space */
+  if ((type === LENS && used > ENOUGH_LENS) ||
+    (type === DISTS && used > ENOUGH_DISTS)) {
+    return 1;
+  }
+
+  var i=0;
+  /* process all codes and make table entries */
+  for (;;) {
+    i++;
+    /* create table entry */
+    here_bits = len - drop;
+    if (work[sym] < end) {
+      here_op = 0;
+      here_val = work[sym];
+    }
+    else if (work[sym] > end) {
+      here_op = extra[extra_index + work[sym]];
+      here_val = base[base_index + work[sym]];
+    }
+    else {
+      here_op = 32 + 64;         /* end of block */
+      here_val = 0;
+    }
+
+    /* replicate for those indices with low len bits equal to huff */
+    incr = 1 << (len - drop);
+    fill = 1 << curr;
+    min = fill;                 /* save offset to next table */
+    do {
+      fill -= incr;
+      table[next + (huff >> drop) + fill] = (here_bits << 24) | (here_op << 16) | here_val |0;
+    } while (fill !== 0);
+
+    /* backwards increment the len-bit code huff */
+    incr = 1 << (len - 1);
+    while (huff & incr) {
+      incr >>= 1;
+    }
+    if (incr !== 0) {
+      huff &= incr - 1;
+      huff += incr;
+    } else {
+      huff = 0;
+    }
+
+    /* go to next symbol, update count, len */
+    sym++;
+    if (--count[len] === 0) {
+      if (len === max) { break; }
+      len = lens[lens_index + work[sym]];
+    }
+
+    /* create new sub-table if needed */
+    if (len > root && (huff & mask) !== low) {
+      /* if first time, transition to sub-tables */
+      if (drop === 0) {
+        drop = root;
+      }
+
+      /* increment past last table */
+      next += min;            /* here min is 1 << curr */
+
+      /* determine length of next table */
+      curr = len - drop;
+      left = 1 << curr;
+      while (curr + drop < max) {
+        left -= count[curr + drop];
+        if (left <= 0) { break; }
+        curr++;
+        left <<= 1;
+      }
+
+      /* check for enough space */
+      used += 1 << curr;
+      if ((type === LENS && used > ENOUGH_LENS) ||
+        (type === DISTS && used > ENOUGH_DISTS)) {
+        return 1;
+      }
+
+      /* point entry in root table to sub-table */
+      low = huff & mask;
+      /*table.op[low] = curr;
+      table.bits[low] = root;
+      table.val[low] = next - opts.table_index;*/
+      table[low] = (root << 24) | (curr << 16) | (next - table_index) |0;
+    }
+  }
+
+  /* fill in remaining table entry if code is incomplete (guaranteed to have
+   at most one remaining entry, since if the code is incomplete, the
+   maximum code length that was allowed to get this far is one bit) */
+  if (huff !== 0) {
+    //table.op[next + huff] = 64;            /* invalid code marker */
+    //table.bits[next + huff] = len - drop;
+    //table.val[next + huff] = 0;
+    table[next + huff] = ((len - drop) << 24) | (64 << 16) |0;
+  }
+
+  /* set return parameters */
+  //opts.table_index += used;
+  opts.bits = root;
+  return 0;
+};
+
+},{"../utils/common":213}],223:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  '2':    'need dictionary',     /* Z_NEED_DICT       2  */
+  '1':    'stream end',          /* Z_STREAM_END      1  */
+  '0':    '',                    /* Z_OK              0  */
+  '-1':   'file error',          /* Z_ERRNO         (-1) */
+  '-2':   'stream error',        /* Z_STREAM_ERROR  (-2) */
+  '-3':   'data error',          /* Z_DATA_ERROR    (-3) */
+  '-4':   'insufficient memory', /* Z_MEM_ERROR     (-4) */
+  '-5':   'buffer error',        /* Z_BUF_ERROR     (-5) */
+  '-6':   'incompatible version' /* Z_VERSION_ERROR (-6) */
+};
+
+},{}],224:[function(require,module,exports){
+'use strict';
+
+
+var utils = require('../utils/common');
+
+/* Public constants ==========================================================*/
+/* ===========================================================================*/
+
+
+//var Z_FILTERED          = 1;
+//var Z_HUFFMAN_ONLY      = 2;
+//var Z_RLE               = 3;
+var Z_FIXED               = 4;
+//var Z_DEFAULT_STRATEGY  = 0;
+
+/* Possible values of the data_type field (though see inflate()) */
+var Z_BINARY              = 0;
+var Z_TEXT                = 1;
+//var Z_ASCII             = 1; // = Z_TEXT
+var Z_UNKNOWN             = 2;
+
+/*============================================================================*/
+
+
+function zero(buf) { var len = buf.length; while (--len >= 0) { buf[len] = 0; } }
+
+// From zutil.h
+
+var STORED_BLOCK = 0;
+var STATIC_TREES = 1;
+var DYN_TREES    = 2;
+/* The three kinds of block type */
+
+var MIN_MATCH    = 3;
+var MAX_MATCH    = 258;
+/* The minimum and maximum match lengths */
+
+// From deflate.h
+/* ===========================================================================
+ * Internal compression state.
+ */
+
+var LENGTH_CODES  = 29;
+/* number of length codes, not counting the special END_BLOCK code */
+
+var LITERALS      = 256;
+/* number of literal bytes 0..255 */
+
+var L_CODES       = LITERALS + 1 + LENGTH_CODES;
+/* number of Literal or Length codes, including the END_BLOCK code */
+
+var D_CODES       = 30;
+/* number of distance codes */
+
+var BL_CODES      = 19;
+/* number of codes used to transfer the bit lengths */
+
+var HEAP_SIZE     = 2*L_CODES + 1;
+/* maximum heap size */
+
+var MAX_BITS      = 15;
+/* All codes must not exceed MAX_BITS bits */
+
+var Buf_size      = 16;
+/* size of bit buffer in bi_buf */
+
+
+/* ===========================================================================
+ * Constants
+ */
+
+var MAX_BL_BITS = 7;
+/* Bit length codes must not exceed MAX_BL_BITS bits */
+
+var END_BLOCK   = 256;
+/* end of block literal code */
+
+var REP_3_6     = 16;
+/* repeat previous bit length 3-6 times (2 bits of repeat count) */
+
+var REPZ_3_10   = 17;
+/* repeat a zero length 3-10 times  (3 bits of repeat count) */
+
+var REPZ_11_138 = 18;
+/* repeat a zero length 11-138 times  (7 bits of repeat count) */
+
+var extra_lbits =   /* extra bits for each length code */
+  [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];
+
+var extra_dbits =   /* extra bits for each distance code */
+  [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];
+
+var extra_blbits =  /* extra bits for each bit length code */
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7];
+
+var bl_order =
+  [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+/* The lengths of the bit length codes are sent in order of decreasing
+ * probability, to avoid transmitting the lengths for unused bit length codes.
+ */
+
+/* ===========================================================================
+ * Local data. These are initialized only once.
+ */
+
+// We pre-fill arrays with 0 to avoid uninitialized gaps
+
+var DIST_CODE_LEN = 512; /* see definition of array dist_code below */
+
+// !!!! Use flat array insdead of structure, Freq = i*2, Len = i*2+1
+var static_ltree  = new Array((L_CODES+2) * 2);
+zero(static_ltree);
+/* The static literal tree. Since the bit lengths are imposed, there is no
+ * need for the L_CODES extra codes used during heap construction. However
+ * The codes 286 and 287 are needed to build a canonical tree (see _tr_init
+ * below).
+ */
+
+var static_dtree  = new Array(D_CODES * 2);
+zero(static_dtree);
+/* The static distance tree. (Actually a trivial tree since all codes use
+ * 5 bits.)
+ */
+
+var _dist_code    = new Array(DIST_CODE_LEN);
+zero(_dist_code);
+/* Distance codes. The first 256 values correspond to the distances
+ * 3 .. 258, the last 256 values correspond to the top 8 bits of
+ * the 15 bit distances.
+ */
+
+var _length_code  = new Array(MAX_MATCH-MIN_MATCH+1);
+zero(_length_code);
+/* length code for each normalized match length (0 == MIN_MATCH) */
+
+var base_length   = new Array(LENGTH_CODES);
+zero(base_length);
+/* First normalized length for each code (0 = MIN_MATCH) */
+
+var base_dist     = new Array(D_CODES);
+zero(base_dist);
+/* First normalized distance for each code (0 = distance of 1) */
+
+
+var StaticTreeDesc = function (static_tree, extra_bits, extra_base, elems, max_length) {
+
+  this.static_tree  = static_tree;  /* static tree or NULL */
+  this.extra_bits   = extra_bits;   /* extra bits for each code or NULL */
+  this.extra_base   = extra_base;   /* base index for extra_bits */
+  this.elems        = elems;        /* max number of elements in the tree */
+  this.max_length   = max_length;   /* max bit length for the codes */
+
+  // show if `static_tree` has data or dummy - needed for monomorphic objects
+  this.has_stree    = static_tree && static_tree.length;
+};
+
+
+var static_l_desc;
+var static_d_desc;
+var static_bl_desc;
+
+
+var TreeDesc = function(dyn_tree, stat_desc) {
+  this.dyn_tree = dyn_tree;     /* the dynamic tree */
+  this.max_code = 0;            /* largest code with non zero frequency */
+  this.stat_desc = stat_desc;   /* the corresponding static tree */
+};
+
+
+
+function d_code(dist) {
+  return dist < 256 ? _dist_code[dist] : _dist_code[256 + (dist >>> 7)];
+}
+
+
+/* ===========================================================================
+ * Output a short LSB first on the stream.
+ * IN assertion: there is enough room in pendingBuf.
+ */
+function put_short (s, w) {
+//    put_byte(s, (uch)((w) & 0xff));
+//    put_byte(s, (uch)((ush)(w) >> 8));
+  s.pending_buf[s.pending++] = (w) & 0xff;
+  s.pending_buf[s.pending++] = (w >>> 8) & 0xff;
+}
+
+
+/* ===========================================================================
+ * Send a value on a given number of bits.
+ * IN assertion: length <= 16 and value fits in length bits.
+ */
+function send_bits(s, value, length) {
+  if (s.bi_valid > (Buf_size - length)) {
+    s.bi_buf |= (value << s.bi_valid) & 0xffff;
+    put_short(s, s.bi_buf);
+    s.bi_buf = value >> (Buf_size - s.bi_valid);
+    s.bi_valid += length - Buf_size;
+  } else {
+    s.bi_buf |= (value << s.bi_valid) & 0xffff;
+    s.bi_valid += length;
+  }
+}
+
+
+function send_code(s, c, tree) {
+  send_bits(s, tree[c*2]/*.Code*/, tree[c*2 + 1]/*.Len*/);
+}
+
+
+/* ===========================================================================
+ * Reverse the first len bits of a code, using straightforward code (a faster
+ * method would use a table)
+ * IN assertion: 1 <= len <= 15
+ */
+function bi_reverse(code, len) {
+  var res = 0;
+  do {
+    res |= code & 1;
+    code >>>= 1;
+    res <<= 1;
+  } while (--len > 0);
+  return res >>> 1;
+}
+
+
+/* ===========================================================================
+ * Flush the bit buffer, keeping at most 7 bits in it.
+ */
+function bi_flush(s) {
+  if (s.bi_valid === 16) {
+    put_short(s, s.bi_buf);
+    s.bi_buf = 0;
+    s.bi_valid = 0;
+
+  } else if (s.bi_valid >= 8) {
+    s.pending_buf[s.pending++] = s.bi_buf & 0xff;
+    s.bi_buf >>= 8;
+    s.bi_valid -= 8;
+  }
+}
+
+
+/* ===========================================================================
+ * Compute the optimal bit lengths for a tree and update the total bit length
+ * for the current block.
+ * IN assertion: the fields freq and dad are set, heap[heap_max] and
+ *    above are the tree nodes sorted by increasing frequency.
+ * OUT assertions: the field len is set to the optimal bit length, the
+ *     array bl_count contains the frequencies for each bit length.
+ *     The length opt_len is updated; static_len is also updated if stree is
+ *     not null.
+ */
+function gen_bitlen(s, desc)
+//    deflate_state *s;
+//    tree_desc *desc;    /* the tree descriptor */
+{
+  var tree            = desc.dyn_tree;
+  var max_code        = desc.max_code;
+  var stree           = desc.stat_desc.static_tree;
+  var has_stree       = desc.stat_desc.has_stree;
+  var extra           = desc.stat_desc.extra_bits;
+  var base            = desc.stat_desc.extra_base;
+  var max_length      = desc.stat_desc.max_length;
+  var h;              /* heap index */
+  var n, m;           /* iterate over the tree elements */
+  var bits;           /* bit length */
+  var xbits;          /* extra bits */
+  var f;              /* frequency */
+  var overflow = 0;   /* number of elements with bit length too large */
+
+  for (bits = 0; bits <= MAX_BITS; bits++) {
+    s.bl_count[bits] = 0;
+  }
+
+  /* In a first pass, compute the optimal bit lengths (which may
+   * overflow in the case of the bit length tree).
+   */
+  tree[s.heap[s.heap_max]*2 + 1]/*.Len*/ = 0; /* root of the heap */
+
+  for (h = s.heap_max+1; h < HEAP_SIZE; h++) {
+    n = s.heap[h];
+    bits = tree[tree[n*2 +1]/*.Dad*/ * 2 + 1]/*.Len*/ + 1;
+    if (bits > max_length) {
+      bits = max_length;
+      overflow++;
+    }
+    tree[n*2 + 1]/*.Len*/ = bits;
+    /* We overwrite tree[n].Dad which is no longer needed */
+
+    if (n > max_code) { continue; } /* not a leaf node */
+
+    s.bl_count[bits]++;
+    xbits = 0;
+    if (n >= base) {
+      xbits = extra[n-base];
+    }
+    f = tree[n * 2]/*.Freq*/;
+    s.opt_len += f * (bits + xbits);
+    if (has_stree) {
+      s.static_len += f * (stree[n*2 + 1]/*.Len*/ + xbits);
+    }
+  }
+  if (overflow === 0) { return; }
+
+  // Trace((stderr,"\nbit length overflow\n"));
+  /* This happens for example on obj2 and pic of the Calgary corpus */
+
+  /* Find the first bit length which could increase: */
+  do {
+    bits = max_length-1;
+    while (s.bl_count[bits] === 0) { bits--; }
+    s.bl_count[bits]--;      /* move one leaf down the tree */
+    s.bl_count[bits+1] += 2; /* move one overflow item as its brother */
+    s.bl_count[max_length]--;
+    /* The brother of the overflow item also moves one step up,
+     * but this does not affect bl_count[max_length]
+     */
+    overflow -= 2;
+  } while (overflow > 0);
+
+  /* Now recompute all bit lengths, scanning in increasing frequency.
+   * h is still equal to HEAP_SIZE. (It is simpler to reconstruct all
+   * lengths instead of fixing only the wrong ones. This idea is taken
+   * from 'ar' written by Haruhiko Okumura.)
+   */
+  for (bits = max_length; bits !== 0; bits--) {
+    n = s.bl_count[bits];
+    while (n !== 0) {
+      m = s.heap[--h];
+      if (m > max_code) { continue; }
+      if (tree[m*2 + 1]/*.Len*/ !== bits) {
+        // Trace((stderr,"code %d bits %d->%d\n", m, tree[m].Len, bits));
+        s.opt_len += (bits - tree[m*2 + 1]/*.Len*/)*tree[m*2]/*.Freq*/;
+        tree[m*2 + 1]/*.Len*/ = bits;
+      }
+      n--;
+    }
+  }
+}
+
+
+/* ===========================================================================
+ * Generate the codes for a given tree and bit counts (which need not be
+ * optimal).
+ * IN assertion: the array bl_count contains the bit length statistics for
+ * the given tree and the field len is set for all tree elements.
+ * OUT assertion: the field code is set for all tree elements of non
+ *     zero code length.
+ */
+function gen_codes(tree, max_code, bl_count)
+//    ct_data *tree;             /* the tree to decorate */
+//    int max_code;              /* largest code with non zero frequency */
+//    ushf *bl_count;            /* number of codes at each bit length */
+{
+  var next_code = new Array(MAX_BITS+1); /* next code value for each bit length */
+  var code = 0;              /* running code value */
+  var bits;                  /* bit index */
+  var n;                     /* code index */
+
+  /* The distribution counts are first used to generate the code values
+   * without bit reversal.
+   */
+  for (bits = 1; bits <= MAX_BITS; bits++) {
+    next_code[bits] = code = (code + bl_count[bits-1]) << 1;
+  }
+  /* Check that the bit counts in bl_count are consistent. The last code
+   * must be all ones.
+   */
+  //Assert (code + bl_count[MAX_BITS]-1 == (1<<MAX_BITS)-1,
+  //        "inconsistent bit counts");
+  //Tracev((stderr,"\ngen_codes: max_code %d ", max_code));
+
+  for (n = 0;  n <= max_code; n++) {
+    var len = tree[n*2 + 1]/*.Len*/;
+    if (len === 0) { continue; }
+    /* Now reverse the bits */
+    tree[n*2]/*.Code*/ = bi_reverse(next_code[len]++, len);
+
+    //Tracecv(tree != static_ltree, (stderr,"\nn %3d %c l %2d c %4x (%x) ",
+    //     n, (isgraph(n) ? n : ' '), len, tree[n].Code, next_code[len]-1));
+  }
+}
+
+
+/* ===========================================================================
+ * Initialize the various 'constant' tables.
+ */
+function tr_static_init() {
+  var n;        /* iterates over tree elements */
+  var bits;     /* bit counter */
+  var length;   /* length value */
+  var code;     /* code value */
+  var dist;     /* distance index */
+  var bl_count = new Array(MAX_BITS+1);
+  /* number of codes at each bit length for an optimal tree */
+
+  // do check in _tr_init()
+  //if (static_init_done) return;
+
+  /* For some embedded targets, global variables are not initialized: */
+/*#ifdef NO_INIT_GLOBAL_POINTERS
+  static_l_desc.static_tree = static_ltree;
+  static_l_desc.extra_bits = extra_lbits;
+  static_d_desc.static_tree = static_dtree;
+  static_d_desc.extra_bits = extra_dbits;
+  static_bl_desc.extra_bits = extra_blbits;
+#endif*/
+
+  /* Initialize the mapping length (0..255) -> length code (0..28) */
+  length = 0;
+  for (code = 0; code < LENGTH_CODES-1; code++) {
+    base_length[code] = length;
+    for (n = 0; n < (1<<extra_lbits[code]); n++) {
+      _length_code[length++] = code;
+    }
+  }
+  //Assert (length == 256, "tr_static_init: length != 256");
+  /* Note that the length 255 (match length 258) can be represented
+   * in two different ways: code 284 + 5 bits or code 285, so we
+   * overwrite length_code[255] to use the best encoding:
+   */
+  _length_code[length-1] = code;
+
+  /* Initialize the mapping dist (0..32K) -> dist code (0..29) */
+  dist = 0;
+  for (code = 0 ; code < 16; code++) {
+    base_dist[code] = dist;
+    for (n = 0; n < (1<<extra_dbits[code]); n++) {
+      _dist_code[dist++] = code;
+    }
+  }
+  //Assert (dist == 256, "tr_static_init: dist != 256");
+  dist >>= 7; /* from now on, all distances are divided by 128 */
+  for (; code < D_CODES; code++) {
+    base_dist[code] = dist << 7;
+    for (n = 0; n < (1<<(extra_dbits[code]-7)); n++) {
+      _dist_code[256 + dist++] = code;
+    }
+  }
+  //Assert (dist == 256, "tr_static_init: 256+dist != 512");
+
+  /* Construct the codes of the static literal tree */
+  for (bits = 0; bits <= MAX_BITS; bits++) {
+    bl_count[bits] = 0;
+  }
+
+  n = 0;
+  while (n <= 143) {
+    static_ltree[n*2 + 1]/*.Len*/ = 8;
+    n++;
+    bl_count[8]++;
+  }
+  while (n <= 255) {
+    static_ltree[n*2 + 1]/*.Len*/ = 9;
+    n++;
+    bl_count[9]++;
+  }
+  while (n <= 279) {
+    static_ltree[n*2 + 1]/*.Len*/ = 7;
+    n++;
+    bl_count[7]++;
+  }
+  while (n <= 287) {
+    static_ltree[n*2 + 1]/*.Len*/ = 8;
+    n++;
+    bl_count[8]++;
+  }
+  /* Codes 286 and 287 do not exist, but we must include them in the
+   * tree construction to get a canonical Huffman tree (longest code
+   * all ones)
+   */
+  gen_codes(static_ltree, L_CODES+1, bl_count);
+
+  /* The static distance tree is trivial: */
+  for (n = 0; n < D_CODES; n++) {
+    static_dtree[n*2 + 1]/*.Len*/ = 5;
+    static_dtree[n*2]/*.Code*/ = bi_reverse(n, 5);
+  }
+
+  // Now data ready and we can init static trees
+  static_l_desc = new StaticTreeDesc(static_ltree, extra_lbits, LITERALS+1, L_CODES, MAX_BITS);
+  static_d_desc = new StaticTreeDesc(static_dtree, extra_dbits, 0,          D_CODES, MAX_BITS);
+  static_bl_desc =new StaticTreeDesc(new Array(0), extra_blbits, 0,         BL_CODES, MAX_BL_BITS);
+
+  //static_init_done = true;
+}
+
+
+/* ===========================================================================
+ * Initialize a new block.
+ */
+function init_block(s) {
+  var n; /* iterates over tree elements */
+
+  /* Initialize the trees. */
+  for (n = 0; n < L_CODES;  n++) { s.dyn_ltree[n*2]/*.Freq*/ = 0; }
+  for (n = 0; n < D_CODES;  n++) { s.dyn_dtree[n*2]/*.Freq*/ = 0; }
+  for (n = 0; n < BL_CODES; n++) { s.bl_tree[n*2]/*.Freq*/ = 0; }
+
+  s.dyn_ltree[END_BLOCK*2]/*.Freq*/ = 1;
+  s.opt_len = s.static_len = 0;
+  s.last_lit = s.matches = 0;
+}
+
+
+/* ===========================================================================
+ * Flush the bit buffer and align the output on a byte boundary
+ */
+function bi_windup(s)
+{
+  if (s.bi_valid > 8) {
+    put_short(s, s.bi_buf);
+  } else if (s.bi_valid > 0) {
+    //put_byte(s, (Byte)s->bi_buf);
+    s.pending_buf[s.pending++] = s.bi_buf;
+  }
+  s.bi_buf = 0;
+  s.bi_valid = 0;
+}
+
+/* ===========================================================================
+ * Copy a stored block, storing first the length and its
+ * one's complement if requested.
+ */
+function copy_block(s, buf, len, header)
+//DeflateState *s;
+//charf    *buf;    /* the input data */
+//unsigned len;     /* its length */
+//int      header;  /* true if block header must be written */
+{
+  bi_windup(s);        /* align on byte boundary */
+
+  if (header) {
+    put_short(s, len);
+    put_short(s, ~len);
+  }
+//  while (len--) {
+//    put_byte(s, *buf++);
+//  }
+  utils.arraySet(s.pending_buf, s.window, buf, len, s.pending);
+  s.pending += len;
+}
+
+/* ===========================================================================
+ * Compares to subtrees, using the tree depth as tie breaker when
+ * the subtrees have equal frequency. This minimizes the worst case length.
+ */
+function smaller(tree, n, m, depth) {
+  var _n2 = n*2;
+  var _m2 = m*2;
+  return (tree[_n2]/*.Freq*/ < tree[_m2]/*.Freq*/ ||
+         (tree[_n2]/*.Freq*/ === tree[_m2]/*.Freq*/ && depth[n] <= depth[m]));
+}
+
+/* ===========================================================================
+ * Restore the heap property by moving down the tree starting at node k,
+ * exchanging a node with the smallest of its two sons if necessary, stopping
+ * when the heap property is re-established (each father smaller than its
+ * two sons).
+ */
+function pqdownheap(s, tree, k)
+//    deflate_state *s;
+//    ct_data *tree;  /* the tree to restore */
+//    int k;               /* node to move down */
+{
+  var v = s.heap[k];
+  var j = k << 1;  /* left son of k */
+  while (j <= s.heap_len) {
+    /* Set j to the smallest of the two sons: */
+    if (j < s.heap_len &&
+      smaller(tree, s.heap[j+1], s.heap[j], s.depth)) {
+      j++;
+    }
+    /* Exit if v is smaller than both sons */
+    if (smaller(tree, v, s.heap[j], s.depth)) { break; }
+
+    /* Exchange v with the smallest son */
+    s.heap[k] = s.heap[j];
+    k = j;
+
+    /* And continue down the tree, setting j to the left son of k */
+    j <<= 1;
+  }
+  s.heap[k] = v;
+}
+
+
+// inlined manually
+// var SMALLEST = 1;
+
+/* ===========================================================================
+ * Send the block data compressed using the given Huffman trees
+ */
+function compress_block(s, ltree, dtree)
+//    deflate_state *s;
+//    const ct_data *ltree; /* literal tree */
+//    const ct_data *dtree; /* distance tree */
+{
+  var dist;           /* distance of matched string */
+  var lc;             /* match length or unmatched char (if dist == 0) */
+  var lx = 0;         /* running index in l_buf */
+  var code;           /* the code to send */
+  var extra;          /* number of extra bits to send */
+
+  if (s.last_lit !== 0) {
+    do {
+      dist = (s.pending_buf[s.d_buf + lx*2] << 8) | (s.pending_buf[s.d_buf + lx*2 + 1]);
+      lc = s.pending_buf[s.l_buf + lx];
+      lx++;
+
+      if (dist === 0) {
+        send_code(s, lc, ltree); /* send a literal byte */
+        //Tracecv(isgraph(lc), (stderr," '%c' ", lc));
+      } else {
+        /* Here, lc is the match length - MIN_MATCH */
+        code = _length_code[lc];
+        send_code(s, code+LITERALS+1, ltree); /* send the length code */
+        extra = extra_lbits[code];
+        if (extra !== 0) {
+          lc -= base_length[code];
+          send_bits(s, lc, extra);       /* send the extra length bits */
+        }
+        dist--; /* dist is now the match distance - 1 */
+        code = d_code(dist);
+        //Assert (code < D_CODES, "bad d_code");
+
+        send_code(s, code, dtree);       /* send the distance code */
+        extra = extra_dbits[code];
+        if (extra !== 0) {
+          dist -= base_dist[code];
+          send_bits(s, dist, extra);   /* send the extra distance bits */
+        }
+      } /* literal or match pair ? */
+
+      /* Check that the overlay between pending_buf and d_buf+l_buf is ok: */
+      //Assert((uInt)(s->pending) < s->lit_bufsize + 2*lx,
+      //       "pendingBuf overflow");
+
+    } while (lx < s.last_lit);
+  }
+
+  send_code(s, END_BLOCK, ltree);
+}
+
+
+/* ===========================================================================
+ * Construct one Huffman tree and assigns the code bit strings and lengths.
+ * Update the total bit length for the current block.
+ * IN assertion: the field freq is set for all tree elements.
+ * OUT assertions: the fields len and code are set to the optimal bit length
+ *     and corresponding code. The length opt_len is updated; static_len is
+ *     also updated if stree is not null. The field max_code is set.
+ */
+function build_tree(s, desc)
+//    deflate_state *s;
+//    tree_desc *desc; /* the tree descriptor */
+{
+  var tree     = desc.dyn_tree;
+  var stree    = desc.stat_desc.static_tree;
+  var has_stree = desc.stat_desc.has_stree;
+  var elems    = desc.stat_desc.elems;
+  var n, m;          /* iterate over heap elements */
+  var max_code = -1; /* largest code with non zero frequency */
+  var node;          /* new node being created */
+
+  /* Construct the initial heap, with least frequent element in
+   * heap[SMALLEST]. The sons of heap[n] are heap[2*n] and heap[2*n+1].
+   * heap[0] is not used.
+   */
+  s.heap_len = 0;
+  s.heap_max = HEAP_SIZE;
+
+  for (n = 0; n < elems; n++) {
+    if (tree[n * 2]/*.Freq*/ !== 0) {
+      s.heap[++s.heap_len] = max_code = n;
+      s.depth[n] = 0;
+
+    } else {
+      tree[n*2 + 1]/*.Len*/ = 0;
+    }
+  }
+
+  /* The pkzip format requires that at least one distance code exists,
+   * and that at least one bit should be sent even if there is only one
+   * possible code. So to avoid special checks later on we force at least
+   * two codes of non zero frequency.
+   */
+  while (s.heap_len < 2) {
+    node = s.heap[++s.heap_len] = (max_code < 2 ? ++max_code : 0);
+    tree[node * 2]/*.Freq*/ = 1;
+    s.depth[node] = 0;
+    s.opt_len--;
+
+    if (has_stree) {
+      s.static_len -= stree[node*2 + 1]/*.Len*/;
+    }
+    /* node is 0 or 1 so it does not have extra bits */
+  }
+  desc.max_code = max_code;
+
+  /* The elements heap[heap_len/2+1 .. heap_len] are leaves of the tree,
+   * establish sub-heaps of increasing lengths:
+   */
+  for (n = (s.heap_len >> 1/*int /2*/); n >= 1; n--) { pqdownheap(s, tree, n); }
+
+  /* Construct the Huffman tree by repeatedly combining the least two
+   * frequent nodes.
+   */
+  node = elems;              /* next internal node of the tree */
+  do {
+    //pqremove(s, tree, n);  /* n = node of least frequency */
+    /*** pqremove ***/
+    n = s.heap[1/*SMALLEST*/];
+    s.heap[1/*SMALLEST*/] = s.heap[s.heap_len--];
+    pqdownheap(s, tree, 1/*SMALLEST*/);
+    /***/
+
+    m = s.heap[1/*SMALLEST*/]; /* m = node of next least frequency */
+
+    s.heap[--s.heap_max] = n; /* keep the nodes sorted by frequency */
+    s.heap[--s.heap_max] = m;
+
+    /* Create a new node father of n and m */
+    tree[node * 2]/*.Freq*/ = tree[n * 2]/*.Freq*/ + tree[m * 2]/*.Freq*/;
+    s.depth[node] = (s.depth[n] >= s.depth[m] ? s.depth[n] : s.depth[m]) + 1;
+    tree[n*2 + 1]/*.Dad*/ = tree[m*2 + 1]/*.Dad*/ = node;
+
+    /* and insert the new node in the heap */
+    s.heap[1/*SMALLEST*/] = node++;
+    pqdownheap(s, tree, 1/*SMALLEST*/);
+
+  } while (s.heap_len >= 2);
+
+  s.heap[--s.heap_max] = s.heap[1/*SMALLEST*/];
+
+  /* At this point, the fields freq and dad are set. We can now
+   * generate the bit lengths.
+   */
+  gen_bitlen(s, desc);
+
+  /* The field len is now set, we can generate the bit codes */
+  gen_codes(tree, max_code, s.bl_count);
+}
+
+
+/* ===========================================================================
+ * Scan a literal or distance tree to determine the frequencies of the codes
+ * in the bit length tree.
+ */
+function scan_tree(s, tree, max_code)
+//    deflate_state *s;
+//    ct_data *tree;   /* the tree to be scanned */
+//    int max_code;    /* and its largest code of non zero frequency */
+{
+  var n;                     /* iterates over all tree elements */
+  var prevlen = -1;          /* last emitted length */
+  var curlen;                /* length of current code */
+
+  var nextlen = tree[0*2 + 1]/*.Len*/; /* length of next code */
+
+  var count = 0;             /* repeat count of the current code */
+  var max_count = 7;         /* max repeat count */
+  var min_count = 4;         /* min repeat count */
+
+  if (nextlen === 0) {
+    max_count = 138;
+    min_count = 3;
+  }
+  tree[(max_code+1)*2 + 1]/*.Len*/ = 0xffff; /* guard */
+
+  for (n = 0; n <= max_code; n++) {
+    curlen = nextlen;
+    nextlen = tree[(n+1)*2 + 1]/*.Len*/;
+
+    if (++count < max_count && curlen === nextlen) {
+      continue;
+
+    } else if (count < min_count) {
+      s.bl_tree[curlen * 2]/*.Freq*/ += count;
+
+    } else if (curlen !== 0) {
+
+      if (curlen !== prevlen) { s.bl_tree[curlen * 2]/*.Freq*/++; }
+      s.bl_tree[REP_3_6*2]/*.Freq*/++;
+
+    } else if (count <= 10) {
+      s.bl_tree[REPZ_3_10*2]/*.Freq*/++;
+
+    } else {
+      s.bl_tree[REPZ_11_138*2]/*.Freq*/++;
+    }
+
+    count = 0;
+    prevlen = curlen;
+
+    if (nextlen === 0) {
+      max_count = 138;
+      min_count = 3;
+
+    } else if (curlen === nextlen) {
+      max_count = 6;
+      min_count = 3;
+
+    } else {
+      max_count = 7;
+      min_count = 4;
+    }
+  }
+}
+
+
+/* ===========================================================================
+ * Send a literal or distance tree in compressed form, using the codes in
+ * bl_tree.
+ */
+function send_tree(s, tree, max_code)
+//    deflate_state *s;
+//    ct_data *tree; /* the tree to be scanned */
+//    int max_code;       /* and its largest code of non zero frequency */
+{
+  var n;                     /* iterates over all tree elements */
+  var prevlen = -1;          /* last emitted length */
+  var curlen;                /* length of current code */
+
+  var nextlen = tree[0*2 + 1]/*.Len*/; /* length of next code */
+
+  var count = 0;             /* repeat count of the current code */
+  var max_count = 7;         /* max repeat count */
+  var min_count = 4;         /* min repeat count */
+
+  /* tree[max_code+1].Len = -1; */  /* guard already set */
+  if (nextlen === 0) {
+    max_count = 138;
+    min_count = 3;
+  }
+
+  for (n = 0; n <= max_code; n++) {
+    curlen = nextlen;
+    nextlen = tree[(n+1)*2 + 1]/*.Len*/;
+
+    if (++count < max_count && curlen === nextlen) {
+      continue;
+
+    } else if (count < min_count) {
+      do { send_code(s, curlen, s.bl_tree); } while (--count !== 0);
+
+    } else if (curlen !== 0) {
+      if (curlen !== prevlen) {
+        send_code(s, curlen, s.bl_tree);
+        count--;
+      }
+      //Assert(count >= 3 && count <= 6, " 3_6?");
+      send_code(s, REP_3_6, s.bl_tree);
+      send_bits(s, count-3, 2);
+
+    } else if (count <= 10) {
+      send_code(s, REPZ_3_10, s.bl_tree);
+      send_bits(s, count-3, 3);
+
+    } else {
+      send_code(s, REPZ_11_138, s.bl_tree);
+      send_bits(s, count-11, 7);
+    }
+
+    count = 0;
+    prevlen = curlen;
+    if (nextlen === 0) {
+      max_count = 138;
+      min_count = 3;
+
+    } else if (curlen === nextlen) {
+      max_count = 6;
+      min_count = 3;
+
+    } else {
+      max_count = 7;
+      min_count = 4;
+    }
+  }
+}
+
+
+/* ===========================================================================
+ * Construct the Huffman tree for the bit lengths and return the index in
+ * bl_order of the last bit length code to send.
+ */
+function build_bl_tree(s) {
+  var max_blindex;  /* index of last bit length code of non zero freq */
+
+  /* Determine the bit length frequencies for literal and distance trees */
+  scan_tree(s, s.dyn_ltree, s.l_desc.max_code);
+  scan_tree(s, s.dyn_dtree, s.d_desc.max_code);
+
+  /* Build the bit length tree: */
+  build_tree(s, s.bl_desc);
+  /* opt_len now includes the length of the tree representations, except
+   * the lengths of the bit lengths codes and the 5+5+4 bits for the counts.
+   */
+
+  /* Determine the number of bit length codes to send. The pkzip format
+   * requires that at least 4 bit length codes be sent. (appnote.txt says
+   * 3 but the actual value used is 4.)
+   */
+  for (max_blindex = BL_CODES-1; max_blindex >= 3; max_blindex--) {
+    if (s.bl_tree[bl_order[max_blindex]*2 + 1]/*.Len*/ !== 0) {
+      break;
+    }
+  }
+  /* Update opt_len to include the bit length tree and counts */
+  s.opt_len += 3*(max_blindex+1) + 5+5+4;
+  //Tracev((stderr, "\ndyn trees: dyn %ld, stat %ld",
+  //        s->opt_len, s->static_len));
+
+  return max_blindex;
+}
+
+
+/* ===========================================================================
+ * Send the header for a block using dynamic Huffman trees: the counts, the
+ * lengths of the bit length codes, the literal tree and the distance tree.
+ * IN assertion: lcodes >= 257, dcodes >= 1, blcodes >= 4.
+ */
+function send_all_trees(s, lcodes, dcodes, blcodes)
+//    deflate_state *s;
+//    int lcodes, dcodes, blcodes; /* number of codes for each tree */
+{
+  var rank;                    /* index in bl_order */
+
+  //Assert (lcodes >= 257 && dcodes >= 1 && blcodes >= 4, "not enough codes");
+  //Assert (lcodes <= L_CODES && dcodes <= D_CODES && blcodes <= BL_CODES,
+  //        "too many codes");
+  //Tracev((stderr, "\nbl counts: "));
+  send_bits(s, lcodes-257, 5); /* not +255 as stated in appnote.txt */
+  send_bits(s, dcodes-1,   5);
+  send_bits(s, blcodes-4,  4); /* not -3 as stated in appnote.txt */
+  for (rank = 0; rank < blcodes; rank++) {
+    //Tracev((stderr, "\nbl code %2d ", bl_order[rank]));
+    send_bits(s, s.bl_tree[bl_order[rank]*2 + 1]/*.Len*/, 3);
+  }
+  //Tracev((stderr, "\nbl tree: sent %ld", s->bits_sent));
+
+  send_tree(s, s.dyn_ltree, lcodes-1); /* literal tree */
+  //Tracev((stderr, "\nlit tree: sent %ld", s->bits_sent));
+
+  send_tree(s, s.dyn_dtree, dcodes-1); /* distance tree */
+  //Tracev((stderr, "\ndist tree: sent %ld", s->bits_sent));
+}
+
+
+/* ===========================================================================
+ * Check if the data type is TEXT or BINARY, using the following algorithm:
+ * - TEXT if the two conditions below are satisfied:
+ *    a) There are no non-portable control characters belonging to the
+ *       "black list" (0..6, 14..25, 28..31).
+ *    b) There is at least one printable character belonging to the
+ *       "white list" (9 {TAB}, 10 {LF}, 13 {CR}, 32..255).
+ * - BINARY otherwise.
+ * - The following partially-portable control characters form a
+ *   "gray list" that is ignored in this detection algorithm:
+ *   (7 {BEL}, 8 {BS}, 11 {VT}, 12 {FF}, 26 {SUB}, 27 {ESC}).
+ * IN assertion: the fields Freq of dyn_ltree are set.
+ */
+function detect_data_type(s) {
+  /* black_mask is the bit mask of black-listed bytes
+   * set bits 0..6, 14..25, and 28..31
+   * 0xf3ffc07f = binary 11110011111111111100000001111111
+   */
+  var black_mask = 0xf3ffc07f;
+  var n;
+
+  /* Check for non-textual ("black-listed") bytes. */
+  for (n = 0; n <= 31; n++, black_mask >>>= 1) {
+    if ((black_mask & 1) && (s.dyn_ltree[n*2]/*.Freq*/ !== 0)) {
+      return Z_BINARY;
+    }
+  }
+
+  /* Check for textual ("white-listed") bytes. */
+  if (s.dyn_ltree[9 * 2]/*.Freq*/ !== 0 || s.dyn_ltree[10 * 2]/*.Freq*/ !== 0 ||
+      s.dyn_ltree[13 * 2]/*.Freq*/ !== 0) {
+    return Z_TEXT;
+  }
+  for (n = 32; n < LITERALS; n++) {
+    if (s.dyn_ltree[n * 2]/*.Freq*/ !== 0) {
+      return Z_TEXT;
+    }
+  }
+
+  /* There are no "black-listed" or "white-listed" bytes:
+   * this stream either is empty or has tolerated ("gray-listed") bytes only.
+   */
+  return Z_BINARY;
+}
+
+
+var static_init_done = false;
+
+/* ===========================================================================
+ * Initialize the tree data structures for a new zlib stream.
+ */
+function _tr_init(s)
+{
+
+  if (!static_init_done) {
+    tr_static_init();
+    static_init_done = true;
+  }
+
+  s.l_desc  = new TreeDesc(s.dyn_ltree, static_l_desc);
+  s.d_desc  = new TreeDesc(s.dyn_dtree, static_d_desc);
+  s.bl_desc = new TreeDesc(s.bl_tree, static_bl_desc);
+
+  s.bi_buf = 0;
+  s.bi_valid = 0;
+
+  /* Initialize the first block of the first file: */
+  init_block(s);
+}
+
+
+/* ===========================================================================
+ * Send a stored block
+ */
+function _tr_stored_block(s, buf, stored_len, last)
+//DeflateState *s;
+//charf *buf;       /* input block */
+//ulg stored_len;   /* length of input block */
+//int last;         /* one if this is the last block for a file */
+{
+  send_bits(s, (STORED_BLOCK<<1)+(last ? 1 : 0), 3);    /* send block type */
+  copy_block(s, buf, stored_len, true); /* with header */
+}
+
+
+/* ===========================================================================
+ * Send one empty static block to give enough lookahead for inflate.
+ * This takes 10 bits, of which 7 may remain in the bit buffer.
+ */
+function _tr_align(s) {
+  send_bits(s, STATIC_TREES<<1, 3);
+  send_code(s, END_BLOCK, static_ltree);
+  bi_flush(s);
+}
+
+
+/* ===========================================================================
+ * Determine the best encoding for the current block: dynamic trees, static
+ * trees or store, and output the encoded block to the zip file.
+ */
+function _tr_flush_block(s, buf, stored_len, last)
+//DeflateState *s;
+//charf *buf;       /* input block, or NULL if too old */
+//ulg stored_len;   /* length of input block */
+//int last;         /* one if this is the last block for a file */
+{
+  var opt_lenb, static_lenb;  /* opt_len and static_len in bytes */
+  var max_blindex = 0;        /* index of last bit length code of non zero freq */
+
+  /* Build the Huffman trees unless a stored block is forced */
+  if (s.level > 0) {
+
+    /* Check if the file is binary or text */
+    if (s.strm.data_type === Z_UNKNOWN) {
+      s.strm.data_type = detect_data_type(s);
+    }
+
+    /* Construct the literal and distance trees */
+    build_tree(s, s.l_desc);
+    // Tracev((stderr, "\nlit data: dyn %ld, stat %ld", s->opt_len,
+    //        s->static_len));
+
+    build_tree(s, s.d_desc);
+    // Tracev((stderr, "\ndist data: dyn %ld, stat %ld", s->opt_len,
+    //        s->static_len));
+    /* At this point, opt_len and static_len are the total bit lengths of
+     * the compressed block data, excluding the tree representations.
+     */
+
+    /* Build the bit length tree for the above two trees, and get the index
+     * in bl_order of the last bit length code to send.
+     */
+    max_blindex = build_bl_tree(s);
+
+    /* Determine the best encoding. Compute the block lengths in bytes. */
+    opt_lenb = (s.opt_len+3+7) >>> 3;
+    static_lenb = (s.static_len+3+7) >>> 3;
+
+    // Tracev((stderr, "\nopt %lu(%lu) stat %lu(%lu) stored %lu lit %u ",
+    //        opt_lenb, s->opt_len, static_lenb, s->static_len, stored_len,
+    //        s->last_lit));
+
+    if (static_lenb <= opt_lenb) { opt_lenb = static_lenb; }
+
+  } else {
+    // Assert(buf != (char*)0, "lost buf");
+    opt_lenb = static_lenb = stored_len + 5; /* force a stored block */
+  }
+
+  if ((stored_len+4 <= opt_lenb) && (buf !== -1)) {
+    /* 4: two words for the lengths */
+
+    /* The test buf != NULL is only necessary if LIT_BUFSIZE > WSIZE.
+     * Otherwise we can't have processed more than WSIZE input bytes since
+     * the last block flush, because compression would have been
+     * successful. If LIT_BUFSIZE <= WSIZE, it is never too late to
+     * transform a block into a stored block.
+     */
+    _tr_stored_block(s, buf, stored_len, last);
+
+  } else if (s.strategy === Z_FIXED || static_lenb === opt_lenb) {
+
+    send_bits(s, (STATIC_TREES<<1) + (last ? 1 : 0), 3);
+    compress_block(s, static_ltree, static_dtree);
+
+  } else {
+    send_bits(s, (DYN_TREES<<1) + (last ? 1 : 0), 3);
+    send_all_trees(s, s.l_desc.max_code+1, s.d_desc.max_code+1, max_blindex+1);
+    compress_block(s, s.dyn_ltree, s.dyn_dtree);
+  }
+  // Assert (s->compressed_len == s->bits_sent, "bad compressed size");
+  /* The above check is made mod 2^32, for files larger than 512 MB
+   * and uLong implemented on 32 bits.
+   */
+  init_block(s);
+
+  if (last) {
+    bi_windup(s);
+  }
+  // Tracev((stderr,"\ncomprlen %lu(%lu) ", s->compressed_len>>3,
+  //       s->compressed_len-7*last));
+}
+
+/* ===========================================================================
+ * Save the match info and tally the frequency counts. Return true if
+ * the current block must be flushed.
+ */
+function _tr_tally(s, dist, lc)
+//    deflate_state *s;
+//    unsigned dist;  /* distance of matched string */
+//    unsigned lc;    /* match length-MIN_MATCH or unmatched char (if dist==0) */
+{
+  //var out_length, in_length, dcode;
+
+  s.pending_buf[s.d_buf + s.last_lit * 2]     = (dist >>> 8) & 0xff;
+  s.pending_buf[s.d_buf + s.last_lit * 2 + 1] = dist & 0xff;
+
+  s.pending_buf[s.l_buf + s.last_lit] = lc & 0xff;
+  s.last_lit++;
+
+  if (dist === 0) {
+    /* lc is the unmatched char */
+    s.dyn_ltree[lc*2]/*.Freq*/++;
+  } else {
+    s.matches++;
+    /* Here, lc is the match length - MIN_MATCH */
+    dist--;             /* dist = match distance - 1 */
+    //Assert((ush)dist < (ush)MAX_DIST(s) &&
+    //       (ush)lc <= (ush)(MAX_MATCH-MIN_MATCH) &&
+    //       (ush)d_code(dist) < (ush)D_CODES,  "_tr_tally: bad match");
+
+    s.dyn_ltree[(_length_code[lc]+LITERALS+1) * 2]/*.Freq*/++;
+    s.dyn_dtree[d_code(dist) * 2]/*.Freq*/++;
+  }
+
+// (!) This block is disabled in zlib defailts,
+// don't enable it for binary compatibility
+
+//#ifdef TRUNCATE_BLOCK
+//  /* Try to guess if it is profitable to stop the current block here */
+//  if ((s.last_lit & 0x1fff) === 0 && s.level > 2) {
+//    /* Compute an upper bound for the compressed length */
+//    out_length = s.last_lit*8;
+//    in_length = s.strstart - s.block_start;
+//
+//    for (dcode = 0; dcode < D_CODES; dcode++) {
+//      out_length += s.dyn_dtree[dcode*2]/*.Freq*/ * (5 + extra_dbits[dcode]);
+//    }
+//    out_length >>>= 3;
+//    //Tracev((stderr,"\nlast_lit %u, in %ld, out ~%ld(%ld%%) ",
+//    //       s->last_lit, in_length, out_length,
+//    //       100L - out_length*100L/in_length));
+//    if (s.matches < (s.last_lit>>1)/*int /2*/ && out_length < (in_length>>1)/*int /2*/) {
+//      return true;
+//    }
+//  }
+//#endif
+
+  return (s.last_lit === s.lit_bufsize-1);
+  /* We avoid equality with lit_bufsize because of wraparound at 64K
+   * on 16 bit machines and because stored blocks are restricted to
+   * 64K-1 bytes.
+   */
+}
+
+exports._tr_init  = _tr_init;
+exports._tr_stored_block = _tr_stored_block;
+exports._tr_flush_block  = _tr_flush_block;
+exports._tr_tally = _tr_tally;
+exports._tr_align = _tr_align;
+
+},{"../utils/common":213}],225:[function(require,module,exports){
+'use strict';
+
+
+function ZStream() {
+  /* next input byte */
+  this.input = null; // JS specific, because we have no pointers
+  this.next_in = 0;
+  /* number of bytes available at input */
+  this.avail_in = 0;
+  /* total number of input bytes read so far */
+  this.total_in = 0;
+  /* next output byte should be put there */
+  this.output = null; // JS specific, because we have no pointers
+  this.next_out = 0;
+  /* remaining free space at output */
+  this.avail_out = 0;
+  /* total number of bytes output so far */
+  this.total_out = 0;
+  /* last error message, NULL if no error */
+  this.msg = ''/*Z_NULL*/;
+  /* not visible by applications */
+  this.state = null;
+  /* best guess about the data type: binary or text */
+  this.data_type = 2/*Z_UNKNOWN*/;
+  /* adler32 value of the uncompressed data */
+  this.adler = 0;
+}
+
+module.exports = ZStream;
+
+},{}]},{},[161])
 

@@ -1,27 +1,27 @@
 
 # Bulletproof
 
-Advanced danmaku render engine with HTML5 / HTML5 高级弹幕渲染引擎
+**Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
+
+**以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
 
 You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
-## Readme
+## Details
 
-*Note: These readme documents are outdated. They will be rewritten after
-core features are completed.*
-
-- [English (en-US)](docs/readme/README.en-US.md)
-- [简体中文 (zh-CN)](docs/readme/README.zh-CN.md)
+Coming soon...
 
 ## Features
 
 - [X] High speed rendering
 - [X] Cross browser compatibility (Chrome, Firefox, IE11, Edge)
-- [ ] Web video player wrapper
-- [ ] Simple danmakus
-  - [X] Flying, right-to-left
+- [ ] Web video player interface
+  - [X] `<video>`
+  - [ ] WebChimera
+- [ ] Basic text danmakus
+  - [ ] Flying
   - [ ] Anchored
-- [ ] Mode 7 danmakus
+- [ ] Custom text danmakus
 - [ ] Scripted danmakus
   - [X] `Display`
   - [X] `Functions`

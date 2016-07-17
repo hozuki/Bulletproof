@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="cache-control" content="no-store">
+    <link rel="stylesheet" href="default.css"/>
+    <title>Bulletproof Showcase</title>
+</head>
+<body>
+<div class="video-selector" id="video-selector">
+    <p><b>Select video</b> (optional)</p>
+    <button id="enter-video-url-btn" type="button">Enter online video URL</button>
+    <span id="local-video-selector-container">
+        &nbsp;or&nbsp;
+        <button id="select-local-video-btn" type="button">Select local video (NW.js/Electron)</button>
+        <input type="file" id="select-local-video" hidden="hidden" multiple="multiple"
+               accept=".mp4,.ogv,.flv,video/mp4,video/H264"/>
+    </span>
+</div>
+<div id="test-case-selector-container">
+    <p><b>Test Cases</b></p>
+    <ol id="test-case-selector">
+    </ol>
+</div>
+<div class="initially-hidden" id="playground">
+    <div style="margin-bottom: 10px;">
+        <b>Selected:</b>&nbsp;<span id="test-case-desc"></span>&nbsp;
+        <button type="button" onclick="reloadPage();">Reload Page</button>
+        <span style="margin-left: 10px;">
+            FPS:&nbsp;
+            <span id="fps-indicator">
+            </span>
+        </span>
+        <div style="margin-top: 5px;">
+            <label for="input-danmaku">Add simple danmaku:
+                <input id="input-danmaku" name="input-danmaku" type="text" style="width: 120px;"/>
+            </label>
+            <label for="input-danmaku-position">Position:
+                <select id="input-danmaku-position">
+                    <option value="1">Flying (R2L)</option>
+                    <option value="2">Flying (L2R)</option>
+                    <option value="3">Top</option>
+                    <option value="4">Bottom</option>
+                    <option value="5">Top-left</option>
+                    <option value="6">Top-right</option>
+                    <option value="7">Bottom-left</option>
+                    <option value="8">Bottom-right</option>
+                </select>
+            </label>
+            <button id="btn-danmaku-spawner" type="button">Add</button>
+        </div>
+    </div>
+    <div id="glantern-container">
+    </div>
+</div>
+<script type="text/javascript" id="bp-source-loader" src="bp-source-loader.js"></script>
+<script type="text/javascript" src="bootstrap.js"></script>
+<script type="text/javascript" src="danmaku-control.js"></script>
+<script type="text/javascript" src="reload-page.js"></script>
+</body>
+</html>
