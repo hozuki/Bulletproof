@@ -2,13 +2,13 @@
  * Created by MIC on 2016/2/28.
  */
 
-import {OutOfRangeError} from "../flash/errors/OutOfRangeError";
+import {OutOfRangeError} from "../../flash/errors/OutOfRangeError";
 
 export abstract class BPUtil {
 
-    static createNumberArray(length:number, zeroFill:boolean = true):number[] {
+    static createNumberArray(length: number, zeroFill: boolean = true): number[] {
         length |= 0;
-        var result:number[];
+        var result: number[];
         if (zeroFill) {
             result = [];
             while (length > 0) {
@@ -21,7 +21,7 @@ export abstract class BPUtil {
         return result;
     }
 
-    static insertAt<T>(array:T[], item:T, index:number):void {
+    static insertAt<T>(array: T[], item: T, index: number): void {
         array.splice(index, 0, item);
     }
 
@@ -34,7 +34,7 @@ export abstract class BPUtil {
      * argument is greater than the second one, a negative when less, and 0 when they are equal.
      * @returns {Number} The inserted index of the item.
      */
-    static binaryInsert<T>(array:T[], item:T, comparison:(toCompare:T, standard:T) => number):number {
+    static binaryInsert<T>(array: T[], item: T, comparison: (toCompare: T, standard: T) => number): number {
         if (array.length <= 0) {
             array.push(item);
             return 0;
@@ -66,10 +66,10 @@ export abstract class BPUtil {
  * @param item {T}
  * @param comparison {function (T, T): Number}
  */
-function getBSIndex<T>(array:T[], item:T, comparison:(toCompare:T, standard:T) => number):number {
+function getBSIndex<T>(array: T[], item: T, comparison: (toCompare: T, standard: T) => number): number {
     var arrayLength = array.length;
     var low = 0, high = arrayLength - 1;
-    var middle:number = -1;
+    var middle: number = -1;
     while (low < high) {
         middle = ((low + high) / 2) | 0;
         var compareResult = comparison(item, array[middle]);

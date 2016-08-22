@@ -9,6 +9,6 @@ import * as Bulletproof from "./index";
  In browsers, we must find the "window" object as global object in highest priority,
  instead of Node's "global" object.
  */
-(function ($global:any):void {
+(function ($global: any): void {
     ($global).Bulletproof = Bulletproof;
 })(window || {});

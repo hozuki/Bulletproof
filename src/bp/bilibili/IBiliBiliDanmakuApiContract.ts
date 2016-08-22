@@ -14,24 +14,24 @@ import {FiniteTimer} from "../danmaku/scripted/dco/FiniteTimer";
 
 export interface IBiliBiliDanmakuApiContract {
 
-    $:Display;
-    $G:Global;
-    Display:Display;
-    Global:Global;
-    Utils:Utils;
-    Player:Player;
-    ScriptManager:ScriptManager;
-    Tween:Tween;
-    Bitmap:Bitmap;
-    Storage:Storage;
+    $: Display;
+    $G: Global;
+    Display: Display;
+    Global: Global;
+    Utils: Utils;
+    Player: Player;
+    ScriptManager: ScriptManager;
+    Tween: Tween;
+    Bitmap: Bitmap;
+    Storage: Storage;
 
-    trace:(message:any) => void;
-    clear:() => void;
-    getTimer:() => number;
-    timer:(obj:any, delay:number) => number;
-    interval:(obj:any, delay:number, times?:number) => FiniteTimer;
-    foreach:(loop:any, f:(key:string, value:any) => void) => void;
-    clone:(object:any) => any;
-    load:(libraryName:string, onComplete:() => void) => void;
+    trace: (message: any) => void;
+    clear: () => void;
+    getTimer: () => number;
+    timer: (obj: any, delay: number) => number;
+    interval: (obj: any, delay: number, times?: number) => FiniteTimer;
+    foreach: (loop: any, f: (key: string, value: any) => void) => void;
+    clone: (object: any) => any;
+    load: (libraryName: string, onComplete: () => void) => void;
 
 }

@@ -4,11 +4,11 @@
 
 export interface CommentData {
 
-    txt:string;
-    time:string;
-    color:number;
-    pool:number;
-    mode:number;
-    fontSize:number;
+    txt: string;
+    time: string;
+    color: number;
+    pool: number;
+    mode: number;
+    fontSize: number;
 
 }

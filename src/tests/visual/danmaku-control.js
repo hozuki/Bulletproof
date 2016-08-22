@@ -9,9 +9,9 @@ var bp;
 
 (function () {
     if (typeof window.document.body.onload === "function") {
-        var __last = window.document.body.onload;
+        var $last = window.document.body.onload;
         window.document.body.onload = function () {
-            __last();
+            $last();
             initDanmakuSendingEventHandlers();
         }
     } else {
@@ -45,6 +45,7 @@ var bp;
                 case 6:
                 case 7:
                 case 8:
+                    console.log("adding... ", text);
                     addSimpleDanmaku(text, type);
                     break;
                 default:

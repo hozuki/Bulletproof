@@ -12,19 +12,19 @@ import {Rectangle} from "../../../../lib/glantern/src/gl/flash/geom/Rectangle";
 
 export class Bitmap extends BiliBiliDamakuApiObject {
 
-    constructor(apiContainer:BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
         super(apiContainer);
     }
 
-    createBitmapData(width:number, height:number, transparent:boolean = true, fillColor:number = 0xffffffff):BitmapData {
+    createBitmapData(width: number, height: number, transparent: boolean = true, fillColor: number = 0xffffffff): BitmapData {
         throw new NotImplementedError();
     }
 
-    createRectangle(x:number = 0, y:number = 0, width:number = 0, height:number = 0):Rectangle {
+    createRectangle(x: number = 0, y: number = 0, width: number = 0, height: number = 0): Rectangle {
         return new Rectangle(x, y, width, height);
     }
 
-    createBitmap(params:ICommentBitmapCreateParams):CommentBitmap {
+    createBitmap(params: ICommentBitmapCreateParams): CommentBitmap {
         throw new NotImplementedError();
     }
 

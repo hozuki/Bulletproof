@@ -3,30 +3,30 @@
  */
 
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
-import {IEngineOptions} from "../../bulletproof/IEngineOptions";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
+import {IEngineOptions} from "../../mic/IEngineOptions";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 export abstract class SimpleDanmakuHelper {
 
-    static getDefaultParams(config:IEngineOptions):ISimpleDanmakuCreateParams {
-        return GLUtil.deepClone(config.defaultSimpleDanmakuCreateParams);
+    static getDefaultParams(config: IEngineOptions): ISimpleDanmakuCreateParams {
+        return CommonUtil.deepClone(config.defaultSimpleDanmakuCreateParams);
     }
 
-    static fillInCreateParams(config:IEngineOptions, params:ISimpleDanmakuCreateParams):void {
-        function applyValue(name:string):void {
-            if (!GLUtil.ptr((<any>params)[name])) {
+    static fillInCreateParams(config: IEngineOptions, params: ISimpleDanmakuCreateParams): void {
+        function applyValue(name: string): void {
+            if (!CommonUtil.ptr((<any>params)[name])) {
                 (<any>params)[name] = (<any>config.defaultSimpleDanmakuCreateParams)[name];
             }
         }
 
-        function setDefaultValue<T>(name:string, def:T):void {
-            if (GLUtil.isUndefined((<any>params)[name])) {
+        function setDefaultValue<T>(name: string, def: T): void {
+            if (CommonUtil.isUndefined((<any>params)[name])) {
                 (<any>params)[name] = def;
             }
         }
 
         // Field bornTime is ignored. See SimpleDanmaku.initialize() for more information.
-        var optionNames:string[] = [
+        var optionNames: string[] = [
             "fontName", "fontStyle", "fontSize", "type", "border", "borderColor", "borderThickness", "background",
             "backgroundColor", "textColor", "outline", "outlineColor", "outlineThickness"
         ];

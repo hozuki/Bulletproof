@@ -11,36 +11,36 @@ import {PlayerState} from "./PlayerState";
 import {DanmakuProviderBase} from "../../danmaku/DanmakuProviderBase";
 import {DisplayObject} from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
 import {Sound} from "../../../../lib/glantern/src/gl/flash/media/Sound";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 export class Player extends BiliBiliDamakuApiObject {
 
-    constructor(apiContainer:BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
         super(apiContainer);
         this._videoPlayer = apiContainer.engine.videoPlayer;
     }
 
-    play():void {
+    play(): void {
         if (this._videoPlayer !== null) {
             this._videoPlayer.play();
         }
     }
 
-    pause():void {
+    pause(): void {
         if (this._videoPlayer !== null) {
             this._videoPlayer.pause();
         }
     }
 
-    seek(offset:number):void {
+    seek(offset: number): void {
         if (this._videoPlayer !== null) {
             this._videoPlayer.currentTime = offset;
         }
     }
 
-    jump(av:string, page:number = 1, newWindow:boolean = false):void {
-        var url = GLUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+    jump(av: string, page: number = 1, newWindow: boolean = false): void {
+        var url = CommonUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
         if (newWindow) {
             window.open(url, "_blank");
         } else {
@@ -48,7 +48,7 @@ export class Player extends BiliBiliDamakuApiObject {
         }
     }
 
-    get state():string {
+    get state(): string {
         if (this._videoPlayer === null) {
             return PlayerState.INVALID;
         } else {
@@ -70,30 +70,30 @@ export class Player extends BiliBiliDamakuApiObject {
         }
     }
 
-    get time():number {
+    get time(): number {
         return this.apiContainer.engine.videoMillis;
     }
 
-    commentTrigger(f:(cd:CommentData) => void, timeout:number = 1000):number {
+    commentTrigger(f: (cd: CommentData) => void, timeout: number = 1000): number {
         throw new NotImplementedError();
     }
 
-    keyTrigger(f:(key:number) => void, timeout:number = 1000, up:boolean = false):number {
+    keyTrigger(f: (key: number) => void, timeout: number = 1000, up: boolean = false): number {
         throw new NotImplementedError();
     }
 
-    setMask(obj:DisplayObject):void {
+    setMask(obj: DisplayObject): void {
         throw new NotImplementedError();
     }
 
-    createSound(t:string, onLoad:Function = null):Sound {
+    createSound(t: string, onLoad: Function = null): Sound {
         throw new NotImplementedError();
     }
 
-    get commentList():CommentData[] {
-        var comments:CommentData[] = [];
+    get commentList(): CommentData[] {
+        var comments: CommentData[] = [];
         var providers = this.apiContainer.engine.danmakuController.getProviders();
-        var provider:DanmakuProviderBase;
+        var provider: DanmakuProviderBase;
         for (var j = 0; j < providers.length; ++j) {
             provider = providers[j];
             for (var i = 0; i < provider.fullDanmakuList.length; ++i) {
@@ -103,30 +103,30 @@ export class Player extends BiliBiliDamakuApiObject {
         return comments;
     }
 
-    get refreshRate():number {
+    get refreshRate(): number {
         return 1 / this.apiContainer.engine.fps;
     }
 
-    set refreshRate(v:number) {
+    set refreshRate(v: number) {
         throw new NotImplementedError();
     }
 
-    get width():number {
+    get width(): number {
         return this.apiContainer.engine.stage.stageWidth;
     }
 
-    get height():number {
+    get height(): number {
         return this.apiContainer.engine.stage.stageHeight;
     }
 
-    get videoWidth():number {
+    get videoWidth(): number {
         return this._videoPlayer !== null ? this._videoPlayer.videoWidth : 0;
     }
 
-    get videoHeight():number {
+    get videoHeight(): number {
         return this._videoPlayer !== null ? this._videoPlayer.videoHeight : 0;
     }
 
-    private _videoPlayer:VideoPlayerBase = null;
+    private _videoPlayer: VideoPlayerBase = null;
 
 }

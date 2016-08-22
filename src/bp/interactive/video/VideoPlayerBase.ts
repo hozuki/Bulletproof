@@ -15,49 +15,49 @@ export abstract class VideoPlayerBase extends EventDispatcher {
     /**
      * Initializes the {@link VideoPlayerBase}.
      */
-    abstract initialize(width:number, height:number):void;
+    abstract initialize(width: number, height: number): void;
 
     /**
      * Load a video from URL.
      * @param url {String} The source URL.
      * @returns {Boolean} Whether the loading procedure was successful.
      */
-    abstract load(url:string):boolean;
+    abstract load(url: string): boolean;
 
     /**
      * Unloads the loaded video (if any) and releases allocated resources.
      */
-    abstract unload():void;
+    abstract unload(): void;
 
     /**
      * Starts or resumes current video.
      */
-    abstract play():void;
+    abstract play(): void;
 
     /**
      * Pauses current video.
      */
-    abstract pause():void;
+    abstract pause(): void;
 
     /**
      * Resumes current video. If the video is not paused, no operation will be done.
      */
-    abstract resume():void;
+    abstract resume(): void;
 
     /**
      * Stops current video.
      */
-    abstract stop():void;
+    abstract stop(): void;
 
     /**
      * Gets current playing timestamp, in seconds.
      * @returns {Number}
      */
-    get currentTime():number {
+    get currentTime(): number {
         throw new NotImplementedError();
     };
 
-    set currentTime(v:number) {
+    set currentTime(v: number) {
         throw new NotImplementedError();
     }
 
@@ -65,135 +65,135 @@ export abstract class VideoPlayerBase extends EventDispatcher {
      * Gets current playing ratio. The ratio is a value between 0 and 1 from start to end.
      * @returns {Number}
      */
-    get currentRatio():number {
+    get currentRatio(): number {
         throw new NotImplementedError();
     }
 
-    set currentRatio(v:number) {
+    set currentRatio(v: number) {
         throw new NotImplementedError();
     }
 
     /**
      * Gets the duration of current video, in seconds.
      */
-    get duration():number {
+    get duration(): number {
         throw new NotImplementedError();
     }
 
-    get autoPlay():boolean {
+    get autoPlay(): boolean {
         throw new NotImplementedError();
     }
 
-    set autoPlay(v:boolean) {
+    set autoPlay(v: boolean) {
         throw new NotImplementedError();
     }
 
     /**
      * Gets whether the video should be looped.
      */
-    get loop():boolean {
+    get loop(): boolean {
         throw new NotImplementedError();
     }
 
-    set loop(v:boolean) {
+    set loop(v: boolean) {
         throw new NotImplementedError();
     }
 
     /**
      * Gets whether the video should be muted.
      */
-    get muted():boolean {
+    get muted(): boolean {
         throw new NotImplementedError();
     }
 
-    set muted(v:boolean) {
+    set muted(v: boolean) {
         throw new NotImplementedError();
     }
 
-    get defaultMuted():boolean {
+    get defaultMuted(): boolean {
         throw new NotImplementedError();
     }
 
-    set defaultMuted(v:boolean) {
+    set defaultMuted(v: boolean) {
         throw new NotImplementedError();
     }
 
-    get playbackRate():number {
+    get playbackRate(): number {
         throw new NotImplementedError();
     }
 
-    set playbackRate(v:number) {
+    set playbackRate(v: number) {
         throw new NotImplementedError();
     }
 
-    get defaultPlaybackRate():number {
+    get defaultPlaybackRate(): number {
         throw new NotImplementedError();
     }
 
-    set defaultPlaybackRate(v:number) {
+    set defaultPlaybackRate(v: number) {
         throw new NotImplementedError();
     }
 
     /**
      * Gets current volume. The value is between 0 and 1 from silence to maximum volume.
      */
-    get volume():number {
+    get volume(): number {
         throw new NotImplementedError();
     }
 
-    set volume(v:number) {
+    set volume(v: number) {
         throw new NotImplementedError();
     }
 
     /**
      * Gets the state enum of the player.
      */
-    get state():VideoPlayerState {
+    get state(): VideoPlayerState {
         throw new NotImplementedError();
     }
 
-    get stateText():string {
+    get stateText(): string {
         return VideoPlayerState[this.state];
     }
 
-    get playing():boolean {
+    get playing(): boolean {
         throw new NotImplementedError();
     }
 
-    get paused():boolean {
+    get paused(): boolean {
         throw new NotImplementedError();
     }
 
-    get seeking():boolean {
+    get seeking(): boolean {
         throw new NotImplementedError();
     }
 
-    get videoWidth():number {
+    get videoWidth(): number {
         throw new NotImplementedError();
     }
 
-    get videoHeight():number {
+    get videoHeight(): number {
         throw new NotImplementedError();
     }
 
     /**
      * Gets the URL of current video.
      */
-    get fileURL():string {
+    get fileURL(): string {
         throw new NotImplementedError();
     }
 
     /**
      * Gets whether there is a video prepared.
      */
-    get hasVideo():boolean {
+    get hasVideo(): boolean {
         throw new NotImplementedError();
     }
 
     /**
      * Gets the element created by the player.
      */
-    get view():HTMLElement {
+    get view(): HTMLElement {
         throw new NotImplementedError();
     }
 

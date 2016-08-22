@@ -6,9 +6,9 @@ import {Stage} from "../../../../lib/glantern/src/gl/flash/display/Stage";
 import {SimpleDanmaku} from "./SimpleDanmaku";
 
 export interface IBatchMeasureParams {
-    currentTime:number;
-    stage:Stage;
-    displayingList:SimpleDanmaku[];
-    stageWidth:number;
-    stageHeight:number;
+    currentTime: number;
+    stage: Stage;
+    displayingList: SimpleDanmaku[];
+    stageWidth: number;
+    stageHeight: number;
 }

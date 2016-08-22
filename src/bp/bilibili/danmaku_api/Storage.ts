@@ -8,23 +8,23 @@ import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/
 
 export class Storage extends BiliBiliDamakuApiObject {
 
-    constructor(apiContainer:BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
         super(apiContainer);
     }
 
-    loadRank(complete:Function, err:Function = null):void {
+    loadRank(complete: Function, err: Function = null): void {
         throw new NotImplementedError();
     }
 
-    uploadScore(score:number, name:string = null, complete:Function = null, err:Function = null):void {
+    uploadScore(score: number, name: string = null, complete: Function = null, err: Function = null): void {
         throw new NotImplementedError();
     }
 
-    saveData(userData:any, complete:Function = null, err:Function = null):void {
+    saveData(userData: any, complete: Function = null, err: Function = null): void {
         throw new NotImplementedError();
     }
 
-    loadData(complete:Function = null, err:Function = null):void {
+    loadData(complete: Function = null, err: Function = null): void {
         throw new NotImplementedError();
     }
 

@@ -7,11 +7,11 @@ import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
 import {DanmakuController} from "./DanmakuController";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
 import {IDanmaku} from "./IDanmaku";
-import {Engine} from "../bulletproof/Engine";
+import {Engine} from "../mic/Engine";
 import {DisplayObject} from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
-import {IDisposable} from "../../../lib/glantern/src/gl/glantern/IDisposable";
+import {IDisposable} from "../../../lib/glantern/src/gl/mic/IDisposable";
 import {NotImplementedError} from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {TimeInfoEx} from "../bulletproof/TimeInfoEx";
+import {TimeInfoEx} from "../mic/TimeInfoEx";
 
 /**
  * Base class exposing common service of a danmaku provider.
@@ -23,7 +23,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Creates a new danmaku provider.
      * @param controller {DanmakuController} The {@link DanmakuController} that will be used for reversed queries.
      */
-    constructor(controller:DanmakuController) {
+    constructor(controller: DanmakuController) {
         this._controller = controller;
         this._displayingDanmakuList = [];
         this._engine = controller.engine;
@@ -35,7 +35,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * danmaku providers.
      * This property must be overridden.
      */
-    get danmakuKind():DanmakuKind {
+    get danmakuKind(): DanmakuKind {
         throw new NotImplementedError();
     }
 
@@ -43,19 +43,19 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Disposes the danmaku provider and release all resources occupied.
      * This method must be overridden.
      */
-    abstract dispose():void;
+    abstract dispose(): void;
 
     /**
      * Perform extra initialization after created.
      */
-    initialize():void {
+    initialize(): void {
         this.layoutManager.initialize();
     }
 
     /**
      * Updates the state of this instance.
      */
-    update(timeInfo:TimeInfoEx):void {
+    update(timeInfo: TimeInfoEx): void {
         this.updateDisplayingDanmakuList(timeInfo);
         this.layoutManager.performLayout(timeInfo);
     }
@@ -69,7 +69,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      *                   be specified when creating a {@link SimpleDanmaku}.
      * @returns {IDanmaku} The created danmaku.
      */
-    addDanmaku(content:string, args?:any):IDanmaku {
+    addDanmaku(content: string, args?: any): IDanmaku {
         if ((true || this.canCreateDanmaku(args)) && this.controller.shouldCreateDanmaku(this)) {
             return this._$addDanmaku(content, args);
         } else {
@@ -83,7 +83,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * @param danmaku {IDanmaku} The danmaku that will be removed.
      * @returns {Boolean} Whether the removal was all-OK.
      */
-    abstract removeDanmaku(danmaku:IDanmaku):boolean;
+    abstract removeDanmaku(danmaku: IDanmaku): boolean;
 
     /**
      * Determines whether a new danmaku can be created with specified arguments, in current
@@ -91,7 +91,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * @param args {*} Arguments used to create a new danmaku.
      * @returns {Boolean} Whether a danmaku can be created with specified arguments.
      */
-    abstract canCreateDanmaku(args?:any):boolean;
+    abstract canCreateDanmaku(args?: any): boolean;
 
     /**
      * Removes "dead" danmakus from the internal danmaku list and release the resources they occupy.
@@ -99,7 +99,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * This method must be overridden.
      * @param timeInfo {TimeInfoEx}
      */
-    abstract updateDisplayingDanmakuList(timeInfo:TimeInfoEx):void;
+    abstract updateDisplayingDanmakuList(timeInfo: TimeInfoEx): void;
 
     /**
      * Determines if a danmaku is "dead". A "dead" danmaku will be removed from the danmaku list to grant space
@@ -109,13 +109,13 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * @param danmaku {IDanmaku} The danmaku to test.
      * @returns {Boolean} True if the danmaku is "dead", and false otherwise.
      */
-    abstract isDanmakuDead(timeInfo:TimeInfoEx, danmaku:IDanmaku):boolean;
+    abstract isDanmakuDead(timeInfo: TimeInfoEx, danmaku: IDanmaku): boolean;
 
     /**
      * Gets the layout manager associated with this instance.
      * @returns {DanmakuLayoutManagerBase}
      */
-    get layoutManager():DanmakuLayoutManagerBase {
+    get layoutManager(): DanmakuLayoutManagerBase {
         return this._layoutManager;
     }
 
@@ -123,7 +123,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Gets the list including all displaying danmakus created and managed by this danmaku provider.
      * @returns {IDanmaku[]}
      */
-    get displayingDanmakuList():IDanmaku[] {
+    get displayingDanmakuList(): IDanmaku[] {
         return this._displayingDanmakuList;
     }
 
@@ -131,7 +131,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Gets the list including all danmakus created and managed by this danmaku provider.
      * @returns {IDanmaku[]}
      */
-    get fullDanmakuList():IDanmaku[] {
+    get fullDanmakuList(): IDanmaku[] {
         throw new NotImplementedError();
     }
 
@@ -139,7 +139,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Gets the {@link DisplayObject} that contains danmakus of this {@link DanmakuProviderBase} as a layer.
      * @returns {DisplayObject}
      */
-    get layer():DisplayObject {
+    get layer(): DisplayObject {
         return this._layer;
     }
 
@@ -147,7 +147,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Gets the danmaku controller specified at the time of creation.
      * @returns {DanmakuController}
      */
-    get controller():DanmakuController {
+    get controller(): DanmakuController {
         return this._controller;
     }
 
@@ -155,7 +155,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Gets the {@link Engine} instance that controls this {@link DanmakuProviderBase}.
      * @returns {Engine}
      */
-    get engine():Engine {
+    get engine(): Engine {
         return this._engine;
     }
 
@@ -165,7 +165,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * The default value is {@link DanmakuProviderFlag.None}, indicating no special flag is set.
      * @returns {DanmakuProviderFlag}
      */
-    get flags():DanmakuProviderFlag {
+    get flags(): DanmakuProviderFlag {
         return DanmakuProviderFlag.None;
     }
 
@@ -173,7 +173,7 @@ export abstract class DanmakuProviderBase implements IDisposable {
      * Pool number of this danmaku provider.
      * @returns {Number}
      */
-    get pool():number {
+    get pool(): number {
         return this._pool;
     }
 
@@ -186,13 +186,13 @@ export abstract class DanmakuProviderBase implements IDisposable {
      *                   be specified when creating a {@link SimpleDanmaku}.
      * @returns {IDanmaku} The created danmaku.
      */
-    protected abstract _$addDanmaku(content:string, args?:any):IDanmaku;
+    protected abstract _$addDanmaku(content: string, args?: any): IDanmaku;
 
-    protected _displayingDanmakuList:IDanmaku[] = null;
-    protected _controller:DanmakuController = null;
-    protected _layoutManager:DanmakuLayoutManagerBase = null;
-    protected _layer:DisplayObject = null;
-    private _engine:Engine = null;
-    private _pool:number = -1;
+    protected _displayingDanmakuList: IDanmaku[] = null;
+    protected _controller: DanmakuController = null;
+    protected _layoutManager: DanmakuLayoutManagerBase = null;
+    protected _layer: DisplayObject = null;
+    private _engine: Engine = null;
+    private _pool: number = -1;
 
 }

@@ -4,19 +4,19 @@
 
 export abstract class PlayerState {
 
-    static get PLAYING():string {
+    static get PLAYING(): string {
         return "playing";
     }
 
-    static get STOP():string {
+    static get STOP(): string {
         return "stop";
     }
 
-    static get PAUSE():string {
+    static get PAUSE(): string {
         return "pause";
     }
 
-    static get INVALID():string {
+    static get INVALID(): string {
         return "invalid";
     }
 

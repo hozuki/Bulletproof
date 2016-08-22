@@ -12,26 +12,26 @@ import {DisplayObjectContainer} from "../../../../lib/glantern/src/gl/flash/disp
 
 export class CommentField extends TextField implements IDanmakuCreatedObject {
 
-    constructor(root:Stage, parent:DisplayObjectContainer, createParams:IGeneralCreateParams, extraCreateParams:IDCExtraCreateParams) {
+    constructor(root: Stage, parent: DisplayObjectContainer, createParams: IGeneralCreateParams, extraCreateParams: IDCExtraCreateParams) {
         super(root, parent);
         this._createParams = DCOHelper.fillInCreateParams(extraCreateParams.engine, this, createParams);
         this._extraCreateParams = extraCreateParams;
         DCOHelper.applyGeneralCreateParams(this, this._createParams);
     }
 
-    get createParams():IGeneralCreateParams {
+    get createParams(): IGeneralCreateParams {
         return this._createParams;
     }
 
-    get extraCreateParams():IDCExtraCreateParams {
+    get extraCreateParams(): IDCExtraCreateParams {
         return this._extraCreateParams;
     }
 
-    get isCreatedByDanmaku():boolean {
+    get isCreatedByDanmaku(): boolean {
         return true;
     }
 
-    protected _extraCreateParams:IDCExtraCreateParams = null;
-    protected _createParams:IGeneralCreateParams = null;
+    protected _extraCreateParams: IDCExtraCreateParams = null;
+    protected _createParams: IGeneralCreateParams = null;
 
 }

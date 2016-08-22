@@ -12,22 +12,22 @@ import {SimpleDanmakuType} from "./SimpleDanamkuType";
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
 import {SimpleDanmakuLayer} from "./SimpleDanmakuLayer";
 import {SimpleDanmakuHelper} from "./SimpleDanmakuHelper";
-import {StageResizedEventArgs} from "../../bulletproof/events/StageResizedEventArgs";
+import {StageResizedEventArgs} from "../../mic/bulletproof/events/StageResizedEventArgs";
 import {IDanmaku} from "../IDanmaku";
 import {GlowFilter} from "../../../../lib/glantern/src/gl/flash/filters/GlowFilter";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
-import {TimeInfoEx} from "../../bulletproof/TimeInfoEx";
+import {TimeInfoEx} from "../../mic/TimeInfoEx";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
 export class SimpleDanmakuProvider extends DanmakuProviderBase {
 
-    constructor(controller:DanmakuController) {
+    constructor(controller: DanmakuController) {
         super(controller);
         this._layoutManager = new SimpleDanmakuLayoutManager(this);
         this._fullDanmakuList = [];
-        var partialCounts:number[] = [], partialDisplayingCounts:number[] = [];
+        var partialCounts: number[] = [], partialDisplayingCounts: number[] = [];
         for (var i = 0; i <= SimpleDanmakuType.Max; ++i) {
             partialCounts.push(0);
             partialDisplayingCounts.push(0);
@@ -36,11 +36,11 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         this._partialDisplayingDanmakuCounts = partialDisplayingCounts;
     }
 
-    get danmakuKind():DanmakuKind {
+    get danmakuKind(): DanmakuKind {
         return DanmakuKind.Simple;
     }
 
-    initialize():void {
+    initialize(): void {
         super.initialize();
         var stage = this.engine.stage;
         var danmakuLayer = new SimpleDanmakuLayer(stage, stage, this);
@@ -52,7 +52,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         this.layoutManager.onStageResize(this, new StageResizedEventArgs(stage.stageWidth, stage.stageHeight));
     }
 
-    dispose():void {
+    dispose(): void {
         this.layer.parent.removeChild(this.layer);
         this.layer.dispose();
         this._layer = null;
@@ -73,35 +73,35 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         this._displayingDanmakuList = null;
     }
 
-    canCreateDanmaku(args?:ISimpleDanmakuCreateParams):boolean {
+    canCreateDanmaku(args?: ISimpleDanmakuCreateParams): boolean {
         var config = this.engine.options;
-        var type:SimpleDanmakuType = GLUtil.ptr(args) ? args.type : config.defaultSimpleDanmakuCreateParams.type;
+        var type: SimpleDanmakuType = CommonUtil.ptr(args) ? args.type : config.defaultSimpleDanmakuCreateParams.type;
         var count = this.partialDanmakuCounts[type];
-        return GLUtil.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
+        return CommonUtil.isUndefined(count) ? false : count < config.simpleDanmakuPartCountThreshold;
     }
 
-    addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):IDanmaku {
+    addDanmaku(content: string, args?: ISimpleDanmakuCreateParams): IDanmaku {
         return super.addDanmaku(content, args);
     }
 
-    removeDanmaku(danmaku:SimpleDanmaku):boolean {
-        var index:number;
+    removeDanmaku(danmaku: SimpleDanmaku): boolean {
+        var index: number;
         var b = false;
         index = this.fullDanmakuList.indexOf(danmaku);
         if (index >= 0) {
-            GLUtil.removeAt(this.fullDanmakuList, index);
+            CommonUtil.removeAt(this.fullDanmakuList, index);
             --this.partialDanmakuCounts[danmaku.createParams.type];
             b = true;
         }
         index = this.displayingDanmakuList.indexOf(danmaku);
         if (index >= 0) {
-            GLUtil.removeAt(this.displayingDanmakuList, index);
+            CommonUtil.removeAt(this.displayingDanmakuList, index);
             --this.partialDisplayingDanmakuCounts[danmaku.createParams.type];
         }
         return b;
     }
 
-    updateDisplayingDanmakuList(timeInfo:TimeInfoEx):void {
+    updateDisplayingDanmakuList(timeInfo: TimeInfoEx): void {
         var partialDisplayingCounts = this.partialDisplayingDanmakuCounts;
         var fullList = this.fullDanmakuList;
         var displayingList = this.displayingDanmakuList;
@@ -109,7 +109,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         // TODO: The algorithm can be optimized!
         var now = timeInfo.millisOfVideo;
         var config = this.engine.options;
-        var danmaku:SimpleDanmaku;
+        var danmaku: SimpleDanmaku;
         var layoutManager = this.layoutManager;
 
         // We don't handle the situation where cursor is at 00:20, and a danmaku born at 00:15 with life 10s is added.
@@ -120,7 +120,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
             // *Assume* that we only play in normal order and don't seek through the track. So we just need to:
             // 1) remove old danmakus in the front of the displaying list;
             // 2) search the danmakus just next to the last in the displaying list.
-            var lastDisplayingDanmaku:SimpleDanmaku = null;
+            var lastDisplayingDanmaku: SimpleDanmaku = null;
             for (var i = 0; i < displayingList.length; ++i) {
                 danmaku = displayingList[i];
                 if (this.isDanmakuDead(timeInfo, danmaku)) {
@@ -128,7 +128,7 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
                     var type = danmaku.createParams.type;
                     --partialDisplayingCounts[type];
                     layoutManager.removeDanmaku(danmaku);
-                    GLUtil.removeAt(displayingList, i);
+                    CommonUtil.removeAt(displayingList, i);
                     --i;
                 } else {
                     break;
@@ -172,42 +172,42 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         }
     }
 
-    isDanmakuDead(timeInfo:TimeInfoEx, danmaku:SimpleDanmaku):boolean {
+    isDanmakuDead(timeInfo: TimeInfoEx, danmaku: SimpleDanmaku): boolean {
         var now = timeInfo.millisOfVideo;
         return now < danmaku.bornTime || danmaku.bornTime + danmaku.lifeTime * 1000 < now;
     }
 
-    get layoutManager():SimpleDanmakuLayoutManager {
+    get layoutManager(): SimpleDanmakuLayoutManager {
         return this._layoutManager;
     }
 
-    get partialDanmakuCounts():number[] {
+    get partialDanmakuCounts(): number[] {
         return this._partialDanmakuCounts;
     }
 
-    get displayingDanmakuList():SimpleDanmaku[] {
+    get displayingDanmakuList(): SimpleDanmaku[] {
         return this._displayingDanmakuList;
     }
 
-    get fullDanmakuList():SimpleDanmaku[] {
+    get fullDanmakuList(): SimpleDanmaku[] {
         return this._fullDanmakuList;
     }
 
-    get partialDisplayingDanmakuCounts():number[] {
+    get partialDisplayingDanmakuCounts(): number[] {
         return this._partialDisplayingDanmakuCounts;
     }
 
-    get flags():DanmakuProviderFlag {
+    get flags(): DanmakuProviderFlag {
         return DanmakuProviderFlag.None;
     }
 
-    get layer():SimpleDanmakuLayer {
+    get layer(): SimpleDanmakuLayer {
         return this._layer;
     }
 
-    update(timeInfo:TimeInfoEx):void {
+    update(timeInfo: TimeInfoEx): void {
         if (this._shouldSortDanmakuList) {
-            this.fullDanmakuList.sort((d1:SimpleDanmaku, d2:SimpleDanmaku):number => {
+            this.fullDanmakuList.sort((d1: SimpleDanmaku, d2: SimpleDanmaku): number => {
                 return d1.bornTime - d2.bornTime;
             });
             this._shouldSortDanmakuList = false;
@@ -215,9 +215,9 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         super.update(timeInfo);
     }
 
-    protected _$addDanmaku(content:string, args?:ISimpleDanmakuCreateParams):SimpleDanmaku {
+    protected _$addDanmaku(content: string, args?: ISimpleDanmakuCreateParams): SimpleDanmaku {
         var options = this.engine.options;
-        if (GLUtil.ptr(args)) {
+        if (CommonUtil.ptr(args)) {
             SimpleDanmakuHelper.fillInCreateParams(options, args);
         } else {
             args = SimpleDanmakuHelper.getDefaultParams(options);
@@ -230,12 +230,12 @@ export class SimpleDanmakuProvider extends DanmakuProviderBase {
         return danmaku;
     }
 
-    protected _layer:SimpleDanmakuLayer;
-    protected _displayingDanmakuList:SimpleDanmaku[];
-    protected _layoutManager:SimpleDanmakuLayoutManager;
-    private _shouldSortDanmakuList:boolean = false;
-    private _fullDanmakuList:SimpleDanmaku[] = null;
-    private _partialDanmakuCounts:number[] = null;
-    private _partialDisplayingDanmakuCounts:number[] = null;
+    protected _layer: SimpleDanmakuLayer;
+    protected _displayingDanmakuList: SimpleDanmaku[];
+    protected _layoutManager: SimpleDanmakuLayoutManager;
+    private _shouldSortDanmakuList: boolean = false;
+    private _fullDanmakuList: SimpleDanmaku[] = null;
+    private _partialDanmakuCounts: number[] = null;
+    private _partialDisplayingDanmakuCounts: number[] = null;
 
 }

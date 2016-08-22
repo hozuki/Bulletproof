@@ -10,7 +10,10 @@ const USER_AGENT = `Bulletproof/${VERSION} (BiliBili, like BSE, like CCL, like F
 import * as bilibili from "./bilibili/index";
 import * as danmaku from "./danmaku/index";
 import * as interactive from "./interactive/index";
-import {DefaultEngineOptions} from "./bulletproof/DefaultEngineOptions";
+import {DefaultEngineOptions} from "./mic/DefaultEngineOptions";
+import * as mic from "./mic/index";
+import * as gl_root from "../../lib/glantern/src/gl/index";
+import * as flash_fix from "./flash/index";
 
 export {
     VERSION as version,
@@ -21,30 +24,27 @@ export {
     DefaultEngineOptions as defaultOptions
 };
 
-import * as bulletproof from "./bulletproof/index";
-const Engine = bulletproof.Engine;
+const Engine = mic.Engine;
 
-export {bulletproof, Engine};
+export {mic, Engine};
 
 // GLantern
-
-import * as gl_root from "../../lib/glantern/src/gl/index";
 
 const flash = gl_root.flash;
 const fl = gl_root.fl;
 const mx = gl_root.mx;
-const glantern = gl_root.glantern;
+const gl_mic = gl_root.mic;
 const webgl = gl_root.webgl;
 const injectToGlobal = gl_root.injectToGlobal;
 const isSupported = gl_root.isSupported;
+const checkSupportStatus = gl_root.checkSupportStatus;
 
-export {flash, fl, mx, glantern, webgl, injectToGlobal, isSupported};
-
-import * as flash_fix from "./flash/index";
+export {flash, fl, mx, webgl, injectToGlobal, isSupported, checkSupportStatus};
 
 fuse(flash, flash_fix);
+fuse(mic, gl_mic);
 
-function fuse(baseObject:Object, attachment:Object):void {
+function fuse(baseObject: Object, attachment: Object): void {
     for (var propName in attachment) {
         if (baseObject.hasOwnProperty(propName)) {
             fuse((<any>baseObject)[propName], (<any>attachment)[propName]);

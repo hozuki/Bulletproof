@@ -7,7 +7,7 @@ import {TimerEvent} from "../../../../../lib/glantern/src/gl/flash/events/TimerE
 
 export class FiniteTimer extends Timer {
 
-    constructor(obj:string|Function, delay:number, repeatCount:number = 1) {
+    constructor(obj: string|Function, delay: number, repeatCount: number = 1) {
         super(delay, repeatCount);
         if (typeof obj === "string") {
             this._funcSource = <string>obj;
@@ -21,15 +21,15 @@ export class FiniteTimer extends Timer {
         this.addEventListener(TimerEvent.TIMER_COMPLETE, this.__closureTimerCompleteHandler.bind(this));
     }
 
-    protected __closureTimerHandler():void {
+    protected __closureTimerHandler(): void {
         this._closure.call(null);
     }
 
-    protected __closureTimerCompleteHandler():void {
+    protected __closureTimerCompleteHandler(): void {
     }
 
-    private _closure:Function = null;
-    private _funcSource:string = null;
-    private _closureIsFunction:boolean = false;
+    private _closure: Function = null;
+    private _funcSource: string = null;
+    private _closureIsFunction: boolean = false;
 
 }

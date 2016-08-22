@@ -10,11 +10,11 @@ import {DefaultEngineOptions} from "./DefaultEngineOptions";
 import {VideoPlayerBase} from "../interactive/video/VideoPlayerBase";
 import {Html5VideoPlayer} from "../interactive/video/html5/Html5VideoPlayer";
 import {IEngineOptions} from "./IEngineOptions";
-import {EngineBase} from "../../../lib/glantern/src/gl/glantern/EngineBase";
-import {GLUtil} from "../../../lib/glantern/src/gl/glantern/GLUtil";
+import {EngineBase} from "../../../lib/glantern/src/gl/mic/EngineBase";
 import {VideoPlayerEvent} from "../interactive/video/VideoPlayerEvent";
 import {VideoPlayerState} from "../interactive/video/VideoPlayerState";
 import {TimeInfoEx} from "./TimeInfoEx";
+import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
 
 /**
  * The root controller for Bulletproof.
@@ -26,7 +26,7 @@ export class Engine extends EngineBase {
      */
     constructor() {
         super();
-        this._options = GLUtil.deepClone(DefaultEngineOptions);
+        this._options = CommonUtil.deepClone(DefaultEngineOptions);
     }
 
     /**
@@ -34,7 +34,7 @@ export class Engine extends EngineBase {
      * @param width {Number} Width of stage requested, in pixels.
      * @param height {Number} Height of stage requested, in pixels.
      */
-    initialize(width:number, height:number):void {
+    initialize(width: number, height: number): void {
         if (this.isInitialized) {
             return;
         }
@@ -45,7 +45,7 @@ export class Engine extends EngineBase {
         this._danmakuController = controller;
 
         // The earlier a provider is added in, the deeper it is in Z axis.
-        var provider:DanmakuProviderBase;
+        var provider: DanmakuProviderBase;
         if (options.codeDanmakuEnabled) {
             provider = new ScriptedDanmakuProvider(controller);
             controller.addProvider(provider);
@@ -56,7 +56,7 @@ export class Engine extends EngineBase {
         }
 
         if (options.videoPlayerEnabled) {
-            var videoPlayer:VideoPlayerBase = null;
+            var videoPlayer: VideoPlayerBase = null;
             if (options.useWebChimeraForVideoPlayback) {
                 console.warn("WebChimera integration is not implemented yet.");
             } else {
@@ -84,7 +84,7 @@ export class Engine extends EngineBase {
     /**
      * Disposes the {@link Engine} instance and release all resources occupied.
      */
-    dispose():void {
+    dispose(): void {
         this._danmakuController.dispose();
         this._danmakuController = null;
         super.dispose();
@@ -94,7 +94,7 @@ export class Engine extends EngineBase {
      * Gets the {@link DanmakuController} instance associated with current {@link Engine} instance.
      * @returns {DanmakuController}
      */
-    get danmakuController():DanmakuController {
+    get danmakuController(): DanmakuController {
         return this._danmakuController;
     }
 
@@ -102,27 +102,27 @@ export class Engine extends EngineBase {
      * Gets current video playback time, in milliseconds.
      * @returns {Number}
      */
-    get videoMillis():number {
+    get videoMillis(): number {
         return this._videoMillis;
     }
 
-    get videoPlayer():VideoPlayerBase {
+    get videoPlayer(): VideoPlayerBase {
         return this._videoPlayer;
     }
 
-    get videoView():HTMLElement {
-        return GLUtil.ptr(this.videoPlayer) ? this.videoPlayer.view : null;
+    get videoView(): HTMLElement {
+        return CommonUtil.ptr(this.videoPlayer) ? this.videoPlayer.view : null;
     }
 
-    get options():IEngineOptions {
+    get options(): IEngineOptions {
         return this._options;
     }
 
-    get blackCurtainView():HTMLDivElement {
+    get blackCurtainView(): HTMLDivElement {
         return this._blackCurtainView;
     }
 
-    private __updateVideoTime(timeInfo:TimeInfoEx):void {
+    private __updateVideoTime(timeInfo: TimeInfoEx): void {
         if (this.videoPlayer.state === VideoPlayerState.Playing) {
             this._videoMillis += this.elapsedMillis - this._lastTimeVideoUpdated;
             this._lastTimeVideoUpdated = this.elapsedMillis;
@@ -130,24 +130,24 @@ export class Engine extends EngineBase {
         timeInfo.millisOfVideo = this._videoMillis;
     }
 
-    private __updateDanmakus(timeInfo:TimeInfoEx):void {
+    private __updateDanmakus(timeInfo: TimeInfoEx): void {
         this.danmakuController.update(timeInfo);
     }
 
-    private __onVideoTimeUpdate():void {
+    private __onVideoTimeUpdate(): void {
         this._playerReportedVideoMillis = this.videoPlayer.currentTime * 1000;
     }
 
-    private __onVideoPlay():void {
+    private __onVideoPlay(): void {
         this._lastTimeVideoUpdated = this.elapsedMillis;
     }
 
-    private _videoMillis:number = 0;
-    private _playerReportedVideoMillis:number = 0;
-    private _lastTimeVideoUpdated:number = -1;
-    private _danmakuController:DanmakuController = null;
-    private _videoPlayer:VideoPlayerBase = null;
-    private _options:IEngineOptions = null;
-    private _blackCurtainView:HTMLDivElement = null;
+    private _videoMillis: number = 0;
+    private _playerReportedVideoMillis: number = 0;
+    private _lastTimeVideoUpdated: number = -1;
+    private _danmakuController: DanmakuController = null;
+    private _videoPlayer: VideoPlayerBase = null;
+    private _options: IEngineOptions = null;
+    private _blackCurtainView: HTMLDivElement = null;
 
 }

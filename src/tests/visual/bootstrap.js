@@ -30,7 +30,6 @@ window.addEventListener("beforeunload", function (ev) {
 function initEnv() {
     if (Bulletproof.isSupported()) {
         bp = new Bulletproof.Engine();
-        debugger;
         bp.initialize(682, 438);
         (function (selector) {
             var elem = document.querySelector(selector);

@@ -4,7 +4,7 @@
 
 import {DanmakuKind} from "../DanmakuKind";
 import {ScriptedDanmakuLayoutManager} from "./ScriptedDanmakuLayoutManager";
-import {Engine} from "../../bulletproof/Engine";
+import {Engine} from "../../mic/Engine";
 import {IDanmakuCreatedObject} from "./dco/IDanmakuCreatedObject";
 import {BiliBiliDanmakuApiContainer} from "../../bilibili/BiliBiliDanmakuApiContainer";
 import {IMotion} from "../../bilibili/danmaku_api/data_types/IMotion";
@@ -17,13 +17,13 @@ import {DisplayObjectContainer} from "../../../../lib/glantern/src/gl/flash/disp
 import {Stage} from "../../../../lib/glantern/src/gl/flash/display/Stage";
 import {WebGLRenderer} from "../../../../lib/glantern/src/gl/webgl/WebGLRenderer";
 import {DisplayObject} from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
 import {ScriptedDanmakuLayer} from "./ScriptedDanmakuLayer";
-import {TimeInfo} from "../../../../lib/glantern/src/gl/glantern/TimeInfo";
+import {TimeInfo} from "../../../../lib/glantern/src/gl/mic/TimeInfo";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku {
 
-    constructor(root:Stage, parent:DisplayObjectContainer, layoutManager:ScriptedDanmakuLayoutManager, createParams:IScriptedDanmakuCreateParams) {
+    constructor(root: Stage, parent: DisplayObjectContainer, layoutManager: ScriptedDanmakuLayoutManager, createParams: IScriptedDanmakuCreateParams) {
         super(root, parent);
         this._layoutManager = layoutManager;
         this._danmakuProvider = layoutManager.danmakuProvider;
@@ -32,47 +32,47 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         this._layer = this.danmakuProvider.layer;
     }
 
-    dispose():void {
+    dispose(): void {
         this.parent.removeChild(this);
         super.dispose();
     }
 
-    get danmakuKind():DanmakuKind {
+    get danmakuKind(): DanmakuKind {
         return DanmakuKind.Scripted;
     }
 
-    get layoutManager():ScriptedDanmakuLayoutManager {
+    get layoutManager(): ScriptedDanmakuLayoutManager {
         return this._layoutManager;
     }
 
-    get danmakuProvider():ScriptedDanmakuProvider {
+    get danmakuProvider(): ScriptedDanmakuProvider {
         return this._danmakuProvider;
     }
 
-    getContent():string {
+    getContent(): string {
         return this._content;
     }
 
-    getText():string {
+    getText(): string {
         // No readable text.
         return "";
     }
 
-    get layer():ScriptedDanmakuLayer {
+    get layer(): ScriptedDanmakuLayer {
         return this._layer;
     }
 
-    initialize(content:string, time:number):void {
+    initialize(content: string, time: number): void {
         this._content = content;
         this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
         this._apiContainer = new BiliBiliDanmakuApiContainer(this);
     }
 
-    get executed():boolean {
+    get executed(): boolean {
         return this._executed;
     }
 
-    execute():void {
+    execute(): void {
         if (!this._executed) {
             if (this.__censor()) {
                 this._lambda = this.__buildFunction();
@@ -82,23 +82,23 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         }
     }
 
-    get createParams():IScriptedDanmakuCreateParams {
+    get createParams(): IScriptedDanmakuCreateParams {
         return this._createParams;
     }
 
-    get engine():Engine {
+    get engine(): Engine {
         return this._engine;
     }
 
-    get bornTime():number {
+    get bornTime(): number {
         return this._bornTime;
     }
 
-    get lifeTime():number {
+    get lifeTime(): number {
         return this.engine.options.codeDanmakuLifeTimeSecs;
     }
 
-    getCommentData():CommentData {
+    getCommentData(): CommentData {
         return {
             txt: this.getContent(),
             time: this.bornTime.toString(),
@@ -109,41 +109,41 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         };
     }
 
-    get right():number {
+    get right(): number {
         return this.x + this.width;
     }
 
-    get bottom():number {
+    get bottom(): number {
         return this.y + this.height;
     }
 
-    protected _$update(timeInfo:TimeInfo):void {
+    protected _$update(timeInfo: TimeInfo): void {
         this.__removeDeadDCObjects();
         this.__applyMotionGroups();
     }
 
-    protected _$render(renderer:WebGLRenderer):void {
+    protected _$render(renderer: WebGLRenderer): void {
         // Do nothing, let children render themselves.
     }
 
-    private __applyMotionGroups():void {
-        var child:DisplayObject&IDanmakuCreatedObject;
+    private __applyMotionGroups(): void {
+        var child: DisplayObject&IDanmakuCreatedObject;
         var now = this.engine.videoMillis;
         for (var i = 0; i < this._children.length; ++i) {
             child = <DisplayObject&IDanmakuCreatedObject><any>this._children[i];
             if (child.isCreatedByDanmaku) {
-                if (GLUtil.ptr(child.createParams.motion)) {
+                if (CommonUtil.ptr(child.createParams.motion)) {
                     ScriptedDanmaku.__applyMotion(child.createParams.motion, now);
-                } else if (GLUtil.ptr(child.createParams.motionGroup)) {
+                } else if (CommonUtil.ptr(child.createParams.motionGroup)) {
                     ScriptedDanmaku.__applyMotionGroup(child.createParams.motionGroup, now);
                 }
             }
         }
     }
 
-    private static __applyMotionGroup(motionGroup:IMotion[], now:number):void {
-        var motion:IMotion;
-        if (GLUtil.ptr(motionGroup)) {
+    private static __applyMotionGroup(motionGroup: IMotion[], now: number): void {
+        var motion: IMotion;
+        if (CommonUtil.ptr(motionGroup)) {
             //console.log("Calculating: ", obj, " on ", now);
             for (var i = 0; i < motionGroup.length; ++i) {
                 motion = motionGroup[i];
@@ -152,17 +152,17 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         }
     }
 
-    private static __applyMotion(motion:IMotion, now:number):void {
-        var propertyNames:string[] = ["x", "y", "alpha", "rotationZ", "rotationY"];
-        var motionAnimation:IMotionPropertyAnimation;
-        var relativeTime:number;
-        var value:number;
+    private static __applyMotion(motion: IMotion, now: number): void {
+        var propertyNames: string[] = ["x", "y", "alpha", "rotationZ", "rotationY"];
+        var motionAnimation: IMotionPropertyAnimation;
+        var relativeTime: number;
+        var value: number;
         if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
             for (var j = 0; j < propertyNames.length; ++j) {
                 motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
-                if (GLUtil.ptr(motionAnimation)) {
+                if (CommonUtil.ptr(motionAnimation)) {
                     relativeTime = now - motion.createdTime;
-                    if (!GLUtil.isUndefined(motionAnimation.startDelay)) {
+                    if (!CommonUtil.isUndefined(motionAnimation.startDelay)) {
                         relativeTime -= motionAnimation.startDelay;
                     }
                     if (relativeTime <= motionAnimation.lifeTime * 1000) {
@@ -177,9 +177,9 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         }
     }
 
-    private __removeDeadDCObjects():void {
+    private __removeDeadDCObjects(): void {
         var bulletproof = this._engine;
-        var child:DisplayObject&IDanmakuCreatedObject;
+        var child: DisplayObject&IDanmakuCreatedObject;
         for (var i = 0; i < this._children.length; ++i) {
             child = <DisplayObject&IDanmakuCreatedObject><any>this._children[i];
             if (child.isCreatedByDanmaku) {
@@ -192,7 +192,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         }
     }
 
-    private __buildFunction():Function {
+    private __buildFunction(): Function {
         // Weak defense is better than none.
         // TODO: Use WebWorker to create a safety sandbox.
         var api = this._apiContainer.api;
@@ -204,29 +204,29 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         return Function.prototype.constructor.apply(Object.create(null), funcArgs);
     }
 
-    private __applyFunction():void {
+    private __applyFunction(): void {
         var ac = this._apiContainer;
-        var apiValues:any[] = [];
+        var apiValues: any[] = [];
         for (var i = 0; i < this._apiNames.length; ++i) {
             apiValues.push((<any>ac.api)[this._apiNames[i]]);
         }
         this._lambda.apply(null, apiValues);
     }
 
-    private __censor():boolean {
+    private __censor(): boolean {
         return true;
     }
 
-    private _apiNames:string[] = null;
-    private _apiContainer:BiliBiliDanmakuApiContainer = null;
-    private _lambda:Function = null;
-    private _content:string = null;
-    private _bornTime:number = 0;
-    private _engine:Engine = null;
-    private _layoutManager:ScriptedDanmakuLayoutManager = null;
-    private _danmakuProvider:ScriptedDanmakuProvider = null;
-    private _layer:ScriptedDanmakuLayer = null;
-    private _createParams:IScriptedDanmakuCreateParams = null;
-    private _executed:boolean = false;
+    private _apiNames: string[] = null;
+    private _apiContainer: BiliBiliDanmakuApiContainer = null;
+    private _lambda: Function = null;
+    private _content: string = null;
+    private _bornTime: number = 0;
+    private _engine: Engine = null;
+    private _layoutManager: ScriptedDanmakuLayoutManager = null;
+    private _danmakuProvider: ScriptedDanmakuProvider = null;
+    private _layer: ScriptedDanmakuLayer = null;
+    private _createParams: IScriptedDanmakuCreateParams = null;
+    private _executed: boolean = false;
 
 }

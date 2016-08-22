@@ -7,14 +7,14 @@ import {DisplayObjectContainer} from "../../../../../lib/glantern/src/gl/flash/d
 
 export interface IGeneralCreateParams {
 
-    x?:number;
-    y?:number;
-    lifeTime?:number;
-    alpha?:number;
-    color?:number;
-    fontsize?:number;
-    parent?:DisplayObjectContainer;
-    motion?:IMotion;
-    motionGroup?:IMotion[]
+    x?: number;
+    y?: number;
+    lifeTime?: number;
+    alpha?: number;
+    color?: number;
+    fontsize?: number;
+    parent?: DisplayObjectContainer;
+    motion?: IMotion;
+    motionGroup?: IMotion[]
 
 }

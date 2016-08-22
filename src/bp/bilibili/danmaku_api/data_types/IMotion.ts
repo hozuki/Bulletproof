@@ -8,13 +8,13 @@ import {DisplayObject} from "../../../../../lib/glantern/src/gl/flash/display/Di
 
 export interface IMotion {
 
-    x?:IMotionPropertyAnimation;
-    y?:IMotionPropertyAnimation;
-    alpha?:IMotionPropertyAnimation;
-    rotationZ?:IMotionPropertyAnimation;
-    rotationY?:IMotionPropertyAnimation;
-    createdTime:number;
-    maximumLifeTime:number;
-    sourceObject?:DisplayObject&IDanmakuCreatedObject;
+    x?: IMotionPropertyAnimation;
+    y?: IMotionPropertyAnimation;
+    alpha?: IMotionPropertyAnimation;
+    rotationZ?: IMotionPropertyAnimation;
+    rotationY?: IMotionPropertyAnimation;
+    createdTime: number;
+    maximumLifeTime: number;
+    sourceObject?: DisplayObject&IDanmakuCreatedObject;
 
 }

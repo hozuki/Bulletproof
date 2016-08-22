@@ -12,28 +12,28 @@ import {ScriptedDanmakuLayer} from "./ScriptedDanmakuLayer";
 import {IScriptedDanmakuCreateParams} from "./IScriptedDanmakuCreateParams";
 import {ScriptedDanmakuHelper} from "./ScriptedDanmakuHelper";
 import {IDanmaku} from "../IDanmaku";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
-import {TimeInfoEx} from "../../bulletproof/TimeInfoEx";
+import {TimeInfoEx} from "../../mic/TimeInfoEx";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
 export class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
-    constructor(controller:DanmakuController) {
+    constructor(controller: DanmakuController) {
         super(controller);
         this._layoutManager = new ScriptedDanmakuLayoutManager(this);
     }
 
-    get danmakuKind():DanmakuKind {
+    get danmakuKind(): DanmakuKind {
         return DanmakuKind.Scripted;
     }
 
-    addDanmaku(content:string, args?:IScriptedDanmakuCreateParams):IDanmaku {
+    addDanmaku(content: string, args?: IScriptedDanmakuCreateParams): IDanmaku {
         return super.addDanmaku(content, args);
     }
 
-    dispose():void {
+    dispose(): void {
         this.layer.parent.removeChild(this.layer);
         this.layer.dispose();
         this._layoutManager.dispose();
@@ -48,30 +48,30 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         this._displayingDanmakuList = null;
     }
 
-    initialize():void {
+    initialize(): void {
         super.initialize();
         var stage = this.engine.stage;
         this._layer = new ScriptedDanmakuLayer(stage, stage);
         stage.addChild(this.layer);
     }
 
-    canCreateDanmaku(args?:any):boolean {
+    canCreateDanmaku(args?: any): boolean {
         return true;
     }
 
-    removeDanmaku(danmaku:ScriptedDanmaku):boolean {
+    removeDanmaku(danmaku: ScriptedDanmaku): boolean {
         var index = this.displayingDanmakuList.indexOf(danmaku);
         if (index < 0) {
             return false;
         } else {
             this.engine.stage.removeChild(danmaku);
-            GLUtil.removeAt(this.displayingDanmakuList, index);
+            CommonUtil.removeAt(this.displayingDanmakuList, index);
             danmaku.dispose();
             return true;
         }
     }
 
-    isDanmakuDead(timeInfo:TimeInfoEx, danmaku:ScriptedDanmaku):boolean {
+    isDanmakuDead(timeInfo: TimeInfoEx, danmaku: ScriptedDanmaku): boolean {
         var now = timeInfo.millisOfVideo;
         if (now < danmaku.bornTime) {
             return danmaku.executed;
@@ -80,9 +80,9 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         }
     }
 
-    update(timeInfo:TimeInfoEx):void {
+    update(timeInfo: TimeInfoEx): void {
         super.update(timeInfo);
-        var danmaku:ScriptedDanmaku;
+        var danmaku: ScriptedDanmaku;
         var now = timeInfo.millisOfVideo;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
             danmaku = this.displayingDanmakuList[i];
@@ -92,8 +92,8 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         }
     }
 
-    updateDisplayingDanmakuList(timeInfo:TimeInfoEx):void {
-        var danmaku:ScriptedDanmaku;
+    updateDisplayingDanmakuList(timeInfo: TimeInfoEx): void {
+        var danmaku: ScriptedDanmaku;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
             danmaku = this.displayingDanmakuList[i];
             if (this.isDanmakuDead(timeInfo, danmaku)) {
@@ -103,28 +103,28 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         }
     }
 
-    get layoutManager():ScriptedDanmakuLayoutManager {
+    get layoutManager(): ScriptedDanmakuLayoutManager {
         return this._layoutManager;
     }
 
-    get displayingDanmakuList():ScriptedDanmaku[] {
+    get displayingDanmakuList(): ScriptedDanmaku[] {
         return this._displayingDanmakuList;
     }
 
-    get fullDanmakuList():ScriptedDanmaku[] {
+    get fullDanmakuList(): ScriptedDanmaku[] {
         return this._displayingDanmakuList;
     }
 
-    get layer():ScriptedDanmakuLayer {
+    get layer(): ScriptedDanmakuLayer {
         return this._layer;
     }
 
-    get flags():DanmakuProviderFlag {
+    get flags(): DanmakuProviderFlag {
         return DanmakuProviderFlag.UnlimitedCreation;
     }
 
-    protected _$addDanmaku(content:string, args?:IScriptedDanmakuCreateParams):ScriptedDanmaku {
-        if (!GLUtil.ptr(args)) {
+    protected _$addDanmaku(content: string, args?: IScriptedDanmakuCreateParams): ScriptedDanmaku {
+        if (!CommonUtil.ptr(args)) {
             args = ScriptedDanmakuHelper.getDefaultParams(this.engine.options);
         }
         var danmaku = new ScriptedDanmaku(this.engine.stage, this.layer, this.layoutManager, args);
@@ -135,8 +135,8 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         return danmaku;
     }
 
-    protected _displayingDanmakuList:ScriptedDanmaku[];
-    protected _layoutManager:ScriptedDanmakuLayoutManager;
-    protected _layer:ScriptedDanmakuLayer;
+    protected _displayingDanmakuList: ScriptedDanmaku[];
+    protected _layoutManager: ScriptedDanmakuLayoutManager;
+    protected _layer: ScriptedDanmakuLayer;
 
 }

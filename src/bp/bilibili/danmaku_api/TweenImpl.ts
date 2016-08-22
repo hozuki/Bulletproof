@@ -9,29 +9,29 @@ import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/
 
 export class TweenImpl extends Tween implements ITween {
 
-    constructor(obj:Object, prop:string, func:Function, begin:number, finish:number, duration:number, useSeconds:boolean = false) {
+    constructor(obj: Object, prop: string, func: Function, begin: number, finish: number, duration: number, useSeconds: boolean = false) {
         super(obj, prop, func, begin, finish, duration, useSeconds);
     }
 
-    stopOnComplete:boolean = true;
+    stopOnComplete: boolean = true;
 
-    play():void {
+    play(): void {
         throw new NotImplementedError();
     }
 
-    stop():void {
+    stop(): void {
         throw new NotImplementedError();
     }
 
-    gotoAndPlay(time:number):void {
+    gotoAndPlay(time: number): void {
         throw new NotImplementedError();
     }
 
-    gotoAndStop(time:number):void {
+    gotoAndStop(time: number): void {
         throw new NotImplementedError();
     }
 
-    togglePause():void {
+    togglePause(): void {
         throw new NotImplementedError();
     }
 

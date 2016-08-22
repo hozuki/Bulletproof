@@ -6,7 +6,7 @@ import {IEngineOptions} from "./IEngineOptions";
 import {SimpleDanmakuType} from "../danmaku/simple/SimpleDanamkuType";
 import {ISimpleDanmakuCreateParams} from "../danmaku/simple/ISimpleDanmakuCreateParams";
 
-export var DefaultEngineOptions:IEngineOptions = Object.create(null);
+export var DefaultEngineOptions: IEngineOptions = Object.create(null);
 
 /**
  * Gets the default life time for simple (text-only) danmakus, in seconds.

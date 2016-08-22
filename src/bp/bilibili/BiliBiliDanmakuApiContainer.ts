@@ -2,7 +2,7 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {Engine} from "../bulletproof/Engine";
+import {Engine} from "../mic/Engine";
 import {IBiliBiliDanmakuApiContract} from "./IBiliBiliDanmakuApiContract";
 import {Display} from "./danmaku_api/Display";
 import {Global} from "./danmaku_api/Global";
@@ -17,18 +17,18 @@ import {Tween} from "./danmaku_api/Tween";
 
 export class BiliBiliDanmakuApiContainer {
 
-    constructor(scriptedDanmaku:ScriptedDanmaku) {
+    constructor(scriptedDanmaku: ScriptedDanmaku) {
         this._codeDanmaku = scriptedDanmaku;
         this._engine = scriptedDanmaku.engine;
         this.__initializeApi();
     }
 
-    get engine():Engine {
+    get engine(): Engine {
         return this._engine;
     }
 
     private __initializeApi() {
-        var api:IBiliBiliDanmakuApiContract = <any>Object.create(null);
+        var api: IBiliBiliDanmakuApiContract = <any>Object.create(null);
 
         api.$ = api.Display = new Display(this);
         api.$G = api.Global = new Global(this);
@@ -52,16 +52,16 @@ export class BiliBiliDanmakuApiContainer {
         this._api = api;
     }
 
-    get api():IBiliBiliDanmakuApiContract {
+    get api(): IBiliBiliDanmakuApiContract {
         return this._api;
     }
 
-    get danmaku():ScriptedDanmaku {
+    get danmaku(): ScriptedDanmaku {
         return this._codeDanmaku;
     }
 
-    private _codeDanmaku:ScriptedDanmaku = null;
-    private _engine:Engine = null;
-    private _api:IBiliBiliDanmakuApiContract = null;
+    private _codeDanmaku: ScriptedDanmaku = null;
+    private _engine: Engine = null;
+    private _api: IBiliBiliDanmakuApiContract = null;
 
 }

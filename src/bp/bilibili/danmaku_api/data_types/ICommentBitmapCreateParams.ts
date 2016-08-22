@@ -7,9 +7,9 @@ import {BitmapData} from "../../../../../lib/glantern/src/gl/flash/display/Bitma
 
 export interface ICommentBitmapCreateParams extends IGeneralCreateParams {
 
-    bitmapData?:BitmapData;
-    pixelSnapping?:string;
-    smoothing?:boolean;
-    scale?:number;
+    bitmapData?: BitmapData;
+    pixelSnapping?: string;
+    smoothing?: boolean;
+    scale?: number;
 
 }

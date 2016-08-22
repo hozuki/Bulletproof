@@ -4,11 +4,11 @@
 
 export interface ITween {
 
-    play():void;
-    gotoAndPlay(time:number):void;
-    stop():void;
-    gotoAndStop(time:number):void;
-    togglePause():void;
-    stopOnComplete:boolean;
+    play(): void;
+    gotoAndPlay(time: number): void;
+    stop(): void;
+    gotoAndStop(time: number): void;
+    togglePause(): void;
+    stopOnComplete: boolean;
 
 }

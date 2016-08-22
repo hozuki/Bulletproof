@@ -9,47 +9,47 @@ import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/
 
 export class Tween extends BiliBiliDamakuApiObject {
 
-    constructor(apiContainer:BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
         super(apiContainer);
     }
 
-    tween(object:Object, dest:Object, src:Object, duration:number, easing:Function):Tween {
+    tween(object: Object, dest: Object, src: Object, duration: number, easing: Function): Tween {
         throw new NotImplementedError();
     }
 
-    to(object:Object, dest:Object, duration:number, easing:Function):Tween {
+    to(object: Object, dest: Object, duration: number, easing: Function): Tween {
         throw new NotImplementedError();
     }
 
-    bezier(object:Object, dest:Object, src:Object, control:Object):Tween {
+    bezier(object: Object, dest: Object, src: Object, control: Object): Tween {
         throw new NotImplementedError();
     }
 
-    scale(src:ITween, scale:number):ITween {
+    scale(src: ITween, scale: number): ITween {
         throw new NotImplementedError();
     }
 
-    delay(src:ITween, delay:number):ITween {
+    delay(src: ITween, delay: number): ITween {
         throw new NotImplementedError();
     }
 
-    reverse(src:ITween):ITween {
+    reverse(src: ITween): ITween {
         throw new NotImplementedError();
     }
 
-    repeat(src:ITween, times:number):ITween {
+    repeat(src: ITween, times: number): ITween {
         throw new NotImplementedError();
     }
 
-    slice(src:ITween, from:number, to:number):ITween {
+    slice(src: ITween, from: number, to: number): ITween {
         throw new NotImplementedError();
     }
 
-    serial(src1:ITween, ...other:Array<ITween>):ITween {
+    serial(src1: ITween, ...other: Array<ITween>): ITween {
         throw new NotImplementedError();
     }
 
-    parallel(src1:ITween, ...other:Array<ITween>):ITween {
+    parallel(src1: ITween, ...other: Array<ITween>): ITween {
         throw new NotImplementedError();
     }
 

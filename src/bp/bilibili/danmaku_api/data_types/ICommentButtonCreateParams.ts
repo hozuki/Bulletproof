@@ -6,7 +6,7 @@ import {IGeneralCreateParams} from "./IGeneralCreateParams";
 
 export interface ICommentButtonCreateParams extends IGeneralCreateParams {
 
-    text?:string;
-    onclick:() => any;
+    text?: string;
+    onclick: () => any;
 
 }

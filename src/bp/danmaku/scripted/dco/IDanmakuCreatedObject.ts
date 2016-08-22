@@ -7,8 +7,8 @@ import {IDCExtraCreateParams} from "./IDCExtraCreateParams";
 
 export interface IDanmakuCreatedObject {
 
-    createParams:IGeneralCreateParams;
-    extraCreateParams:IDCExtraCreateParams;
-    isCreatedByDanmaku:boolean;
+    createParams: IGeneralCreateParams;
+    extraCreateParams: IDCExtraCreateParams;
+    isCreatedByDanmaku: boolean;
 
 }

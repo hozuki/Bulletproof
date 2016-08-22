@@ -6,9 +6,9 @@ import {SimpleLayoutBase} from "./SimpleLayoutBase";
 import {SimpleDanmakuType} from "../SimpleDanamkuType";
 import {IBatchMeasureParams} from "../IBatchMeasureParams";
 import {SimpleDanmaku} from "../SimpleDanmaku";
-import {GLUtil} from "../../../../../lib/glantern/src/gl/glantern/GLUtil";
-import {BPUtil} from "../../../bulletproof/BPUtil";
+import {BPUtil} from "../../../mic/bulletproof/BPUtil";
 import {Rectangle} from "../../../../../lib/glantern/src/gl/flash/geom/Rectangle";
+import {CommonUtil} from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 export abstract class HorizontalLayout extends SimpleLayoutBase {
 
@@ -17,18 +17,18 @@ export abstract class HorizontalLayout extends SimpleLayoutBase {
         this._ySortedList = [];
     }
 
-    positionX(danmaku:SimpleDanmaku, measureParams:IBatchMeasureParams):void {
+    positionX(danmaku: SimpleDanmaku, measureParams: IBatchMeasureParams): void {
         var elapsedLifeRatio = (measureParams.currentTime - danmaku.bornTime) / (danmaku.lifeTime * 1000);
         danmaku.x = this._$getNewX(danmaku, measureParams.stageWidth, elapsedLifeRatio);
     }
 
-    positionY(danmaku:SimpleDanmaku, measureParams:IBatchMeasureParams):void {
+    positionY(danmaku: SimpleDanmaku, measureParams: IBatchMeasureParams): void {
         if (danmaku.isYSet) {
             return;
         }
         var ySortedList = this._ySortedList;
         var ySortedListLength = ySortedList.length;
-        var currentHost:SimpleDanmaku;
+        var currentHost: SimpleDanmaku;
         var stageWidth = measureParams.stageWidth;
         var stageHeight = measureParams.stageHeight;
         // if (ySortedListLength > 0) {
@@ -122,7 +122,7 @@ export abstract class HorizontalLayout extends SimpleLayoutBase {
             // BTW, the case when the length of the displaying list is 0 is handled in `ySortedListLength > 0`.
             var displayingList = measureParams.displayingList;
             var displayingListLength = displayingList.length;
-            var latestHorizontalDanmakuInDL:SimpleDanmaku = null;
+            var latestHorizontalDanmakuInDL: SimpleDanmaku = null;
             for (var i = displayingListLength - 1; i >= 0; --i) {
                 var dan = displayingList[i];
                 if (isDanmakuHorizontal(dan) && dan.isYSet) {
@@ -141,30 +141,30 @@ export abstract class HorizontalLayout extends SimpleLayoutBase {
         this.__updateYSortedList(danmaku);
     }
 
-    add(danmaku:SimpleDanmaku):void {
+    add(danmaku: SimpleDanmaku): void {
     }
 
-    remove(danmaku:SimpleDanmaku):void {
-        GLUtil.remove(this._ySortedList, danmaku);
+    remove(danmaku: SimpleDanmaku): void {
+        CommonUtil.remove(this._ySortedList, danmaku);
     }
 
-    private __updateYSortedList(danmaku:SimpleDanmaku):void {
-        BPUtil.binaryInsert(this._ySortedList, danmaku, (toInsert:SimpleDanmaku, standard:SimpleDanmaku):number => {
+    private __updateYSortedList(danmaku: SimpleDanmaku): void {
+        BPUtil.binaryInsert(this._ySortedList, danmaku, (toInsert: SimpleDanmaku, standard: SimpleDanmaku): number => {
             var yDiff = toInsert.y - standard.y;
             return yDiff !== 0 ? toInsert.x - standard.x : yDiff;
         });
     }
 
-    protected abstract _$getNewX(danmaku:SimpleDanmaku, stageWidth:number, lifeRatio:number):number;
+    protected abstract _$getNewX(danmaku: SimpleDanmaku, stageWidth: number, lifeRatio: number): number;
 
-    protected abstract _$isDanmakuFullyOnStage(danmaku:SimpleDanmaku, stageWidth:number):boolean;
+    protected abstract _$isDanmakuFullyOnStage(danmaku: SimpleDanmaku, stageWidth: number): boolean;
 
-    protected abstract _$getDefaultX(danmaku:SimpleDanmaku, stageWidth:number):number;
+    protected abstract _$getDefaultX(danmaku: SimpleDanmaku, stageWidth: number): number;
 
-    private _ySortedList:SimpleDanmaku[] = null;
+    private _ySortedList: SimpleDanmaku[] = null;
 
 }
 
-function isDanmakuHorizontal(danmaku:SimpleDanmaku):boolean {
+function isDanmakuHorizontal(danmaku: SimpleDanmaku): boolean {
     return danmaku.isType(SimpleDanmakuType.R2L) || danmaku.isType(SimpleDanmakuType.L2R);
 }

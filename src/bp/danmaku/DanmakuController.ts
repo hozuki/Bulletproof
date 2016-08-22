@@ -4,12 +4,12 @@
 
 import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
-import {Engine} from "../bulletproof/Engine";
+import {Engine} from "../mic/Engine";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
 import {IWebGLElement} from "../../../lib/glantern/src/gl/webgl/IWebGLElement";
 import {WebGLRenderer} from "../../../lib/glantern/src/gl/webgl/WebGLRenderer";
-import {GLUtil} from "../../../lib/glantern/src/gl/glantern/GLUtil";
-import {TimeInfoEx} from "../bulletproof/TimeInfoEx";
+import {TimeInfoEx} from "../mic/TimeInfoEx";
+import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
 
 /**
  * The controller of all danmakus.
@@ -21,7 +21,7 @@ export class DanmakuController implements IWebGLElement {
      * Creates a new {@Link DanmakuController} instance.
      * @param bulletproof {Engine} The {@link Engine} instance that will be attached to.
      */
-    constructor(bulletproof:Engine) {
+    constructor(bulletproof: Engine) {
         this._engine = bulletproof;
         this._danmakuProviders = new Map<DanmakuKind, DanmakuProviderBase>();
     }
@@ -29,8 +29,8 @@ export class DanmakuController implements IWebGLElement {
     /**
      * Disposes the {@link DanmakuController} instance and release all resources occupied.
      */
-    dispose():void {
-        this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
+    dispose(): void {
+        this._danmakuProviders.forEach((provider: DanmakuProviderBase): void => {
             provider.dispose();
         });
         this._danmakuProviders.clear();
@@ -44,11 +44,11 @@ export class DanmakuController implements IWebGLElement {
      * Danmaku providers should check via this function before actually creating a danmaku.
      * @param requestingProvider {DanmakuProviderBase} The danmaku provider requesting the check.
      */
-    shouldCreateDanmaku(requestingProvider:DanmakuProviderBase):boolean {
+    shouldCreateDanmaku(requestingProvider: DanmakuProviderBase): boolean {
         var canCreate = true;
         var totalDanmakuCount = 0;
         var globalThreshold = this.engine.options.globalDanmakuCountThreshold;
-        this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
+        this._danmakuProviders.forEach((provider: DanmakuProviderBase): void => {
             // If a danmaku provider has no number limit, it contributes 0 to the total count.
             if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag.UnlimitedCreation) !== 0) {
                 return;
@@ -66,8 +66,8 @@ export class DanmakuController implements IWebGLElement {
      * already exists, the new one will not be added.
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be added.
      */
-    addProvider(provider:DanmakuProviderBase):void {
-        if (GLUtil.ptr(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
+    addProvider(provider: DanmakuProviderBase): void {
+        if (CommonUtil.ptr(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
             provider.initialize();
         }
@@ -77,8 +77,8 @@ export class DanmakuController implements IWebGLElement {
      * Removes a new kind of danmaku provider from provider instance list.
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be removed.
      */
-    removeProvider(provider:DanmakuProviderBase):void {
-        if (GLUtil.ptr(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
+    removeProvider(provider: DanmakuProviderBase): void {
+        if (CommonUtil.ptr(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.delete(provider.danmakuKind);
         }
     }
@@ -89,14 +89,14 @@ export class DanmakuController implements IWebGLElement {
      * @param kind {DanmakuKind} The danmaku kind of requested danmaku provider.
      * @returns {DanmakuProviderBase}
      */
-    getProvider(kind:DanmakuKind):DanmakuProviderBase {
+    getProvider(kind: DanmakuKind): DanmakuProviderBase {
         var provider = this._danmakuProviders.get(kind);
-        return GLUtil.ptr(provider) ? provider : null;
+        return CommonUtil.ptr(provider) ? provider : null;
     }
 
-    getProviders():DanmakuProviderBase[] {
-        var providers:DanmakuProviderBase[] = [];
-        this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
+    getProviders(): DanmakuProviderBase[] {
+        var providers: DanmakuProviderBase[] = [];
+        this._danmakuProviders.forEach((provider: DanmakuProviderBase): void => {
             providers.push(provider);
         });
         return providers;
@@ -105,8 +105,8 @@ export class DanmakuController implements IWebGLElement {
     /**
      * Updates the status of all danmaku providers.
      */
-    update(timeInfo:TimeInfoEx):void {
-        this._danmakuProviders.forEach((provider:DanmakuProviderBase):void => {
+    update(timeInfo: TimeInfoEx): void {
+        this._danmakuProviders.forEach((provider: DanmakuProviderBase): void => {
             provider.update(timeInfo);
         });
     }
@@ -115,7 +115,7 @@ export class DanmakuController implements IWebGLElement {
      * Perform extra rendering if needed.
      * @param renderer {WebGLRenderer} The renderer used.
      */
-    render(renderer:WebGLRenderer):void {
+    render(renderer: WebGLRenderer): void {
         // Do nothing.
     }
 
@@ -123,15 +123,15 @@ export class DanmakuController implements IWebGLElement {
      * Gets the {@link Engine} instance that controls this {@link DanmakuController}.
      * @returns {Engine}
      */
-    get engine():Engine {
+    get engine(): Engine {
         return this._engine;
     }
 
-    getNextAvailablePool():number {
+    getNextAvailablePool(): number {
         return this._danmakuProviders.size;
     }
 
-    private _danmakuProviders:Map<DanmakuKind, DanmakuProviderBase> = null;
-    private _engine:Engine = null;
+    private _danmakuProviders: Map<DanmakuKind, DanmakuProviderBase> = null;
+    private _engine: Engine = null;
 
 }

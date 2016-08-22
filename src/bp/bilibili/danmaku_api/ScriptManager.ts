@@ -8,19 +8,19 @@ import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/
 
 export class ScriptManager extends BiliBiliDamakuApiObject {
 
-    constructor(apiContainer:BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
         super(apiContainer);
     }
 
-    clearTimer():void {
+    clearTimer(): void {
         throw new NotImplementedError();
     }
 
-    clearEl():void {
+    clearEl(): void {
         throw new NotImplementedError();
     }
 
-    clearTrigger():void {
+    clearTrigger(): void {
         throw new NotImplementedError();
     }
 

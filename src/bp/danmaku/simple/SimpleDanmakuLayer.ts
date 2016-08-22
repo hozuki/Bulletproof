@@ -9,47 +9,48 @@ import {Stage} from "../../../../lib/glantern/src/gl/flash/display/Stage";
 import {DisplayObjectContainer} from "../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
 import {WebGLRenderer} from "../../../../lib/glantern/src/gl/webgl/WebGLRenderer";
 import {RenderHelper} from "../../../../lib/glantern/src/gl/webgl/RenderHelper";
-import {Engine} from "../../bulletproof/Engine";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
-import {TimeInfo} from "../../../../lib/glantern/src/gl/glantern/TimeInfo";
+import {Engine} from "../../mic/Engine";
+import {GLUtil} from "../../../../lib/glantern/src/gl/mic/glantern/GLUtil";
+import {TimeInfo} from "../../../../lib/glantern/src/gl/mic/TimeInfo";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 export class SimpleDanmakuLayer extends TextField {
 
-    constructor(root:Stage, parent:DisplayObjectContainer, provider:SimpleDanmakuProvider) {
+    constructor(root: Stage, parent: DisplayObjectContainer, provider: SimpleDanmakuProvider) {
         super(root, parent);
         this._provider = provider;
         this._engine = provider.engine;
     }
 
-    get danmakuProvider():SimpleDanmakuProvider {
+    get danmakuProvider(): SimpleDanmakuProvider {
         return this._provider;
     }
 
-    get context2D():CanvasRenderingContext2D {
+    get context2D(): CanvasRenderingContext2D {
         return this._context2D;
     }
 
-    get engine():Engine {
+    get engine(): Engine {
         return this._engine;
     }
 
-    protected _$update(timeInfo:TimeInfo):void {
+    protected _$update(timeInfo: TimeInfo): void {
         if (this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageSize();
             this._$drawTextElements(this.context2D);
         }
     }
 
-    protected _$render(renderer:WebGLRenderer):void {
+    protected _$render(renderer: WebGLRenderer): void {
         if (this.visible && this.alpha > 0 && this.danmakuProvider.displayingDanmakuList.length > 0) {
             this._canvasTarget.updateImageContent();
             RenderHelper.copyImageContent(renderer, this._canvasTarget, renderer.currentRenderTarget, false, renderer.currentRenderTarget.isRoot, this.transform.matrix3D, this.alpha, false);
         }
     }
 
-    protected _$drawTextElements(context2D:CanvasRenderingContext2D):void {
-        var danmaku:SimpleDanmaku;
-        var lastDanmaku:SimpleDanmaku = null;
+    protected _$drawTextElements(context2D: CanvasRenderingContext2D): void {
+        var danmaku: SimpleDanmaku;
+        var lastDanmaku: SimpleDanmaku = null;
         var danmakuList = this.danmakuProvider.displayingDanmakuList;
         context2D.clearRect(0, 0, context2D.canvas.width, context2D.canvas.height);
         for (var i = 0; i < danmakuList.length; ++i) {
@@ -59,7 +60,7 @@ export class SimpleDanmakuLayer extends TextField {
         }
     }
 
-    private static __drawSimpleDanmaku(context2D:CanvasRenderingContext2D, danmaku:SimpleDanmaku, last:SimpleDanmaku):void {
+    private static __drawSimpleDanmaku(context2D: CanvasRenderingContext2D, danmaku: SimpleDanmaku, last: SimpleDanmaku): void {
         if (!danmaku.visible) {
             return;
         }
@@ -67,7 +68,7 @@ export class SimpleDanmakuLayer extends TextField {
         var cp = danmaku.createParams;
         var lastCP = last ? last.createParams : null;
         var metrics = danmaku.metrics;
-        if (!GLUtil.ptr(last) || cp.fontName !== lastCP.fontName ||
+        if (!CommonUtil.ptr(last) || cp.fontName !== lastCP.fontName ||
             cp.fontSize !== lastCP.fontSize || cp.fontStyle !== lastCP.fontStyle) {
             context2D.font = `${cp.fontStyle} ${cp.fontSize}pt \"${cp.fontName}\"`;
         }
@@ -89,7 +90,7 @@ export class SimpleDanmakuLayer extends TextField {
         }
     }
 
-    private _provider:SimpleDanmakuProvider = null;
-    private _engine:Engine = null;
+    private _provider: SimpleDanmakuProvider = null;
+    private _engine: Engine = null;
 
 }

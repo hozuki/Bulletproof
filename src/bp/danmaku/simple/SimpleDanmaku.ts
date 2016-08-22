@@ -11,65 +11,65 @@ import {CommentData} from "../../bilibili/danmaku_api/CommentData";
 import {TextDanmakuBase} from "../TextDanmakuBase";
 import {SimpleDanmakuLayer} from "./SimpleDanmakuLayer";
 import {ISimpleDanmakuMetrics} from "./ISimpleDanmakuMetrics";
-import {GLUtil} from "../../../../lib/glantern/src/gl/glantern/GLUtil";
+import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 export class SimpleDanmaku extends TextDanmakuBase {
 
-    constructor(layoutManager:SimpleDanmakuLayoutManager, createParams:ISimpleDanmakuCreateParams) {
+    constructor(layoutManager: SimpleDanmakuLayoutManager, createParams: ISimpleDanmakuCreateParams) {
         super(layoutManager);
         this._createParams = createParams;
         this._layer = this.danmakuProvider.layer;
     }
 
-    get danmakuKind():DanmakuKind {
+    get danmakuKind(): DanmakuKind {
         return DanmakuKind.Simple;
     }
 
-    get layoutManager():SimpleDanmakuLayoutManager {
+    get layoutManager(): SimpleDanmakuLayoutManager {
         return this._layoutManager;
     }
 
-    get danmakuProvider():SimpleDanmakuProvider {
+    get danmakuProvider(): SimpleDanmakuProvider {
         return this._danmakuProvider;
     }
 
-    getContent():string {
+    getContent(): string {
         return this._content;
     }
 
-    getText():string {
+    getText(): string {
         return this._content;
     }
 
-    initialize(content:string, time?:number):void {
+    initialize(content: string, time?: number): void {
         this._content = content;
         this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
     }
 
-    get bornTime():number {
+    get bornTime(): number {
         return this._bornTime;
     }
 
-    get lifeTime():number {
+    get lifeTime(): number {
         return this.engine.options.simpleDanmakuLifeTimeSecs;
     }
 
-    get layer():SimpleDanmakuLayer {
+    get layer(): SimpleDanmakuLayer {
         return this._layer;
     }
 
-    get createParams():ISimpleDanmakuCreateParams {
+    get createParams(): ISimpleDanmakuCreateParams {
         return this._createParams;
     }
 
-    getTextHeight():number {
+    getTextHeight(): number {
         if (this._textHeight < 0) {
             this._textHeight = this.createParams.fontSize * 1.5;
         }
         return this._textHeight;
     }
 
-    getTextWidth():number {
+    getTextWidth(): number {
         if (this._textWidth < 0) {
             var context2D = this.layer.context2D;
             context2D.font = `${this.createParams.fontSize}pt "${this.createParams.fontName}"`;
@@ -85,34 +85,34 @@ export class SimpleDanmaku extends TextDanmakuBase {
      * bottom right) should recalculate their Y positions to fit in the change.
      * @type {Boolean}
      */
-    isYSet:boolean = false;
+    isYSet: boolean = false;
 
     /**
      * Gets/sets whether the X position of this {@link SimpleDanmaku} is set. Common languages are horizontally displayed,
      * that means the X position changes much less frequently than the Y position.
      * @type {Boolean}
      */
-    isXSet:boolean = false;
+    isXSet: boolean = false;
 
-    get width():number {
+    get width(): number {
         return this.metrics.borderWidth;
     }
 
-    get height():number {
+    get height(): number {
         return this.metrics.borderHeight;
     }
 
-    get right():number {
+    get right(): number {
         return this.x + this.width;
     }
 
-    get bottom():number {
+    get bottom(): number {
         return this.y + this.height;
     }
 
-    displaying:boolean = false;
+    displaying: boolean = false;
 
-    getCommentData():CommentData {
+    getCommentData(): CommentData {
         return {
             txt: this.getContent(),
             time: this.bornTime.toString(),
@@ -123,23 +123,23 @@ export class SimpleDanmaku extends TextDanmakuBase {
         };
     }
 
-    isType(type:SimpleDanmakuType):boolean {
+    isType(type: SimpleDanmakuType): boolean {
         return this.createParams.type === type;
     }
 
-    get metrics():ISimpleDanmakuMetrics {
-        if (!GLUtil.ptr(this._metrics)) {
+    get metrics(): ISimpleDanmakuMetrics {
+        if (!CommonUtil.ptr(this._metrics)) {
             this._metrics = this.__calcMetrics();
         }
         return this._metrics;
     }
 
-    private __calcMetrics():ISimpleDanmakuMetrics {
+    private __calcMetrics(): ISimpleDanmakuMetrics {
         var cp = this.createParams;
         var outlineThickness = cp.outline && cp.outlineThickness > 0 ? cp.outlineThickness : 0;
         var borderThickness = cp.border && cp.borderThickness > 0 ? cp.borderThickness : 0;
         var textWidth = this.getTextWidth(), textHeight = this.getTextHeight();
-        var metrics:ISimpleDanmakuMetrics = Object.create(null);
+        var metrics: ISimpleDanmakuMetrics = Object.create(null);
         /* Background */
         metrics.bgBaseX = metrics.bgBaseY = 0;
         metrics.bgWidth = textWidth + borderThickness * 2 + outlineThickness * 2 + 2;
@@ -162,14 +162,14 @@ export class SimpleDanmaku extends TextDanmakuBase {
         return metrics;
     }
 
-    private _content:string = null;
-    private _bornTime:number = 0;
-    protected _layoutManager:SimpleDanmakuLayoutManager;
-    protected _danmakuProvider:SimpleDanmakuProvider;
-    protected _layer:SimpleDanmakuLayer;
-    private _createParams:ISimpleDanmakuCreateParams;
-    private _textWidth:number = -1;
-    private _textHeight:number = -1;
-    private _metrics:ISimpleDanmakuMetrics = null;
+    private _content: string = null;
+    private _bornTime: number = 0;
+    protected _layoutManager: SimpleDanmakuLayoutManager;
+    protected _danmakuProvider: SimpleDanmakuProvider;
+    protected _layer: SimpleDanmakuLayer;
+    private _createParams: ISimpleDanmakuCreateParams;
+    private _textWidth: number = -1;
+    private _textHeight: number = -1;
+    private _metrics: ISimpleDanmakuMetrics = null;
 
 }
