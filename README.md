@@ -41,10 +41,10 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
   - [X] `<video>`
   - [ ] WebChimera
 - [ ] Basic text danmakus
-  - [ ] Flying
-  - [ ] Anchored
-- [ ] Custom text danmakus
-- [ ] Scripted danmakus
+  - [ ] Flying *(mode0)*
+  - [ ] Anchored *(mode1 - mode6)*
+- [ ] Custom text danmakus *(mode7)*
+- [ ] Scripted danmakus *(mode8)*
   - [X] `Display`
   - [X] `Functions`
   - [X] `Global`
