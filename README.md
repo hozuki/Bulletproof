@@ -21,15 +21,22 @@ $ npm install
 $ gulp
 ```
 
-To preview, at least one of the modern browsers is required: Chrome, Firefox, IE11,
-Edge, NW.js, Electron<sup>i</sup>.
+To preview, at least one of modern browsers is required:
+- Chrome
+- NW.js
+- Electron <sup>Has not been tested, but should work.</sup>.
+- Firefox
+- Edge
+- IE 11
 
-<sup>i</sup> Has not been tested, but should work.
+Although all these browsers are supported, the order of the list shows the how the
+experience will be. Chrome is greatly suggested since the performance on it is the best;
+Firefox sometimes is slow; Edge and IE 11 always have serious performance degeneration.
 
 ## Features
 
 - [X] High speed rendering
-- [X] Cross browser compatibility (Chrome, Firefox, IE11, Edge)
+- [X] Cross browser compatibility
 - [ ] Web video player interface
   - [X] `<video>`
   - [ ] WebChimera
