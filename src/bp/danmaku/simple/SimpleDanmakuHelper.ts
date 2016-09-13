@@ -1,5 +1,5 @@
 /**
- * Created by MIC on 2016/2/7.
+ * Created by MIC on 2016/8/23.
  */
 
 import {ISimpleDanmakuCreateParams} from "./ISimpleDanmakuCreateParams";
@@ -16,12 +16,6 @@ export abstract class SimpleDanmakuHelper {
         function applyValue(name: string): void {
             if (!CommonUtil.ptr((<any>params)[name])) {
                 (<any>params)[name] = (<any>config.defaultSimpleDanmakuCreateParams)[name];
-            }
-        }
-
-        function setDefaultValue<T>(name: string, def: T): void {
-            if (CommonUtil.isUndefined((<any>params)[name])) {
-                (<any>params)[name] = def;
             }
         }
 

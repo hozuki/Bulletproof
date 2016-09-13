@@ -1,5 +1,5 @@
 /**
- * Created by MIC on 2016/2/2.
+ * Created by MIC on 2016/8/23.
  */
 
 export enum SimpleDanmakuType {

@@ -15,6 +15,7 @@ import {VideoPlayerEvent} from "../interactive/video/VideoPlayerEvent";
 import {VideoPlayerState} from "../interactive/video/VideoPlayerState";
 import {TimeInfoEx} from "./TimeInfoEx";
 import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
+import {VirtualDom} from "../../../lib/glantern/src/gl/mic/VirtualDom";
 
 /**
  * The root controller for Bulletproof.
@@ -33,8 +34,9 @@ export class Engine extends EngineBase {
      * Initialize the {@link Engine} instance with default parameters.
      * @param width {Number} Width of stage requested, in pixels.
      * @param height {Number} Height of stage requested, in pixels.
+     * @param parent {HTMLElement} Parent of views.
      */
-    initialize(width: number, height: number): void {
+    initialize(width: number, height: number, parent: HTMLElement): void {
         if (this.isInitialized) {
             return;
         }
@@ -44,16 +46,7 @@ export class Engine extends EngineBase {
         var controller = new DanmakuController(this);
         this._danmakuController = controller;
 
-        // The earlier a provider is added in, the deeper it is in Z axis.
-        var provider: DanmakuProviderBase;
-        if (options.codeDanmakuEnabled) {
-            provider = new ScriptedDanmakuProvider(controller);
-            controller.addProvider(provider);
-        }
-        if (options.simpleDanmakuEnabled) {
-            provider = new SimpleDanmakuProvider(controller);
-            controller.addProvider(provider);
-        }
+        this._blackCurtainView = VirtualDom.createElement<HTMLDivElement>("div");
 
         if (options.videoPlayerEnabled) {
             var videoPlayer: VideoPlayerBase = null;
@@ -71,14 +64,20 @@ export class Engine extends EngineBase {
             }
         }
 
-        this.attachUpdateFunction(this.__updateDanmakus.bind(this));
+        this.__initHtmlElements(width, height, parent);
 
-        var blackCurtainView = window.document.createElement("div");
-        var blackCurtainStyle = blackCurtainView.style;
-        blackCurtainStyle.width = `${width}px`;
-        blackCurtainStyle.height = `${height}px`;
-        blackCurtainStyle.backgroundColor = "black";
-        this._blackCurtainView = blackCurtainView;
+        // The earlier a provider is added in, the deeper it is in Z axis.
+        var provider: DanmakuProviderBase;
+        if (options.codeDanmakuEnabled) {
+            provider = new ScriptedDanmakuProvider(controller);
+            controller.addProvider(provider);
+        }
+        if (options.simpleDanmakuEnabled) {
+            provider = new SimpleDanmakuProvider(controller);
+            controller.addProvider(provider);
+        }
+
+        this.attachUpdateFunction(this.__updateDanmakus.bind(this));
     }
 
     /**
@@ -140,6 +139,29 @@ export class Engine extends EngineBase {
 
     private __onVideoPlay(): void {
         this._lastTimeVideoUpdated = this.elapsedMillis;
+    }
+
+    private __initHtmlElements(width: number, height: number, parent: HTMLElement): void {
+        var blackCurtainView = this.blackCurtainView;
+        var blackCurtainStyle = blackCurtainView.style;
+        blackCurtainStyle.width = `${width}px`;
+        blackCurtainStyle.height = `${height}px`;
+        blackCurtainStyle.backgroundColor = "black";
+        blackCurtainStyle.position = "absolute";
+        blackCurtainStyle.zIndex = "0";
+        var videoView = this.videoView;
+        if (CommonUtil.ptr(videoView)) {
+            var videoStyle = videoView.style;
+            videoStyle.position = "absolute";
+            videoStyle.zIndex = "1";
+        }
+        var view = this.view;
+        view.style.position = "absolute";
+        view.style.zIndex = "9999";
+
+        parent.appendChild(blackCurtainView);
+        parent.appendChild(videoView);
+        parent.appendChild(view);
     }
 
     private _videoMillis: number = 0;

@@ -1,8 +1,8 @@
 /**
- * Created by MIC on 2016/2/2.
+ * Created by MIC on 2016/8/23.
  */
 
-import {SimpleDanmakuType} from "./SimpleDanamkuType";
+import {SimpleDanmakuType} from "./SimpleDanmakuType";
 
 export interface ISimpleDanmakuCreateParams {
 

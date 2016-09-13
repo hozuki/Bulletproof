@@ -30,19 +30,7 @@ window.addEventListener("beforeunload", function (ev) {
 function initEnv() {
     if (Bulletproof.isSupported()) {
         bp = new Bulletproof.Engine();
-        bp.initialize(682, 438);
-        (function (selector) {
-            var elem = document.querySelector(selector);
-            bp.blackCurtainView.style.position = "absolute";
-            bp.blackCurtainView.style.zIndex = "0";
-            bp.videoView.style.position = "absolute";
-            bp.videoView.style.zIndex = "1";
-            bp.view.style.position = "absolute";
-            bp.view.style.zIndex = "9999";
-            elem.appendChild(bp.blackCurtainView);
-            elem.appendChild(bp.videoView);
-            elem.appendChild(bp.view);
-        })("#glantern-container");
+        bp.initialize(682, 438, document.querySelector("#glantern-container"));
     }
 }
 

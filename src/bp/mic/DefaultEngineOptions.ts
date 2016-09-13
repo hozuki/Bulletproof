@@ -3,7 +3,7 @@
  */
 
 import {IEngineOptions} from "./IEngineOptions";
-import {SimpleDanmakuType} from "../danmaku/simple/SimpleDanamkuType";
+import {SimpleDanmakuType} from "../danmaku/simple/SimpleDanmakuType";
 import {ISimpleDanmakuCreateParams} from "../danmaku/simple/ISimpleDanmakuCreateParams";
 
 export var DefaultEngineOptions: IEngineOptions = Object.create(null);
