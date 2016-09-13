@@ -21,10 +21,11 @@ var bp = null;
     var videoSelector = document.getElementById("video-selector");
     var testCaseSelector = document.getElementById("test-case-selector");
 
-    window.document.body.onload = function () {
+    window.onload = function () {
         initEnv();
         initVideoElements();
         initList();
+        console.log("Bulletproof initialization completed.");
     };
 
     window.addEventListener("beforeunload", function (ev) {
