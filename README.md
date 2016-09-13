@@ -24,7 +24,7 @@ $ gulp
 To preview, at least one of modern browsers is required:
 - Chrome
 - NW.js
-- Electron <sup>Has not been tested, but should work.</sup>.
+- Electron <sup>Has not been tested, but should work.</sup>
 - Firefox
 - Edge
 - IE 11
