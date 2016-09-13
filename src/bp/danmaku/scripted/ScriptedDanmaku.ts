@@ -32,7 +32,18 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         this._layer = this.danmakuProvider.layer;
     }
 
+    clearElements(): void {
+        while (this.numChildren > 0) {
+            this.removeChildAt(0);
+        }
+    }
+
     dispose(): void {
+        var scriptManager = this.apiContainer.api.ScriptManager;
+        scriptManager.clearEl();
+        scriptManager.clearTimer();
+        scriptManager.clearTrigger();
+        this.clearElements();
         this.parent.removeChild(this);
         super.dispose();
     }
@@ -80,6 +91,10 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
                 this._executed = true;
             }
         }
+    }
+
+    get apiContainer(): BiliBiliDanmakuApiContainer {
+        return this._apiContainer;
     }
 
     get createParams(): IScriptedDanmakuCreateParams {

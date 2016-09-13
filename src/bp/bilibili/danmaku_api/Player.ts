@@ -22,20 +22,23 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     play(): void {
-        if (this._videoPlayer !== null) {
-            this._videoPlayer.play();
+        var videoPlayer = this._videoPlayer;
+        if (videoPlayer !== null) {
+            videoPlayer.play();
         }
     }
 
     pause(): void {
-        if (this._videoPlayer !== null) {
-            this._videoPlayer.pause();
+        var videoPlayer = this._videoPlayer;
+        if (videoPlayer !== null) {
+            videoPlayer.pause();
         }
     }
 
     seek(offset: number): void {
-        if (this._videoPlayer !== null) {
-            this._videoPlayer.currentTime = offset;
+        var videoPlayer = this._videoPlayer;
+        if (videoPlayer !== null) {
+            videoPlayer.currentTime = offset;
         }
     }
 
@@ -49,10 +52,11 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get state(): string {
-        if (this._videoPlayer === null) {
+        var videoPlayer = this._videoPlayer;
+        if (videoPlayer === null) {
             return PlayerState.INVALID;
         } else {
-            var state = this._videoPlayer.state;
+            var state = videoPlayer.state;
             switch (state) {
                 case VideoPlayerState.Playing:
                 case VideoPlayerState.Seeking:
@@ -75,11 +79,13 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     commentTrigger(f: (cd: CommentData) => void, timeout: number = 1000): number {
-        throw new NotImplementedError();
+        var scriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
+        return scriptManager.addCommentTrigger(f, timeout);
     }
 
     keyTrigger(f: (key: number) => void, timeout: number = 1000, up: boolean = false): number {
-        throw new NotImplementedError();
+        var scriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
+        return scriptManager.addKeyTrigger(f, timeout, up);
     }
 
     setMask(obj: DisplayObject): void {
@@ -120,11 +126,13 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get videoWidth(): number {
-        return this._videoPlayer !== null ? this._videoPlayer.videoWidth : 0;
+        var videoPlayer = this._videoPlayer;
+        return videoPlayer !== null ? videoPlayer.videoWidth : 0;
     }
 
     get videoHeight(): number {
-        return this._videoPlayer !== null ? this._videoPlayer.videoHeight : 0;
+        var videoPlayer = this._videoPlayer;
+        return videoPlayer !== null ? videoPlayer.videoHeight : 0;
     }
 
     private _videoPlayer: VideoPlayerBase = null;

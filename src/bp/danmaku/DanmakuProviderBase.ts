@@ -71,7 +71,9 @@ export abstract class DanmakuProviderBase implements IDisposable {
      */
     addDanmaku(content: string, args?: any): IDanmaku {
         if ((true || this.canCreateDanmaku(args)) && this.controller.shouldCreateDanmaku(this)) {
-            return this._$addDanmaku(content, args);
+            var danmaku = this._$addDanmaku(content, args);
+            this.engine.raiseCommentEvent(danmaku.getCommentData());
+            return danmaku;
         } else {
             return null;
         }

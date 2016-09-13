@@ -15,6 +15,10 @@ import {VideoPlayerState} from "../interactive/video/VideoPlayerState";
 import {TimeInfoEx} from "./TimeInfoEx";
 import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
 import {VirtualDom} from "../../../lib/glantern/src/gl/mic/VirtualDom";
+import {CommentKeyEventArgs} from "./bulletproof/events/CommentKeyEventArgs";
+import {EventBase} from "../../../lib/glantern/src/gl/mic/EventBase";
+import {BPEvents} from "./bulletproof/events/BPEvents";
+import {CommentData} from "../bilibili/danmaku_api/CommentData";
 
 /**
  * The root controller for Bulletproof.
@@ -79,9 +83,27 @@ export class Engine extends EngineBase {
      * Disposes the {@link Engine} instance and release all resources occupied.
      */
     dispose(): void {
-        this._danmakuController.dispose();
+        this.danmakuController.dispose();
         this._danmakuController = null;
         super.dispose();
+    }
+
+    /**
+     * Use this method to activate Players' key triggers.
+     * @param keyCode {Number} The key code.
+     * @param keyUp {Boolean} Whether this is a KeyUp event.
+     */
+    raiseKeyEvent(keyCode: number, keyUp: boolean): void {
+        var e = new CommentKeyEventArgs(keyCode, keyUp);
+        this.dispatchEvent(EventBase.create(BPEvents.COMMENT_KEY), e);
+    }
+
+    /**
+     * Use this method to activate Players' comment triggers.
+     * @param data {CommentData} The CommentData of newly added danmaku.
+     */
+    raiseCommentEvent(data: CommentData): void {
+        this.dispatchEvent(EventBase.create(BPEvents.COMMENT_ADDED), data);
     }
 
     /**
