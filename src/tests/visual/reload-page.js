@@ -2,6 +2,8 @@
  * Created by MIC on 2016/2/25.
  */
 
+"use strict";
+
 function reloadPage() {
     // Note: Reloading problem
     //   When caching policy is active, Bulletproof fails to redraw in the new session created by

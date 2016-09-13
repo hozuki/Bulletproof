@@ -40,10 +40,10 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 - [ ] Web video player interface
   - [X] `<video>`
   - [ ] WebChimera
-- [ ] Basic text danmakus
-  - [ ] Flying *(mode0)*
-  - [ ] Anchored *(mode1 - mode6)*
-- [ ] Custom text danmakus *(mode7)*
+- [ ] <del>Basic text danmakus</del> (ref: CommentCoreLibrary)
+  - [ ] <del>Flying *(mode0)*</del>
+  - [ ] <del>Anchored *(mode1 - mode6)*</del>
+- [ ] <del>Custom text danmakus *(mode7)*</del> (ref: BiliBili HTML5 Player)
 - [ ] Scripted danmakus *(mode8)*
   - [X] `Display`
   - [X] `Functions`
@@ -59,7 +59,7 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 
 ## License
 
-Bulletproof employs [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
+Bulletproof uses [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
 
-Part of Bulletproof uses modifications based on [`webgl-utils.js`](//github.com/KhronosGroup/WebGL/blob/master/sdk/demos/common/webgl-utils.js). Its license file
+A part of Bulletproof uses modifications based on [`webgl-utils.js`](//github.com/KhronosGroup/WebGL/blob/master/sdk/demos/common/webgl-utils.js). Its license file
 can be found [here](docs/license/webgl-utils.txt).

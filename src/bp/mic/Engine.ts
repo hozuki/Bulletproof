@@ -5,7 +5,6 @@
 import {DanmakuController} from "../danmaku/DanmakuController";
 import {ScriptedDanmakuProvider} from "../danmaku/scripted/ScriptedDanmakuProvider";
 import {DanmakuProviderBase} from "../danmaku/DanmakuProviderBase";
-import {SimpleDanmakuProvider} from "../danmaku/simple/SimpleDanmakuProvider";
 import {DefaultEngineOptions} from "./DefaultEngineOptions";
 import {VideoPlayerBase} from "../interactive/video/VideoPlayerBase";
 import {Html5VideoPlayer} from "../interactive/video/html5/Html5VideoPlayer";
@@ -72,10 +71,6 @@ export class Engine extends EngineBase {
             provider = new ScriptedDanmakuProvider(controller);
             controller.addProvider(provider);
         }
-        if (options.simpleDanmakuEnabled) {
-            provider = new SimpleDanmakuProvider(controller);
-            controller.addProvider(provider);
-        }
 
         this.attachUpdateFunction(this.__updateDanmakus.bind(this));
     }
@@ -102,7 +97,7 @@ export class Engine extends EngineBase {
      * @returns {Number}
      */
     get videoMillis(): number {
-        return this._videoMillis;
+        return this.options.videoPlayerEnabled ? this._videoMillis : this.elapsedMillis;
     }
 
     get videoPlayer(): VideoPlayerBase {
@@ -122,7 +117,8 @@ export class Engine extends EngineBase {
     }
 
     private __updateVideoTime(timeInfo: TimeInfoEx): void {
-        if (this.videoPlayer.state === VideoPlayerState.Playing) {
+        // If the video player is disabled, then follow our own timer.
+        if (!this.options.videoPlayerEnabled || this.videoPlayer.state === VideoPlayerState.Playing) {
             this._videoMillis += this.elapsedMillis - this._lastTimeVideoUpdated;
             this._lastTimeVideoUpdated = this.elapsedMillis;
         }

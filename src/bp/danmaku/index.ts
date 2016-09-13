@@ -8,6 +8,5 @@ export * from "./DanmakuLayoutManagerBase";
 export * from "./DanmakuProviderBase";
 
 import * as scripted from "./scripted/index";
-import * as simple from "./simple/index";
 
-export {scripted, simple};
+export {scripted};
