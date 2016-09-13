@@ -1,28 +1,50 @@
 
 # Bulletproof
 
-Advanced danmaku render engine with HTML5 / HTML5 高级弹幕渲染引擎
+**Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
+
+**以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
 
 You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
-## Readme
+## Details
 
-*Note: These readme documents are outdated. They will be rewritten after
-core features are completed.*
+Coming soon...
 
-- [English (en-US)](docs/readme/README.en-US.md)
-- [简体中文 (zh-CN)](docs/readme/README.zh-CN.md)
+## Building & Testing
+
+Git, Node.js, NPM and Gulp are required.
+
+```bash
+$ git clone https://github.com/Hozuki/Bulletproof.git
+$ npm install
+$ gulp
+```
+
+To preview, at least one of modern browsers is required:
+- Chrome
+- NW.js
+- Electron <sup>Has not been tested, but should work.</sup>
+- Firefox
+- Edge
+- IE 11
+
+Although all these browsers are supported, the order of the list shows the how the
+experience will be. Chrome is greatly suggested since the performance on it is the best;
+Firefox sometimes is slow; Edge and IE 11 always have serious performance degeneration.
 
 ## Features
 
 - [X] High speed rendering
-- [X] Cross browser compatibility (Chrome, Firefox, IE11, Edge)
-- [ ] Web video player wrapper
-- [ ] Simple danmakus
-  - [X] Flying, right-to-left
-  - [ ] Anchored
-- [ ] Mode 7 danmaku
-- [ ] Scripted danmaku
+- [X] Cross browser compatibility
+- [ ] Web video player interface
+  - [X] `<video>`
+  - [ ] WebChimera
+- [ ] <del>Basic text danmakus</del> (ref: CommentCoreLibrary)
+  - [ ] <del>Flying *(mode0)*</del>
+  - [ ] <del>Anchored *(mode1 - mode6)*</del>
+- [ ] <del>Custom text danmakus *(mode7)*</del> (ref: BiliBili HTML5 Player)
+- [ ] Scripted danmakus *(mode8)*
   - [X] `Display`
   - [X] `Functions`
   - [X] `Global`
@@ -37,7 +59,7 @@ core features are completed.*
 
 ## License
 
-Bulletproof employs [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
+Bulletproof uses [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
 
-Part of Bulletproof uses modifications based on [`webgl-utils.js`](//github.com/KhronosGroup/WebGL/blob/master/sdk/demos/common/webgl-utils.js). Its license file
+A part of Bulletproof uses modifications based on [`webgl-utils.js`](//github.com/KhronosGroup/WebGL/blob/master/sdk/demos/common/webgl-utils.js). Its license file
 can be found [here](docs/license/webgl-utils.txt).

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="cache-control" content="no-store"/>
+    <link rel="stylesheet" href="default.css"/>
+    <title>Bulletproof Showcase</title>
+</head>
+<body>
+<div class="video-selector" id="video-selector">
+    <p><b>Select video</b> (optional)</p>
+    <button id="enter-video-url-btn" type="button">Enter online video URL</button>
+    <span id="local-video-selector-container">
+        &nbsp;or&nbsp;
+        <button id="select-local-video-btn" type="button">Select local video (NW.js/Electron)</button>
+        <input type="file" id="select-local-video" hidden="hidden" accept=".mp4,.ogv,.flv,video/mp4,video/H264"/>
+    </span>
+    <span>
+        &nbsp;or&nbsp;
+        <button id="select-no-video-btn" type="button">Continue without video</button>
+    </span>
+</div>
+<div id="test-case-selector" class="initially-hidden">
+    <p><b>Test Cases</b></p>
+    <ol id="test-case-list">
+    </ol>
+</div>
+<div class="initially-hidden" id="playground">
+    <div style="margin-bottom: 10px;">
+        <b>Selected:</b>&nbsp;<span id="test-case-desc"></span>&nbsp;
+        <button type="button" onclick="reloadPage();">Reload Page</button>
+        <span style="margin-left: 10px;">
+            FPS:&nbsp;
+            <span id="fps-indicator">
+            </span>
+        </span>
+    </div>
+    <div id="glantern-container">
+    </div>
+</div>
+<script type="text/javascript" id="bp-source-loader" src="bp-source-loader.js"></script>
+<script type="text/javascript" src="bootstrap.js"></script>
+<script type="text/javascript" src="reload-page.js"></script>
+</body>
+</html>
