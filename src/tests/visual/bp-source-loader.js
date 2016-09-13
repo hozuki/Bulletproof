@@ -34,14 +34,14 @@
     }
     var src = null;
     if (useNodeVersion) {
-        src = "./ex-build/node/bp/index";
+        src = "./build/node/bp/index";
         window.Bulletproof = require(src);
     } else {
-        src = "ex-build/Bulletproof-browser" + (useMinimizedVersion ? ".min" : "") + ".js";
+        src = "build/Bulletproof-browser" + (useMinimizedVersion ? ".min" : "") + ".js";
         if (forceNoCache) {
             var timeMillis = Date.now();
             src += "?time=" + timeMillis.toString();
         }
         appendScript(src);
     }
-})(false, false);
+})(false, true);
