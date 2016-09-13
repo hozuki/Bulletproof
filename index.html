@@ -16,7 +16,7 @@
       <a href="https://github.com/Hozuki/Bulletproof" class="btn" target="_blank">View on GitHub</a>
       <a href="https://github.com/Hozuki/Bulletproof/zipball/master" class="btn" target="_blank">Download .zip</a>
       <a href="https://github.com/Hozuki/Bulletproof/tarball/master" class="btn" target="_blank">Download .tar.gz</a>
-      <a href="test/visual/index.html" class="btn" target="_blank">Have a try</a>
+      <a href="src/tests/visual/index.html" class="btn" target="_blank">Have a try</a>
       <div>
         <iframe src="https://ghbtns.com/github-btn.html?user=Hozuki&repo=Bulletproof&type=star&count=true" frameborder="0" scrolling="0" width="90px" height="20px"></iframe>
         <iframe src="https://ghbtns.com/github-btn.html?user=Hozuki&repo=Bulletproof&type=fork&count=true" frameborder="0" scrolling="0" width="90px" height="20px"></iframe>
@@ -51,9 +51,9 @@ which started a kind of art of creating splendid danmakus. It was all started in
 selecting test cases. The test cases are:</p>
 
 <ul>
-<li>A spinning 3-D ball (<a href="test/visual/test-scripts/3d-ball.js"><code>3d-ball.js</code></a>);</li>
-<li>Green Dam Musume (<a href="test/visual/test-scripts/kanpai-green-dam.js"><code>kanpai-green-dam.js</code></a>);</li>
-<li>Madoka and her happy <del>tree</del> friends (<a href="test/visual/test-scripts/kanpai-madoka.js"><code>kanpai-madoka.js</code></a>).</li>
+<li>A spinning 3-D ball (<a href="src/tests/visual/test-scripts/3d-ball.js"><code>3d-ball.js</code></a>);</li>
+<li>Green Dam Musume (<a href="src/tests/visual/test-scripts/kanpai-green-dam.js"><code>kanpai-green-dam.js</code></a>);</li>
+<li>Madoka and her happy <del>tree</del> friends (<a href="src/tests/visual/test-scripts/kanpai-madoka.js"><code>kanpai-madoka.js</code></a>).</li>
 </ul>
 
 <p>You are able to select the tests from the homepage. Source code of the tests can be found in <code>test/visual/test-scripts/</code>.</p>
@@ -118,7 +118,7 @@ Note that there are only loose CommonJS style JavaScript files generated in this
 <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>./Bulletproof/build/Bulletproof-browser.min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
 
 <p>After either way of importing, the <code>Bulletproof</code> namespace can be accessed in global scope.
-An example usage can be found <a href="test/visual/bootstrap.js">here</a>.</p>
+An example usage can be found <a href="src/tests/visual/bootstrap.js">here</a>.</p>
 
 <h2>
 <a id="project-status" class="anchor" href="#project-status" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project Status</h2>
@@ -146,9 +146,9 @@ but main features are active.</p>
 <p>为了能让各位能直接看到测试效果，代码已经编译了。您可以使用比较新的浏览器（别用老 IE 和那些国产浏览器）在当前的测试主页（<code>test/visual/index.html</code>）显示的示例中选择。当前包含的的示例有：</p>
 
 <ul>
-<li>一个三维旋转的球（<a href="test/visual/test-scripts/3d-ball.js"><code>3d-ball.js</code></a>）；</li>
-<li>绿坝娘（<a href="test/visual/test-scripts/kanpai-green-dam.js"><code>kanpai-green-dam.js</code></a>）；</li>
-<li>小圆脸和她愉♀快的小伙伴们（<a href="test/visual/test-scripts/kanpai-madoka.js"><code>kanpai-madoka.js</code></a>）。</li>
+<li>一个三维旋转的球（<a href="src/tests/visual/test-scripts/3d-ball.js"><code>3d-ball.js</code></a>）；</li>
+<li>绿坝娘（<a href="src/tests/visual/test-scripts/kanpai-green-dam.js"><code>kanpai-green-dam.js</code></a>）；</li>
+<li>小圆脸和她愉♀快的小伙伴们（<a href="src/tests/visual/test-scripts/kanpai-madoka.js"><code>kanpai-madoka.js</code></a>）。</li>
 </ul>
 
 <p>所有的测试样例都位于 <code>test/visual/test-scripts</code> 目录下。</p>
@@ -211,7 +211,7 @@ $ tsc -p <span class="pl-c1">.</span></pre></div>
 
 <div class="highlight highlight-text-html-basic"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>./Bulletproof/build/Bulletproof-browser.min.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</pre></div>
 
-<p>在任何一种导入方式完成后，全局域中会添加一个 <code>Bulletproof</code> 命名空间。之后的使用示例可以来<a href="test/visual/bootstrap.js">这里</a>看看。</p>
+<p>在任何一种导入方式完成后，全局域中会添加一个 <code>Bulletproof</code> 命名空间。之后的使用示例可以来<a href="src/tests/visual/bootstrap.js">这里</a>看看。</p>
 
 <h2>
 <a id="项目状态" class="anchor" href="#%E9%A1%B9%E7%9B%AE%E7%8A%B6%E6%80%81" aria-hidden="true"><span class="octicon octicon-link"></span></a>项目状态</h2>
