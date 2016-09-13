@@ -4,7 +4,6 @@
 
 import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
 import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
 export class ScriptManager extends BiliBiliDamakuApiObject {
 
@@ -13,15 +12,18 @@ export class ScriptManager extends BiliBiliDamakuApiObject {
     }
 
     clearTimer(): void {
-        throw new NotImplementedError();
+        var globalScriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
+        globalScriptManager.clearTimers();
     }
 
     clearEl(): void {
-        throw new NotImplementedError();
+        var globalScriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
+        globalScriptManager.clearElements();
     }
 
     clearTrigger(): void {
-        throw new NotImplementedError();
+        var globalScriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
+        globalScriptManager.clearTriggers();
     }
 
 }

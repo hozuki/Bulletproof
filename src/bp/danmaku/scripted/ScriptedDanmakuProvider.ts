@@ -14,6 +14,7 @@ import {ScriptedDanmakuHelper} from "./ScriptedDanmakuHelper";
 import {IDanmaku} from "../IDanmaku";
 import {TimeInfoEx} from "../../mic/TimeInfoEx";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import {GlobalScriptManager} from "./GlobalScriptManager";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
@@ -23,6 +24,7 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
     constructor(controller: DanmakuController) {
         super(controller);
         this._layoutManager = new ScriptedDanmakuLayoutManager(this);
+        this._scriptManager = new GlobalScriptManager(this);
     }
 
     get danmakuKind(): DanmakuKind {
@@ -34,15 +36,17 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     dispose(): void {
-        this.layer.parent.removeChild(this.layer);
-        this.layer.dispose();
+        var layer = this.layer;
+        layer.parent.removeChild(this.layer);
+        layer.dispose();
         this._layoutManager.dispose();
         this._layoutManager = null;
-        for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
-            this.displayingDanmakuList[i].dispose();
+        var displayingDanmakuList = this.displayingDanmakuList;
+        for (var i = 0; i < displayingDanmakuList.length; ++i) {
+            displayingDanmakuList[i].dispose();
         }
-        while (this.displayingDanmakuList.length > 0) {
-            this.displayingDanmakuList.pop();
+        while (displayingDanmakuList.length > 0) {
+            displayingDanmakuList.pop();
         }
         this._layer = null;
         this._displayingDanmakuList = null;
@@ -123,6 +127,10 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         return DanmakuProviderFlag.UnlimitedCreation;
     }
 
+    get scriptManager(): GlobalScriptManager {
+        return this._scriptManager;
+    }
+
     protected _$addDanmaku(content: string, args?: IScriptedDanmakuCreateParams): ScriptedDanmaku {
         if (!CommonUtil.ptr(args)) {
             args = ScriptedDanmakuHelper.getDefaultParams(this.engine.options);
@@ -138,5 +146,6 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
     protected _displayingDanmakuList: ScriptedDanmaku[];
     protected _layoutManager: ScriptedDanmakuLayoutManager;
     protected _layer: ScriptedDanmakuLayer;
+    private _scriptManager: GlobalScriptManager = null;
 
 }
