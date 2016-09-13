@@ -26,7 +26,7 @@ const helpers = {
     copyAll: function () {
         return gulp
             .src(["build/**/*.js", "build/**/*.js.map"])
-            .pipe(gulp.dest("src/tests/visual/ex-build"));
+            .pipe(gulp.dest("src/tests/visual/build"));
     },
     errorHandler: function (err) {
         var colors = gutil.colors;
