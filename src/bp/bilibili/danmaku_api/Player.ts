@@ -13,6 +13,7 @@ import {DisplayObject} from "../../../../lib/glantern/src/gl/flash/display/Displ
 import {Sound} from "../../../../lib/glantern/src/gl/flash/media/Sound";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import {URLRequest} from "../../../../lib/glantern/src/gl/flash/net/URLRequest";
 
 export class Player extends BiliBiliDamakuApiObject {
 
@@ -93,7 +94,18 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     createSound(t: string, onLoad: Function = null): Sound {
-        throw new NotImplementedError();
+        var request = new URLRequest(t);
+        var sound = new Sound(request);
+        if (CommonUtil.isFunction(onLoad)) {
+            var handler = ((): () => void => {
+                return (): void => {
+                    onLoad();
+                    sound.removeEventListener(Sound.COMPLETE, handler);
+                }
+            })();
+            sound.addEventListener(Sound.COMPLETE, handler);
+        }
+        return sound;
     }
 
     get commentList(): CommentData[] {
