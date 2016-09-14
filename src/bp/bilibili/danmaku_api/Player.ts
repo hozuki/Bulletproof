@@ -2,8 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
-import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
+import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
 import {CommentData} from "./CommentData";
 import {VideoPlayerBase} from "../../interactive/video/VideoPlayerBase";
 import {VideoPlayerState} from "../../interactive/video/VideoPlayerState";
@@ -14,12 +13,17 @@ import {Sound} from "../../../../lib/glantern/src/gl/flash/media/Sound";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 import {URLRequest} from "../../../../lib/glantern/src/gl/flash/net/URLRequest";
+import {ScriptedDanmakuProvider} from "../../danmaku/scripted/ScriptedDanmakuProvider";
+import {StaticDanmakuApiContract} from "../StaticDanmakuApiContract";
+import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
 
-export class Player extends BiliBiliDamakuApiObject {
+export class Player extends StaticDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
-        super(apiContainer);
-        this._videoPlayer = apiContainer.engine.videoPlayer;
+    constructor(provider: ScriptedDanmakuProvider, contract: StaticDanmakuApiContract) {
+        super();
+        this._provider = provider;
+        this._contract = contract;
+        this._videoPlayer = provider.engine.videoPlayer;
     }
 
     play(): void {
@@ -46,9 +50,9 @@ export class Player extends BiliBiliDamakuApiObject {
     jump(av: string, page: number = 1, newWindow: boolean = false): void {
         var url = CommonUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
         if (newWindow) {
-            window.open(url, "_blank");
+            VirtualDom.openWindow(url, "_blank");
         } else {
-            window.location.assign(url);
+            VirtualDom.assignLocation(url);
         }
     }
 
@@ -76,17 +80,15 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get time(): number {
-        return this.apiContainer.engine.videoMillis;
+        return this.$$danmakuProvider.engine.videoMillis;
     }
 
     commentTrigger(f: (cd: CommentData) => void, timeout: number = 1000): number {
-        var scriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
-        return scriptManager.addCommentTrigger(f, timeout);
+        return this.$$contract.ScriptManager.addCommentTrigger(f, timeout);
     }
 
     keyTrigger(f: (key: number) => void, timeout: number = 1000, up: boolean = false): number {
-        var scriptManager = this.apiContainer.danmaku.danmakuProvider.scriptManager;
-        return scriptManager.addKeyTrigger(f, timeout, up);
+        return this.$$contract.ScriptManager.addKeyTrigger(f, timeout, up);
     }
 
     setMask(obj: DisplayObject): void {
@@ -110,7 +112,7 @@ export class Player extends BiliBiliDamakuApiObject {
 
     get commentList(): CommentData[] {
         var comments: CommentData[] = [];
-        var providers = this.apiContainer.engine.danmakuController.getProviders();
+        var providers = this.$$danmakuProvider.engine.danmakuController.getProviders();
         var provider: DanmakuProviderBase;
         for (var j = 0; j < providers.length; ++j) {
             provider = providers[j];
@@ -122,7 +124,7 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get refreshRate(): number {
-        return 1 / this.apiContainer.engine.fps;
+        return 1 / this.$$danmakuProvider.engine.fps;
     }
 
     set refreshRate(v: number) {
@@ -130,11 +132,11 @@ export class Player extends BiliBiliDamakuApiObject {
     }
 
     get width(): number {
-        return this.apiContainer.engine.stage.stageWidth;
+        return this.$$danmakuProvider.engine.stage.stageWidth;
     }
 
     get height(): number {
-        return this.apiContainer.engine.stage.stageHeight;
+        return this.$$danmakuProvider.engine.stage.stageHeight;
     }
 
     get videoWidth(): number {
@@ -147,6 +149,16 @@ export class Player extends BiliBiliDamakuApiObject {
         return videoPlayer !== null ? videoPlayer.videoHeight : 0;
     }
 
+    private get $$danmakuProvider(): ScriptedDanmakuProvider {
+        return this._provider;
+    }
+
+    private get $$contract(): StaticDanmakuApiContract {
+        return this._contract;
+    }
+
+    private _provider: ScriptedDanmakuProvider = null;
+    private _contract: StaticDanmakuApiContract = null;
     private _videoPlayer: VideoPlayerBase = null;
 
 }

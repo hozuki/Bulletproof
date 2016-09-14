@@ -2,14 +2,14 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
-import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
+import {DanmakuApiContainer} from "../DanmakuApiContainer";
+import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
-export class Storage extends BiliBiliDamakuApiObject {
+export class Storage extends StaticDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
-        super(apiContainer);
+    constructor() {
+        super();
     }
 
     loadRank(complete: Function, err: Function = null): void {

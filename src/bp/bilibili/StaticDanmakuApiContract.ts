@@ -1,29 +1,26 @@
 /**
- * Created by MIC on 2015/12/29.
+ * Created by MIC on 2016/9/14.
  */
 
-import {Display} from "./danmaku_api/Display";
 import {Global} from "./danmaku_api/Global";
+import {Storage} from "./danmaku_api/Storage";
 import {Utils} from "./danmaku_api/Utils";
-import {Player} from "./danmaku_api/Player";
 import {ScriptManager} from "./danmaku_api/ScriptManager";
 import {Tween} from "./danmaku_api/Tween";
 import {Bitmap} from "./danmaku_api/Bitmap";
-import {Storage} from "./danmaku_api/Storage";
 import {FiniteTimer} from "../danmaku/scripted/dco/FiniteTimer";
+import {Player} from "./danmaku_api/Player";
 
-export interface IBiliBiliDanmakuApiContract {
+export interface StaticDanmakuApiContract {
 
-    $: Display;
     $G: Global;
-    Display: Display;
     Global: Global;
     Utils: Utils;
-    Player: Player;
     ScriptManager: ScriptManager;
     Tween: Tween;
     Bitmap: Bitmap;
     Storage: Storage;
+    Player: Player;
 
     trace: (message: any) => void;
     clear: () => void;

@@ -2,16 +2,16 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
-import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
+import {DanmakuApiContainer} from "../../DanmakuApiContainer";
+import {IDCExtraCreateParams} from "../../../danmaku/scripted/dco/IDCExtraCreateParams";
 
-export abstract class BiliBiliDamakuApiObject {
+export abstract class InstanceDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: DanmakuApiContainer) {
         this._apiContainer = apiContainer;
     }
 
-    get apiContainer(): BiliBiliDanmakuApiContainer {
+    get apiContainer(): DanmakuApiContainer {
         return this._apiContainer;
     }
 
@@ -24,6 +24,6 @@ export abstract class BiliBiliDamakuApiObject {
         return r;
     }
 
-    protected _apiContainer: BiliBiliDanmakuApiContainer = null;
+    protected _apiContainer: DanmakuApiContainer = null;
 
 }

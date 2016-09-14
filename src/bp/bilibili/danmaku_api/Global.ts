@@ -2,13 +2,12 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
+import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
 
-export class Global extends BiliBiliDamakuApiObject {
+export class Global extends StaticDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
-        super(apiContainer);
+    constructor() {
+        super();
         this._map = new Map<any, any>();
     }
 
