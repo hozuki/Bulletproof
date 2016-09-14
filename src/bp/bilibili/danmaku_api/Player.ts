@@ -10,12 +10,12 @@ import {PlayerState} from "./PlayerState";
 import {DanmakuProviderBase} from "../../danmaku/DanmakuProviderBase";
 import {DisplayObject} from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
 import {Sound} from "../../../../lib/glantern/src/gl/flash/media/Sound";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 import {URLRequest} from "../../../../lib/glantern/src/gl/flash/net/URLRequest";
 import {ScriptedDanmakuProvider} from "../../danmaku/scripted/ScriptedDanmakuProvider";
 import {StaticDanmakuApiContract} from "../StaticDanmakuApiContract";
 import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
+import {NotSupportedError} from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
 
 export class Player extends StaticDanmakuApiObject {
 
@@ -92,7 +92,7 @@ export class Player extends StaticDanmakuApiObject {
     }
 
     setMask(obj: DisplayObject): void {
-        throw new NotImplementedError();
+        this.$$danmakuProvider.layer.mask = obj;
     }
 
     createSound(t: string, onLoad: Function = null): Sound {
@@ -128,7 +128,7 @@ export class Player extends StaticDanmakuApiObject {
     }
 
     set refreshRate(v: number) {
-        throw new NotImplementedError();
+        throw new NotSupportedError();
     }
 
     get width(): number {
