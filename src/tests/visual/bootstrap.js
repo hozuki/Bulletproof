@@ -68,9 +68,9 @@ var bp = null;
     function initList() {
         var testCases = {
             "Blank": "",
-            "3D ball": "3d-ball.js",
-            "Green Dam Musume": "kanpai-green-dam.js",
-            "Madoka and her happy <del>tree</del> friends": "kanpai-madoka.js"
+            "3D ball": "3d-ball.as",
+            "Green Dam Musume": "kanpai-green-dam.as",
+            "Madoka and her happy <del>tree</del> friends": "kanpai-madoka.as"
         };
 
         var caseListElem = document.getElementById("test-case-list");
