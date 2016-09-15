@@ -2,18 +2,20 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
+import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
 import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
 import {MathUtil} from "../../../../lib/glantern/src/gl/mic/MathUtil";
 import {GLUtil} from "../../../../lib/glantern/src/gl/mic/glantern/GLUtil";
+import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
+import {StaticDanmakuApiContract} from "../StaticDanmakuApiContract";
 
-const date = new Date();
+const $date = new Date();
 
-export class Utils extends BiliBiliDamakuApiObject {
+export class Utils extends StaticDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
-        super(apiContainer);
+    constructor(contract: StaticDanmakuApiContract) {
+        super();
+        this._contract = contract;
     }
 
     hue(v: number): number {
@@ -31,20 +33,22 @@ export class Utils extends BiliBiliDamakuApiObject {
     }
 
     formatTimes(time: number): string {
-        date.setTime(time * 1000);
-        return date.toLocaleString();
+        $date.setTime(time * 1000);
+        return $date.toLocaleString();
     }
 
     delay(source: string, delay: number): number;
     delay(closure: Function, delay: number): number;
     delay(obj: any, delay: number): number {
-        return window.setTimeout(obj, delay);
+        return <number>VirtualDom.setTimeout(obj, delay);
     }
 
     interval(source: string, delay: number, times: number): FiniteTimer;
     interval(closure: Function, delay: number, times: number): FiniteTimer;
     interval(obj: any, delay: number, times: number): FiniteTimer {
-        return new FiniteTimer(obj, delay, times);
+        var timer = new FiniteTimer(obj, delay, times);
+        this.$$contract.ScriptManager.addTimer(timer);
+        return timer;
     }
 
     distance(x1: number, y1: number, x2: number, y2: number): number {
@@ -55,5 +59,11 @@ export class Utils extends BiliBiliDamakuApiObject {
         console.assert(min < max, "'max' must be bigger than 'min'.");
         return Math.random() * (max - min) + min;
     }
+
+    private get $$contract(): StaticDanmakuApiContract {
+        return this._contract;
+    }
+
+    private _contract: StaticDanmakuApiContract = null;
 
 }

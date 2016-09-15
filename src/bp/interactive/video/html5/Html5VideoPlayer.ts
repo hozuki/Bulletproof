@@ -8,6 +8,7 @@ import {MathUtil} from "../../../../../lib/glantern/src/gl/mic/MathUtil";
 import {VideoPlayerEvent} from "../VideoPlayerEvent";
 import {EventBase} from "../../../../../lib/glantern/src/gl/mic/EventBase";
 import {CommonUtil} from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
+import {VirtualDom} from "../../../../../lib/glantern/src/gl/mic/VirtualDom";
 
 type EventHandler<T extends Event> = (ev: T) => void;
 
@@ -16,7 +17,7 @@ export class Html5VideoPlayer extends VideoPlayerBase {
     constructor(videoElement: HTMLVideoElement = null) {
         super();
         if (!CommonUtil.ptr(videoElement) || !(videoElement instanceof HTMLVideoElement)) {
-            videoElement = window.document.createElement("video");
+            videoElement = VirtualDom.createElement<HTMLVideoElement>("video");
         }
         this._videoElement = videoElement;
         this._eventHandlers = [];

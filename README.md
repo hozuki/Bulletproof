@@ -17,6 +17,7 @@ Git, Node.js, NPM and Gulp are required.
 
 ```bash
 $ git clone https://github.com/Hozuki/Bulletproof.git
+$ git submodule update --init --recursive
 $ npm install
 $ gulp
 ```
@@ -35,23 +36,23 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 
 ## Features
 
-- [X] High speed rendering
-- [X] Cross browser compatibility
+- [x] High speed rendering
+- [x] Cross browser compatibility
 - [ ] Web video player interface
-  - [X] `<video>`
+  - [x] `<video>`
   - [ ] WebChimera
 - [ ] <del>Basic text danmakus</del> (ref: CommentCoreLibrary)
   - [ ] <del>Flying *(mode0)*</del>
   - [ ] <del>Anchored *(mode1 - mode6)*</del>
 - [ ] <del>Custom text danmakus *(mode7)*</del> (ref: BiliBili HTML5 Player)
 - [ ] Scripted danmakus *(mode8)*
-  - [X] `Display`
-  - [X] `Functions`
-  - [X] `Global`
+  - [x] `Display`
+  - [x] `Functions`
+  - [x] `Global`
   - [ ] `Tween`
-  - [ ] `Player`
-  - [ ] `ScriptManager`
-  - [X] `Utils`
+  - [x] `Player` (almost, `createSound()` and `setMask()` are in progress)
+  - [x] `ScriptManager`
+  - [x] `Utils`
   - [ ] External library: `Bitmap`
   - [ ] External library: `Storage`
   - [ ] Safety sandbox

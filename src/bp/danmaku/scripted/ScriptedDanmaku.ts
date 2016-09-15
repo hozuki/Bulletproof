@@ -6,7 +6,7 @@ import {DanmakuKind} from "../DanmakuKind";
 import {ScriptedDanmakuLayoutManager} from "./ScriptedDanmakuLayoutManager";
 import {Engine} from "../../mic/Engine";
 import {IDanmakuCreatedObject} from "./dco/IDanmakuCreatedObject";
-import {BiliBiliDanmakuApiContainer} from "../../bilibili/BiliBiliDanmakuApiContainer";
+import {DanmakuApiContainer} from "../../bilibili/DanmakuApiContainer";
 import {IMotion} from "../../bilibili/danmaku_api/data_types/IMotion";
 import {IMotionPropertyAnimation} from "../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
 import {ScriptedDanmakuProvider} from "./ScriptedDanmakuProvider";
@@ -76,7 +76,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
     initialize(content: string, time: number): void {
         this._content = content;
         this._bornTime = typeof this.createParams.bornTime === "number" ? this.createParams.bornTime : time;
-        this._apiContainer = new BiliBiliDanmakuApiContainer(this);
+        this._apiContainer = new DanmakuApiContainer(this);
     }
 
     get executed(): boolean {
@@ -93,7 +93,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         }
     }
 
-    get apiContainer(): BiliBiliDanmakuApiContainer {
+    get apiContainer(): DanmakuApiContainer {
         return this._apiContainer;
     }
 
@@ -211,11 +211,12 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         // Weak defense is better than none.
         // TODO: Use WebWorker to create a safety sandbox.
         var api = this._apiContainer.api;
-        this._apiNames = [];
-        for (var apiName in api) {
-            this._apiNames.push(apiName);
+        var thisApiNames: string[] = this._apiNames = [];
+        var apiNames = Object.keys(api);
+        for (var i = 0; i < apiNames.length; ++i) {
+            thisApiNames.push(apiNames[i]);
         }
-        var funcArgs = this._apiNames.concat(this._content);
+        var funcArgs = thisApiNames.concat(this._content);
         return Function.prototype.constructor.apply(Object.create(null), funcArgs);
     }
 
@@ -233,7 +234,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
     }
 
     private _apiNames: string[] = null;
-    private _apiContainer: BiliBiliDanmakuApiContainer = null;
+    private _apiContainer: DanmakuApiContainer = null;
     private _lambda: Function = null;
     private _content: string = null;
     private _bornTime: number = 0;

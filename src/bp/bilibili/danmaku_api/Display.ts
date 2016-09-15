@@ -2,8 +2,7 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
-import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
+import {DanmakuApiContainer} from "../DanmakuApiContainer";
 import {DCShape} from "../../danmaku/scripted/dco/DCShape";
 import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
 import {ICommentButtonCreateParams} from "./data_types/ICommentButtonCreateParams";
@@ -21,19 +20,21 @@ import {TextFormat} from "../../../../lib/glantern/src/gl/flash/text/TextFormat"
 import {Graphics} from "../../../../lib/glantern/src/gl/flash/display/Graphics";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import {InstanceDanmakuApiObject} from "./internal/InstanceDanmakuApiObject";
+import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
 
-export class Display extends BiliBiliDamakuApiObject {
+export class Display extends InstanceDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
+    constructor(apiContainer: DanmakuApiContainer) {
         super(apiContainer);
     }
 
     get fullScreenWidth(): number {
-        return window.screen.width;
+        return VirtualDom.screenWidth;
     }
 
     get fullScreenHeight(): number {
-        return window.screen.height;
+        return VirtualDom.screenHeight;
     }
 
     get width(): number {

@@ -2,15 +2,15 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {BiliBiliDamakuApiObject} from "./BiliBiliDamakuApiObject";
-import {BiliBiliDanmakuApiContainer} from "../BiliBiliDanmakuApiContainer";
+import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {DanmakuApiContainer} from "../DanmakuApiContainer";
 import {ITween} from "./ITween";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
-export class Tween extends BiliBiliDamakuApiObject {
+export class Tween extends StaticDanmakuApiObject {
 
-    constructor(apiContainer: BiliBiliDanmakuApiContainer) {
-        super(apiContainer);
+    constructor() {
+        super();
     }
 
     tween(object: Object, dest: Object, src: Object, duration: number, easing: Function): Tween {

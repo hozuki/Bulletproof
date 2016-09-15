@@ -2,7 +2,7 @@
  * Created by MIC on 2015/12/29.
  */
 
-export * from "./BiliBiliDanmakuApiContainer";
+export * from "./DanmakuApiContainer";
 
 import * as danmaku_api from "./danmaku_api/index";
 

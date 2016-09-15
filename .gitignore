@@ -1,9 +1,9 @@
 
-.idea/
+/.idea/
 
-node_modules/
+/node_modules/
 
-build/
+/build/
 
-src/tests/visual/build/
-!src/tests/visual/build/Bulletproof-browser.min.js
+/src/tests/visual/build/
+!/src/tests/visual/build/Bulletproof-browser.min.js

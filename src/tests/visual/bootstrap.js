@@ -66,18 +66,28 @@ var bp = null;
     }
 
     function initList() {
-        var testCases = {
-            "Blank": "",
-            "3D ball": "3d-ball.js",
-            "Green Dam Musume": "kanpai-green-dam.js",
-            "Madoka and her happy <del>tree</del> friends": "kanpai-madoka.js"
-        };
-
+        /**
+         * @type {{name:string, desc:string, file:string}[]}
+         */
+        var testCases;
         var caseListElem = document.getElementById("test-case-list");
-        if (Bulletproof.isSupported() && bp) {
-            initListNormal();
+
+        if (global) {
+            testCases = require("./test-scripts/index");
+            initListInternal();
         } else {
-            initListOnFailure();
+            loadFileAsync("test-scripts/index.js", function (errText, responseText) {
+                testCases = (new Function("module", responseText))(null);
+                initListInternal();
+            });
+        }
+
+        function initListInternal() {
+            if (Bulletproof.isSupported() && bp) {
+                initListNormal();
+            } else {
+                initListOnFailure();
+            }
         }
 
         function testCaseListItemOnClick(ev) {
@@ -153,35 +163,34 @@ var bp = null;
         }
 
         function initListNormal() {
-            for (var caseName in testCases) {
-                if (testCases.hasOwnProperty(caseName)) {
-                    /**
-                     * @type {HTMLLIElement}
-                     */
-                    var liElem = document.createElement("li");
-                    /**
-                     * @type {HTMLAnchorElement}
-                     */
-                    var aElem = document.createElement("a");
-                    aElem.innerHTML = caseName;
-                    aElem.href = "javascript:;";
-                    if (testCases[caseName]) {
-                        aElem.name = "test-scripts/" + testCases[caseName];
-                    }
-                    aElem.addEventListener("click", testCaseListItemOnClick.bind(aElem));
-                    liElem.appendChild(aElem);
-                    caseListElem.appendChild(liElem);
+            for (var caseIndex in testCases) {
+                var testCase = testCases[caseIndex];
+                /**
+                 * @type {HTMLLIElement}
+                 */
+                var liElem = document.createElement("li");
+                /**
+                 * @type {HTMLAnchorElement}
+                 */
+                var aElem = document.createElement("a");
+                aElem.innerHTML = testCase.desc;
+                aElem.href = "javascript:;";
+                if (testCase.file) {
+                    aElem.name = "test-scripts/" + testCase.file;
+                }
+                aElem.addEventListener("click", testCaseListItemOnClick.bind(aElem));
+                liElem.appendChild(aElem);
+                caseListElem.appendChild(liElem);
 
-                    if (aElem.name) {
-                        var blankElem = document.createElement("span");
-                        blankElem.textContent = " #";
-                        var viewSourceElem = document.createElement("a");
-                        viewSourceElem.href = aElem.name;
-                        viewSourceElem.textContent = "View source";
-                        viewSourceElem.target = "_blank";
-                        liElem.appendChild(blankElem);
-                        liElem.appendChild(viewSourceElem);
-                    }
+                if (aElem.name) {
+                    var blankElem = document.createElement("span");
+                    blankElem.textContent = " #";
+                    var viewSourceElem = document.createElement("a");
+                    viewSourceElem.href = aElem.name;
+                    viewSourceElem.textContent = "View source";
+                    viewSourceElem.target = "_blank";
+                    liElem.appendChild(blankElem);
+                    liElem.appendChild(viewSourceElem);
                 }
             }
         }

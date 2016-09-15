@@ -1,3 +1,6 @@
 [submodule "lib/glantern"]
 	path = lib/glantern
-	url = https://github.com/Hozuki/GLantern.git
+	url = https://github.com/hozuki/GLantern.git
+[submodule "src/tests/visual/test-scripts"]
+	path = src/tests/visual/test-scripts
+	url = https://github.com/hozuki/Bulletproof-TestScripts.git
