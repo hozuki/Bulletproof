@@ -72,7 +72,7 @@ var bp = null;
         var testCases;
         var caseListElem = document.getElementById("test-case-list");
 
-        if (global) {
+        if (typeof global !== typeof void(0)) {
             testCases = require("./test-scripts/index");
             initListInternal();
         } else {
@@ -125,7 +125,7 @@ var bp = null;
                         codeProvider.addDanmaku(data);
                     }
                 };
-                if (typeof global !== typeof undefined) {
+                if (typeof global !== typeof void(0)) {
                     // In Node.js environments
                     var fs = require("fs");
                     fs.readFile(fileName, "utf-8", exec);
