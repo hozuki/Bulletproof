@@ -16,6 +16,7 @@ import {StaticDanmakuApiContract} from "./StaticDanmakuApiContract";
 import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
 import {ScriptedDanmaku} from "../danmaku/scripted/ScriptedDanmaku";
 import {Engine} from "../mic/Engine";
+import {Global} from "./danmaku_api/Global";
 
 let $staticContexts: Map<ScriptedDanmakuProvider, StaticDanmakuApiContract> = new Map<ScriptedDanmakuProvider, StaticDanmakuApiContract>();
 
@@ -55,6 +56,7 @@ function $getStaticContract(provider: ScriptedDanmakuProvider): StaticDanmakuApi
         return $staticContexts.get(provider);
     }
     var contract: StaticDanmakuApiContract = <any>Object.create(null);
+    contract.$G = contract.Global = new Global();
     contract.Bitmap = new Bitmap();
     contract.ScriptManager = new ScriptManager(provider);
     contract.Storage = new Storage();
