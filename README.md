@@ -17,6 +17,7 @@ Git, Node.js, NPM and Gulp are required.
 
 ```bash
 $ git clone https://github.com/Hozuki/Bulletproof.git
+$ git submodule update --init --recursive
 $ npm install
 $ gulp
 ```
