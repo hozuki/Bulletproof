@@ -20,7 +20,7 @@ import {TextFormat} from "../../../../lib/glantern/src/gl/flash/text/TextFormat"
 import {Graphics} from "../../../../lib/glantern/src/gl/flash/display/Graphics";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {InstanceDanmakuApiObject} from "./internal/InstanceDanmakuApiObject";
+import {InstanceDanmakuApiObject} from "../internal/InstanceDanmakuApiObject";
 import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
 
 export class Display extends InstanceDanmakuApiObject {

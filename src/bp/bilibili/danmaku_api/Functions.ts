@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
 import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";

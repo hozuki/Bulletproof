@@ -2,7 +2,6 @@
  * Created by MIC on 2015/12/29.
  */
 
-export * from "./internal/StaticDanmakuApiObject";
 export * from "./Display";
 export * from "./Global";
 export * from "./Functions";

@@ -5,5 +5,6 @@
 export * from "./DanmakuApiContainer";
 
 import * as danmaku_api from "./danmaku_api/index";
+import * as internal from "./internal/index";
 
-export {danmaku_api};
+export {danmaku_api, internal};

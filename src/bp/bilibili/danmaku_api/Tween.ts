@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
 import {DanmakuApiContainer} from "../DanmakuApiContainer";
 import {ITween} from "./ITween";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
