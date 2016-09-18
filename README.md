@@ -58,6 +58,16 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
   - [ ] Safety sandbox
 - [ ] BiliBili XML parser
 
+## TODO
+
+- `DisplayObject.mask` (`Player.setMask()`)
+- Easing (`Tween` and `ITween`, `$object.motion.easing`)
+- Linking `Player` to [VideoPlayer](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/fl/video/VideoPlayer.html)
+- `Player.createSound()`
+- `Display.createButton()`
+- Library: `Bitmap`
+- `Display.createCanvas()`
+
 ## License
 
 Bulletproof uses [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
