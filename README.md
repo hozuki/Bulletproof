@@ -15,20 +15,24 @@ Coming soon...
 
 Git, Node.js, NPM and Gulp are required.
 
-```bash
-$ git clone https://github.com/Hozuki/Bulletproof.git
-$ git submodule update --init --recursive
+```shell
+$ git clone https://github.com/hozuki/Bulletproof.git
 $ npm install
+$ git submodule update --init --recursive
+$ cd lib/glantern
+$ npm install
+$ cd ../../
 $ gulp
 ```
 
 To preview, at least one of modern browsers is required:
-- Chrome
-- NW.js
+- Chrome (50-60 fps)
+- NW.js (50-60 fps)
 - Electron <sup>Has not been tested, but should work.</sup>
-- Firefox
-- Edge
-- IE 11
+- Firefox (40-60 fps)
+- Edge (~24 fps)
+- IE 11 (~20 fps)
+- Chrome for Android (~16 fps)
 
 Although all these browsers are supported, the order of the list shows the how the
 experience will be. Chrome is greatly suggested since the performance on it is the best;
@@ -41,11 +45,11 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 - [ ] Web video player interface
   - [x] `<video>`
   - [ ] WebChimera
-- [ ] <del>Basic text danmakus</del> (ref: CommentCoreLibrary)
-  - [ ] <del>Flying *(mode0)*</del>
-  - [ ] <del>Anchored *(mode1 - mode6)*</del>
-- [ ] <del>Custom text danmakus *(mode7)*</del> (ref: BiliBili HTML5 Player)
-- [ ] Scripted danmakus *(mode8)*
+- [ ] <del>Basic text danmakus</del> (ref: [CommentCoreLibrary](https://github.com/jabbany/CommentCoreLibrary))
+  - [ ] <del>Flying *(mode 0)*</del>
+  - [ ] <del>Anchored *(mode 1 - mode 6)*</del>
+- [ ] <del>Custom text danmakus *(mode 7)*</del> (ref: [BiliBili HTML5 Player](http://www.bilibili.com/html/help.html#p))
+- [ ] Scripted danmakus *(mode 8)*
   - [x] `Display`
   - [x] `Functions`
   - [x] `Global`
