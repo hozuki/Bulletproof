@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
 import {ICommentBitmapCreateParams} from "./data_types/ICommentBitmapCreateParams";
 import {CommentBitmap} from "./CommentBitmap";
 import {BitmapData} from "../../../../lib/glantern/src/gl/flash/display/BitmapData";

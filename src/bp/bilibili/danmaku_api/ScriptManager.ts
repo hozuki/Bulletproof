@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
 import {KeyTriggerHandler} from "../internal/KeyTriggerHandler";
 import {CommentTriggerHandler} from "../internal/CommentTriggerHandler";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";

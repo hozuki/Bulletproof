@@ -20,8 +20,9 @@ import {TextFormat} from "../../../../lib/glantern/src/gl/flash/text/TextFormat"
 import {Graphics} from "../../../../lib/glantern/src/gl/flash/display/Graphics";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {InstanceDanmakuApiObject} from "./internal/InstanceDanmakuApiObject";
+import {InstanceDanmakuApiObject} from "../internal/InstanceDanmakuApiObject";
 import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
+import {NotSupportedError} from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
 
 export class Display extends InstanceDanmakuApiObject {
 
@@ -138,18 +139,18 @@ export class Display extends InstanceDanmakuApiObject {
     }
 
     createGraphic(): Graphics {
-        throw new NotImplementedError();
+        throw new NotSupportedError();
     }
 
     projectVector(matrix: Matrix3D, vector: Vector3D): Vector3D {
         return matrix.transformVector(vector);
     }
 
-    projectVectors(matrix: Matrix3D, vertices: number[], projectedVertices: number[], uvts: number[]): void {
+    projectVectors(matrix: Matrix3D, vertices: number[], projectedVertices: number[], uvts: number[] = null): void {
         while (projectedVertices.length > 0) {
             projectedVertices.pop();
         }
-        if (vertices.length % 3 != 0) {
+        if (vertices.length % 3 !== 0) {
             CommonUtil.trace("Display.projectVectors input vertex Vector must be a multiple of 3.");
             return;
         }

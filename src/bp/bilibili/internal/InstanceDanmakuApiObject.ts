@@ -2,8 +2,8 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {DanmakuApiContainer} from "../../DanmakuApiContainer";
-import {IDCExtraCreateParams} from "../../../danmaku/scripted/dco/IDCExtraCreateParams";
+import {DanmakuApiContainer} from "../DanmakuApiContainer";
+import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
 
 export abstract class InstanceDanmakuApiObject {
 

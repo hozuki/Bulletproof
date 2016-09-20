@@ -3,7 +3,7 @@
  */
 
 import {DanmakuApiContainer} from "../DanmakuApiContainer";
-import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
 import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
 export class Storage extends StaticDanmakuApiObject {

@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "./internal/StaticDanmakuApiObject";
+import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
 import {CommentData} from "./CommentData";
 import {VideoPlayerBase} from "../../interactive/video/VideoPlayerBase";
 import {VideoPlayerState} from "../../interactive/video/VideoPlayerState";
