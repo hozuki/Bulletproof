@@ -1,6 +1,8 @@
 
 # Bulletproof
 
+[![Travis](https://img.shields.io/travis/hozuki/Bulletproof.svg)](https://travis-ci.org/hozuki/Bulletproof)
+
 **Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
 
 **以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
