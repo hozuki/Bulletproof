@@ -6,16 +6,18 @@ import {DanmakuKind} from "./DanmakuKind";
 import {DanmakuProviderBase} from "./DanmakuProviderBase";
 import {Engine} from "../mic/Engine";
 import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
-import {IWebGLElement} from "../../../lib/glantern/src/gl/webgl/IWebGLElement";
 import {WebGLRenderer} from "../../../lib/glantern/src/gl/webgl/WebGLRenderer";
 import {TimeInfoEx} from "../mic/TimeInfoEx";
 import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
+import {IUpdateable} from "../../../lib/glantern/src/gl/mic/IUpdateable";
+import {IDrawable} from "../../../lib/glantern/src/gl/mic/IDrawable";
+import {IWebGLElement} from "../../../lib/glantern/src/gl/webgl/IWebGLElement";
 
 /**
  * The controller of all danmakus.
  * This class is a factory and manager of danmaku providers.
  */
-export class DanmakuController implements IWebGLElement {
+export class DanmakuController implements IWebGLElement, IUpdateable, IDrawable {
 
     /**
      * Creates a new {@Link DanmakuController} instance.
@@ -106,6 +108,9 @@ export class DanmakuController implements IWebGLElement {
      * Updates the status of all danmaku providers.
      */
     update(timeInfo: TimeInfoEx): void {
+        if (!this.enabled) {
+            return;
+        }
         this._danmakuProviders.forEach((provider: DanmakuProviderBase): void => {
             provider.update(timeInfo);
         });
@@ -117,6 +122,17 @@ export class DanmakuController implements IWebGLElement {
      */
     render(renderer: WebGLRenderer): void {
         // Do nothing.
+        if (!this.visible) {
+            return;
+        }
+    }
+
+    $update(timeInfo: TimeInfoEx): void {
+        this.update(timeInfo);
+    }
+
+    $render(renderer: WebGLRenderer): void {
+        this.render(renderer);
     }
 
     /**
@@ -130,6 +146,10 @@ export class DanmakuController implements IWebGLElement {
     getNextAvailablePool(): number {
         return this._danmakuProviders.size;
     }
+
+    enabled: boolean = true;
+
+    visible: boolean = true;
 
     private _danmakuProviders: Map<DanmakuKind, DanmakuProviderBase> = null;
     private _engine: Engine = null;

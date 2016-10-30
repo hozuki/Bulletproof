@@ -66,13 +66,13 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 
 ## TODO
 
-- `DisplayObject.mask` (`Player.setMask()`)
-- Easing (`Tween` and `ITween`, `$object.motion.easing`)
-- Linking `Player` to [VideoPlayer](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/fl/video/VideoPlayer.html)
-- `Player.createSound()`
-- `Display.createButton()`
-- Library: `Bitmap`
-- `Display.createCanvas()`
+- [x] `DisplayObject.mask` (`Player.setMask()`)
+- [ ] Easing (`Tween` and `ITween`, `$object.motion.easing`)
+- [ ] Linking `Player` to [VideoPlayer](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/fl/video/VideoPlayer.html)
+- [ ] `Player.createSound()`
+- [ ] `Display.createButton()`
+- [ ] Library: `Bitmap`
+- [ ] `Display.createCanvas()`
 
 ## License
 
