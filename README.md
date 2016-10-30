@@ -1,6 +1,8 @@
 
 # Bulletproof
 
+[![Travis](https://img.shields.io/travis/hozuki/Bulletproof.svg)](https://travis-ci.org/hozuki/Bulletproof)
+
 **Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
 
 **以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
@@ -64,13 +66,13 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 
 ## TODO
 
-- `DisplayObject.mask` (`Player.setMask()`)
-- Easing (`Tween` and `ITween`, `$object.motion.easing`)
-- Linking `Player` to [VideoPlayer](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/fl/video/VideoPlayer.html)
-- `Player.createSound()`
-- `Display.createButton()`
-- Library: `Bitmap`
-- `Display.createCanvas()`
+- [x] `DisplayObject.mask` (`Player.setMask()`)
+- [ ] Easing (`Tween` and `ITween`, `$object.motion.easing`)
+- [ ] Linking `Player` to [VideoPlayer](http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/fl/video/VideoPlayer.html)
+- [ ] `Player.createSound()`
+- [ ] `Display.createButton()`
+- [ ] Library: `Bitmap`
+- [ ] `Display.createCanvas()`
 
 ## License
 

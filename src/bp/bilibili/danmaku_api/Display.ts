@@ -83,12 +83,12 @@ export class Display extends InstanceDanmakuApiObject {
     createGlowFilter(color: number = 0xff0000, alpha: number = 1.0, blurX: number = 6.0,
                      blurY: number = 6.0, strength: number = 2, quality: number = BitmapFilterQuality.LOW,
                      inner: boolean = false, knockout: boolean = false): GlowFilter {
-        var renderer = this.apiContainer.danmaku.stage.worldRenderer;
+        var renderer = this.apiContainer.danmaku.stage.$worldRenderer;
         return new GlowFilter(renderer.filterManager, color, alpha, blurX, blurY, strength, quality, inner, knockout);
     }
 
     createBlurFilter(blurX: number = 4.0, blurY: number = 4.0, quality: number = BitmapFilterQuality.LOW): BlurFilter {
-        var renderer = this.apiContainer.danmaku.stage.worldRenderer;
+        var renderer = this.apiContainer.danmaku.stage.$worldRenderer;
         return new BlurFilter(renderer.filterManager, blurX, blurY, quality);
     }
 

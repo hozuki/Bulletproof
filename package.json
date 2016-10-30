@@ -11,7 +11,7 @@
     "render engine"
   ],
   "engines": {
-    "node": ">=0.12"
+    "node": ">=5.0"
   },
   "dependencies": {
     "browserify": "^12.0.1",
