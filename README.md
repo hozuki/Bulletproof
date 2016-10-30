@@ -2,16 +2,28 @@
 # Bulletproof
 
 [![Travis](https://img.shields.io/travis/hozuki/Bulletproof.svg)](https://travis-ci.org/hozuki/Bulletproof)
+[![npm](https://img.shields.io/npm/v/bp.js.svg)](https://npmjs.com/package/bp.js)
 
 **Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
 
 **以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
+
+**WORK IN PROGRESS**
 
 You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
 ## Details
 
 Coming soon...
+
+## Downloading from NPM
+
+```shell
+npm install bp.js
+```
+
+(Why isn't the package name `bulletproof`? Because that name was registered before this
+package publishes to NPM. （ つ Д ｀）)
 
 ## Building & Testing
 

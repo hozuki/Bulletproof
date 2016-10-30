@@ -1,5 +1,5 @@
 {
-  "name": "bulletproof",
+  "name": "bp.js",
   "version": "0.6.0-alpha",
   "description": "Bulletproof is a HTML5 advanced danmaku (live comment) rendering engine.",
   "main": "build/node/index",
@@ -41,8 +41,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Hozuki/Bulletproof.git"
+    "url": "https://github.com/hozuki/Bulletproof.git"
   },
   "license": "MIT",
-  "bugs": "http://github.com/Hozuki/Bulletproof/issues"
+  "bugs": "http://github.com/hozuki/Bulletproof/issues"
 }
