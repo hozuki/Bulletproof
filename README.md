@@ -7,11 +7,22 @@
 
 **以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
 
+**WORK IN PROGRESS**
+
 You can also check out the live demo from <http://hozuki.github.io/Bulletproof>.
 
 ## Details
 
 Coming soon...
+
+## Downloading from NPM
+
+```shell
+npm install bp.js
+```
+
+(Why isn't the package name `bulletproof`? Because that name was registered before this
+package publishes to NPM. （ つ Д ｀）)
 
 ## Building & Testing
 
