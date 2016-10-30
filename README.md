@@ -2,6 +2,7 @@
 # Bulletproof
 
 [![Travis](https://img.shields.io/travis/hozuki/Bulletproof.svg)](https://travis-ci.org/hozuki/Bulletproof)
+[![npm](https://img.shields.io/npm/v/bp.js.svg)](https://npmjs.com/package/bp.js)
 
 **Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
 
