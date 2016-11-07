@@ -30,13 +30,11 @@ package publishes to NPM. （ つ Д ｀）)
 Git, Node.js, NPM and Gulp are required.
 
 ```shell
-$ git clone https://github.com/hozuki/Bulletproof.git
-$ npm install
-$ git submodule update --init --recursive
-$ cd lib/glantern
-$ npm install
-$ cd ../../
-$ gulp
+git clone https://github.com/hozuki/Bulletproof.git
+npm install
+git submodule update --init --recursive
+git submodule foreach npm install
+gulp
 ```
 
 To preview, at least one of modern browsers is required:
