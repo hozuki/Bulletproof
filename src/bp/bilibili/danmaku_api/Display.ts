@@ -2,29 +2,29 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {DanmakuApiContainer} from "../DanmakuApiContainer";
-import {DCShape} from "../../danmaku/scripted/dco/DCShape";
-import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
-import {ICommentButtonCreateParams} from "./data_types/ICommentButtonCreateParams";
-import {CommentField} from "./CommentField";
-import {Matrix} from "../../../../lib/glantern/src/gl/flash/geom/Matrix";
-import {Point} from "../../../../lib/glantern/src/gl/flash/geom/Point";
-import {TextField} from "../../../../lib/glantern/src/gl/flash/text/TextField";
-import {BitmapFilterQuality} from "../../../../lib/glantern/src/gl/flash/filters/BitmapFilterQuality";
-import {GlowFilter} from "../../../../lib/glantern/src/gl/flash/filters/GlowFilter";
-import {BlurFilter} from "../../../../lib/glantern/src/gl/flash/filters/BlurFilter";
-import {Vector3D} from "../../../../lib/glantern/src/gl/flash/geom/Vector3D";
-import {Matrix3D} from "../../../../lib/glantern/src/gl/flash/geom/Matrix3D";
-import {ColorTransform} from "../../../../lib/glantern/src/gl/flash/geom/ColorTransform";
-import {TextFormat} from "../../../../lib/glantern/src/gl/flash/text/TextFormat";
-import {Graphics} from "../../../../lib/glantern/src/gl/flash/display/Graphics";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {InstanceDanmakuApiObject} from "../internal/InstanceDanmakuApiObject";
-import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
-import {NotSupportedError} from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
+import DanmakuApiContainer from "../DanmakuApiContainer";
+import DCShape from "../../danmaku/scripted/dco/DCShape";
+import IGeneralCreateParams from "./data_types/IGeneralCreateParams";
+import ICommentButtonCreateParams from "./data_types/ICommentButtonCreateParams";
+import CommentField from "./CommentField";
+import Matrix from "../../../../lib/glantern/src/gl/flash/geom/Matrix";
+import Point from "../../../../lib/glantern/src/gl/flash/geom/Point";
+import TextField from "../../../../lib/glantern/src/gl/flash/text/TextField";
+import BitmapFilterQuality from "../../../../lib/glantern/src/gl/flash/filters/BitmapFilterQuality";
+import GlowFilter from "../../../../lib/glantern/src/gl/flash/filters/GlowFilter";
+import BlurFilter from "../../../../lib/glantern/src/gl/flash/filters/BlurFilter";
+import Vector3D from "../../../../lib/glantern/src/gl/flash/geom/Vector3D";
+import Matrix3D from "../../../../lib/glantern/src/gl/flash/geom/Matrix3D";
+import ColorTransform from "../../../../lib/glantern/src/gl/flash/geom/ColorTransform";
+import TextFormat from "../../../../lib/glantern/src/gl/flash/text/TextFormat";
+import Graphics from "../../../../lib/glantern/src/gl/flash/display/Graphics";
+import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import InstanceDanmakuApiObject from "../internal/InstanceDanmakuApiObject";
+import VirtualDom from "../../../../lib/glantern/src/gl/mic/VirtualDom";
+import NotSupportedError from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
 
-export class Display extends InstanceDanmakuApiObject {
+export default class Display extends InstanceDanmakuApiObject {
 
     constructor(apiContainer: DanmakuApiContainer) {
         super(apiContainer);

@@ -2,17 +2,17 @@
  * Created by MIC on 2016/2/8.
  */
 
-import {VideoPlayerBase} from "../VideoPlayerBase";
-import {VideoPlayerState} from "../VideoPlayerState";
-import {MathUtil} from "../../../../../lib/glantern/src/gl/mic/MathUtil";
-import {VideoPlayerEvent} from "../VideoPlayerEvent";
-import {EventBase} from "../../../../../lib/glantern/src/gl/mic/EventBase";
-import {CommonUtil} from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {VirtualDom} from "../../../../../lib/glantern/src/gl/mic/VirtualDom";
+import VideoPlayerBase from "../VideoPlayerBase";
+import VideoPlayerState from "../VideoPlayerState";
+import MathUtil from "../../../../../lib/glantern/src/gl/mic/MathUtil";
+import VideoPlayerEvent from "../VideoPlayerEvent";
+import EventBase from "../../../../../lib/glantern/src/gl/mic/EventBase";
+import CommonUtil from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
+import VirtualDom from "../../../../../lib/glantern/src/gl/mic/VirtualDom";
 
 type EventHandler<T extends Event> = (ev: T) => void;
 
-export class Html5VideoPlayer extends VideoPlayerBase {
+export default class Html5VideoPlayer extends VideoPlayerBase {
 
     constructor(videoElement: HTMLVideoElement = null) {
         super();

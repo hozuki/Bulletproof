@@ -2,7 +2,7 @@
  * Created by MIC on 2016/9/13.
  */
 
-export class CommentKeyEventArgs {
+export default class CommentKeyEventArgs {
 
     constructor(keyCode: number, keyUp: boolean) {
         this._keyCode = keyCode;

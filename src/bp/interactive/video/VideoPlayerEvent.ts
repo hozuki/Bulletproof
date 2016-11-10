@@ -2,9 +2,9 @@
  * Created by MIC on 2016/6/13.
  */
 
-import {EventBase} from "../../../../lib/glantern/src/gl/mic/EventBase";
+import EventBase from "../../../../lib/glantern/src/gl/mic/EventBase";
 
-export class VideoPlayerEvent extends EventBase {
+export default class VideoPlayerEvent extends EventBase {
 
     static get VIDEO_ENDED(): string {
         return "videoEnded";

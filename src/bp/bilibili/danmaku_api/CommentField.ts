@@ -2,15 +2,15 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {IDanmakuCreatedObject} from "../../danmaku/scripted/dco/IDanmakuCreatedObject";
-import {IGeneralCreateParams} from "./data_types/IGeneralCreateParams";
-import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
-import {DCOHelper} from "../../danmaku/scripted/dco/DCOHelper";
-import {TextField} from "../../../../lib/glantern/src/gl/flash/text/TextField";
-import {Stage} from "../../../../lib/glantern/src/gl/flash/display/Stage";
-import {DisplayObjectContainer} from "../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
+import IDanmakuCreatedObject from "../../danmaku/scripted/dco/IDanmakuCreatedObject";
+import IGeneralCreateParams from "./data_types/IGeneralCreateParams";
+import IDCExtraCreateParams from "../../danmaku/scripted/dco/IDCExtraCreateParams";
+import DCOHelper from "../../danmaku/scripted/dco/DCOHelper";
+import TextField from "../../../../lib/glantern/src/gl/flash/text/TextField";
+import Stage from "../../../../lib/glantern/src/gl/flash/display/Stage";
+import DisplayObjectContainer from "../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
 
-export class CommentField extends TextField implements IDanmakuCreatedObject {
+export default class CommentField extends TextField implements IDanmakuCreatedObject {
 
     constructor(root: Stage, parent: DisplayObjectContainer, createParams: IGeneralCreateParams, extraCreateParams: IDCExtraCreateParams) {
         super(root, parent);

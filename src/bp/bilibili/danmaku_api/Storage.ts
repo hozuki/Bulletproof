@@ -2,11 +2,10 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {DanmakuApiContainer} from "../DanmakuApiContainer";
-import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
+import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
-export class Storage extends StaticDanmakuApiObject {
+export default class Storage extends StaticDanmakuApiObject {
 
     constructor() {
         super();

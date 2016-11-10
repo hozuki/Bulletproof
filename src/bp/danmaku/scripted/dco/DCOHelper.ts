@@ -2,16 +2,16 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {IGeneralCreateParams} from "../../../bilibili/danmaku_api/data_types/IGeneralCreateParams";
-import {IDanmakuCreatedObject} from "./IDanmakuCreatedObject";
-import {ICommentButtonCreateParams} from "../../../bilibili/danmaku_api/data_types/ICommentButtonCreateParams";
-import {Engine} from "../../../mic/Engine";
-import {IMotionPropertyAnimation} from "../../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
-import {IMotion} from "../../../bilibili/danmaku_api/data_types/IMotion";
-import {DisplayObject} from "../../../../../lib/glantern/src/gl/flash/display/DisplayObject";
-import {CommonUtil} from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
+import IGeneralCreateParams from "../../../bilibili/danmaku_api/data_types/IGeneralCreateParams";
+import IDanmakuCreatedObject from "./IDanmakuCreatedObject";
+import ICommentButtonCreateParams from "../../../bilibili/danmaku_api/data_types/ICommentButtonCreateParams";
+import Engine from "../../../mic/Engine";
+import IMotionPropertyAnimation from "../../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
+import IMotion from "../../../bilibili/danmaku_api/data_types/IMotion";
+import DisplayObject from "../../../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import CommonUtil from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
 
-export abstract class DCOHelper {
+abstract class DCOHelper {
 
     static fillInCreateParams(engine: Engine, requestingObject: DisplayObject&IDanmakuCreatedObject, createParams: IGeneralCreateParams): IGeneralCreateParams {
         var r: IGeneralCreateParams = <any>Object.create(null);
@@ -96,3 +96,5 @@ export abstract class DCOHelper {
     }
 
 }
+
+export default DCOHelper;

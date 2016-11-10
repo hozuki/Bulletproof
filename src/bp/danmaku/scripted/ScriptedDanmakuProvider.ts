@@ -2,23 +2,22 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuProviderBase} from "../DanmakuProviderBase";
-import {DanmakuKind} from "../DanmakuKind";
-import {ScriptedDanmakuLayoutManager} from "./ScriptedDanmakuLayoutManager";
-import {DanmakuController} from "../DanmakuController";
-import {ScriptedDanmaku} from "./ScriptedDanmaku";
-import {DanmakuProviderFlag} from "../DanmakuProviderFlag";
-import {ScriptedDanmakuLayer} from "./ScriptedDanmakuLayer";
-import {IScriptedDanmakuCreateParams} from "./IScriptedDanmakuCreateParams";
-import {ScriptedDanmakuHelper} from "./ScriptedDanmakuHelper";
-import {IDanmaku} from "../IDanmaku";
-import {TimeInfoEx} from "../../mic/TimeInfoEx";
-import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import DanmakuProviderBase from "../DanmakuProviderBase";
+import DanmakuKind from "../DanmakuKind";
+import ScriptedDanmakuLayoutManager from "./ScriptedDanmakuLayoutManager";
+import DanmakuController from "../DanmakuController";
+import ScriptedDanmaku from "./ScriptedDanmaku";
+import DanmakuProviderFlag from "../DanmakuProviderFlag";
+import ScriptedDanmakuLayer from "./ScriptedDanmakuLayer";
+import ScriptedDanmakuCreateParams from "./ScriptedDanmakuCreateParams";
+import IDanmaku from "../IDanmaku";
+import TimeInfoEx from "../../mic/TimeInfoEx";
+import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 /**
  * An implementation of {@link DanmakuProviderBase}, for managing code damakus.
  */
-export class ScriptedDanmakuProvider extends DanmakuProviderBase {
+export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
     constructor(controller: DanmakuController) {
         super(controller);
@@ -29,7 +28,7 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         return DanmakuKind.Scripted;
     }
 
-    addDanmaku(content: string, args?: IScriptedDanmakuCreateParams): IDanmaku {
+    addDanmaku(content: string, args?: ScriptedDanmakuCreateParams): IDanmaku {
         return super.addDanmaku(content, args);
     }
 
@@ -125,9 +124,9 @@ export class ScriptedDanmakuProvider extends DanmakuProviderBase {
         return DanmakuProviderFlag.UnlimitedCreation;
     }
 
-    protected _$addDanmaku(content: string, args?: IScriptedDanmakuCreateParams): ScriptedDanmaku {
+    protected _$addDanmaku(content: string, args?: ScriptedDanmakuCreateParams): ScriptedDanmaku {
         if (!CommonUtil.ptr(args)) {
-            args = ScriptedDanmakuHelper.getDefaultParams(this.engine.options);
+            args = CommonUtil.deepClone(this.engine.options);
         }
         var danmaku = new ScriptedDanmaku(this.engine.stage, this.layer, this.layoutManager, args);
         // Add to the last position of all currently active damakus to ensure being drawn as topmost.

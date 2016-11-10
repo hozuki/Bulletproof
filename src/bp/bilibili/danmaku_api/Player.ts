@@ -2,22 +2,22 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
-import {CommentData} from "./CommentData";
-import {VideoPlayerBase} from "../../interactive/video/VideoPlayerBase";
-import {VideoPlayerState} from "../../interactive/video/VideoPlayerState";
-import {PlayerState} from "./PlayerState";
-import {DanmakuProviderBase} from "../../danmaku/DanmakuProviderBase";
-import {DisplayObject} from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
-import {Sound} from "../../../../lib/glantern/src/gl/flash/media/Sound";
-import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {URLRequest} from "../../../../lib/glantern/src/gl/flash/net/URLRequest";
-import {ScriptedDanmakuProvider} from "../../danmaku/scripted/ScriptedDanmakuProvider";
-import {StaticDanmakuApiContract} from "../StaticDanmakuApiContract";
-import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
-import {NotSupportedError} from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
+import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
+import CommentData from "./CommentData";
+import VideoPlayerBase from "../../interactive/video/VideoPlayerBase";
+import VideoPlayerState from "../../interactive/video/VideoPlayerState";
+import PlayerState from "./PlayerState";
+import DanmakuProviderBase from "../../danmaku/DanmakuProviderBase";
+import DisplayObject from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import Sound from "../../../../lib/glantern/src/gl/flash/media/Sound";
+import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import URLRequest from "../../../../lib/glantern/src/gl/flash/net/URLRequest";
+import ScriptedDanmakuProvider from "../../danmaku/scripted/ScriptedDanmakuProvider";
+import StaticDanmakuApiContract from "../StaticDanmakuApiContract";
+import VirtualDom from "../../../../lib/glantern/src/gl/mic/VirtualDom";
+import NotSupportedError from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
 
-export class Player extends StaticDanmakuApiObject {
+export default class Player extends StaticDanmakuApiObject {
 
     constructor(provider: ScriptedDanmakuProvider, contract: StaticDanmakuApiContract) {
         super();

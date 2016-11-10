@@ -2,9 +2,9 @@
  * Created by MIC on 2016/2/28.
  */
 
-import {OutOfRangeError} from "../../flash/errors/OutOfRangeError";
+import OutOfRangeError from "../../flash/errors/OutOfRangeError";
 
-export abstract class BPUtil {
+abstract class BPUtil {
 
     static createNumberArray(length: number, zeroFill: boolean = true): number[] {
         length |= 0;
@@ -103,3 +103,5 @@ function getBSIndex<T>(array: T[], item: T, comparison: (toCompare: T, standard:
     }
     return middle;
 }
+
+export default BPUtil;

@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-export abstract class MotionEasing {
+abstract class MotionEasing {
 
     static get NONE(): string {
         return 'None';
@@ -45,3 +45,5 @@ export abstract class MotionEasing {
     }
 
 }
+
+export default MotionEasing;

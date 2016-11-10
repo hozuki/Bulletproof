@@ -2,7 +2,7 @@
  * Created by MIC on 2016/2/8.
  */
 
-export enum VideoPlayerState {
+enum VideoPlayerState {
 
     Invalid = -1,
     Created = 0,
@@ -14,3 +14,5 @@ export enum VideoPlayerState {
     Seeking = 6
 
 }
+
+export default VideoPlayerState;

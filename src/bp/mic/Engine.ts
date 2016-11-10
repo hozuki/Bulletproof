@@ -2,28 +2,28 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuController} from "../danmaku/DanmakuController";
-import {ScriptedDanmakuProvider} from "../danmaku/scripted/ScriptedDanmakuProvider";
-import {DanmakuProviderBase} from "../danmaku/DanmakuProviderBase";
-import {DefaultEngineOptions} from "./DefaultEngineOptions";
-import {VideoPlayerBase} from "../interactive/video/VideoPlayerBase";
-import {Html5VideoPlayer} from "../interactive/video/html5/Html5VideoPlayer";
-import {IEngineOptions} from "./IEngineOptions";
-import {EngineBase} from "../../../lib/glantern/src/gl/mic/EngineBase";
-import {VideoPlayerEvent} from "../interactive/video/VideoPlayerEvent";
-import {VideoPlayerState} from "../interactive/video/VideoPlayerState";
-import {TimeInfoEx} from "./TimeInfoEx";
-import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
-import {VirtualDom} from "../../../lib/glantern/src/gl/mic/VirtualDom";
-import {CommentKeyEventArgs} from "./bulletproof/events/CommentKeyEventArgs";
-import {EventBase} from "../../../lib/glantern/src/gl/mic/EventBase";
-import {BPEvents} from "./bulletproof/events/BPEvents";
-import {CommentData} from "../bilibili/danmaku_api/CommentData";
+import DanmakuController from "../danmaku/DanmakuController";
+import ScriptedDanmakuProvider from "../danmaku/scripted/ScriptedDanmakuProvider";
+import DanmakuProviderBase from "../danmaku/DanmakuProviderBase";
+import DefaultEngineOptions from "./DefaultEngineOptions";
+import VideoPlayerBase from "../interactive/video/VideoPlayerBase";
+import Html5VideoPlayer from "../interactive/video/html5/Html5VideoPlayer";
+import EngineOptions from "./EngineOptions";
+import EngineBase from "../../../lib/glantern/src/gl/mic/EngineBase";
+import VideoPlayerEvent from "../interactive/video/VideoPlayerEvent";
+import VideoPlayerState from "../interactive/video/VideoPlayerState";
+import TimeInfoEx from "./TimeInfoEx";
+import CommonUtil from "../../../lib/glantern/src/gl/mic/CommonUtil";
+import VirtualDom from "../../../lib/glantern/src/gl/mic/VirtualDom";
+import CommentKeyEventArgs from "./bulletproof/events/CommentKeyEventArgs";
+import EventBase from "../../../lib/glantern/src/gl/mic/EventBase";
+import BPEvents from "./bulletproof/events/BPEvents";
+import CommentData from "../bilibili/danmaku_api/CommentData";
 
 /**
  * The root controller for Bulletproof.
  */
-export class Engine extends EngineBase {
+export default class Engine extends EngineBase {
 
     /**
      * Creates a new {@link Engine} instance.
@@ -71,7 +71,7 @@ export class Engine extends EngineBase {
 
         // The earlier a provider is added in, the deeper it is in Z axis.
         var provider: DanmakuProviderBase;
-        if (options.codeDanmakuEnabled) {
+        if (options.scriptedDanmakuEnabled) {
             provider = new ScriptedDanmakuProvider(controller);
             controller.addProvider(provider);
         }
@@ -130,7 +130,7 @@ export class Engine extends EngineBase {
         return CommonUtil.ptr(this.videoPlayer) ? this.videoPlayer.view : null;
     }
 
-    get options(): IEngineOptions {
+    get options(): EngineOptions {
         return this._options;
     }
 
@@ -187,7 +187,7 @@ export class Engine extends EngineBase {
     private _lastTimeVideoUpdated: number = -1;
     private _danmakuController: DanmakuController = null;
     private _videoPlayer: VideoPlayerBase = null;
-    private _options: IEngineOptions = null;
+    private _options: EngineOptions = null;
     private _blackCurtainView: HTMLDivElement = null;
 
 }

@@ -2,16 +2,16 @@
  * Created by MIC on 2016/9/14.
  */
 
-import {Global} from "./danmaku_api/Global";
-import {Storage} from "./danmaku_api/Storage";
-import {Utils} from "./danmaku_api/Utils";
-import {ScriptManager} from "./danmaku_api/ScriptManager";
-import {Tween} from "./danmaku_api/Tween";
-import {Bitmap} from "./danmaku_api/Bitmap";
-import {FiniteTimer} from "../danmaku/scripted/dco/FiniteTimer";
-import {Player} from "./danmaku_api/Player";
+import Global from "./danmaku_api/Global";
+import Storage from "./danmaku_api/Storage";
+import Utils from "./danmaku_api/Utils";
+import ScriptManager from "./danmaku_api/ScriptManager";
+import Tween from "./danmaku_api/Tween";
+import Bitmap from "./danmaku_api/Bitmap";
+import FiniteTimer from "../danmaku/scripted/dco/FiniteTimer";
+import Player from "./danmaku_api/Player";
 
-export interface StaticDanmakuApiContract {
+interface StaticDanmakuApiContract {
 
     $G: Global;
     Global: Global;
@@ -32,3 +32,5 @@ export interface StaticDanmakuApiContract {
     load: (libraryName: string, onComplete: () => void) => void;
 
 }
+
+export default StaticDanmakuApiContract;

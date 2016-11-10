@@ -2,25 +2,25 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {DanmakuApiContract} from "./DanmakuApiContract";
-import {Display} from "./danmaku_api/Display";
-import {Functions} from "./danmaku_api/Functions";
-import {Utils} from "./danmaku_api/Utils";
-import {Bitmap} from "./danmaku_api/Bitmap";
-import {Player} from "./danmaku_api/Player";
-import {ScriptManager} from "./danmaku_api/ScriptManager";
-import {Storage} from "./danmaku_api/Storage";
-import {Tween} from "./danmaku_api/Tween";
-import {ScriptedDanmakuProvider} from "../danmaku/scripted/ScriptedDanmakuProvider";
-import {StaticDanmakuApiContract} from "./StaticDanmakuApiContract";
-import {CommonUtil} from "../../../lib/glantern/src/gl/mic/CommonUtil";
-import {ScriptedDanmaku} from "../danmaku/scripted/ScriptedDanmaku";
-import {Engine} from "../mic/Engine";
-import {Global} from "./danmaku_api/Global";
+import DanmakuApiContract from "./DanmakuApiContract";
+import Display from "./danmaku_api/Display";
+import Functions from "./danmaku_api/Functions";
+import Utils from "./danmaku_api/Utils";
+import Bitmap from "./danmaku_api/Bitmap";
+import Player from "./danmaku_api/Player";
+import ScriptManager from "./danmaku_api/ScriptManager";
+import Storage from "./danmaku_api/Storage";
+import Tween from "./danmaku_api/Tween";
+import ScriptedDanmakuProvider from "../danmaku/scripted/ScriptedDanmakuProvider";
+import StaticDanmakuApiContract from "./StaticDanmakuApiContract";
+import CommonUtil from "../../../lib/glantern/src/gl/mic/CommonUtil";
+import ScriptedDanmaku from "../danmaku/scripted/ScriptedDanmaku";
+import Engine from "../mic/Engine";
+import Global from "./danmaku_api/Global";
 
-let $staticContexts: Map<ScriptedDanmakuProvider, StaticDanmakuApiContract> = new Map<ScriptedDanmakuProvider, StaticDanmakuApiContract>();
+const $staticContexts: Map<ScriptedDanmakuProvider, StaticDanmakuApiContract> = new Map<ScriptedDanmakuProvider, StaticDanmakuApiContract>();
 
-export class DanmakuApiContainer {
+export default class DanmakuApiContainer {
 
     constructor(danmaku: ScriptedDanmaku) {
         this._danmaku = danmaku;

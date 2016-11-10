@@ -2,10 +2,10 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {IMotion} from "./IMotion";
-import {DisplayObjectContainer} from "../../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
+import IMotion from "./IMotion";
+import DisplayObjectContainer from "../../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
 
-export interface IGeneralCreateParams {
+interface IGeneralCreateParams {
 
     x?: number;
     y?: number;
@@ -18,3 +18,5 @@ export interface IGeneralCreateParams {
     motionGroup?: IMotion[]
 
 }
+
+export default IGeneralCreateParams;

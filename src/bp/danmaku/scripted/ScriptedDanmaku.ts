@@ -2,28 +2,28 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuKind} from "../DanmakuKind";
-import {ScriptedDanmakuLayoutManager} from "./ScriptedDanmakuLayoutManager";
-import {Engine} from "../../mic/Engine";
-import {IDanmakuCreatedObject} from "./dco/IDanmakuCreatedObject";
-import {DanmakuApiContainer} from "../../bilibili/DanmakuApiContainer";
-import {IMotion} from "../../bilibili/danmaku_api/data_types/IMotion";
-import {IMotionPropertyAnimation} from "../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
-import {ScriptedDanmakuProvider} from "./ScriptedDanmakuProvider";
-import {IDanmaku} from "../IDanmaku";
-import {IScriptedDanmakuCreateParams} from "./IScriptedDanmakuCreateParams";
-import {CommentData} from "../../bilibili/danmaku_api/CommentData";
-import {DisplayObjectContainer} from "../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
-import {Stage} from "../../../../lib/glantern/src/gl/flash/display/Stage";
-import {WebGLRenderer} from "../../../../lib/glantern/src/gl/webgl/WebGLRenderer";
-import {DisplayObject} from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
-import {ScriptedDanmakuLayer} from "./ScriptedDanmakuLayer";
-import {TimeInfo} from "../../../../lib/glantern/src/gl/mic/TimeInfo";
-import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import DanmakuKind from "../DanmakuKind";
+import ScriptedDanmakuLayoutManager from "./ScriptedDanmakuLayoutManager";
+import Engine from "../../mic/Engine";
+import IDanmakuCreatedObject from "./dco/IDanmakuCreatedObject";
+import DanmakuApiContainer from "../../bilibili/DanmakuApiContainer";
+import IMotion from "../../bilibili/danmaku_api/data_types/IMotion";
+import IMotionPropertyAnimation from "../../bilibili/danmaku_api/data_types/IMotionPropertyAnimation";
+import ScriptedDanmakuProvider from "./ScriptedDanmakuProvider";
+import IDanmaku from "../IDanmaku";
+import ScriptedDanmakuCreateParams from "./ScriptedDanmakuCreateParams";
+import CommentData from "../../bilibili/danmaku_api/CommentData";
+import DisplayObjectContainer from "../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
+import Stage from "../../../../lib/glantern/src/gl/flash/display/Stage";
+import WebGLRenderer from "../../../../lib/glantern/src/gl/webgl/WebGLRenderer";
+import DisplayObject from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import ScriptedDanmakuLayer from "./ScriptedDanmakuLayer";
+import TimeInfo from "../../../../lib/glantern/src/gl/mic/TimeInfo";
+import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 
-export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku {
+export default class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku {
 
-    constructor(root: Stage, parent: DisplayObjectContainer, layoutManager: ScriptedDanmakuLayoutManager, createParams: IScriptedDanmakuCreateParams) {
+    constructor(root: Stage, parent: DisplayObjectContainer, layoutManager: ScriptedDanmakuLayoutManager, createParams: ScriptedDanmakuCreateParams) {
         super(root, parent);
         this._layoutManager = layoutManager;
         this._danmakuProvider = layoutManager.danmakuProvider;
@@ -97,7 +97,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
         return this._apiContainer;
     }
 
-    get createParams(): IScriptedDanmakuCreateParams {
+    get createParams(): ScriptedDanmakuCreateParams {
         return this._createParams;
     }
 
@@ -242,7 +242,7 @@ export class ScriptedDanmaku extends DisplayObjectContainer implements IDanmaku 
     private _layoutManager: ScriptedDanmakuLayoutManager = null;
     private _danmakuProvider: ScriptedDanmakuProvider = null;
     private _layer: ScriptedDanmakuLayer = null;
-    private _createParams: IScriptedDanmakuCreateParams = null;
+    private _createParams: ScriptedDanmakuCreateParams = null;
     private _executed: boolean = false;
 
 }

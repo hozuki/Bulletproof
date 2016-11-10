@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-export abstract class PlayerState {
+abstract class PlayerState {
 
     static get PLAYING(): string {
         return "playing";
@@ -21,3 +21,5 @@ export abstract class PlayerState {
     }
 
 }
+
+export default PlayerState;

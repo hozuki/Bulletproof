@@ -2,16 +2,16 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
-import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
-import {MathUtil} from "../../../../lib/glantern/src/gl/mic/MathUtil";
-import {GLUtil} from "../../../../lib/glantern/src/gl/mic/glantern/GLUtil";
-import {VirtualDom} from "../../../../lib/glantern/src/gl/mic/VirtualDom";
-import {StaticDanmakuApiContract} from "../StaticDanmakuApiContract";
+import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
+import FiniteTimer from "../../danmaku/scripted/dco/FiniteTimer";
+import MathUtil from "../../../../lib/glantern/src/gl/mic/MathUtil";
+import GLUtil from "../../../../lib/glantern/src/gl/mic/glantern/GLUtil";
+import VirtualDom from "../../../../lib/glantern/src/gl/mic/VirtualDom";
+import StaticDanmakuApiContract from "../StaticDanmakuApiContract";
 
 const $date = new Date();
 
-export class Utils extends StaticDanmakuApiObject {
+export default class Utils extends StaticDanmakuApiObject {
 
     constructor(contract: StaticDanmakuApiContract) {
         super();

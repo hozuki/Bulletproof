@@ -2,10 +2,10 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {DanmakuApiContainer} from "../DanmakuApiContainer";
-import {IDCExtraCreateParams} from "../../danmaku/scripted/dco/IDCExtraCreateParams";
+import DanmakuApiContainer from "../DanmakuApiContainer";
+import IDCExtraCreateParams from "../../danmaku/scripted/dco/IDCExtraCreateParams";
 
-export abstract class InstanceDanmakuApiObject {
+abstract class InstanceDanmakuApiObject {
 
     constructor(apiContainer: DanmakuApiContainer) {
         this._apiContainer = apiContainer;
@@ -27,3 +27,5 @@ export abstract class InstanceDanmakuApiObject {
     protected _apiContainer: DanmakuApiContainer = null;
 
 }
+
+export default InstanceDanmakuApiObject;

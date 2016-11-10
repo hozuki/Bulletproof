@@ -2,11 +2,11 @@
  * Created by MIC on 2016/2/8.
  */
 
-import {VideoPlayerState} from "./VideoPlayerState";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {EventDispatcher} from "../../../../lib/glantern/src/gl/flash/events/EventDispatcher";
+import VideoPlayerState from "./VideoPlayerState";
+import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import EventDispatcher from "../../../../lib/glantern/src/gl/flash/events/EventDispatcher";
 
-export abstract class VideoPlayerBase extends EventDispatcher {
+abstract class VideoPlayerBase extends EventDispatcher {
 
     constructor() {
         super();
@@ -198,3 +198,5 @@ export abstract class VideoPlayerBase extends EventDispatcher {
     }
 
 }
+
+export default VideoPlayerBase;

@@ -2,10 +2,10 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {Timer} from "../../../../../lib/glantern/src/gl/flash/utils/Timer";
-import {TimerEvent} from "../../../../../lib/glantern/src/gl/flash/events/TimerEvent";
+import Timer from "../../../../../lib/glantern/src/gl/flash/utils/Timer";
+import TimerEvent from "../../../../../lib/glantern/src/gl/flash/events/TimerEvent";
 
-export class FiniteTimer extends Timer {
+export default class FiniteTimer extends Timer {
 
     constructor(obj: string|Function, delay: number, repeatCount: number = 1) {
         super(delay, repeatCount);

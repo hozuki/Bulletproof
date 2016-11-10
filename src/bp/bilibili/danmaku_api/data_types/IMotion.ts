@@ -2,11 +2,11 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {IMotionPropertyAnimation} from "./IMotionPropertyAnimation";
-import {IDanmakuCreatedObject} from "../../../danmaku/scripted/dco/IDanmakuCreatedObject";
-import {DisplayObject} from "../../../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import IMotionPropertyAnimation from "./IMotionPropertyAnimation";
+import IDanmakuCreatedObject from "../../../danmaku/scripted/dco/IDanmakuCreatedObject";
+import DisplayObject from "../../../../../lib/glantern/src/gl/flash/display/DisplayObject";
 
-export interface IMotion {
+interface IMotion {
 
     x?: IMotionPropertyAnimation;
     y?: IMotionPropertyAnimation;
@@ -18,3 +18,5 @@ export interface IMotion {
     sourceObject?: DisplayObject&IDanmakuCreatedObject;
 
 }
+
+export default IMotion;

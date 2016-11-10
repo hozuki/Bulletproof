@@ -2,14 +2,14 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
-import {ICommentBitmapCreateParams} from "./data_types/ICommentBitmapCreateParams";
-import {CommentBitmap} from "./CommentBitmap";
-import {BitmapData} from "../../../../lib/glantern/src/gl/flash/display/BitmapData";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {Rectangle} from "../../../../lib/glantern/src/gl/flash/geom/Rectangle";
+import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
+import ICommentBitmapCreateParams from "./data_types/ICommentBitmapCreateParams";
+import CommentBitmap from "./CommentBitmap";
+import BitmapData from "../../../../lib/glantern/src/gl/flash/display/BitmapData";
+import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import Rectangle from "../../../../lib/glantern/src/gl/flash/geom/Rectangle";
 
-export class Bitmap extends StaticDanmakuApiObject {
+export default class Bitmap extends StaticDanmakuApiObject {
 
     constructor() {
         super();

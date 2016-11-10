@@ -2,5 +2,7 @@
  * Created by MIC on 2015/12/29.
  */
 
-export * from "./DCOHelper";
-export * from "./DCShape";
+import DCOHelper from "./DCOHelper";
+import DCShape from "./DCShape";
+
+export {DCOHelper, DCShape};

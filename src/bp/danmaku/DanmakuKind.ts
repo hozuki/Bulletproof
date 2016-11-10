@@ -2,7 +2,7 @@
  * Created by MIC on 2015/12/28.
  */
 
-export enum DanmakuKind {
+enum DanmakuKind {
 
     /**
      * Note: This type handles all types (0: flying, 1: fixed on top, 2: fixed on bottom) of danmaku
@@ -12,3 +12,5 @@ export enum DanmakuKind {
     Scripted = 8
 
 }
+
+export default DanmakuKind;

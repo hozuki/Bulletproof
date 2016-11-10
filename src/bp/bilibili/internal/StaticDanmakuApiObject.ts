@@ -2,6 +2,8 @@
  * Created by MIC on 2015/12/29.
  */
 
-export abstract class StaticDanmakuApiObject {
+abstract class StaticDanmakuApiObject {
 
 }
+
+export default StaticDanmakuApiObject;

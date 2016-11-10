@@ -2,14 +2,14 @@
  * Created by MIC on 2016/1/7.
  */
 
-import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
-import {FiniteTimer} from "../../danmaku/scripted/dco/FiniteTimer";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {CommonUtil} from "../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {StaticDanmakuApiContract} from "../StaticDanmakuApiContract";
-import {ScriptedDanmakuProvider} from "../../danmaku/scripted/ScriptedDanmakuProvider";
+import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
+import FiniteTimer from "../../danmaku/scripted/dco/FiniteTimer";
+import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
+import StaticDanmakuApiContract from "../StaticDanmakuApiContract";
+import ScriptedDanmakuProvider from "../../danmaku/scripted/ScriptedDanmakuProvider";
 
-export class Functions extends StaticDanmakuApiObject {
+export default class Functions extends StaticDanmakuApiObject {
 
     constructor(provider: ScriptedDanmakuProvider, contract: StaticDanmakuApiContract) {
         super();

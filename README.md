@@ -4,9 +4,9 @@
 [![Travis](https://img.shields.io/travis/hozuki/Bulletproof.svg)](https://travis-ci.org/hozuki/Bulletproof)
 [![npm](https://img.shields.io/npm/v/bp.js.svg)](https://npmjs.com/package/bp.js)
 
-**Advanced danmaku render engine based on WebGL and other HTML 5 technologies**
+**Advanced danmaku render engine built WebGL**
 
-**以 WebGL 和其他 HTML 5 技术为核心的高级弹幕渲染引擎**
+**以 WebGL 核心的高级弹幕渲染引擎**
 
 **WORK IN PROGRESS**
 
@@ -22,8 +22,8 @@ Coming soon...
 npm install bp.js
 ```
 
-(Why isn't the package name `bulletproof`? Because that name was registered before this
-package publishes to NPM. （ つ Д ｀）)
+Why isn't the package name `bulletproof`? Because that name was registered before this
+package is published to NPM. （ つ Д ｀）
 
 ## Building & Testing
 
@@ -88,5 +88,4 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
 
 Bulletproof uses [The MIT License](http://mitlicense.org). A copy of it can be found [here](LICENSE.md).
 
-A part of Bulletproof uses modifications based on [`webgl-utils.js`](//github.com/KhronosGroup/WebGL/blob/master/sdk/demos/common/webgl-utils.js). Its license file
-can be found [here](docs/license/webgl-utils.txt).
+Bulletproof is built on [GLantern](https://github.com/hozuki/GLantern), thus they have the same [mods](https://github.com/hozuki/GLanter#credits).

@@ -2,7 +2,7 @@
  * Created by MIC on 2016/2/11.
  */
 
-export interface IScriptedDanmakuCreateParams {
+interface ScriptedDanmakuCreateParams {
 
     /**
      * Manual override for {@link ScriptedDanmaku.bornTime}.
@@ -12,3 +12,5 @@ export interface IScriptedDanmakuCreateParams {
     bornTime?: number;
 
 }
+
+export default ScriptedDanmakuCreateParams;
