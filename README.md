@@ -4,7 +4,7 @@
 [![Travis](https://img.shields.io/travis/hozuki/Bulletproof.svg)](https://travis-ci.org/hozuki/Bulletproof)
 [![npm](https://img.shields.io/npm/v/bp.js.svg)](https://npmjs.com/package/bp.js)
 
-**Advanced danmaku render engine built WebGL**
+**Advanced danmaku render engine built on WebGL**
 
 **以 WebGL 核心的高级弹幕渲染引擎**
 
@@ -31,7 +31,7 @@ Git, Node.js, NPM and Gulp are required.
 
 ```shell
 git clone https://github.com/hozuki/Bulletproof.git
-npm install
+cd Bulletproof && npm install
 git submodule update --init --recursive
 git submodule foreach npm install
 gulp
@@ -66,7 +66,7 @@ Firefox sometimes is slow; Edge and IE 11 always have serious performance degene
   - [x] `Functions`
   - [x] `Global`
   - [ ] `Tween`
-  - [x] `Player` (almost, `createSound()` and `setMask()` are in progress)
+  - [x] `Player` (almost, `createSound()` is in progress)
   - [x] `ScriptManager`
   - [x] `Utils`
   - [ ] External library: `Bitmap`

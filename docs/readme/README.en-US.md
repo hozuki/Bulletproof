@@ -77,7 +77,7 @@ In other cases, please import the files using `<script>` tag:
 ```
 
 After either way of importing, the `Bulletproof` namespace can be accessed in global scope.
-An example usage can be found [here](../../test/visual/bootstrap.js).
+An example usage can be found [here](../../test/visual/index.js).
 
 ## Project Status
 

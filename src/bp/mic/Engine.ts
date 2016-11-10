@@ -35,16 +35,17 @@ export default class Engine extends EngineBase {
 
     /**
      * Initialize the {@link Engine} instance with default parameters.
+     * @param canvas {HTMLCanvasElement}
      * @param width {Number} Width of stage requested, in pixels.
      * @param height {Number} Height of stage requested, in pixels.
      * @param parent {HTMLElement} Parent of views.
      */
-    initialize(width: number, height: number, parent: HTMLElement): void {
+    initialize(canvas: HTMLCanvasElement, width: number, height: number, parent: HTMLElement): void {
         if (this.isInitialized) {
             return;
         }
 
-        super.initialize(width, height);
+        super.initialize(canvas, width, height);
         var options = this.options;
         var controller = new DanmakuController(this);
         this._danmakuController = controller;
