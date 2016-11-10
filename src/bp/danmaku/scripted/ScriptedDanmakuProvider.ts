@@ -2,6 +2,7 @@
  * Created by MIC on 2015/12/28.
  */
 
+import {Vm} from "vm.js";
 import DanmakuProviderBase from "../DanmakuProviderBase";
 import DanmakuKind from "../DanmakuKind";
 import ScriptedDanmakuLayoutManager from "./ScriptedDanmakuLayoutManager";
@@ -22,6 +23,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     constructor(controller: DanmakuController) {
         super(controller);
         this._layoutManager = new ScriptedDanmakuLayoutManager(this);
+        this._vm = new Vm();
     }
 
     get danmakuKind(): DanmakuKind {
@@ -75,7 +77,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     isDanmakuDead(timeInfo: TimeInfoEx, danmaku: ScriptedDanmaku): boolean {
         var now = timeInfo.millisOfVideo;
         if (now < danmaku.bornTime) {
-            return danmaku.executed;
+            return danmaku.isExecuted;
         } else {
             return danmaku.bornTime + danmaku.lifeTime * 1000 < now;
         }
@@ -87,7 +89,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
         var now = timeInfo.millisOfVideo;
         for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
             danmaku = this.displayingDanmakuList[i];
-            if (!danmaku.executed && now >= danmaku.bornTime) {
+            if (!danmaku.isExecuted && now >= danmaku.bornTime) {
                 danmaku.execute();
             }
         }
@@ -124,6 +126,10 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
         return DanmakuProviderFlag.UnlimitedCreation;
     }
 
+    get vm(): Vm {
+        return this._vm;
+    }
+
     protected _$addDanmaku(content: string, args?: ScriptedDanmakuCreateParams): ScriptedDanmaku {
         if (!CommonUtil.ptr(args)) {
             args = CommonUtil.deepClone(this.engine.options);
@@ -139,5 +145,6 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     protected _displayingDanmakuList: ScriptedDanmaku[];
     protected _layoutManager: ScriptedDanmakuLayoutManager;
     protected _layer: ScriptedDanmakuLayer;
+    private _vm: Vm = null;
 
 }

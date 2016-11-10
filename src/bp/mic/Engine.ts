@@ -62,8 +62,6 @@ export default class Engine extends EngineBase {
             this._videoPlayer = videoPlayer;
             if (videoPlayer !== null) {
                 videoPlayer.initialize(width, height);
-                videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_TIME_UPDATE, this.__onVideoTimeUpdate.bind(this));
-                videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_PLAY, this.__onVideoPlay.bind(this));
                 this.attachUpdateFunction(this.__updateVideoTime.bind(this));
             }
         }
@@ -77,6 +75,7 @@ export default class Engine extends EngineBase {
             controller.addProvider(provider);
         }
 
+        this.__initEventHandlers();
         this.attachUpdateFunction(this.__updateDanmakus.bind(this));
     }
 
@@ -152,12 +151,19 @@ export default class Engine extends EngineBase {
         this.danmakuController.update(timeInfo);
     }
 
-    private __onVideoTimeUpdate(): void {
-        this._playerReportedVideoMillis = this.videoPlayer.currentTime * 1000;
-    }
-
-    private __onVideoPlay(): void {
-        this._lastTimeVideoUpdated = this.elapsedMillis;
+    private __initEventHandlers(): void {
+        var videoPlayer = this._videoPlayer;
+        if (CommonUtil.ptr(videoPlayer)) {
+            videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_TIME_UPDATE, this.__onVideoTimeUpdate.bind(this));
+            videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_PLAY, this.__onVideoPlay.bind(this));
+        }
+        var canvas = this.view;
+        if (CommonUtil.ptr(canvas)) {
+            canvas.addEventListener("mouseenter", this.__onCanvasMouseEnter.bind(this));
+            canvas.addEventListener("mouseout", this.__onCanvasMouseLeave.bind(this));
+            canvas.addEventListener("mousemove", this.__onCanvasMouseMove.bind(this));
+            canvas.addEventListener("click", this.__onCanvasClick.bind(this));
+        }
     }
 
     private __initHtmlElements(width: number, height: number, parent: HTMLElement): void {
@@ -181,6 +187,30 @@ export default class Engine extends EngineBase {
         parent.appendChild(blackCurtainView);
         parent.appendChild(videoView);
         parent.appendChild(view);
+    }
+
+    private __onVideoTimeUpdate(): void {
+        this._playerReportedVideoMillis = this.videoPlayer.currentTime * 1000;
+    }
+
+    private __onVideoPlay(): void {
+        this._lastTimeVideoUpdated = this.elapsedMillis;
+    }
+
+    private __onCanvasMouseEnter(e: MouseEvent): void {
+
+    }
+
+    private __onCanvasMouseLeave(e: MouseEvent): void {
+
+    }
+
+    private __onCanvasMouseMove(e: MouseEvent): void {
+
+    }
+
+    private __onCanvasClick(e: MouseEvent): void {
+
     }
 
     private _videoMillis: number = 0;

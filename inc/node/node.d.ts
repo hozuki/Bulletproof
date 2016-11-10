@@ -1320,7 +1320,7 @@ declare module "fs" {
     export var R_OK: number;
     /** Constant for fs.access(). File can be written by the calling process. */
     export var W_OK: number;
-    /** Constant for fs.access(). File can be executed by the calling process. */
+    /** Constant for fs.access(). File can be isExecuted by the calling process. */
     export var X_OK: number;
     /** Tests a user's permissions for the file specified by path. */
     export function access(path: string, callback: (err: NodeJS.ErrnoException) => void): void;

@@ -2,6 +2,7 @@
  * Created by MIC on 2015/12/28.
  */
 
+import * as VMJS from "vm.js";
 import DanmakuKind from "../DanmakuKind";
 import ScriptedDanmakuLayoutManager from "./ScriptedDanmakuLayoutManager";
 import Engine from "../../mic/Engine";
@@ -79,17 +80,18 @@ export default class ScriptedDanmaku extends DisplayObjectContainer implements I
         this._apiContainer = new DanmakuApiContainer(this);
     }
 
-    get executed(): boolean {
-        return this._executed;
+    get isExecuted(): boolean {
+        return this._isExecuted;
     }
 
     execute(): void {
-        if (!this._executed) {
-            if (this.__censor()) {
-                this._lambda = this.__buildFunction();
-                this.__applyFunction();
-                this._executed = true;
-            }
+        if (this.isExecuted) {
+            return;
+        }
+        if (this.__censor()) {
+            this._lambda = this.__buildFunction();
+            this.__applyFunction();
+            this._isExecuted = true;
         }
     }
 
@@ -168,7 +170,7 @@ export default class ScriptedDanmaku extends DisplayObjectContainer implements I
     }
 
     private static __applyMotion(motion: IMotion, now: number): void {
-        var propertyNames: string[] = ["x", "y", "alpha", "rotationZ", "rotationY"];
+        const propertyNames = ["x", "y", "alpha", "rotationZ", "rotationY"];
         var motionAnimation: IMotionPropertyAnimation;
         var relativeTime: number;
         var value: number;
@@ -210,7 +212,7 @@ export default class ScriptedDanmaku extends DisplayObjectContainer implements I
     private __buildFunction(): Function {
         // Weak defense is better than none.
         // TODO: Use WebWorker to create a safety sandbox.
-        var api = this._apiContainer.api;
+        var api = this.apiContainer.api;
         var thisApiNames: string[] = this._apiNames = [];
         var apiNames = Object.keys(api);
         for (var i = 0; i < apiNames.length; ++i) {
@@ -221,7 +223,7 @@ export default class ScriptedDanmaku extends DisplayObjectContainer implements I
     }
 
     private __applyFunction(): void {
-        var ac = this._apiContainer;
+        var ac = this.apiContainer;
         var apiValues: any[] = [];
         for (var i = 0; i < this._apiNames.length; ++i) {
             apiValues.push((<any>ac.api)[this._apiNames[i]]);
@@ -231,6 +233,19 @@ export default class ScriptedDanmaku extends DisplayObjectContainer implements I
 
     private __censor(): boolean {
         return true;
+    }
+
+    private __runInVM(): void {
+        var api = this.apiContainer.api;
+        var thisApiNames: string[] = this._apiNames = [];
+        var apiNames = Object.keys(api);
+        for (var i = 0; i < apiNames.length; ++i) {
+            thisApiNames.push(apiNames[i]);
+        }
+        var vm = this.danmakuProvider.vm;
+        for (var i = 0; i < thisApiNames.length; ++i) {
+            vm.realm.global[thisApiNames[i]] = api[thisApiNames[i]];
+        }
     }
 
     private _apiNames: string[] = null;
@@ -243,6 +258,7 @@ export default class ScriptedDanmaku extends DisplayObjectContainer implements I
     private _danmakuProvider: ScriptedDanmakuProvider = null;
     private _layer: ScriptedDanmakuLayer = null;
     private _createParams: ScriptedDanmakuCreateParams = null;
-    private _executed: boolean = false;
+    private _isExecuted: boolean = false;
+    private _script: VMJS.Script;
 
 }

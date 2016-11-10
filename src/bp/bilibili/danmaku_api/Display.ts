@@ -18,11 +18,12 @@ import Matrix3D from "../../../../lib/glantern/src/gl/flash/geom/Matrix3D";
 import ColorTransform from "../../../../lib/glantern/src/gl/flash/geom/ColorTransform";
 import TextFormat from "../../../../lib/glantern/src/gl/flash/text/TextFormat";
 import Graphics from "../../../../lib/glantern/src/gl/flash/display/Graphics";
-import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 import InstanceDanmakuApiObject from "../internal/InstanceDanmakuApiObject";
 import VirtualDom from "../../../../lib/glantern/src/gl/mic/VirtualDom";
 import NotSupportedError from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
+import DCCanvas from "../../danmaku/scripted/dco/DCCanvas";
+import DCButton from "../../danmaku/scripted/dco/DCButton";
 
 export default class Display extends InstanceDanmakuApiObject {
 
@@ -72,12 +73,23 @@ export default class Display extends InstanceDanmakuApiObject {
         return shape;
     }
 
-    createCanvas(params: IGeneralCreateParams): any {
-        throw new NotImplementedError();
+    createCanvas(params: IGeneralCreateParams): DCCanvas {
+        var danmaku = this.apiContainer.danmaku;
+        var canvas = new DCCanvas(danmaku.stage, danmaku, params, this._$getExtraCreateParams());
+        danmaku.addChild(canvas);
+        return canvas;
     }
 
-    createButton(text: string, params: ICommentButtonCreateParams): any {
-        throw new NotImplementedError();
+    createButton(params: ICommentButtonCreateParams): DCButton;
+    createButton(text: string, params: ICommentButtonCreateParams): DCButton;
+    createButton(p1: any, p2?: any): DCButton {
+        var params: ICommentButtonCreateParams = typeof p1 !== "string" ? p1 : p2;
+        params = params || <ICommentButtonCreateParams>Object.create(null);
+        var text = typeof p1 === "string" ? p1 : (params.text || "");
+        var danmaku = this.apiContainer.danmaku;
+        var button = new DCButton(danmaku.stage, danmaku, params, this._$getExtraCreateParams());
+        danmaku.addChild(button);
+        return button;
     }
 
     createGlowFilter(color: number = 0xff0000, alpha: number = 1.0, blurX: number = 6.0,

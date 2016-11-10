@@ -13,8 +13,8 @@ import CommonUtil from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
 
 abstract class DCOHelper {
 
-    static fillInCreateParams(engine: Engine, requestingObject: DisplayObject&IDanmakuCreatedObject, createParams: IGeneralCreateParams): IGeneralCreateParams {
-        var r: IGeneralCreateParams = <any>Object.create(null);
+    static fillInCreateParams<T extends IGeneralCreateParams>(engine: Engine, requestingObject: DisplayObject&IDanmakuCreatedObject, createParams: T): T {
+        var r: T = Object.create(null);
 
         r.color = createParams.color;
         r.alpha = createParams.alpha;
@@ -75,6 +75,13 @@ abstract class DCOHelper {
         // Warning: shallow copy
         r.motion = createParams.motion;
         r.motionGroup = createParams.motionGroup;
+
+        const handledProperties = ["color", "alpha", "fontsize", "lifeTime", "parent", "x", "y", "motion", "motionGroup"];
+        for (var k in createParams) {
+            if (Object.prototype.hasOwnProperty.call(createParams, k) && handledProperties.indexOf(k) < 0) {
+                (<any>r)[k] = (<any>createParams)[k];
+            }
+        }
 
         return r;
     }

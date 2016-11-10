@@ -22,10 +22,16 @@ export default class FiniteTimer extends Timer {
     }
 
     protected __closureTimerHandler(): void {
-        this._closure.call(null);
+        try {
+            // TODO: closure 'this' problem (kanpai-full.xml -> 'g' and 'cv')
+            this._closure();
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     protected __closureTimerCompleteHandler(): void {
+        this._closure = null;
     }
 
     private _closure: Function = null;

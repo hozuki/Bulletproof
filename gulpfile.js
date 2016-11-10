@@ -64,7 +64,7 @@ gulp.task("build-compile-glantern", function () {
 gulp.task("build-browserify", ["build-compile"], function () {
     return browserify({
         entries: [
-            "build/node/bp/browser-index.js"
+            "build/node/bp/browser-bootstrap.js"
         ],
         debug: true
     })
