@@ -13,6 +13,7 @@ const gutil = require("gulp-util");
 const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
+const os = require("os");
 
 const tsConfig = {
     target: "es5",
@@ -75,7 +76,7 @@ gulp.task("build-browserify", ["build-compile"], function () {
         .pipe(gulp.dest("build"))
         .pipe(rename({suffix: ".min"}))
         .pipe(uglify())
-        .on("error", helpers.errorHandler)
+        .on("error", gutil.log)
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("build"));
 });

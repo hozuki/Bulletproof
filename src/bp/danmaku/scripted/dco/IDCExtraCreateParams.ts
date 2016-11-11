@@ -3,13 +3,11 @@
  */
 
 import Engine from "../../../mic/Engine";
-import ScriptedDanmaku from "../ScriptedDanmaku";
+import ScriptedDanmakuProvider from "../ScriptedDanmakuProvider";
 
 interface IDCExtraCreateParams {
 
-    engine: Engine;
     bornTime: number;
-    creator: ScriptedDanmaku;
 
 }
 

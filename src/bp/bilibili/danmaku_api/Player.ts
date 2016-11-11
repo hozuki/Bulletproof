@@ -2,7 +2,6 @@
  * Created by MIC on 2016/1/7.
  */
 
-import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
 import CommentData from "./CommentData";
 import VideoPlayerBase from "../../interactive/video/VideoPlayerBase";
 import VideoPlayerState from "../../interactive/video/VideoPlayerState";
@@ -13,41 +12,35 @@ import Sound from "../../../../lib/glantern/src/gl/flash/media/Sound";
 import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
 import URLRequest from "../../../../lib/glantern/src/gl/flash/net/URLRequest";
 import ScriptedDanmakuProvider from "../../danmaku/scripted/ScriptedDanmakuProvider";
-import StaticDanmakuApiContract from "../StaticDanmakuApiContract";
 import VirtualDom from "../../../../lib/glantern/src/gl/mic/VirtualDom";
 import NotSupportedError from "../../../../lib/glantern/src/gl/flash/errors/NotSupportedError";
+import Engine from "../../mic/Engine";
+import BiliApiContract from "../BiliApiContract";
 
-export default class Player extends StaticDanmakuApiObject {
+export default class Player {
 
-    constructor(provider: ScriptedDanmakuProvider, contract: StaticDanmakuApiContract) {
-        super();
-        this._provider = provider;
-        this._contract = contract;
-        this._videoPlayer = provider.engine.videoPlayer;
-    }
-
-    play(): void {
-        var videoPlayer = this._videoPlayer;
+    static play(): void {
+        var videoPlayer = Player._videoPlayer;
         if (videoPlayer !== null) {
             videoPlayer.play();
         }
     }
 
-    pause(): void {
-        var videoPlayer = this._videoPlayer;
+    static pause(): void {
+        var videoPlayer = Player._videoPlayer;
         if (videoPlayer !== null) {
             videoPlayer.pause();
         }
     }
 
-    seek(offset: number): void {
-        var videoPlayer = this._videoPlayer;
+    static seek(offset: number): void {
+        var videoPlayer = Player._videoPlayer;
         if (videoPlayer !== null) {
             videoPlayer.currentTime = offset;
         }
     }
 
-    jump(av: string, page: number = 1, newWindow: boolean = false): void {
+    static jump(av: string, page: number = 1, newWindow: boolean = false): void {
         var url = CommonUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
         if (newWindow) {
             VirtualDom.openWindow(url, "_blank");
@@ -56,8 +49,8 @@ export default class Player extends StaticDanmakuApiObject {
         }
     }
 
-    get state(): string {
-        var videoPlayer = this._videoPlayer;
+    static get state(): string {
+        var videoPlayer = Player._videoPlayer;
         if (videoPlayer === null) {
             return PlayerState.INVALID;
         } else {
@@ -79,23 +72,23 @@ export default class Player extends StaticDanmakuApiObject {
         }
     }
 
-    get time(): number {
-        return this.$$danmakuProvider.engine.videoMillis;
+    static get time(): number {
+        return Engine.instance.videoMillis;
     }
 
-    commentTrigger(f: (cd: CommentData) => void, timeout: number = 1000): number {
-        return this.$$contract.ScriptManager.addCommentTrigger(f, timeout);
+    static commentTrigger(f: (cd: CommentData) => void, timeout: number = 1000): number {
+        return BiliApiContract.ScriptManager.addCommentTrigger(f, timeout);
     }
 
-    keyTrigger(f: (key: number) => void, timeout: number = 1000, up: boolean = false): number {
-        return this.$$contract.ScriptManager.addKeyTrigger(f, timeout, up);
+    static keyTrigger(f: (key: number) => void, timeout: number = 1000, up: boolean = false): number {
+        return BiliApiContract.ScriptManager.addKeyTrigger(f, timeout, up);
     }
 
-    setMask(obj: DisplayObject): void {
-        this.$$danmakuProvider.layer.mask = obj;
+    static setMask(obj: DisplayObject): void {
+        ScriptedDanmakuProvider.instance.layer.mask = obj;
     }
 
-    createSound(t: string, onLoad: Function = null): Sound {
+    static createSound(t: string, onLoad: Function = null): Sound {
         var request = new URLRequest(t);
         var sound = new Sound(request);
         if (CommonUtil.isFunction(onLoad)) {
@@ -110,9 +103,9 @@ export default class Player extends StaticDanmakuApiObject {
         return sound;
     }
 
-    get commentList(): CommentData[] {
+    static get commentList(): CommentData[] {
         var comments: CommentData[] = [];
-        var providers = this.$$danmakuProvider.engine.danmakuController.getProviders();
+        var providers = Engine.instance.danmakuController.getProviders();
         var provider: DanmakuProviderBase;
         for (var j = 0; j < providers.length; ++j) {
             provider = providers[j];
@@ -123,42 +116,36 @@ export default class Player extends StaticDanmakuApiObject {
         return comments;
     }
 
-    get refreshRate(): number {
-        return 1 / this.$$danmakuProvider.engine.fps;
+    static get refreshRate(): number {
+        return 1 / Engine.instance.fps;
     }
 
-    set refreshRate(v: number) {
+    static set refreshRate(v: number) {
         throw new NotSupportedError();
     }
 
-    get width(): number {
-        return this.$$danmakuProvider.engine.stage.stageWidth;
+    static get width(): number {
+        return Engine.instance.stage.stageWidth;
     }
 
-    get height(): number {
-        return this.$$danmakuProvider.engine.stage.stageHeight;
+    static get height(): number {
+        return Engine.instance.stage.stageHeight;
     }
 
-    get videoWidth(): number {
-        var videoPlayer = this._videoPlayer;
+    static get videoWidth(): number {
+        var videoPlayer = Player._videoPlayer;
         return videoPlayer !== null ? videoPlayer.videoWidth : 0;
     }
 
-    get videoHeight(): number {
-        var videoPlayer = this._videoPlayer;
+    static get videoHeight(): number {
+        var videoPlayer = Player._videoPlayer;
         return videoPlayer !== null ? videoPlayer.videoHeight : 0;
     }
 
-    private get $$danmakuProvider(): ScriptedDanmakuProvider {
-        return this._provider;
+    static $init(): void {
+        Player._videoPlayer = Engine.instance.videoPlayer;
     }
 
-    private get $$contract(): StaticDanmakuApiContract {
-        return this._contract;
-    }
-
-    private _provider: ScriptedDanmakuProvider = null;
-    private _contract: StaticDanmakuApiContract = null;
-    private _videoPlayer: VideoPlayerBase = null;
+    private static _videoPlayer: VideoPlayerBase = null;
 
 }

@@ -10,6 +10,7 @@ import IMotionPropertyAnimation from "../../../bilibili/danmaku_api/data_types/I
 import IMotion from "../../../bilibili/danmaku_api/data_types/IMotion";
 import DisplayObject from "../../../../../lib/glantern/src/gl/flash/display/DisplayObject";
 import CommonUtil from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
+import IDCExtraCreateParams from "./IDCExtraCreateParams";
 
 abstract class DCOHelper {
 
@@ -33,7 +34,7 @@ abstract class DCOHelper {
                 motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
                 if (CommonUtil.ptr(motionAnimation)) {
                     if (CommonUtil.isUndefined(motionAnimation.lifeTime)) {
-                        motionAnimation.lifeTime = requestingObject.extraCreateParams.creator.lifeTime;
+                        motionAnimation.lifeTime = engine.options.codeDanmakuLifeTimeSecs * 1000;
                     }
                     if (typeof motionAnimation.startDelay === "number") {
                         maxLife = Math.max(maxLife, motionAnimation.lifeTime * 1000 + motionAnimation.startDelay);
@@ -100,6 +101,12 @@ abstract class DCOHelper {
 
     static applyButtonCreateParams(displayObject: DisplayObject&IDanmakuCreatedObject, createParams: ICommentButtonCreateParams): void {
         DCOHelper.applyGeneralCreateParams(displayObject, createParams);
+    }
+
+    static getExtraCreateParams(): IDCExtraCreateParams {
+        return {
+            bornTime: Engine.instance.elapsedMillis
+        };
     }
 
 }

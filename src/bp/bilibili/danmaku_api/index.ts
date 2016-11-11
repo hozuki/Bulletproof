@@ -4,7 +4,6 @@
 
 import Display from "./Display";
 import Global from "./Global";
-import Functions from "./Functions";
 import Utils from "./Utils";
 import Storage from "./Storage";
 import CommentBitmap from "./CommentBitmap";
@@ -20,7 +19,6 @@ import CommentField from "./CommentField";
 export {
     Display,
     Global,
-    Functions,
     Utils,
     Storage,
     CommentBitmap,
@@ -33,6 +31,8 @@ export {
     MotionEasing,
     CommentField
 };
+
+export * from "./Functions";
 
 // (function () {
 //     var reg = /export \* from "\.\/([^"]+)"/;

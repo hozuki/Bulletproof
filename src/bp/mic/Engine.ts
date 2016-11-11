@@ -19,6 +19,7 @@ import CommentKeyEventArgs from "./bulletproof/events/CommentKeyEventArgs";
 import EventBase from "../../../lib/glantern/src/gl/mic/EventBase";
 import BPEvents from "./bulletproof/events/BPEvents";
 import CommentData from "../bilibili/danmaku_api/CommentData";
+import ApplicationError from "../../../lib/glantern/src/gl/flash/errors/ApplicationError";
 
 /**
  * The root controller for Bulletproof.
@@ -30,7 +31,11 @@ export default class Engine extends EngineBase {
      */
     constructor() {
         super();
+        if (CommonUtil.ptr(Engine.instance)) {
+            throw new ApplicationError("Engine is already created.");
+        }
         this._options = CommonUtil.deepClone(DefaultEngineOptions);
+        Engine._instance = this;
     }
 
     /**
@@ -138,6 +143,10 @@ export default class Engine extends EngineBase {
         return this._blackCurtainView;
     }
 
+    static get instance(): Engine {
+        return Engine._instance;
+    }
+
     private __updateVideoTime(timeInfo: TimeInfoEx): void {
         // If the video player is disabled, then follow our own timer.
         if (!this.options.videoPlayerEnabled || this.videoPlayer.state === VideoPlayerState.Playing) {
@@ -220,5 +229,6 @@ export default class Engine extends EngineBase {
     private _videoPlayer: VideoPlayerBase = null;
     private _options: EngineOptions = null;
     private _blackCurtainView: HTMLDivElement = null;
+    private static _instance: Engine = null;
 
 }

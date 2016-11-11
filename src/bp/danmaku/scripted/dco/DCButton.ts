@@ -9,12 +9,13 @@ import DisplayObjectContainer from "../../../../../lib/glantern/src/gl/flash/dis
 import IDCExtraCreateParams from "./IDCExtraCreateParams";
 import DCOHelper from "./DCOHelper";
 import ICommentButtonCreateParams from "../../../bilibili/danmaku_api/data_types/ICommentButtonCreateParams";
+import Engine from "../../../mic/Engine";
 
 export default class DCButton extends Button implements IDanmakuCreatedObject {
 
     constructor(root: Stage, parent: DisplayObjectContainer, createParams: ICommentButtonCreateParams, extraCreateParams: IDCExtraCreateParams) {
         super(root, parent);
-        this._createParams = DCOHelper.fillInCreateParams(extraCreateParams.engine, this, createParams);
+        this._createParams = DCOHelper.fillInCreateParams(Engine.instance, this, createParams);
         this._extraCreateParams = extraCreateParams;
         DCOHelper.applyGeneralCreateParams(this, this._createParams);
     }

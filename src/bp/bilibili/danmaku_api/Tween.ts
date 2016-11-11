@@ -2,15 +2,10 @@
  * Created by MIC on 2016/1/7.
  */
 
-import StaticDanmakuApiObject from "../internal/StaticDanmakuApiObject";
 import ITween from "./ITween";
 import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
-export default class Tween extends StaticDanmakuApiObject {
-
-    constructor() {
-        super();
-    }
+export default class Tween {
 
     tween(object: Object, dest: Object, src: Object, duration: number, easing: Function): Tween {
         throw new NotImplementedError();

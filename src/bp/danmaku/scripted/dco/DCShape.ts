@@ -9,12 +9,13 @@ import DCOHelper from "./DCOHelper";
 import Shape from "../../../../../lib/glantern/src/gl/flash/display/Shape";
 import Stage from "../../../../../lib/glantern/src/gl/flash/display/Stage";
 import DisplayObjectContainer from "../../../../../lib/glantern/src/gl/flash/display/DisplayObjectContainer";
+import Engine from "../../../mic/Engine";
 
 export default class DCShape extends Shape implements IDanmakuCreatedObject {
 
     constructor(root: Stage, parent: DisplayObjectContainer, createParams: IGeneralCreateParams, extraCreateParams: IDCExtraCreateParams) {
         super(root, parent);
-        this._createParams = DCOHelper.fillInCreateParams(extraCreateParams.engine, this, createParams);
+        this._createParams = DCOHelper.fillInCreateParams(Engine.instance, this, createParams);
         this._extraCreateParams = extraCreateParams;
         DCOHelper.applyGeneralCreateParams(this, this._createParams);
     }
