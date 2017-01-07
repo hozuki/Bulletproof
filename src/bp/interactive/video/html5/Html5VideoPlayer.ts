@@ -1,22 +1,20 @@
 /**
  * Created by MIC on 2016/2/8.
  */
-
-import {VideoPlayerBase} from "../VideoPlayerBase";
-import {VideoPlayerState} from "../VideoPlayerState";
-import {MathUtil} from "../../../../../lib/glantern/src/gl/mic/MathUtil";
-import {VideoPlayerEvent} from "../VideoPlayerEvent";
-import {EventBase} from "../../../../../lib/glantern/src/gl/mic/EventBase";
-import {CommonUtil} from "../../../../../lib/glantern/src/gl/mic/CommonUtil";
-import {VirtualDom} from "../../../../../lib/glantern/src/gl/mic/VirtualDom";
+import VideoPlayerBase from "../VideoPlayerBase";
+import VideoPlayerState from "../VideoPlayerState";
+import MathUtil from "../../../../../lib/glantern/src/gl/mic/MathUtil";
+import VideoPlayerEvent from "../VideoPlayerEvent";
+import EventBase from "../../../../../lib/glantern/src/gl/mic/EventBase";
+import VirtualDom from "../../../../../lib/glantern/src/gl/mic/VirtualDom";
 
 type EventHandler<T extends Event> = (ev: T) => void;
 
-export class Html5VideoPlayer extends VideoPlayerBase {
+export default class Html5VideoPlayer extends VideoPlayerBase {
 
     constructor(videoElement: HTMLVideoElement = null) {
         super();
-        if (!CommonUtil.ptr(videoElement) || !(videoElement instanceof HTMLVideoElement)) {
+        if (!videoElement || !(videoElement instanceof HTMLVideoElement)) {
             videoElement = VirtualDom.createElement<HTMLVideoElement>("video");
         }
         this._videoElement = videoElement;
@@ -25,15 +23,15 @@ export class Html5VideoPlayer extends VideoPlayerBase {
     }
 
     initialize(width: number, height: number): void {
-        var vid = this._videoElement;
-        var handlers = this._eventHandlers;
+        const vid = this._videoElement;
+        const handlers = this._eventHandlers;
         vid.width = width;
         vid.height = height;
 
-        var $this = this;
+        const $this = this;
 
         function addListener(name: string, listener: EventHandler<Event>): void {
-            var f = listener.bind($this);
+            const f = listener.bind($this);
             handlers.push({name: name, handler: f});
             vid.addEventListener(name, f);
         }
@@ -50,18 +48,16 @@ export class Html5VideoPlayer extends VideoPlayerBase {
     }
 
     dispose(): void {
-        var video = this._videoElement;
-        var videoParent = video.parentElement;
-        var handlers = this._eventHandlers;
-        for (var i = 0; i < handlers.length; ++i) {
+        const video = this.view;
+        const videoParent = video.parentElement;
+        const handlers = this._eventHandlers;
+        for (let i = 0; i < handlers.length; ++i) {
             video.removeEventListener(handlers[i].name, handlers[i].handler);
         }
-        if (CommonUtil.ptr(videoParent)) {
+        if (videoParent) {
             videoParent.removeChild(video);
         }
-        while (handlers.length > 0) {
-            handlers.pop();
-        }
+        handlers.splice(0, handlers.length);
         this._state = VideoPlayerState.Invalid;
         this._videoElement = null;
         this._eventHandlers = null;
@@ -69,63 +65,69 @@ export class Html5VideoPlayer extends VideoPlayerBase {
     }
 
     load(url: string): boolean {
-        if (this._state !== VideoPlayerState.Invalid) {
-            this.unload();
-            try {
-                this._videoElement.src = url;
-                this._state = VideoPlayerState.Loaded;
-                return true;
-            } catch (ex) {
-                return false;
-            }
+        if (this._state === VideoPlayerState.Invalid) {
+            return;
+        }
+        this.unload();
+        try {
+            this.view.src = url;
+            this._state = VideoPlayerState.Loaded;
+            return true;
+        } catch (ex) {
+            return false;
         }
     }
 
     unload(): void {
-        if (this.hasVideo) {
-            this.stop();
-            this._videoElement.src = null;
-            this._state = VideoPlayerState.Initialized;
+        if (!this.hasVideo) {
+            return;
         }
+        this.stop();
+        this.view.src = null;
+        this._state = VideoPlayerState.Initialized;
     }
 
     play(): void {
-        if (this.hasVideo) {
-            this._videoElement.play();
-            this._state = VideoPlayerState.Playing;
+        if (!this.hasVideo) {
+            return;
         }
+        this.view.play();
+        this._state = VideoPlayerState.Playing;
     }
 
     pause(): void {
-        if (this.hasVideo) {
-            this._videoElement.pause();
-            this._state = VideoPlayerState.Paused;
+        if (!this.hasVideo) {
+            return;
         }
+        this.view.pause();
+        this._state = VideoPlayerState.Paused;
     }
 
     resume(): void {
-        if (this.hasVideo) {
-            if (this._state === VideoPlayerState.Paused) {
-                this.play();
-            }
+        if (!this.hasVideo) {
+            return;
+        }
+        if (this._state === VideoPlayerState.Paused) {
+            this.play();
         }
     }
 
     stop(): void {
-        if (this.hasVideo) {
-            this._videoElement.pause();
-            this._videoElement.currentTime = 0;
-            this._state = VideoPlayerState.Stopped;
+        if (!this.hasVideo) {
+            return;
         }
+        this.view.pause();
+        this.view.currentTime = 0;
+        this._state = VideoPlayerState.Stopped;
     }
 
     get currentTime(): number {
-        return this.hasVideo ? this._videoElement.currentTime : 0;
+        return this.hasVideo ? this.view.currentTime : 0;
     }
 
     set currentTime(v: number) {
         if (this.hasVideo) {
-            this._videoElement.currentTime = v;
+            this.view.currentTime = v;
         }
     }
 
@@ -141,77 +143,91 @@ export class Html5VideoPlayer extends VideoPlayerBase {
     }
 
     get duration(): number {
-        return this.hasVideo ? this._videoElement.duration : 0;
+        return this.hasVideo ? this.view.duration : 0;
     }
 
     get autoPlay(): boolean {
-        return this._videoElement !== null ? this._videoElement.autoplay : false;
+        const vid = this.view;
+        return vid ? vid.autoplay : false;
     }
 
     set autoPlay(v: boolean) {
-        if (this._videoElement !== null) {
-            this._videoElement.autoplay = v;
+        const vid = this.view;
+        if (vid) {
+            vid.autoplay = v;
         }
     }
 
     get loop(): boolean {
-        return this._videoElement !== null ? this._videoElement.loop : false;
+        const vid = this.view;
+        return vid ? vid.loop : false;
     }
 
     set loop(v: boolean) {
-        if (this._videoElement !== null) {
-            this._videoElement.loop = v;
+        const vid = this.view;
+        if (vid) {
+            vid.loop = v;
         }
     }
 
     get muted(): boolean {
-        return this._videoElement !== null ? this._videoElement.muted : false;
+        const vid = this.view;
+        return vid ? vid.muted : false;
     }
 
     set muted(v: boolean) {
-        if (this._videoElement !== null) {
-            this._videoElement.muted = v;
+        const vid = this.view;
+        if (vid) {
+            vid.muted = v;
         }
     }
 
     get defaultMuted(): boolean {
-        return this._videoElement !== null ? this._videoElement.defaultMuted : false;
+        const vid = this.view;
+        return vid ? vid.defaultMuted : false;
     }
 
     set defaultMuted(v: boolean) {
-        if (this._videoElement !== null) {
-            this._videoElement.defaultMuted = v;
+        const vid = this.view;
+        if (vid) {
+            vid.defaultMuted = v;
         }
     }
 
     get playbackRate(): number {
-        return this._videoElement !== null ? this._videoElement.playbackRate : 0;
+        const vid = this.view;
+        return vid ? vid.playbackRate : 0;
     }
 
     set playbackRate(v: number) {
-        if (this._videoElement !== null) {
-            this._videoElement.playbackRate = v;
+        const vid = this.view;
+        if (vid) {
+            vid.playbackRate = v;
         }
     }
 
     get defaultPlaybackRate(): number {
-        return this._videoElement !== null ? this._videoElement.defaultPlaybackRate : 0;
+        const vid = this.view;
+        return vid ? vid.defaultPlaybackRate : 0;
     }
 
     set defaultPlaybackRate(v: number) {
-        if (this._videoElement !== null) {
-            this._videoElement.defaultPlaybackRate = v;
+        const vid = this.view;
+        if (vid) {
+            vid.defaultPlaybackRate = v;
         }
     }
 
     get volume(): number {
-        return this._videoElement !== null ? this._videoElement.volume / 200 : 0;
+        const vid = this.view;
+        return vid ? vid.volume / 200 : 0;
     }
 
     set volume(v: number) {
-        if (this._videoElement !== null) {
+        const vid = this.view;
+        if (vid) {
             v = MathUtil.clamp(v, 0, 1);
-            this._videoElement.volume = v * 200;
+            vid.volume = v * 200;
         }
     }
 
@@ -228,19 +244,23 @@ export class Html5VideoPlayer extends VideoPlayerBase {
     }
 
     get seeking(): boolean {
-        return this._videoElement !== null ? this._videoElement.seeking : false;
+        const vid = this.view;
+        return vid ? vid.seeking : false;
     }
 
     get videoWidth(): number {
-        return this._videoElement !== null ? this._videoElement.videoWidth : 0;
+        const vid = this.view;
+        return vid ? vid.videoWidth : 0;
     }
 
     get videoHeight(): number {
-        return this._videoElement !== null ? this._videoElement.videoHeight : 0;
+        const vid = this.view;
+        return vid ? vid.videoHeight : 0;
     }
 
     get fileURL(): string {
-        return this._videoElement !== null ? this._videoElement.currentSrc : null;
+        const vid = this.view;
+        return vid ? vid.currentSrc : null;
     }
 
     get hasVideo(): boolean {

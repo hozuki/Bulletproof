@@ -22,7 +22,7 @@ var bp = null;
     var testCaseSelector = document.getElementById("test-case-selector");
 
     window.onload = function () {
-        initEnv();
+        initBulletproof();
         initVideoElements();
         initList();
         console.log("Bulletproof initialization completed.");
@@ -58,10 +58,12 @@ var bp = null;
         element.style.display = "block";
     }
 
-    function initEnv() {
+    function initBulletproof() {
         if (Bulletproof.isSupported()) {
             bp = new Bulletproof.Engine();
-            bp.initialize(682, 438, document.getElementById("glantern-container"));
+            var canvas = document.createElement("canvas");
+            canvas.className = "bulletproof-view";
+            bp.initialize(canvas, 682, 438, document.getElementById("bulletproof-container"));
         }
     }
 
@@ -115,27 +117,48 @@ var bp = null;
          * @param callback {function():void} Async callback.
          */
         function executeCodeDanmakuContent(fileName, callback) {
-            if (fileName) {
-                var exec = function (err, data) {
-                    if (err) {
-                        console.error(err, data);
-                    } else {
-                        callback();
-                        var codeProvider = bp.danmakuController.getProvider(Bulletproof.danmaku.DanmakuKind.Scripted);
-                        codeProvider.addDanmaku(data);
-                    }
-                };
-                if (typeof global !== typeof void(0)) {
-                    // In Node.js environments
-                    var fs = require("fs");
-                    fs.readFile(fileName, "utf-8", exec);
-                } else {
-                    // In common browsers
-                    // Note: Please view on a server. Local file access is forbidden due to safety restrictions.
-                    loadFileAsync(fileName, exec);
-                }
-            } else {
+            if (!fileName) {
                 callback();
+                return;
+            }
+
+            function exec(err, data) {
+                var extension = this.extension;
+                if (err) {
+                    console.error(err, data);
+                } else {
+                    callback();
+                    var scriptedProvider = bp.danmakuController.getProvider(Bulletproof.danmaku.DanmakuKind.Scripted);
+                    switch (extension) {
+                        case ".as":
+                            scriptedProvider.addDanmaku(data);
+                            break;
+                        case ".xml":
+                            /**
+                             * @type {BiliCommentObject[]}
+                             */
+                            var commentObjects = Bulletproof.bilibili.xml.BiliXmlParser.parse(data);
+                            for (var i = 0; i < commentObjects.length; ++i) {
+                                var commentObject = commentObjects[i];
+                                scriptedProvider.addDanmaku(commentObject.text, {bornTime: commentObject.bornTime * 1000});
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            var extension = fileName.toLowerCase().substring(fileName.lastIndexOf("."));
+
+            if (typeof global !== typeof void(0)) {
+                // In Node.js environments
+                var fs = require("fs");
+                fs.readFile(fileName, "utf-8", exec.bind({extension: extension}));
+            } else {
+                // In common browsers
+                // Note: Please view on a server. Local file access is forbidden due to safety restrictions.
+                loadFileAsync(fileName, exec.bind({extension: extension}));
             }
         }
 
@@ -220,7 +243,9 @@ var bp = null;
             return;
         }
         $timerHandle = setInterval(function () {
-            document.getElementById("fps-indicator").textContent = (Math.round(bp.fps * 100) / 100).toString();
+            var info = (Math.round(bp.fps * 100) / 100).toString();
+            info += " " + (bp.elapsedMillis / 1000).toString() + "secs";
+            document.getElementById("fps-indicator").textContent = info;
         }, 1000);
     }
 

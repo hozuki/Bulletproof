@@ -2,15 +2,15 @@
  * Created by MIC on 2016/2/2.
  */
 
-import {Engine} from "../mic/Engine";
-import {DanmakuKind} from "./DanmakuKind";
-import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
-import {DanmakuProviderBase} from "./DanmakuProviderBase";
-import {CommentData} from "../bilibili/danmaku_api/CommentData";
-import {IDisposable} from "../../../lib/glantern/src/gl/mic/IDisposable";
-import {DisplayObject} from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import Engine from "../mic/Engine";
+import DanmakuKind from "./DanmakuKind";
+import DanmakuLayoutManagerBase from "./DanmakuLayoutManagerBase";
+import DanmakuProviderBase from "./DanmakuProviderBase";
+import CommentData from "../bilibili/danmaku_api/CommentData";
+import IDisposable from "../../../lib/glantern/src/gl/mic/IDisposable";
+import DisplayObject from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
 
-export interface IDanmaku extends IDisposable {
+interface IDanmaku extends IDisposable {
 
     /**
      * Returns the content used to create this danmaku.
@@ -111,3 +111,5 @@ export interface IDanmaku extends IDisposable {
     layer: DisplayObject;
 
 }
+
+export default IDanmaku;

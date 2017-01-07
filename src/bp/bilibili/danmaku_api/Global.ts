@@ -2,23 +2,16 @@
  * Created by MIC on 2015/12/29.
  */
 
-import {StaticDanmakuApiObject} from "../internal/StaticDanmakuApiObject";
+const $map = new Map<any, any>();
 
-export class Global extends StaticDanmakuApiObject {
+export default class Global {
 
-    constructor() {
-        super();
-        this._map = new Map<any, any>();
+    static _set(key: any, val: any): void {
+        $map.set(key, val);
     }
 
-    _set(key: any, val: any): void {
-        this._map.set(key, val);
+    static _get(key: any): any {
+        $map.get(key);
     }
-
-    _get(key: any): any {
-        return this._map.get(key);
-    }
-
-    private _map: Map<any, any> = null;
 
 }

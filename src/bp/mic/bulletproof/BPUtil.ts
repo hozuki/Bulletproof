@@ -1,22 +1,17 @@
 /**
  * Created by MIC on 2016/2/28.
  */
+import OutOfRangeError from "../../flash/errors/OutOfRangeError";
 
-import {OutOfRangeError} from "../../flash/errors/OutOfRangeError";
-
-export abstract class BPUtil {
+abstract class BPUtil {
 
     static createNumberArray(length: number, zeroFill: boolean = true): number[] {
         length |= 0;
-        var result: number[];
+        const result: number[] = new Array<number>(length);
         if (zeroFill) {
-            result = [];
-            while (length > 0) {
-                result.push(0);
-                --length;
+            for (let i = 0; i < length; ++i) {
+                result[i] = 0;
             }
-        } else {
-            result = <number[]>(new Array(length));
         }
         return result;
     }
@@ -39,7 +34,7 @@ export abstract class BPUtil {
             array.push(item);
             return 0;
         }
-        var arrayLength = array.length;
+        const arrayLength = array.length;
         if (comparison(item, array[0]) <= 0) {
             array.unshift(item);
             return 0;
@@ -47,7 +42,7 @@ export abstract class BPUtil {
             array.push(item);
             return arrayLength - 1;
         }
-        var newIndex = getBSIndex(array, item, comparison);
+        const newIndex = getBSIndex(array, item, comparison);
         if (newIndex < 0) {
             throw new OutOfRangeError("Unexpected sorting result.");
         }
@@ -67,12 +62,12 @@ export abstract class BPUtil {
  * @param comparison {function (T, T): Number}
  */
 function getBSIndex<T>(array: T[], item: T, comparison: (toCompare: T, standard: T) => number): number {
-    var arrayLength = array.length;
-    var low = 0, high = arrayLength - 1;
-    var middle: number = -1;
+    const arrayLength = array.length;
+    let low = 0, high = arrayLength - 1;
+    let middle: number = -1;
     while (low < high) {
         middle = ((low + high) / 2) | 0;
-        var compareResult = comparison(item, array[middle]);
+        const compareResult = comparison(item, array[middle]);
         if (compareResult > 0) {
             // item > array[middle]
             low = middle + 1;
@@ -103,3 +98,5 @@ function getBSIndex<T>(array: T[], item: T, comparison: (toCompare: T, standard:
     }
     return middle;
 }
+
+export default BPUtil;

@@ -3,11 +3,11 @@
  */
 
 
-import {ITween} from "./ITween";
-import {Tween} from "../../../../lib/glantern/src/gl/fl/transitions/Tween";
-import {NotImplementedError} from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import ITween from "./ITween";
+import Tween from "../../../../lib/glantern/src/gl/fl/transitions/Tween";
+import NotImplementedError from "../../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
 
-export class TweenImpl extends Tween implements ITween {
+export default class TweenImpl extends Tween implements ITween {
 
     constructor(obj: Object, prop: string, func: Function, begin: number, finish: number, duration: number, useSeconds: boolean = false) {
         super(obj, prop, func, begin, finish, duration, useSeconds);

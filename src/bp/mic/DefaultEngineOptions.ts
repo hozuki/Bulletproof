@@ -2,9 +2,11 @@
  * Created by MIC on 2016/2/7.
  */
 
-import {IEngineOptions} from "./IEngineOptions";
+import EngineOptions from "./EngineOptions";
 
-export var DefaultEngineOptions: IEngineOptions = Object.create(null);
+const DefaultEngineOptions: EngineOptions = Object.create(null);
+
+export default DefaultEngineOptions;
 
 /**
  * Gets the default life time for scripted danmakus, in seconds.
@@ -22,7 +24,7 @@ DefaultEngineOptions.globalDanmakuCountThreshold = 3000;
  * Whether should enable scripted danmaku support.
  * @type {Boolean}
  */
-DefaultEngineOptions.codeDanmakuEnabled = true;
+DefaultEngineOptions.scriptedDanmakuEnabled = true;
 
 /**
  * Whether should enable the default video player.

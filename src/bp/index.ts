@@ -10,10 +10,11 @@ const USER_AGENT = `Bulletproof/${VERSION} (BiliBili, like BSE, like CCL, like F
 import * as bilibili from "./bilibili/index";
 import * as danmaku from "./danmaku/index";
 import * as interactive from "./interactive/index";
-import {DefaultEngineOptions} from "./mic/DefaultEngineOptions";
 import * as mic from "./mic/index";
 import * as gl_root from "../../lib/glantern/src/gl/index";
 import * as flash_fix from "./flash/index";
+
+const DefaultEngineOptions = mic.DefaultEngineOptions;
 
 export {
     VERSION as version,

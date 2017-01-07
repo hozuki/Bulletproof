@@ -69,7 +69,7 @@ var Bulletproof = require("./Bulletproof/build/node/index");
 <script type="text/javascript" src="./Bulletproof/build/Bulletproof-browser.min.js"></script>
 ```
 
-在任何一种导入方式完成后，全局域中会添加一个 `Bulletproof` 命名空间。之后的使用示例可以来[这里](../../test/visual/bootstrap.js)看看。
+在任何一种导入方式完成后，全局域中会添加一个 `Bulletproof` 命名空间。之后的使用示例可以来[这里](../../test/visual/index.js)看看。
 
 ## 项目状态
 

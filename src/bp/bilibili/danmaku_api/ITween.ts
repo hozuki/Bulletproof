@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-export interface ITween {
+interface ITween {
 
     play(): void;
     gotoAndPlay(time: number): void;
@@ -12,3 +12,5 @@ export interface ITween {
     stopOnComplete: boolean;
 
 }
+
+export default ITween;

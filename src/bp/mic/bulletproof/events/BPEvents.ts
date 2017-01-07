@@ -2,7 +2,7 @@
  * Created by MIC on 2016/9/13.
  */
 
-export abstract class BPEvents {
+abstract class BPEvents {
 
     static get COMMENT_KEY(): string {
         return "commentKey";
@@ -13,3 +13,5 @@ export abstract class BPEvents {
     }
 
 }
+
+export default BPEvents;

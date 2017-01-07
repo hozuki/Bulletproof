@@ -2,5 +2,9 @@
  * Created by MIC on 2015/12/29.
  */
 
-export * from "./DCOHelper";
-export * from "./DCShape";
+import DCCanvas from "./DCCanvas";
+import DCOHelper from "./DCOHelper";
+import DCShape from "./DCShape";
+import FiniteTimer from "./FiniteTimer";
+
+export {DCCanvas, DCOHelper, DCShape, FiniteTimer};

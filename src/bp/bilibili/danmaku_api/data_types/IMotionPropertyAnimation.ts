@@ -2,7 +2,7 @@
  * Created by MIC on 2015/12/29.
  */
 
-export interface IMotionPropertyAnimation {
+interface IMotionPropertyAnimation {
 
     fromValue: number;
     toValue?: number;
@@ -12,3 +12,5 @@ export interface IMotionPropertyAnimation {
     repeat?: number;
 
 }
+
+export default IMotionPropertyAnimation;

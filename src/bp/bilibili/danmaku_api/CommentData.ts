@@ -2,7 +2,7 @@
  * Created by MIC on 2016/1/7.
  */
 
-export interface CommentData {
+interface CommentData {
 
     txt: string;
     time: string;
@@ -12,3 +12,5 @@ export interface CommentData {
     fontSize: number;
 
 }
+
+export default CommentData;

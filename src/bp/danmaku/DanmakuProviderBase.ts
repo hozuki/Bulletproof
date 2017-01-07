@@ -2,22 +2,22 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuKind} from "./DanmakuKind";
-import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
-import {DanmakuController} from "./DanmakuController";
-import {DanmakuProviderFlag} from "./DanmakuProviderFlag";
-import {IDanmaku} from "./IDanmaku";
-import {Engine} from "../mic/Engine";
-import {DisplayObject} from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
-import {IDisposable} from "../../../lib/glantern/src/gl/mic/IDisposable";
-import {NotImplementedError} from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {TimeInfoEx} from "../mic/TimeInfoEx";
+import DanmakuKind from "./DanmakuKind";
+import DanmakuLayoutManagerBase from "./DanmakuLayoutManagerBase";
+import DanmakuController from "./DanmakuController";
+import DanmakuProviderFlag from "./DanmakuProviderFlag";
+import IDanmaku from "./IDanmaku";
+import Engine from "../mic/Engine";
+import DisplayObject from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import IDisposable from "../../../lib/glantern/src/gl/mic/IDisposable";
+import NotImplementedError from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import TimeInfoEx from "../mic/TimeInfoEx";
 
 /**
  * Base class exposing common service of a danmaku provider.
  * This class must be inherited.
  */
-export abstract class DanmakuProviderBase implements IDisposable {
+abstract class DanmakuProviderBase implements IDisposable {
 
     /**
      * Creates a new danmaku provider.
@@ -198,3 +198,5 @@ export abstract class DanmakuProviderBase implements IDisposable {
     private _pool: number = -1;
 
 }
+
+export default DanmakuProviderBase;

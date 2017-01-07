@@ -2,7 +2,7 @@
  * Created by MIC on 2016/2/7.
  */
 
-export class StageResizedEventArgs {
+export default class StageResizedEventArgs {
 
     constructor(width: number, height: number) {
         this._width = width;

@@ -2,4 +2,6 @@
  * Created by MIC on 2016/2/8.
  */
 
-export * from "./Html5VideoPlayer";
+import Html5VideoPlayer from "./Html5VideoPlayer";
+
+export {Html5VideoPlayer};

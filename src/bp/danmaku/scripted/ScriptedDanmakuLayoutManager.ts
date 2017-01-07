@@ -2,13 +2,13 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuLayoutManagerBase} from "../DanmakuLayoutManagerBase";
-import {ScriptedDanmakuProvider} from "./ScriptedDanmakuProvider";
-import {DanmakuKind} from "../DanmakuKind";
-import {StageResizedEventArgs} from "../../mic/bulletproof/events/StageResizedEventArgs";
-import {TimeInfoEx} from "../../mic/TimeInfoEx";
+import DanmakuLayoutManagerBase from "../DanmakuLayoutManagerBase";
+import ScriptedDanmakuProvider from "./ScriptedDanmakuProvider";
+import DanmakuKind from "../DanmakuKind";
+import StageResizedEventArgs from "../../mic/bulletproof/events/StageResizedEventArgs";
+import TimeInfoEx from "../../mic/TimeInfoEx";
 
-export class ScriptedDanmakuLayoutManager extends DanmakuLayoutManagerBase {
+export default class ScriptedDanmakuLayoutManager extends DanmakuLayoutManagerBase {
 
     constructor(provider: ScriptedDanmakuProvider) {
         super(provider);

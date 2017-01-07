@@ -2,7 +2,9 @@
  * Created by MIC on 2016/9/13.
  */
 
-import {TimeoutFunction} from "./TimeoutFunction";
+import TimeoutFunction from "./TimeoutFunction";
 
-export interface CommentTriggerHandler extends TimeoutFunction {
+interface CommentTriggerHandler extends TimeoutFunction {
 }
+
+export default CommentTriggerHandler;

@@ -13,6 +13,7 @@ const gutil = require("gulp-util");
 const browserify = require("browserify");
 const source = require("vinyl-source-stream");
 const buffer = require("vinyl-buffer");
+const os = require("os");
 
 const tsConfig = {
     target: "es5",
@@ -23,13 +24,13 @@ const tsConfig = {
 };
 
 const helpers = {
-    copyAll: function () {
+    copyAll: () => {
         return gulp
             .src(["build/**/*.js", "build/**/*.js.map"])
             .pipe(gulp.dest("src/tests/visual/build"));
     },
     errorHandler: function (err) {
-        var colors = gutil.colors;
+        const colors = gutil.colors;
         gutil.log(os.EOL);
         gutil.log(colors.red("Error:") + " " + colors.magenta(err.fileName));
         gutil.log("    on line " + colors.cyan(err.loc.line) + ": " + colors.red(err.message));
@@ -41,27 +42,27 @@ gulp.task("default", ["build"]);
 
 gulp.task("build", ["build-compile", "build-browserify"], helpers.copyAll);
 
-gulp.task("build-compile", ["build-compile-glantern"], function () {
+gulp.task("build-compile", ["build-compile-glantern"], () => {
     return gulp
         .src(["src/bp/**/*.ts", "inc/**/*.ts"])
         .pipe(sourcemaps.init())
         .pipe(ts(tsConfig))
         .js
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("build/node/bp"))
+        .pipe(gulp.dest("build/node/bp"));
 });
 
-gulp.task("build-compile-glantern", function () {
+gulp.task("build-compile-glantern", () => {
     return gulp
         .src(["lib/glantern/src/gl/**/*.ts", "lib/glantern/inc/**/*.ts"])
         .pipe(sourcemaps.init())
         .pipe(ts(tsConfig))
         .js
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("build/lib/glantern/src/gl"))
+        .pipe(gulp.dest("build/lib/glantern/src/gl"));
 });
 
-gulp.task("build-browserify", ["build-compile"], function () {
+gulp.task("build-browserify", ["build-compile"], () => {
     return browserify({
         entries: [
             "build/node/bp/browser-bootstrap.js"
@@ -75,7 +76,7 @@ gulp.task("build-browserify", ["build-compile"], function () {
         .pipe(gulp.dest("build"))
         .pipe(rename({suffix: ".min"}))
         .pipe(uglify())
-        .on("error", helpers.errorHandler)
+        .on("error", gutil.log)
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest("build"));
 });

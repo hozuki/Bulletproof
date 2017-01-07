@@ -2,13 +2,13 @@
  * Created by MIC on 2015/12/28.
  */
 
-import {DanmakuKind} from "./DanmakuKind";
-import {DanmakuProviderBase} from "./DanmakuProviderBase";
-import {Engine} from "../mic/Engine";
-import {StageResizedEventArgs} from "../mic/bulletproof/events/StageResizedEventArgs";
-import {IDisposable} from "../../../lib/glantern/src/gl/mic/IDisposable";
-import {NotImplementedError} from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {TimeInfoEx} from "../mic/TimeInfoEx";
+import DanmakuKind from "./DanmakuKind";
+import DanmakuProviderBase from "./DanmakuProviderBase";
+import Engine from "../mic/Engine";
+import StageResizedEventArgs from "../mic/bulletproof/events/StageResizedEventArgs";
+import IDisposable from "../../../lib/glantern/src/gl/mic/IDisposable";
+import NotImplementedError from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import TimeInfoEx from "../mic/TimeInfoEx";
 
 /**
  * Base class exposing common service of a danmaku layout manager.
@@ -17,7 +17,7 @@ import {TimeInfoEx} from "../mic/TimeInfoEx";
  * layout, as in {@link ScriptedDanmakuLayoutManager}.
  * This class must be inherited.
  */
-export abstract class DanmakuLayoutManagerBase implements IDisposable {
+abstract class DanmakuLayoutManagerBase implements IDisposable {
 
     /**
      * Creates a new danmaku layout manager.
@@ -83,3 +83,5 @@ export abstract class DanmakuLayoutManagerBase implements IDisposable {
     private _engine: Engine = null;
 
 }
+
+export default DanmakuLayoutManagerBase;

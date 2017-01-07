@@ -2,16 +2,16 @@
  * Created by MIC on 2016/6/11.
  */
 
-import {IDanmaku} from "./IDanmaku";
-import {Engine} from "../mic/Engine";
-import {DanmakuKind} from "./DanmakuKind";
-import {CommentData} from "../bilibili/danmaku_api/CommentData";
-import {DanmakuProviderBase} from "./DanmakuProviderBase";
-import {DanmakuLayoutManagerBase} from "./DanmakuLayoutManagerBase";
-import {NotImplementedError} from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
-import {DisplayObject} from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
+import IDanmaku from "./IDanmaku";
+import Engine from "../mic/Engine";
+import DanmakuKind from "./DanmakuKind";
+import CommentData from "../bilibili/danmaku_api/CommentData";
+import DanmakuProviderBase from "./DanmakuProviderBase";
+import DanmakuLayoutManagerBase from "./DanmakuLayoutManagerBase";
+import NotImplementedError from "../../../lib/glantern/src/gl/flash/errors/NotImplementedError";
+import DisplayObject from "../../../lib/glantern/src/gl/flash/display/DisplayObject";
 
-export abstract class TextDanmakuBase implements IDanmaku {
+abstract class TextDanmakuBase implements IDanmaku {
 
     constructor(layoutManager: DanmakuLayoutManagerBase) {
         this._layoutManager = layoutManager;
@@ -107,3 +107,5 @@ export abstract class TextDanmakuBase implements IDanmaku {
     protected _layer: DisplayObject = null;
 
 }
+
+export default TextDanmakuBase;
