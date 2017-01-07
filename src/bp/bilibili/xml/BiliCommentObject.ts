@@ -11,8 +11,8 @@ interface BiliCommentObject {
     color: number;
     date: number;
     pool: number;
-    u5: number;
-    u6: number;
+    senderCrc: string;
+    id: number;
 
 }
 

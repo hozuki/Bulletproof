@@ -47,9 +47,9 @@ export default class DanmakuController implements IWebGLElement, IUpdateable, ID
      * @param requestingProvider {DanmakuProviderBase} The danmaku provider requesting the check.
      */
     shouldCreateDanmaku(requestingProvider: DanmakuProviderBase): boolean {
-        var canCreate = true;
-        var totalDanmakuCount = 0;
-        var globalThreshold = this.engine.options.globalDanmakuCountThreshold;
+        let canCreate = true;
+        let totalDanmakuCount = 0;
+        const globalThreshold = this.engine.options.globalDanmakuCountThreshold;
         this._danmakuProviders.forEach((provider: DanmakuProviderBase): void => {
             // If a danmaku provider has no number limit, it contributes 0 to the total count.
             if (!canCreate || (requestingProvider.flags & DanmakuProviderFlag.UnlimitedCreation) !== 0) {
@@ -69,7 +69,7 @@ export default class DanmakuController implements IWebGLElement, IUpdateable, ID
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be added.
      */
     addProvider(provider: DanmakuProviderBase): void {
-        if (CommonUtil.ptr(provider) && !this._danmakuProviders.has(provider.danmakuKind)) {
+        if (provider && !this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.set(provider.danmakuKind, provider);
             provider.initialize();
         }
@@ -80,7 +80,7 @@ export default class DanmakuController implements IWebGLElement, IUpdateable, ID
      * @param provider {DanmakuProviderBase} The danmaku provider preparing to be removed.
      */
     removeProvider(provider: DanmakuProviderBase): void {
-        if (CommonUtil.ptr(provider) && this._danmakuProviders.has(provider.danmakuKind)) {
+        if (provider && this._danmakuProviders.has(provider.danmakuKind)) {
             this._danmakuProviders.delete(provider.danmakuKind);
         }
     }
@@ -93,7 +93,7 @@ export default class DanmakuController implements IWebGLElement, IUpdateable, ID
      */
     getProvider(kind: DanmakuKind): DanmakuProviderBase {
         var provider = this._danmakuProviders.get(kind);
-        return CommonUtil.ptr(provider) ? provider : null;
+        return provider ? provider : null;
     }
 
     getProviders(): DanmakuProviderBase[] {

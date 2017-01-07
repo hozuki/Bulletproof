@@ -14,10 +14,10 @@ export default class Utils {
     static hue(v: number): number {
         v = v % 360;
         // http://blog.sina.com.cn/s/blog_5de73d0b0101baxq.html
-        var lambda = v / 60 * 255;
-        var r = MathUtil.clamp(510 - lambda, 0, 255);
-        var g = MathUtil.clamp(v < 180 ? lambda : lambda - 510, 0, 255);
-        var b = MathUtil.clamp(v < 180 ? lambda - 510 : lambda, 0, 255);
+        const lambda = v / 60 * 255;
+        const r = MathUtil.clamp(510 - lambda, 0, 255);
+        const g = MathUtil.clamp(v < 180 ? lambda : lambda - 510, 0, 255);
+        const b = MathUtil.clamp(v < 180 ? lambda - 510 : lambda, 0, 255);
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     }
 

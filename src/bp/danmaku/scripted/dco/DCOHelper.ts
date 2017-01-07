@@ -1,7 +1,6 @@
 /**
  * Created by MIC on 2015/12/29.
  */
-
 import IGeneralCreateParams from "../../../bilibili/danmaku_api/data_types/IGeneralCreateParams";
 import IDanmakuCreatedObject from "./IDanmakuCreatedObject";
 import ICommentButtonCreateParams from "../../../bilibili/danmaku_api/data_types/ICommentButtonCreateParams";
@@ -15,7 +14,7 @@ import IDCExtraCreateParams from "./IDCExtraCreateParams";
 abstract class DCOHelper {
 
     static fillInCreateParams<T extends IGeneralCreateParams>(engine: Engine, requestingObject: DisplayObject&IDanmakuCreatedObject, createParams: T): T {
-        var r: T = Object.create(null);
+        const r: T = Object.create(null);
 
         r.color = createParams.color;
         r.alpha = createParams.alpha;
@@ -26,13 +25,12 @@ abstract class DCOHelper {
         r.y = createParams.y;
 
         function __getMaximumLifeTime(motion: IMotion): {maxLife: number, literalMaxLife: number} {
-            var motionAnimation: IMotionPropertyAnimation;
-            var propertyNames: string[] = ["x", "y", "alpha", "rotationZ", "rotationY"];
-            var maxLife: number = 0;
-            var literalMaxLife: number = 0;
-            for (var j = 0; j < propertyNames.length; ++j) {
-                motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
-                if (CommonUtil.ptr(motionAnimation)) {
+            const propertyNames: string[] = ["x", "y", "alpha", "rotationZ", "rotationY"];
+            let maxLife: number = 0;
+            let literalMaxLife: number = 0;
+            for (let j = 0; j < propertyNames.length; ++j) {
+                const motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
+                if (motionAnimation) {
                     if (CommonUtil.isUndefined(motionAnimation.lifeTime)) {
                         motionAnimation.lifeTime = engine.options.codeDanmakuLifeTimeSecs * 1000;
                     }
@@ -50,25 +48,23 @@ abstract class DCOHelper {
             };
         }
 
-        if (CommonUtil.ptr(createParams.motion) && CommonUtil.ptr(createParams.motionGroup)) {
+        if (createParams.motion && createParams.motionGroup) {
             console.warn("'motion' and 'motionGroup' are both set!");
         }
-        var now = engine.videoMillis;
-        var life: {maxLife: number, literalMaxLife: number};
-        var motion: IMotion;
-        if (CommonUtil.ptr(createParams.motion)) {
-            motion = createParams.motion;
+        let now = engine.videoMillis;
+        if (createParams.motion) {
+            const motion = createParams.motion;
             motion.sourceObject = requestingObject;
             motion.createdTime = now;
-            life = __getMaximumLifeTime(motion);
+            const life = __getMaximumLifeTime(motion);
             motion.maximumLifeTime = life.maxLife;
         }
-        if (CommonUtil.ptr(createParams.motionGroup)) {
-            for (var i = 0; i < createParams.motionGroup.length; ++i) {
-                motion = createParams.motionGroup[i];
+        if (createParams.motionGroup) {
+            for (let i = 0; i < createParams.motionGroup.length; ++i) {
+                const motion = createParams.motionGroup[i];
                 motion.sourceObject = requestingObject;
                 motion.createdTime = now;
-                life = __getMaximumLifeTime(motion);
+                const life = __getMaximumLifeTime(motion);
                 motion.maximumLifeTime = life.maxLife;
                 now += life.literalMaxLife;
             }
@@ -78,7 +74,7 @@ abstract class DCOHelper {
         r.motionGroup = createParams.motionGroup;
 
         const handledProperties = ["color", "alpha", "fontsize", "lifeTime", "parent", "x", "y", "motion", "motionGroup"];
-        for (var k in createParams) {
+        for (const k in createParams) {
             if (Object.prototype.hasOwnProperty.call(createParams, k) && handledProperties.indexOf(k) < 0) {
                 (<any>r)[k] = (<any>createParams)[k];
             }

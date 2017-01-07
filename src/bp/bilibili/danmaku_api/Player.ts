@@ -1,12 +1,10 @@
 /**
  * Created by MIC on 2016/1/7.
  */
-
 import CommentData from "./CommentData";
 import VideoPlayerBase from "../../interactive/video/VideoPlayerBase";
 import VideoPlayerState from "../../interactive/video/VideoPlayerState";
 import PlayerState from "./PlayerState";
-import DanmakuProviderBase from "../../danmaku/DanmakuProviderBase";
 import DisplayObject from "../../../../lib/glantern/src/gl/flash/display/DisplayObject";
 import Sound from "../../../../lib/glantern/src/gl/flash/media/Sound";
 import CommonUtil from "../../../../lib/glantern/src/gl/mic/CommonUtil";
@@ -20,28 +18,28 @@ import BiliApiContract from "../BiliApiContract";
 export default class Player {
 
     static play(): void {
-        var videoPlayer = Player._videoPlayer;
-        if (videoPlayer !== null) {
+        const videoPlayer = Player._videoPlayer;
+        if (videoPlayer) {
             videoPlayer.play();
         }
     }
 
     static pause(): void {
-        var videoPlayer = Player._videoPlayer;
-        if (videoPlayer !== null) {
+        const videoPlayer = Player._videoPlayer;
+        if (videoPlayer) {
             videoPlayer.pause();
         }
     }
 
     static seek(offset: number): void {
-        var videoPlayer = Player._videoPlayer;
-        if (videoPlayer !== null) {
+        const videoPlayer = Player._videoPlayer;
+        if (videoPlayer) {
             videoPlayer.currentTime = offset;
         }
     }
 
     static jump(av: string, page: number = 1, newWindow: boolean = false): void {
-        var url = CommonUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
+        const url = CommonUtil.formatString("http://www.bilibili.com/video/{0}/index_{1}.html", av, page);
         if (newWindow) {
             VirtualDom.openWindow(url, "_blank");
         } else {
@@ -50,11 +48,11 @@ export default class Player {
     }
 
     static get state(): string {
-        var videoPlayer = Player._videoPlayer;
+        const videoPlayer = Player._videoPlayer;
         if (videoPlayer === null) {
             return PlayerState.INVALID;
         } else {
-            var state = videoPlayer.state;
+            const state = videoPlayer.state;
             switch (state) {
                 case VideoPlayerState.Playing:
                 case VideoPlayerState.Seeking:
@@ -89,10 +87,10 @@ export default class Player {
     }
 
     static createSound(t: string, onLoad: Function = null): Sound {
-        var request = new URLRequest(t);
-        var sound = new Sound(request);
+        const request = new URLRequest(t);
+        const sound = new Sound(request);
         if (CommonUtil.isFunction(onLoad)) {
-            var handler = ((): () => void => {
+            const handler = ((): () => void => {
                 return (): void => {
                     onLoad();
                     sound.removeEventListener(Sound.COMPLETE, handler);
@@ -104,12 +102,11 @@ export default class Player {
     }
 
     static get commentList(): CommentData[] {
-        var comments: CommentData[] = [];
-        var providers = Engine.instance.danmakuController.getProviders();
-        var provider: DanmakuProviderBase;
-        for (var j = 0; j < providers.length; ++j) {
-            provider = providers[j];
-            for (var i = 0; i < provider.fullDanmakuList.length; ++i) {
+        const comments: CommentData[] = [];
+        const providers = Engine.instance.danmakuController.getProviders();
+        for (let j = 0; j < providers.length; ++j) {
+            const provider = providers[j];
+            for (let i = 0; i < provider.fullDanmakuList.length; ++i) {
                 comments.push(provider.fullDanmakuList[i].getCommentData());
             }
         }
@@ -133,13 +130,13 @@ export default class Player {
     }
 
     static get videoWidth(): number {
-        var videoPlayer = Player._videoPlayer;
-        return videoPlayer !== null ? videoPlayer.videoWidth : 0;
+        const videoPlayer = Player._videoPlayer;
+        return videoPlayer ? videoPlayer.videoWidth : 0;
     }
 
     static get videoHeight(): number {
-        var videoPlayer = Player._videoPlayer;
-        return videoPlayer !== null ? videoPlayer.videoHeight : 0;
+        const videoPlayer = Player._videoPlayer;
+        return videoPlayer ? videoPlayer.videoHeight : 0;
     }
 
     static $init(): void {

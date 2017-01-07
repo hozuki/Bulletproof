@@ -1,7 +1,6 @@
 /**
  * Created by MIC on 2015/12/29.
  */
-
 import DCShape from "../../danmaku/scripted/dco/DCShape";
 import IGeneralCreateParams from "./data_types/IGeneralCreateParams";
 import ICommentButtonCreateParams from "./data_types/ICommentButtonCreateParams";
@@ -52,9 +51,9 @@ export default class Display {
     }
 
     static createComment(text: string, params: IGeneralCreateParams): CommentField {
-        var provider = ScriptedDanmakuProvider.instance;
-        var layer = provider.layer;
-        var textField = new CommentField(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
+        const provider = ScriptedDanmakuProvider.instance;
+        const layer = provider.layer;
+        const textField = new CommentField(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
         textField.text = text;
         textField.textColor = 0xffffff;
         // Use "Arial" as default font for users outside China.
@@ -65,18 +64,18 @@ export default class Display {
     }
 
     static createShape(params: IGeneralCreateParams): DCShape {
-        var provider = ScriptedDanmakuProvider.instance;
-        var layer = provider.layer;
-        var shape = new DCShape(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
+        const provider = ScriptedDanmakuProvider.instance;
+        const layer = provider.layer;
+        const shape = new DCShape(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
         layer.addChild(shape);
         provider.registerElement(shape);
         return shape;
     }
 
     static createCanvas(params: IGeneralCreateParams): DCCanvas {
-        var provider = ScriptedDanmakuProvider.instance;
-        var layer = provider.layer;
-        var canvas = new DCCanvas(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
+        const provider = ScriptedDanmakuProvider.instance;
+        const layer = provider.layer;
+        const canvas = new DCCanvas(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
         layer.addChild(canvas);
         provider.registerElement(canvas);
         return canvas;
@@ -85,12 +84,12 @@ export default class Display {
     static createButton(params: ICommentButtonCreateParams): DCButton;
     static createButton(text: string, params: ICommentButtonCreateParams): DCButton;
     static createButton(p1: any, p2?: any): DCButton {
-        var params: ICommentButtonCreateParams = typeof p1 !== "string" ? p1 : p2;
+        let params: ICommentButtonCreateParams = typeof p1 !== "string" ? p1 : p2;
         params = params || <ICommentButtonCreateParams>Object.create(null);
-        var text = typeof p1 === "string" ? p1 : (params.text || "");
-        var provider = ScriptedDanmakuProvider.instance;
-        var layer = provider.layer;
-        var button = new DCButton(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
+        const text = typeof p1 === "string" ? p1 : (params.text || "");
+        const provider = ScriptedDanmakuProvider.instance;
+        const layer = provider.layer;
+        const button = new DCButton(layer.stage, layer, params, DCOHelper.getExtraCreateParams());
         layer.addChild(button);
         provider.registerElement(button);
         return button;
@@ -99,12 +98,12 @@ export default class Display {
     static createGlowFilter(color: number = 0xff0000, alpha: number = 1.0, blurX: number = 6.0,
                             blurY: number = 6.0, strength: number = 2, quality: number = BitmapFilterQuality.LOW,
                             inner: boolean = false, knockout: boolean = false): GlowFilter {
-        var renderer = ScriptedDanmakuProvider.instance.layer.stage.$worldRenderer;
+        const renderer = ScriptedDanmakuProvider.instance.layer.stage.$worldRenderer;
         return new GlowFilter(renderer.filterManager, color, alpha, blurX, blurY, strength, quality, inner, knockout);
     }
 
     static createBlurFilter(blurX: number = 4.0, blurY: number = 4.0, quality: number = BitmapFilterQuality.LOW): BlurFilter {
-        var renderer = ScriptedDanmakuProvider.instance.layer.stage.$worldRenderer;
+        const renderer = ScriptedDanmakuProvider.instance.layer.stage.$worldRenderer;
         return new BlurFilter(renderer.filterManager, blurX, blurY, quality);
     }
 
@@ -170,10 +169,10 @@ export default class Display {
             CommonUtil.trace("Display.projectVectors input vertex Vector must be a multiple of 3.");
             return;
         }
-        var transformed: number[] = [];
+        const transformed: number[] = [];
         matrix.transformVectors(vertices, transformed);
-        for (var i = 0; i < transformed.length / 3; i++) {
-            var x = transformed[i * 3], y = transformed[i * 3 + 1];
+        for (let i = 0; i < transformed.length / 3; i++) {
+            const x = transformed[i * 3], y = transformed[i * 3 + 1];
             projectedVertices.push(x, y);
         }
     }

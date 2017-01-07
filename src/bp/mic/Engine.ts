@@ -1,10 +1,8 @@
 /**
  * Created by MIC on 2015/12/28.
  */
-
 import DanmakuController from "../danmaku/DanmakuController";
 import ScriptedDanmakuProvider from "../danmaku/scripted/ScriptedDanmakuProvider";
-import DanmakuProviderBase from "../danmaku/DanmakuProviderBase";
 import DefaultEngineOptions from "./DefaultEngineOptions";
 import VideoPlayerBase from "../interactive/video/VideoPlayerBase";
 import Html5VideoPlayer from "../interactive/video/html5/Html5VideoPlayer";
@@ -31,7 +29,7 @@ export default class Engine extends EngineBase {
      */
     constructor() {
         super();
-        if (CommonUtil.ptr(Engine.instance)) {
+        if (Engine.instance) {
             throw new ApplicationError("Engine is already created.");
         }
         this._options = CommonUtil.deepClone(DefaultEngineOptions);
@@ -51,14 +49,14 @@ export default class Engine extends EngineBase {
         }
 
         super.initialize(canvas, width, height);
-        var options = this.options;
-        var controller = new DanmakuController(this);
+        const options = this.options;
+        const controller = new DanmakuController(this);
         this._danmakuController = controller;
 
         this._blackCurtainView = VirtualDom.createElement<HTMLDivElement>("div");
 
         if (options.videoPlayerEnabled) {
-            var videoPlayer: VideoPlayerBase = null;
+            let videoPlayer: VideoPlayerBase = null;
             if (options.useWebChimeraForVideoPlayback) {
                 console.warn("WebChimera integration is not implemented yet.");
             } else {
@@ -74,9 +72,8 @@ export default class Engine extends EngineBase {
         this.__initHtmlElements(width, height, parent);
 
         // The earlier a provider is added in, the deeper it is in Z axis.
-        var provider: DanmakuProviderBase;
         if (options.scriptedDanmakuEnabled) {
-            provider = new ScriptedDanmakuProvider(controller);
+            const provider = new ScriptedDanmakuProvider(controller);
             controller.addProvider(provider);
         }
 
@@ -99,7 +96,7 @@ export default class Engine extends EngineBase {
      * @param keyUp {Boolean} Whether this is a KeyUp event.
      */
     raiseKeyEvent(keyCode: number, keyUp: boolean): void {
-        var e = new CommentKeyEventArgs(keyCode, keyUp);
+        const e = new CommentKeyEventArgs(keyCode, keyUp);
         this.dispatchEvent(EventBase.create(BPEvents.COMMENT_KEY), e);
     }
 
@@ -132,7 +129,7 @@ export default class Engine extends EngineBase {
     }
 
     get videoView(): HTMLElement {
-        return CommonUtil.ptr(this.videoPlayer) ? this.videoPlayer.view : null;
+        return this.videoPlayer ? this.videoPlayer.view : null;
     }
 
     get options(): EngineOptions {
@@ -161,13 +158,13 @@ export default class Engine extends EngineBase {
     }
 
     private __initEventHandlers(): void {
-        var videoPlayer = this._videoPlayer;
-        if (CommonUtil.ptr(videoPlayer)) {
+        const videoPlayer = this._videoPlayer;
+        if (videoPlayer) {
             videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_TIME_UPDATE, this.__onVideoTimeUpdate.bind(this));
             videoPlayer.addEventListener(VideoPlayerEvent.VIDEO_PLAY, this.__onVideoPlay.bind(this));
         }
-        var canvas = this.view;
-        if (CommonUtil.ptr(canvas)) {
+        const canvas = this.view;
+        if (canvas) {
             canvas.addEventListener("mouseenter", this.__onCanvasMouseEnter.bind(this));
             canvas.addEventListener("mouseout", this.__onCanvasMouseLeave.bind(this));
             canvas.addEventListener("mousemove", this.__onCanvasMouseMove.bind(this));
@@ -176,20 +173,20 @@ export default class Engine extends EngineBase {
     }
 
     private __initHtmlElements(width: number, height: number, parent: HTMLElement): void {
-        var blackCurtainView = this.blackCurtainView;
-        var blackCurtainStyle = blackCurtainView.style;
+        const blackCurtainView = this.blackCurtainView;
+        const blackCurtainStyle = blackCurtainView.style;
         blackCurtainStyle.width = `${width}px`;
         blackCurtainStyle.height = `${height}px`;
         blackCurtainStyle.backgroundColor = "black";
         blackCurtainStyle.position = "absolute";
         blackCurtainStyle.zIndex = "0";
-        var videoView = this.videoView;
-        if (CommonUtil.ptr(videoView)) {
-            var videoStyle = videoView.style;
+        const videoView = this.videoView;
+        if (videoView) {
+            const videoStyle = videoView.style;
             videoStyle.position = "absolute";
             videoStyle.zIndex = "1";
         }
-        var view = this.view;
+        const view = this.view;
         view.style.position = "absolute";
         view.style.zIndex = "9999";
 

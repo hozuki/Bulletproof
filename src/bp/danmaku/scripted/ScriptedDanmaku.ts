@@ -1,8 +1,6 @@
 /**
  * Created by MIC on 2015/12/28.
  */
-
-import * as vm from "vm";
 import DanmakuKind from "../DanmakuKind";
 import ScriptedDanmakuLayoutManager from "./ScriptedDanmakuLayoutManager";
 import Engine from "../../mic/Engine";
@@ -109,8 +107,9 @@ export default class ScriptedDanmaku implements IDanmaku {
     }
 
     private __runInVM(): void {
-        vm.runInNewContext(this.getContent(), this.danmakuProvider.scriptContext);
-        console.log(this.danmakuProvider.scriptContext);
+        //vm.runInNewContext(this.getContent(), this.danmakuProvider.scriptContext);
+        this.danmakuProvider.eval(this.getContent());
+        //console.log(this.danmakuProvider.scriptContext);
     }
 
     private _content: string = null;

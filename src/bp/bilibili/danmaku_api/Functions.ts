@@ -33,12 +33,12 @@ export function interval(obj: any, delay: number, times: number = 1): FiniteTime
     // var timer = new FiniteTimer(obj, delay, times);
     // BiliApiContract.ScriptManager.addTimer(timer);
     // return timer;
-    var fn = typeof obj === "string" ? Function(obj) : obj;
-    var $counter = 0;
-    var handle = setInterval(() => {
-        ++$counter;
+    const fn = typeof obj === "string" ? Function(obj) : obj;
+    let counter = 0;
+    const handle = VirtualDom.setInterval(() => {
+        ++counter;
         fn();
-        if (times > 0 && $counter >= times) {
+        if (times > 0 && counter >= times) {
             VirtualDom.clearInterval(handle);
         }
     }, <any>delay);
@@ -47,10 +47,10 @@ export function interval(obj: any, delay: number, times: number = 1): FiniteTime
 }
 
 export function foreach(loop: any, f: (key: string, value: any) => void): void {
-    if (!CommonUtil.ptr(loop)) {
+    if (!loop) {
         return;
     }
-    for (var key in loop) {
+    for (const key in loop) {
         if (loop.hasOwnProperty(key)) {
             f(key, loop[key]);
         }
@@ -62,11 +62,11 @@ export function clone(object: any): any {
 }
 
 export function load(libraryName: string, onComplete: () => void): void {
-    var availableLibraries: string[] = [
+    const availableLibraries: string[] = [
         "libBitmap",
         "libStorage"
     ];
-    var index = availableLibraries.indexOf(libraryName);
+    const index = availableLibraries.indexOf(libraryName);
     if (index >= 0) {
         switch (index) {
             case 0:

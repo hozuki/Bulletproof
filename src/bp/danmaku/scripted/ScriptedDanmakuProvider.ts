@@ -1,7 +1,6 @@
 /**
  * Created by MIC on 2015/12/28.
  */
-
 // Damn you TypeScript
 import * as vm from "vm";
 import DanmakuProviderBase from "../DanmakuProviderBase";
@@ -31,16 +30,20 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
     constructor(controller: DanmakuController) {
         super(controller);
-        if (CommonUtil.ptr(ScriptedDanmakuProvider.instance)) {
+        if (ScriptedDanmakuProvider.instance) {
             throw new ApplicationError("A ScriptedDanamkuProvider is already created.");
         }
         this._layoutManager = new ScriptedDanmakuLayoutManager(this);
         this._createdElements = [];
-        this._scriptContext = BiliApiContract;
+        this._scriptContext = vm.createContext(BiliApiContract);
         ScriptedDanmakuProvider._instance = this;
         // TODO: SO UGLY!
         ScriptManager.$init();
         Player.$init();
+    }
+
+    eval(code: string): void {
+        vm.runInContext(code, this._scriptContext);
     }
 
     get danmakuKind(): DanmakuKind {
@@ -52,9 +55,9 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     dispose(): void {
-        var layer = this.layer;
+        const layer = this.layer;
         while (layer.numChildren > 0) {
-            var child = layer.getChildAt(0);
+            const child = layer.getChildAt(0);
             layer.removeChildAt(0);
             child.dispose();
         }
@@ -62,8 +65,8 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
         layer.dispose();
         this.layoutManager.dispose();
         this._layoutManager = null;
-        var displayingDanmakuList = this.displayingDanmakuList;
-        for (var i = 0; i < displayingDanmakuList.length; ++i) {
+        const displayingDanmakuList = this.displayingDanmakuList;
+        for (let i = 0; i < displayingDanmakuList.length; ++i) {
             displayingDanmakuList[i].dispose();
         }
         while (displayingDanmakuList.length > 0) {
@@ -75,7 +78,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
     initialize(): void {
         super.initialize();
-        var stage = this.engine.stage;
+        const stage = this.engine.stage;
         this._layer = new ScriptedDanmakuLayer(stage, stage);
         stage.addChild(this.layer);
     }
@@ -85,7 +88,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     removeDanmaku(danmaku: ScriptedDanmaku): boolean {
-        var index = this.displayingDanmakuList.indexOf(danmaku);
+        const index = this.displayingDanmakuList.indexOf(danmaku);
         if (index < 0) {
             return false;
         } else {
@@ -96,7 +99,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     isDanmakuDead(timeInfo: TimeInfoEx, danmaku: ScriptedDanmaku): boolean {
-        var now = timeInfo.millisOfVideo;
+        const now = timeInfo.millisOfVideo;
         if (now < danmaku.bornTime) {
             return danmaku.isExecuted;
         } else {
@@ -106,10 +109,9 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
     update(timeInfo: TimeInfoEx): void {
         super.update(timeInfo);
-        var danmaku: ScriptedDanmaku;
-        var now = timeInfo.millisOfVideo;
-        for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
-            danmaku = this.displayingDanmakuList[i];
+        const now = timeInfo.millisOfVideo;
+        for (let i = 0; i < this.displayingDanmakuList.length; ++i) {
+            const danmaku = this.displayingDanmakuList[i];
             if (!danmaku.isExecuted && now >= danmaku.bornTime) {
                 danmaku.execute();
             }
@@ -119,9 +121,8 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     updateDisplayingDanmakuList(timeInfo: TimeInfoEx): void {
-        var danmaku: ScriptedDanmaku;
-        for (var i = 0; i < this.displayingDanmakuList.length; ++i) {
-            danmaku = this.displayingDanmakuList[i];
+        for (let i = 0; i < this.displayingDanmakuList.length; ++i) {
+            const danmaku = this.displayingDanmakuList[i];
             if (this.isDanmakuDead(timeInfo, danmaku)) {
                 this.removeDanmaku(danmaku);
                 --i;
@@ -164,25 +165,24 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     protected _$addDanmaku(content: string, args?: ScriptedDanmakuCreateParams): ScriptedDanmaku {
-        if (!CommonUtil.ptr(args)) {
+        if (!args) {
             args = CommonUtil.deepClone(this.engine.options);
         }
-        var danmaku = new ScriptedDanmaku(this.layoutManager, args);
+        const danmaku = new ScriptedDanmaku(this.layoutManager, args);
         danmaku.initialize(content, this.engine.videoMillis);
         this.displayingDanmakuList.push(danmaku);
         return danmaku;
     }
 
     private __applyMotionGroups(): void {
-        var child: DisplayObject&IDanmakuCreatedObject;
-        var now = this.engine.videoMillis;
-        var elements = this._createdElements;
-        for (var i = 0; i < elements.length; ++i) {
-            child = <DisplayObject&IDanmakuCreatedObject>elements[i];
+        const now = this.engine.videoMillis;
+        const elements = this._createdElements;
+        for (let i = 0; i < elements.length; ++i) {
+            const child = <DisplayObject&IDanmakuCreatedObject>elements[i];
             if (child.isCreatedByDanmaku) {
-                if (CommonUtil.ptr(child.createParams.motion)) {
+                if (child.createParams.motion) {
                     ScriptedDanmakuProvider.__applyMotion(child.createParams.motion, now);
-                } else if (CommonUtil.ptr(child.createParams.motionGroup)) {
+                } else if (child.createParams.motionGroup) {
                     ScriptedDanmakuProvider.__applyMotionGroup(child.createParams.motionGroup, now);
                 }
             }
@@ -190,11 +190,10 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     private static __applyMotionGroup(motionGroup: IMotion[], now: number): void {
-        var motion: IMotion;
-        if (CommonUtil.ptr(motionGroup)) {
+        if (motionGroup) {
             //console.log("Calculating: ", obj, " on ", now);
-            for (var i = 0; i < motionGroup.length; ++i) {
-                motion = motionGroup[i];
+            for (let i = 0; i < motionGroup.length; ++i) {
+                const motion = motionGroup[i];
                 ScriptedDanmakuProvider.__applyMotion(motion, now);
             }
         }
@@ -202,21 +201,18 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
     private static __applyMotion(motion: IMotion, now: number): void {
         const propertyNames = ["x", "y", "alpha", "rotationZ", "rotationY"];
-        var motionAnimation: IMotionPropertyAnimation;
-        var relativeTime: number;
-        var value: number;
         if (motion.createdTime <= now && now <= motion.createdTime + motion.maximumLifeTime) {
-            for (var j = 0; j < propertyNames.length; ++j) {
-                motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
-                if (CommonUtil.ptr(motionAnimation)) {
-                    relativeTime = now - motion.createdTime;
+            for (let j = 0; j < propertyNames.length; ++j) {
+                const motionAnimation = <IMotionPropertyAnimation>(<any>motion)[propertyNames[j]];
+                if (motionAnimation) {
+                    let relativeTime = now - motion.createdTime;
                     if (!CommonUtil.isUndefined(motionAnimation.startDelay)) {
                         relativeTime -= motionAnimation.startDelay;
                     }
                     if (relativeTime <= motionAnimation.lifeTime * 1000) {
                         // TODO: property 'repeat' is ignored here.
                         // TODO: easing usage is always interpreted as linear here.
-                        value = motionAnimation.fromValue +
+                        const value = motionAnimation.fromValue +
                             (motionAnimation.toValue - motionAnimation.fromValue) / (motionAnimation.lifeTime * 1000) * relativeTime;
                         (<any>motion.sourceObject)[propertyNames[j]] = value;
                     }
@@ -226,10 +222,10 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
     }
 
     private __removeDeadDCObjects(): void {
-        var engine = this.engine;
-        var elements = this._createdElements;
-        for (var i = 0; i < elements.length; ++i) {
-            var child = <DisplayObject&IDanmakuCreatedObject>elements[i];
+        const engine = this.engine;
+        const elements = this._createdElements;
+        for (let i = 0; i < elements.length; ++i) {
+            const child = <DisplayObject&IDanmakuCreatedObject>elements[i];
             if (!child.isCreatedByDanmaku) {
                 continue;
             }
