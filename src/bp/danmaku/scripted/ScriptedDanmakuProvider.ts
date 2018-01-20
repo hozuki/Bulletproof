@@ -166,7 +166,7 @@ export default class ScriptedDanmakuProvider extends DanmakuProviderBase {
 
     protected _$addDanmaku(content: string, args?: ScriptedDanmakuCreateParams): ScriptedDanmaku {
         if (!args) {
-            args = CommonUtil.deepClone(this.engine.options);
+            args = CommonUtil.deepClone(this.engine.options) as ScriptedDanmakuCreateParams;
         }
         const danmaku = new ScriptedDanmaku(this.layoutManager, args);
         danmaku.initialize(content, this.engine.videoMillis);
