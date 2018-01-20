@@ -41,9 +41,8 @@ export default class Engine extends EngineBase {
      * @param canvas {HTMLCanvasElement}
      * @param width {Number} Width of stage requested, in pixels.
      * @param height {Number} Height of stage requested, in pixels.
-     * @param parent {HTMLElement} Parent of views.
      */
-    initialize(canvas: HTMLCanvasElement, width: number, height: number, parent: HTMLElement): void {
+    initialize(canvas: HTMLCanvasElement, width: number, height: number): void {
         if (this.isInitialized) {
             return;
         }
@@ -69,6 +68,7 @@ export default class Engine extends EngineBase {
             }
         }
 
+        const parent = canvas.parentElement;
         this.__initHtmlElements(width, height, parent);
 
         // The earlier a provider is added in, the deeper it is in Z axis.
@@ -190,9 +190,8 @@ export default class Engine extends EngineBase {
         view.style.position = "absolute";
         view.style.zIndex = "9999";
 
-        parent.appendChild(blackCurtainView);
-        parent.appendChild(videoView);
-        parent.appendChild(view);
+        parent.insertBefore(videoView, null);
+        parent.insertBefore(blackCurtainView, null);
     }
 
     private __onVideoTimeUpdate(): void {

@@ -63,7 +63,9 @@ var bp = null;
             bp = new Bulletproof.Engine();
             var canvas = document.createElement("canvas");
             canvas.className = "bulletproof-view";
-            bp.initialize(canvas, 682, 438, document.getElementById("bulletproof-container"));
+            var container = document.getElementById("bulletproof-container");
+            container.appendChild(canvas);
+            bp.initialize(canvas, 682, 438);
         }
     }
 
