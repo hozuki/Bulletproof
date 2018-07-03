@@ -7,3 +7,6 @@
 
 /src/tests/visual/build/
 !/src/tests/visual/build/Bulletproof-browser.min.js
+
+/misc/*.*
+!/misc/*.xml
